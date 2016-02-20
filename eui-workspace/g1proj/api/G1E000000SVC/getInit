@@ -1,0 +1,618 @@
+{
+    "MSG"
+:
+    "정상적으로 처리되었습니다.", "data"
+:
+    {
+        "varsetting"
+    :
+        {
+            "SECURITY_DENIED_CODE"
+        :
+            200130, "HTTP_STATUS"
+        :
+            "STATUS", "AJAX_HEADER"
+        :
+            "AJAX", "CHAT_HISTORY"
+        :
+            "history", "X_CSRF_TOKEN"
+        :
+            "X-CSRF-TOKEN", "GENERIC_APP_ERROR_CODE"
+        :
+            -1, "CHAT_FILEDATA"
+        :
+            "filedata", "SIGNAL_DATA"
+        :
+            "signaldata", "DESC"
+        :
+            "DESC", "LOGIN_SUCCESS_CODE"
+        :
+            200110, "ROLE_USER"
+        :
+            "ROLE_USER", "CHAT_JOIN"
+        :
+            "join", "ROLE_GUEST"
+        :
+            "ROLE_GUEST", "USERID"
+        :
+            "USER_ID", "ROLE_TEST"
+        :
+            "ROLE_TEST", "LINK"
+        :
+            "LINK", "BLOG_POST_URL"
+        :
+            "http://www.codingpedia.org/ama/tutorial-rest-api-design-and-implementation-in-java-with-jersey-and-spring/", "TYPE"
+        :
+            "TYPE", "CHAT_RM_SYSTEM"
+        :
+            "system", "MSG"
+        :
+            "MSG", "GENERIC_APP_SUCCESS_CODE"
+        :
+            1, "CHAT_FILEDATA_SYS"
+        :
+            "filedatasys", "CHAT_S_FUNC_CODE"
+        :
+            "CH", "USERPW"
+        :
+            "PW", "CHAT_FILESTATUS"
+        :
+            "filestatus", "LOGIN_FAIL_CODE"
+        :
+            200111, "CHAT_MESSAGE"
+        :
+            "msg", "CHAT_TOAST"
+        :
+            "toastmsg", "DATA"
+        :
+            "data", "CHAT_UID_SYSTEM"
+        :
+            "system", "NO_DATA_FOUND"
+        :
+            0, "ROLE_ADMIN"
+        :
+            "ROLE_ADMIN", "CHAT_HISTORY_SYS"
+        :
+            "historysys", "CHAT_REFTYPE"
+        :
+            "RM"
+        }
+    ,
+        "session"
+    :
+        {
+            "TEL_NO"
+        :
+            "031-200-2542", "ADD_USER_ID"
+        :
+            "tngus", "ADD_USER_NAME"
+        :
+            "김진화", "USER_ID"
+        :
+            "tngus", "REMARKS"
+        :
+            "", "EMAIL"
+        :
+            "tngus@htns.com", "locale"
+        :
+            "KO", "POSITION"
+        :
+            "", "STATUS"
+        :
+            "C", "USER_AUTH"
+        :
+            "U", "TIME_ZONE"
+        :
+            "GMT +09:00", "USE_YN"
+        :
+            "Y", "ADD_DATE"
+        :
+            "2015-12-01 19:44:36", "CHANGE_USER_ID"
+        :
+            "tngus", "SHOTCUT_XPATH"
+        :
+            "/set/shotcut", "COMPANY_CODE"
+        :
+            "HTNS", "EXPIRED_DATE"
+        :
+            "20151020", "APP_MODE"
+        :
+            "pro", "DEPT_CODE"
+        :
+            "M10531", "PLANT_CODE"
+        :
+            "SW", "USER_NAME_ENG"
+        :
+            "KIMJINHWA", "CHANGE_DATE"
+        :
+            "2015-12-01 19:44:36", "CHANGE_USER_NAME"
+        :
+            "김진화", "FAX_NO"
+        :
+            "031-200-2543", "EMP_ID"
+        :
+            "20041271", "USER_LANG"
+        :
+            "KO", "USER_NAME_LOC"
+        :
+            "김진화", "ROW_PER_PAGE"
+        :
+            "5"
+        }
+    ,
+        "cmpsetting"
+    :
+        [
+            {"SET_MGT_VALUE": "KRW", "SET_MGT_CODE": "CUR"}
+        ], "dept"
+    :
+        {
+            "DEPT_NAME"
+        :
+            "지원팀", "DEPT_MANAGER_NAME"
+        :
+            "이국환 이사", "TEL_NO"
+        :
+            "", "DEPT_CODE"
+        :
+            "M10531", "ADD_USER_ID"
+        :
+            "SYSTEM", "ADD_USER_NAME"
+        :
+            "시스템", "PLANT_CODE"
+        :
+            "SW", "DEPT_MANAGER_ID"
+        :
+            "19991009", "S_FUNC_CODE"
+        :
+            "", "REMARKS"
+        :
+            "", "CHANGE_USER_NAME"
+        :
+            "", "STATUS"
+        :
+            "C", "PLANT_NAME"
+        :
+            "", "FAX_NO"
+        :
+            "", "USE_YN"
+        :
+            "Y", "TIME_ZONE"
+        :
+            "GMT +09:00", "ADD_DATE"
+        :
+            1438651776000, "CHANGE_USER_ID"
+        :
+            "", "COMPANY_CODE"
+        :
+            "HTNS", "PARENTS_DEPT_CODE"
+        :
+            "M10000"
+        }
+    ,
+        "menu"
+    :
+        [
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "정산 관리 시스템", "SHOTCUT": "", "LEVEL": 1, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNACC", "DSKT_SQ": 1, "DSKT_CD": "MNACC", "ORDER_SEQ": 10, "PCODE": "*", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "통합정산관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNACC01", "DSKT_SQ": 1, "DSKT_CD": "MNACC", "ORDER_SEQ": 1, "PCODE": "MNACC", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "ACC020101V", "TEXT": "통합청구", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "acc.view.acc020101.ACC020101V", "CODE": "MNACC0102", "DSKT_SQ": 1, "DSKT_CD": "MNACC", "ORDER_SEQ": 1, "PCODE": "MNACC01", "ID": "ACC020101V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "ACC020201V", "TEXT": "통합지불", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "acc.view.acc020201.ACC020201V", "CODE": "MNACC0103", "DSKT_SQ": 1, "DSKT_CD": "MNACC", "ORDER_SEQ": 1, "PCODE": "MNACC01", "ID": "ACC020201V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "ACC010101V", "TEXT": "통합정산", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "acc.view.acc010101.ACC010101V", "CODE": "MNACC0101", "DSKT_SQ": 1, "DSKT_CD": "MNACC", "ORDER_SEQ": 1, "PCODE": "MNACC01", "ID": "ACC010101V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "회계시스템", "SHOTCUT": "", "LEVEL": 1, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 11, "PCODE": "*", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "기초코드관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN01", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "전표관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN02", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 2, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "자금관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN03", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 3, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "수표관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN04", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 4, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "고정자산관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN05", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 5, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "결산관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN06", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 6, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "마감관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN07", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 7, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "장표관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN08", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 8, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "Y", "ICONCLS": "", "SWIDGET": "", "TEXT": "재무제표관리", "SHOTCUT": "", "LEVEL": 2, "CLS": "", "RESIZABLE": "", "SCLASS": "", "CODE": "MNFIN09", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 9, "PCODE": "MNFIN", "ID": "", "MAXIMIZABLE": ""},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010101V", "TEXT": "계정과목관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 700, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010101.FIN010101V", "CODE": "MNFIN0101", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN01", "ID": "FIN010101V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010102V", "TEXT": "관리항목관리", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010102.FIN010102V", "CODE": "MNFIN0102", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN01", "ID": "FIN010102V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010203V", "TEXT": "분개전표관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010203.FIN010203V", "CODE": "MNFIN0202", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN02", "ID": "FIN010203V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010201V", "TEXT": "결의전표관리", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 850, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010201.FIN010201V", "CODE": "MNFIN0201", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN02", "ID": "FIN010201V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010204V", "TEXT": "매출세금계산서관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 750, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010204.FIN010204V", "CODE": "MNFIN0203", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN02", "ID": "FIN010204V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010205V", "TEXT": "매입세금계산서관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 750, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010205.FIN010205V", "CODE": "MNFIN0204", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN02", "ID": "FIN010205V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010209V", "TEXT": "매입계산서관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 750, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010209.FIN010209V", "CODE": "MNFIN0205", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN02", "ID": "FIN010209V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010206V", "TEXT": "입금관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010206.FIN010206V", "CODE": "MNFIN0301", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN03", "ID": "FIN010206V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010208V", "TEXT": "자금일보", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 900, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010208.FIN010208V", "CODE": "MNFIN0303", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN03", "ID": "FIN010208V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010210V", "TEXT": "출금관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010210.FIN010210V", "CODE": "MNFIN0302", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN03", "ID": "FIN010210V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN040204V", "TEXT": "수표상태관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin040204.FIN040204V", "CODE": "MNFIN0403", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN04", "ID": "FIN040204V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN040202V", "TEXT": "유효수표조회", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin040202.FIN040202V", "CODE": "MNFIN0402", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN04", "ID": "FIN040202V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN040201V", "TEXT": "수표구입및폐기", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin040201.FIN040201V", "CODE": "MNFIN0401", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN04", "ID": "FIN040201V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN030301V", "TEXT": "고정자산명세서", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin030301.FIN030301V", "CODE": "MNFIN0505", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN05", "ID": "FIN030301V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN030203V", "TEXT": "월별감가상각현황", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 620, "RESIZABLE": "Y", "SCLASS": "fin.view.fin030203.FIN030203V", "CODE": "MNFIN0504", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN05", "ID": "FIN030203V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN030202V", "TEXT": "감가상각비현황", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin030202.FIN030202V", "CODE": "MNFIN0503", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN05", "ID": "FIN030202V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN030102V", "TEXT": "월상각내역조회", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin030102.FIN030102V", "CODE": "MNFIN0502", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN05", "ID": "FIN030102V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN030101V", "TEXT": "고정자산등록", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin030101.FIN030101V", "CODE": "MNFIN0501", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN05", "ID": "FIN030101V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010305V", "TEXT": "환평가결산", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010305.FIN010305V", "CODE": "MNFIN0601", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN06", "ID": "FIN010305V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010304V", "TEXT": "년마감결산", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 650, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010304.FIN010304V", "CODE": "MNFIN0603", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN06", "ID": "FIN010304V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010301V", "TEXT": "이익잉여금처분", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 300, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010301.FIN010301V", "CODE": "MNFIN0602", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN06", "ID": "FIN010301V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010302V", "TEXT": "회계마감관리", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010302.FIN010302V", "CODE": "MNFIN0701", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN07", "ID": "FIN010302V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010405V", "TEXT": "채권연령분석", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010405.FIN010405V", "CODE": "MNFIN0804", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN08", "ID": "FIN010405V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010410V", "TEXT": "일반거래처원장", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010410.FIN010410V", "CODE": "MNFIN0802", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN08", "ID": "FIN010410V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010403V", "TEXT": "계정별원장", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010403.FIN010403V", "CODE": "MNFIN0801", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN08", "ID": "FIN010403V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010411V", "TEXT": "총괄거래처원장", "WIDTH": 1000, "SHOTCUT": "N", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010411.FIN010411V", "CODE": "MNFIN0803", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN08", "ID": "FIN010411V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010406V", "TEXT": "재무상태표", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010406.FIN010406V", "CODE": "MNFIN0901", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN09", "ID": "FIN010406V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010407V", "TEXT": "손익계산서", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010407.FIN010407V", "CODE": "MNFIN0902", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN09", "ID": "FIN010407V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010408V", "TEXT": "합계잔액시산표", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010408.FIN010408V", "CODE": "MNFIN0903", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN09", "ID": "FIN010408V", "MAXIMIZABLE": "Y"},
+            {"CHILD_YN": "N", "ICONCLS": "ae-shortcut", "SWIDGET": "FIN010409V", "TEXT": "기간별손익계산서", "WIDTH": 1000, "SHOTCUT": "Y", "LEVEL": 3, "CLS": "ae-shortcut", "HEIGHT": 600, "RESIZABLE": "Y", "SCLASS": "fin.view.fin010409.FIN010409V", "CODE": "MNFIN0904", "DSKT_SQ": 2, "DSKT_CD": "MNFIN", "ORDER_SEQ": 1, "PCODE": "MNFIN09", "ID": "FIN010409V", "MAXIMIZABLE": "Y"}
+        ], "message"
+    :
+        [
+            {"MSG_ID": "행추가", "MSG_CONTENTS": "행추가"},
+            {"MSG_ID": "F000000119", "MSG_CONTENTS": "삭제할 데이터를 선택해 주세요."},
+            {"MSG_ID": "F000000122", "MSG_CONTENTS": "신청일자를 입력해 주세요."},
+            {"MSG_ID": "F000000129", "MSG_CONTENTS": "시간은 0~23 사이만 입력 가능합니다. \\n자정이 넘었을 경우 00시로 입력 바랍니다.\\n(예: 출근시간이 24시00분 이면 -> 0000 으로 입력)"},
+            {"MSG_ID": "F000000130", "MSG_CONTENTS": "성명을 입력해 주시기 바랍니다."},
+            {"MSG_ID": "F000000131", "MSG_CONTENTS": "날짜 형식을 yymmdd 형식으로 입력해 주세요. (ID"},
+            {"MSG_ID": "F000000134", "MSG_CONTENTS": "사용자 정보를 입력해 주세요."},
+            {"MSG_ID": "CUSTOMER_TYPE", "MSG_CONTENTS": "거래처유형"},
+            {"MSG_ID": "IRRE_CODE", "MSG_CONTENTS": "IRRE코드"},
+            {"MSG_ID": "ISSUE_STAFF_ID", "MSG_CONTENTS": "발생담당자아이디"},
+            {"MSG_ID": "DOC_NO", "MSG_CONTENTS": "다이렉트번호"},
+            {"MSG_ID": "PAYBACK_FOC_AMT", "MSG_CONTENTS": "반제외화금액"},
+            {"MSG_ID": "WITH_SLIP_NO", "MSG_CONTENTS": "출금전표번호"},
+            {"MSG_ID": "WITH_DATE", "MSG_CONTENTS": "출금일자"},
+            {"MSG_ID": "F000000001", "MSG_CONTENTS": "원하는 행을 선택해 주세요!"},
+            {"MSG_ID": "F000000011", "MSG_CONTENTS": "이름을 입력해 주세요."},
+            {"MSG_ID": "F000000015", "MSG_CONTENTS": "<@VALUE> :  날짜형식(yyyymmdd)으로 입력하시요."},
+            {"MSG_ID": "F000000016", "MSG_CONTENTS": "년월을 형식에 맞게 다시 입력해주세요! : yyyymm"},
+            {"MSG_ID": "F000000018", "MSG_CONTENTS": "휴일를 입력해 주세요."},
+            {"MSG_ID": "F000000019", "MSG_CONTENTS": "요일을 입력해 주세요."},
+            {"MSG_ID": "F000000023", "MSG_CONTENTS": "일자(시작일자 or 종료일자)를 입력해 주세요."},
+            {"MSG_ID": "F000000027", "MSG_CONTENTS": "해당년도 연차를 입력해 주세요."},
+            {"MSG_ID": "F000000039", "MSG_CONTENTS": "일자를 입력해 주세요."},
+            {"MSG_ID": "COMPANY_NAME", "MSG_CONTENTS": "법인명"},
+            {"MSG_ID": "CONSOL_REASON", "MSG_CONTENTS": "병합사유"},
+            {"MSG_ID": "F000000059", "MSG_CONTENTS": "조회기간을 입력해 주세요."},
+            {"MSG_ID": "EX_DIFF_AMT", "MSG_CONTENTS": "환차금액"},
+            {"MSG_ID": "RECV_SLIP_NO", "MSG_CONTENTS": "입금전표번호"},
+            {"MSG_ID": "FINAL_PAYBACK_DATE", "MSG_CONTENTS": "최종반제일자"},
+            {"MSG_ID": "LINK_DT_CODE", "MSG_CONTENTS": "연계코드"},
+            {"MSG_ID": "F000000094", "MSG_CONTENTS": "한 행만 선택해 주세요."},
+            {"MSG_ID": "F000000095", "MSG_CONTENTS": "삭제 하시겠습니까?"},
+            {"MSG_ID": "APPR_DATE", "MSG_CONTENTS": "승인일자"},
+            {"MSG_ID": "F000000150", "MSG_CONTENTS": "가져올 기간을 다시 입력해 주세요."},
+            {"MSG_ID": "CARRIER_NAME_ENG", "MSG_CONTENTS": "항공사이름(영어)"},
+            {"MSG_ID": "F000000152", "MSG_CONTENTS": "적용일자를 입력해 주세요."},
+            {"MSG_ID": "CARRIER_NO", "MSG_CONTENTS": "항공사숫자"},
+            {"MSG_ID": "F000000158", "MSG_CONTENTS": "직급명을 입력해 주세요."},
+            {"MSG_ID": "F000000159", "MSG_CONTENTS": "직급번호를 입력해 주세요."},
+            {"MSG_ID": "BILL_TOTAL_AMT", "MSG_CONTENTS": "청구합계"},
+            {"MSG_ID": "REJECT_DATE", "MSG_CONTENTS": "반려일자"},
+            {"MSG_ID": "CODE_TYPE", "MSG_CONTENTS": "코드타입"},
+            {"MSG_ID": "SALES_ID_SUB", "MSG_CONTENTS": "영업담당자(부)"},
+            {"MSG_ID": "DUE_DATE", "MSG_CONTENTS": "만기일자"},
+            {"MSG_ID": "ASSET_CHG_AMT", "MSG_CONTENTS": "자산변동금액"},
+            {"MSG_ID": "CURRENT_DEP_AMT", "MSG_CONTENTS": "당기상각액"},
+            {"MSG_ID": "DEP_FINISH_DATE", "MSG_CONTENTS": "상각완료년도"},
+            {"MSG_ID": "CHQ_STATUS", "MSG_CONTENTS": "수표상태"},
+            {"MSG_ID": "CHQ_ISSUE_USER_ID", "MSG_CONTENTS": "수표발행담당자아이디"},
+            {"MSG_ID": "CHQ_WITH_DATE", "MSG_CONTENTS": "수표출금일자"},
+            {"MSG_ID": "CHQ_WITH_SLIP_NO", "MSG_CONTENTS": "수표출금전표번호"},
+            {"MSG_ID": "CHQ_PUR_CNT", "MSG_CONTENTS": "수표구매수"},
+            {"MSG_ID": "JNAL_DATE", "MSG_CONTENTS": "분개전표일자"},
+            {"MSG_ID": "SCHEDULE_LIMIT", "MSG_CONTENTS": "일정범위"},
+            {"MSG_ID": "ACCOUNT_GRP_NAME", "MSG_CONTENTS": "계정과목그룹명"},
+            {"MSG_ID": "DC_ACC_TYPE", "MSG_CONTENTS": "채권채무구분"},
+            {"MSG_ID": "UNIT_PRICE", "MSG_CONTENTS": "단가"},
+            {"MSG_ID": "F000000002", "MSG_CONTENTS": "조회를 하여주십시오"},
+            {"MSG_ID": "CLOSE_USER_NAME", "MSG_CONTENTS": "마감등록자명"},
+            {"MSG_ID": "CHARGE_DESC", "MSG_CONTENTS": "비용설명"},
+            {"MSG_ID": "ACCOUNT_SEQ", "MSG_CONTENTS": "회계기수"},
+            {"MSG_ID": "REVERT_DEPT", "MSG_CONTENTS": "귀속부서"},
+            {"MSG_ID": "TEMP_JNAL_DATE", "MSG_CONTENTS": "결의전표일자"},
+            {"MSG_ID": "ACCOUNT_START_DATE", "MSG_CONTENTS": "회계기수시작일자"},
+            {"MSG_ID": "CHARGE_SEQ_NO", "MSG_CONTENTS": "비용일련번호"},
+            {"MSG_ID": "PAYMENT_EX_RATE", "MSG_CONTENTS": "지불환율"},
+            {"MSG_ID": "AR_COMPANY_CODE", "MSG_CONTENTS": "매출법인코드"},
+            {"MSG_ID": "BILL_NO", "MSG_CONTENTS": "청구번호"},
+            {"MSG_ID": "BILL_CONFIRM_USER_ID", "MSG_CONTENTS": "청구확정담당자아이디"},
+            {"MSG_ID": "PARTNER_CONFIRM_ID", "MSG_CONTENTS": "파트너확정자아이디"},
+            {"MSG_ID": "AP_COMPANY_CODE", "MSG_CONTENTS": "매입법인코드"},
+            {"MSG_ID": "AP_CONFIRM_USER_ID", "MSG_CONTENTS": "매입확정담당자아이디"},
+            {"MSG_ID": "EX_SLIP_NO", "MSG_CONTENTS": "환평가전표번호"},
+            {"MSG_ID": "EX_CALC_AMT", "MSG_CONTENTS": "환산금액"},
+            {"MSG_ID": "ISSUE_LOC_AMT", "MSG_CONTENTS": "발생현지금액"},
+            {"MSG_ID": "LINK_DT_NAME", "MSG_CONTENTS": "연계코드명"},
+            {"MSG_ID": "REQ_REASON", "MSG_CONTENTS": "요청사유"},
+            {"MSG_ID": "PAY_TO_CODE", "MSG_CONTENTS": "지불처코드"},
+            {"MSG_ID": "PARENT_REF_NO", "MSG_CONTENTS": "부모근거번호"},
+            {"MSG_ID": "DEPART_DATE", "MSG_CONTENTS": "출발일자"},
+            {"MSG_ID": "PAYMENT_TOTAL_AMT", "MSG_CONTENTS": "지불합계"},
+            {"MSG_ID": "SCHEDULE_GROUP", "MSG_CONTENTS": "일정그룹"},
+            {"MSG_ID": "SCHEDULE_TYPE", "MSG_CONTENTS": "일정종류"},
+            {"MSG_ID": "SCHEDULE_NAME", "MSG_CONTENTS": "일정명"},
+            {"MSG_ID": "ENG_VALUE", "MSG_CONTENTS": "영문값"},
+            {"MSG_ID": "FILE_PATH", "MSG_CONTENTS": "파일경로"},
+            {"MSG_ID": "NOTIFY_DATE", "MSG_CONTENTS": "고시일자"},
+            {"MSG_ID": "CUSTOMER_NAME_ENG", "MSG_CONTENTS": "거래처영문명"},
+            {"MSG_ID": "DEPT", "MSG_CONTENTS": "부서"},
+            {"MSG_ID": "CHARGE_NAME_ENG", "MSG_CONTENTS": "영문비용명"},
+            {"MSG_ID": "DT_CHARGE_YN", "MSG_CONTENTS": "상세비용여부"},
+            {"MSG_ID": "DEAL_UNIT", "MSG_CONTENTS": "거래단위"},
+            {"MSG_ID": "FOC_AMT", "MSG_CONTENTS": "외화금액"},
+            {"MSG_ID": "TEMP_JNAL_REF_NO", "MSG_CONTENTS": "결의전표근거번호"},
+            {"MSG_ID": "PAYBACK_JNAL_NO", "MSG_CONTENTS": "반제전표번호"},
+            {"MSG_ID": "SET_FOC_AMT", "MSG_CONTENTS": "입출금외화금액"},
+            {"MSG_ID": "CONTRACT_EX_RATE", "MSG_CONTENTS": "계약환율"},
+            {"MSG_ID": "LOC_TOTAL_AMT", "MSG_CONTENTS": "현지금액합계"},
+            {"MSG_ID": "AR_VIEW_DATE", "MSG_CONTENTS": "매출조회일시"},
+            {"MSG_ID": "PARTNER_CHECK_DATE", "MSG_CONTENTS": "파트너확인일자"},
+            {"MSG_ID": "BILL_TAX_RATE", "MSG_CONTENTS": "청구세율"},
+            {"MSG_ID": "ADJUSTMENT_YN", "MSG_CONTENTS": "조정여부"},
+            {"MSG_ID": "AP_CONFIRM_DATE", "MSG_CONTENTS": "매입확정일시"},
+            {"MSG_ID": "CHARGE_DEPT_CODE", "MSG_CONTENTS": "관리부서코드"},
+            {"MSG_ID": "ACCR_DEP_AMT", "MSG_CONTENTS": "상각누계액"},
+            {"MSG_ID": "CHQ_ISSUE_SLIP_NO", "MSG_CONTENTS": "수표발행전표번호"},
+            {"MSG_ID": "CHQ_PRINT_USER_ID", "MSG_CONTENTS": "수표출력담당자아이디"},
+            {"MSG_ID": "SURPLUS_TYPE", "MSG_CONTENTS": "이익잉여금구분"},
+            {"MSG_ID": "MGT_ITEM_DESC_ENG", "MSG_CONTENTS": "관리항목영문상세명"},
+            {"MSG_ID": "MFCS_ENGAGE_CODE", "MSG_CONTENTS": "MFCS중계사업자코드"},
+            {"MSG_ID": "ACC_REF_NO", "MSG_CONTENTS": "정산근거번호"},
+            {"MSG_ID": "BRANCH_CODE", "MSG_CONTENTS": "지점코드"},
+            {"MSG_ID": "DAY", "MSG_CONTENTS": "일자"},
+            {"MSG_ID": "QUERY_VALUE", "MSG_CONTENTS": "쿼리값"},
+            {"MSG_ID": "FIN_YN", "MSG_CONTENTS": "회계사용여부"},
+            {"MSG_ID": "ADDR_ENG", "MSG_CONTENTS": "주소영문명"},
+            {"MSG_ID": "STATE", "MSG_CONTENTS": "주도"},
+            {"MSG_ID": "SALES_ID_MASTER", "MSG_CONTENTS": "영업담당자(정)"},
+            {"MSG_ID": "MONTHLY_YN", "MSG_CONTENTS": "건별월별구분"},
+            {"MSG_ID": "YYMMDD_NAME", "MSG_CONTENTS": "년월일명"},
+            {"MSG_ID": "FILE_NAME", "MSG_CONTENTS": "파일명"},
+            {"MSG_ID": "FAX_YN", "MSG_CONTENTS": "FAX서비스여부"},
+            {"MSG_ID": "PLANT_NAME", "MSG_CONTENTS": "사업장명"},
+            {"MSG_ID": "EMAIL", "MSG_CONTENTS": "이메일"},
+            {"MSG_ID": "EXPIRED_DATE", "MSG_CONTENTS": "암호만기일"},
+            {"MSG_ID": "USER_AUTH", "MSG_CONTENTS": "권한설정"},
+            {"MSG_ID": "CUSTOMER_CHARGE_CODE", "MSG_CONTENTS": "업체비용코드"},
+            {"MSG_ID": "MGT_ITEM_CODE", "MSG_CONTENTS": "관리항목코드"},
+            {"MSG_ID": "TEMP_JNAL_ISSUE_DATE", "MSG_CONTENTS": "결의전표작성일자"},
+            {"MSG_ID": "PAYMENT_TAX_RATE", "MSG_CONTENTS": "지불세율"},
+            {"MSG_ID": "AR_SLIP_NO", "MSG_CONTENTS": "매출전표번호"},
+            {"MSG_ID": "CUSTOMER_STAFF_TEL", "MSG_CONTENTS": "거래처담당자연락처"},
+            {"MSG_ID": "AP_VIEW_DATE", "MSG_CONTENTS": "매입조회일시"},
+            {"MSG_ID": "DEP_YYYYMM", "MSG_CONTENTS": "감가상각발생년월"},
+            {"MSG_ID": "DEP_DEGREE", "MSG_CONTENTS": "상각차수"},
+            {"MSG_ID": "CHARGE_USER_ID", "MSG_CONTENTS": "관리자아이디"},
+            {"MSG_ID": "PRE_ACCR_AMT", "MSG_CONTENTS": "전기말장부가액"},
+            {"MSG_ID": "CHQ_CONFIRM_DATE", "MSG_CONTENTS": "수표발행일자"},
+            {"MSG_ID": "CHQ_DIS_DATE", "MSG_CONTENTS": "수표폐기일자"},
+            {"MSG_ID": "JNAL_REF_NO", "MSG_CONTENTS": "분개전표근거번호"},
+            {"MSG_ID": "ACCOUNT_GRP_CODE", "MSG_CONTENTS": "계정과목그룹코드"},
+            {"MSG_ID": "ACCOUNT_GRP_ORD_NO", "MSG_CONTENTS": "계정과목그룹정렬순서"},
+            {"MSG_ID": "FOC_CREDIT_AMT", "MSG_CONTENTS": "외화대변금액"},
+            {"MSG_ID": "PAYMENT_CONFIRM_DATE", "MSG_CONTENTS": "지불확정일자"},
+            {"MSG_ID": "SWIFT_CODE", "MSG_CONTENTS": "SWIFT코드"},
+            {"MSG_ID": "RECV_DATE", "MSG_CONTENTS": "입금일자"},
+            {"MSG_ID": "PAYBACK_DATE", "MSG_CONTENTS": "반제일자"},
+            {"MSG_ID": "DEPART_TIME", "MSG_CONTENTS": "출발시간"},
+            {"MSG_ID": "CONSOL_YN", "MSG_CONTENTS": "병합여부"},
+            {"MSG_ID": "BRANCH_NAME", "MSG_CONTENTS": "지점명"},
+            {"MSG_ID": "SCHEDULE_DESC", "MSG_CONTENTS": "일정설명"},
+            {"MSG_ID": "BANK_CODE", "MSG_CONTENTS": "은행코드"},
+            {"MSG_ID": "CITY", "MSG_CONTENTS": "도시"},
+            {"MSG_ID": "CUSTOMER_DIRECTOR", "MSG_CONTENTS": "거래처대표자명"},
+            {"MSG_ID": "FILE_MGT_CODE", "MSG_CONTENTS": "파일관리코드"},
+            {"MSG_ID": "STAFF_ROLE", "MSG_CONTENTS": "담당업무"},
+            {"MSG_ID": "START_DATE", "MSG_CONTENTS": "시작일자"},
+            {"MSG_ID": "CLOSE_AMEND_NO", "MSG_CONTENTS": "마감수정요청번호"},
+            {"MSG_ID": "LOGIN_FAIL_NO", "MSG_CONTENTS": "로그인실패횟수"},
+            {"MSG_ID": "USER_LANG", "MSG_CONTENTS": "언어설정"},
+            {"MSG_ID": "ACC_DEPT", "MSG_CONTENTS": "정산부서"},
+            {"MSG_ID": "TEMP_JNAL_NO", "MSG_CONTENTS": "결의전표번호"},
+            {"MSG_ID": "SET_DATE", "MSG_CONTENTS": "입출금일자"},
+            {"MSG_ID": "PROXY_YN", "MSG_CONTENTS": "대납여부"},
+            {"MSG_ID": "AR_CONFIRM_DATE", "MSG_CONTENTS": "매출확정일자"},
+            {"MSG_ID": "BILL_CONFIRM_DATE", "MSG_CONTENTS": "청구확정일자"},
+            {"MSG_ID": "USER_DEF_NO", "MSG_CONTENTS": "사용자지정번호"},
+            {"MSG_ID": "PARTNER_CONFIRM_DATE", "MSG_CONTENTS": "파트너확정일자"},
+            {"MSG_ID": "PARNTER_OPINION", "MSG_CONTENTS": "파트너의견"},
+            {"MSG_ID": "RECOMPUTE_YN", "MSG_CONTENTS": "재계산여부"},
+            {"MSG_ID": "DEP_METHOD", "MSG_CONTENTS": "상각방법"},
+            {"MSG_ID": "MIN_REMAIN_AMT", "MSG_CONTENTS": "최저잔존가액"},
+            {"MSG_ID": "CHQ_NO", "MSG_CONTENTS": "수표번호"},
+            {"MSG_ID": "CHQ_PRINT_DATE", "MSG_CONTENTS": "수표출력일자"},
+            {"MSG_ID": "DEP_SLIP_NO", "MSG_CONTENTS": "감가상각전표번호"},
+            {"MSG_ID": "PARENT_ACCOUNT_CODE", "MSG_CONTENTS": "부모계정과목코드"},
+            {"MSG_ID": "CREDIT_AMT", "MSG_CONTENTS": "대변금액"},
+            {"MSG_ID": "PAYMENT_CONFIRM_USER_ID", "MSG_CONTENTS": "지불확정담당자아이디"},
+            {"MSG_ID": "ITEM_SEQ_NO", "MSG_CONTENTS": "항목일련번호"},
+            {"MSG_ID": "TAX_AMT", "MSG_CONTENTS": "세액"},
+            {"MSG_ID": "BANK_NAME", "MSG_CONTENTS": "은행명"},
+            {"MSG_ID": "IRRE_SEQ_NO", "MSG_CONTENTS": "IRRE일련번호"},
+            {"MSG_ID": "IRRE_INFO", "MSG_CONTENTS": "IRRE내용"},
+            {"MSG_ID": "COMPLETE_DATE", "MSG_CONTENTS": "조치일자"},
+            {"MSG_ID": "SURPLUS_SLIP_NO", "MSG_CONTENTS": "이익잉여금처분전표번호"},
+            {"MSG_ID": "END_DATE", "MSG_CONTENTS": "종료일자"},
+            {"MSG_ID": "NO", "MSG_CONTENTS": "번호"},
+            {"MSG_ID": "ADDR_LOC", "MSG_CONTENTS": "주소명"},
+            {"MSG_ID": "EMAIL_ADDR", "MSG_CONTENTS": "이메일주소"},
+            {"MSG_ID": "INDUSTRY_TYPE", "MSG_CONTENTS": "업종"},
+            {"MSG_ID": "STAFF_NAME", "MSG_CONTENTS": "담당자명"},
+            {"MSG_ID": "LINK_SEQ_NO", "MSG_CONTENTS": "연계일련번호"},
+            {"MSG_ID": "LINK_CUSTOMER_NAME", "MSG_CONTENTS": "연계거래처명"},
+            {"MSG_ID": "REP_YN", "MSG_CONTENTS": "대표여부"},
+            {"MSG_ID": "PW", "MSG_CONTENTS": "암호"},
+            {"MSG_ID": "CUSTOMER_CHARGE_NAME", "MSG_CONTENTS": "업체비용명"},
+            {"MSG_ID": "AP_SLIP_NO", "MSG_CONTENTS": "매입전표번호"},
+            {"MSG_ID": "ACC_TYPE", "MSG_CONTENTS": "정산유형"},
+            {"MSG_ID": "JNAL_SEQ_NO", "MSG_CONTENTS": "분개전표상세일련번호"},
+            {"MSG_ID": "TEMP_JNAL_APP_USER_ID", "MSG_CONTENTS": "결의전표승인자아이디"},
+            {"MSG_ID": "CUSTOMER_IRS_NO", "MSG_CONTENTS": "거래처사업자번호"},
+            {"MSG_ID": "CUSTOMER_ADDR", "MSG_CONTENTS": "거래처주소"},
+            {"MSG_ID": "CUSTOMER_BIZ_TYPE", "MSG_CONTENTS": "거래처업태"},
+            {"MSG_ID": "FIN_IF_DATE", "MSG_CONTENTS": "회계이관일자"},
+            {"MSG_ID": "BANK_ACCOUNT_NO", "MSG_CONTENTS": "계좌번호"},
+            {"MSG_ID": "BILL_MONTH", "MSG_CONTENTS": "청구월"},
+            {"MSG_ID": "FIX_ASSET_CODE", "MSG_CONTENTS": "고정자산코드"},
+            {"MSG_ID": "CHG_SEQ_NO", "MSG_CONTENTS": "변동일련번호"},
+            {"MSG_ID": "ASSET_CHG_TYPE", "MSG_CONTENTS": "자산변동구분"},
+            {"MSG_ID": "ACQ_DATE", "MSG_CONTENTS": "취득일"},
+            {"MSG_ID": "RE_EVAL_AMT", "MSG_CONTENTS": "재평가액"},
+            {"MSG_ID": "DEP_RATE", "MSG_CONTENTS": "상각율"},
+            {"MSG_ID": "CHQ_DIS_USER_ID", "MSG_CONTENTS": "수표폐기담당자아이디"},
+            {"MSG_ID": "LOC_RMA_AMT", "MSG_CONTENTS": "잔액"},
+            {"MSG_ID": "FOC_DEBIT_AMT", "MSG_CONTENTS": "외화차변금액"},
+            {"MSG_ID": "MGT_SEQ_NO", "MSG_CONTENTS": "관리항목일련번호"},
+            {"MSG_ID": "MGT_ITEM_DESC", "MSG_CONTENTS": "관리항목상세명"},
+            {"MSG_ID": "PARTNER_BILL_NO", "MSG_CONTENTS": "파트너청구서"},
+            {"MSG_ID": "ISSUE_REASON", "MSG_CONTENTS": "발생이유"},
+            {"MSG_ID": "COMPLET_INFO", "MSG_CONTENTS": "조치내용"},
+            {"MSG_ID": "CHARGE_SYNONYM_ENG", "MSG_CONTENTS": "영문비용약어명"},
+            {"MSG_ID": "ACCOUNT_CODE", "MSG_CONTENTS": "계정과목코드"},
+            {"MSG_ID": "CUSTOMER_INV_NO", "MSG_CONTENTS": "거래처전표번호"},
+            {"MSG_ID": "TEMP_JNAL_APP_YN", "MSG_CONTENTS": "결의전표승인여부"},
+            {"MSG_ID": "SUMUP", "MSG_CONTENTS": "적요"},
+            {"MSG_ID": "CHARGE_DETAIL_SEQ", "MSG_CONTENTS": "비용상세일련번호"},
+            {"MSG_ID": "LOC_TAX_RATE", "MSG_CONTENTS": "현지세율"},
+            {"MSG_ID": "AR_VIEW_USER_ID", "MSG_CONTENTS": "매출조회담당자아이디"},
+            {"MSG_ID": "AR_CONFIRM_USER_ID", "MSG_CONTENTS": "매출확정사용자아이디"},
+            {"MSG_ID": "TAX_INV_DATE", "MSG_CONTENTS": "세금계산서일자"},
+            {"MSG_ID": "CUSTOMER_STAFF", "MSG_CONTENTS": "거래처담당자명"},
+            {"MSG_ID": "PARTNER_PAY_NO", "MSG_CONTENTS": "파트너지불서"},
+            {"MSG_ID": "PARTNER_AP_NO", "MSG_CONTENTS": "파트너매입정산서"},
+            {"MSG_ID": "ACQ_AMT", "MSG_CONTENTS": "취득원가"},
+            {"MSG_ID": "DEP_AMT", "MSG_CONTENTS": "일반상각비"},
+            {"MSG_ID": "UNIT", "MSG_CONTENTS": "단위"},
+            {"MSG_ID": "CHQ_SEQ_NO", "MSG_CONTENTS": "수표구매일련번호"},
+            {"MSG_ID": "CHQ_AMT", "MSG_CONTENTS": "수표발행금액"},
+            {"MSG_ID": "CHQ_PUR_DATE", "MSG_CONTENTS": "수표구매일자"},
+            {"MSG_ID": "CHQ_START_NO", "MSG_CONTENTS": "수표시작번호"},
+            {"MSG_ID": "ACCOUNT_GRP_NAME_ENG", "MSG_CONTENTS": "계정과목그룹영문명"},
+            {"MSG_ID": "IFRS_ACCOUNT_CODE", "MSG_CONTENTS": "IFRS계정과목코드"},
+            {"MSG_ID": "DEBIT_AMT", "MSG_CONTENTS": "차변금액"},
+            {"MSG_ID": "MAND_INPUT_YN", "MSG_CONTENTS": "필수입력여부"},
+            {"MSG_ID": "SUPPLY_VALUE_AMT", "MSG_CONTENTS": "공급가액"},
+            {"MSG_ID": "BANK_ADDR", "MSG_CONTENTS": "은행주소"},
+            {"MSG_ID": "COMPLETE_USER_ID", "MSG_CONTENTS": "조치담당자아이디"},
+            {"MSG_ID": "DOC_TYPE", "MSG_CONTENTS": "다이렉트종류"},
+            {"MSG_ID": "DOC_DATE", "MSG_CONTENTS": "다이렉트일자"},
+            {"MSG_ID": "ACC_FILE_TYPE", "MSG_CONTENTS": "회계파일타입"},
+            {"MSG_ID": "PAYBACK_SLIP_NO", "MSG_CONTENTS": "반제전표번호"},
+            {"MSG_ID": "ISSUE_FOC_AMT", "MSG_CONTENTS": "발생외화금액"},
+            {"MSG_ID": "AMEND_STATUS", "MSG_CONTENTS": "변경승인상태"},
+            {"MSG_ID": "REJECT_USER_NAME", "MSG_CONTENTS": "반려자이름"},
+            {"MSG_ID": "COMMON_CODE", "MSG_CONTENTS": "공통코드"},
+            {"MSG_ID": "DT_CODE", "MSG_CONTENTS": "상세코드"},
+            {"MSG_ID": "SORT_SEQ_NO", "MSG_CONTENTS": "정렬순서"},
+            {"MSG_ID": "TTS_RATE", "MSG_CONTENTS": "전신환매도율"},
+            {"MSG_ID": "CUSTOMER_LEVEL", "MSG_CONTENTS": "거래처등급"},
+            {"MSG_ID": "SMS_YN", "MSG_CONTENTS": "SMS서비스여부"},
+            {"MSG_ID": "EMAIL_YN", "MSG_CONTENTS": "EMAIL서비스여부"},
+            {"MSG_ID": "JOB_YEAR", "MSG_CONTENTS": "업무년도"},
+            {"MSG_ID": "CLOSE_USER_ID", "MSG_CONTENTS": "마감등록자아이디"},
+            {"MSG_ID": "SET_MGT_VALUE", "MSG_CONTENTS": "설정관리값"},
+            {"MSG_ID": "TAX_TYPE", "MSG_CONTENTS": "세무구분"},
+            {"MSG_ID": "PAYMENT_CUR", "MSG_CONTENTS": "지불통화단위"},
+            {"MSG_ID": "VENDOR_BILL_NO", "MSG_CONTENTS": "지불번호"},
+            {"MSG_ID": "PARTNER_ACC_YN", "MSG_CONTENTS": "파트너정산여부"},
+            {"MSG_ID": "PARTNER_AR_NO", "MSG_CONTENTS": "파트너매출정산서"},
+            {"MSG_ID": "JNAL_NO", "MSG_CONTENTS": "분개전표번호"},
+            {"MSG_ID": "MGT_ITEM_VALUE", "MSG_CONTENTS": "관리항목값"},
+            {"MSG_ID": "PAYMENT_TAX_AMT", "MSG_CONTENTS": "지불세금"},
+            {"MSG_ID": "PAYMENT_MONTH", "MSG_CONTENTS": "지불월"},
+            {"MSG_ID": "VENDOR_INV_NO", "MSG_CONTENTS": "거래처지불요청번호"},
+            {"MSG_ID": "DC_TYPE", "MSG_CONTENTS": "차변대변구분"},
+            {"MSG_ID": "ACCOUNT_NAME", "MSG_CONTENTS": "계정과목명"},
+            {"MSG_ID": "TAX_BILL_NO", "MSG_CONTENTS": "세금계산서번호"},
+            {"MSG_ID": "TEMP_JNAL_SEQ_NO", "MSG_CONTENTS": "결의전표상세일련번호"},
+            {"MSG_ID": "TEMP_JNAL_USER_ID", "MSG_CONTENTS": "결의전표작성자아이디"},
+            {"MSG_ID": "TEMP_JNAL_DEPT", "MSG_CONTENTS": "결의전표작성부서"},
+            {"MSG_ID": "ACCOUNT_END_DATE", "MSG_CONTENTS": "회계기수종료일자"},
+            {"MSG_ID": "SET_SLIP_NO", "MSG_CONTENTS": "입출금전표번호"},
+            {"MSG_ID": "ISSUE_USER_ID", "MSG_CONTENTS": "작성자아이디"},
+            {"MSG_ID": "ISSUE_DEPT", "MSG_CONTENTS": "작성부서"},
+            {"MSG_ID": "FIN_IF_USER_ID", "MSG_CONTENTS": "회계이관담당자아이디"},
+            {"MSG_ID": "AP_VIEW_USER_ID", "MSG_CONTENTS": "매입조회담당자아이디"},
+            {"MSG_ID": "ASSET_CHG_DATE", "MSG_CONTENTS": "자산변동일자"},
+            {"MSG_ID": "DEP_STATUS", "MSG_CONTENTS": "상각상태"},
+            {"MSG_ID": "USEFUL_LIFE", "MSG_CONTENTS": "내용연수"},
+            {"MSG_ID": "MONTH_CNT", "MSG_CONTENTS": "월수"},
+            {"MSG_ID": "CHQ_PUR_BANK_NO", "MSG_CONTENTS": "수표구매은행"},
+            {"MSG_ID": "IFRS_ACCOUNT_NAME", "MSG_CONTENTS": "IFRS계정과목명"},
+            {"MSG_ID": "POST_YN", "MSG_CONTENTS": "기표가능여부"},
+            {"MSG_ID": "CONSOL_SEQ_NO", "MSG_CONTENTS": "병합일련번호"},
+            {"MSG_ID": "APPR_USER_ID", "MSG_CONTENTS": "승인자아이디"},
+            {"MSG_ID": "CLOSE_YN", "MSG_CONTENTS": "마감여부"},
+            {"MSG_ID": "LOC_VALUE", "MSG_CONTENTS": "한글값"},
+            {"MSG_ID": "BUSINESS_TYPE", "MSG_CONTENTS": "업태"},
+            {"MSG_ID": "LINK_CUSTOMER_CODE", "MSG_CONTENTS": "연계거래처코드"},
+            {"MSG_ID": "TEMP_JNAL_APP_DATE", "MSG_CONTENTS": "결의전표승인일자"},
+            {"MSG_ID": "SET_LOC_AMT", "MSG_CONTENTS": "입출금현지금액"},
+            {"MSG_ID": "FIX_ASSET_NAME", "MSG_CONTENTS": "고정자산명"},
+            {"MSG_ID": "REMAIN_AMT", "MSG_CONTENTS": "잔존가액"},
+            {"MSG_ID": "PRE_DEP_ACCR_AMT", "MSG_CONTENTS": "전기말상각누계액"},
+            {"MSG_ID": "CHQ_REF_NO", "MSG_CONTENTS": "수표발행근거전표번호"},
+            {"MSG_ID": "CHQ_ACCOUNT_NO", "MSG_CONTENTS": "수표계좌번호"},
+            {"MSG_ID": "JNAL_TYPE", "MSG_CONTENTS": "분개전표유형"},
+            {"MSG_ID": "ACCOUNT_NAME_ENG", "MSG_CONTENTS": "계정과목영문명"},
+            {"MSG_ID": "ACCOUNT_DESC", "MSG_CONTENTS": "계정과목설명"},
+            {"MSG_ID": "FOC_RMA_AMT", "MSG_CONTENTS": "외화잔액"},
+            {"MSG_ID": "MGT_ITEM_NAME", "MSG_CONTENTS": "관리항목명"},
+            {"MSG_ID": "MGT_ITEM_NAME_ENG", "MSG_CONTENTS": "관리항목영문명"},
+            {"MSG_ID": "JOB_INFO", "MSG_CONTENTS": "업무내용"},
+            {"MSG_ID": "IRRE_NAME", "MSG_CONTENTS": "IRRE명"},
+            {"MSG_ID": "BEFORE_JOB_NO", "MSG_CONTENTS": "병합전JOB번호"},
+            {"MSG_ID": "CONSOL_DATE", "MSG_CONTENTS": "병합일시"},
+            {"MSG_ID": "PLANT_ADDR", "MSG_CONTENTS": "사업장주소"},
+            {"MSG_ID": "JNAL_RATE_AMT", "MSG_CONTENTS": "전표금액"},
+            {"MSG_ID": "CLOSE_SLIP_NO", "MSG_CONTENTS": "년마감결산전표"},
+            {"MSG_ID": "PAYBACK_LOC_AMT", "MSG_CONTENTS": "반제현지금액"},
+            {"MSG_ID": "L_FUNC_CODE", "MSG_CONTENTS": "대기능코드"},
+            {"MSG_ID": "JOB_REF_NO", "MSG_CONTENTS": "JOB근거번호"},
+            {"MSG_ID": "LOC_SUM_AMT", "MSG_CONTENTS": "현지합계"},
+            {"MSG_ID": "BILL_TAX_AMT", "MSG_CONTENTS": "청구세금"},
+            {"MSG_ID": "REJECT_USER_ID", "MSG_CONTENTS": "반려자아이디"},
+            {"MSG_ID": "SCHEDULE_TYPE_NAME", "MSG_CONTENTS": "일정종류명"},
+            {"MSG_ID": "DESCRIPTION", "MSG_CONTENTS": "설명"},
+            {"MSG_ID": "BASIC_RATE", "MSG_CONTENTS": "매매기준율"},
+            {"MSG_ID": "TTB_RATE", "MSG_CONTENTS": "전신환매입률"},
+            {"MSG_ID": "SET_MGT_CODE", "MSG_CONTENTS": "설정관리코드"},
+            {"MSG_ID": "TAX_RATE", "MSG_CONTENTS": "세율"},
+            {"MSG_ID": "M000000162", "MSG_CONTENTS": "수작업 입력한 건만 수정 가능합니다."},
+            {"MSG_ID": "F000000162", "MSG_CONTENTS": "선택된 행을 확인하여 주세요."},
+            {"MSG_ID": "M000000158", "MSG_CONTENTS": "확정하시겠습니까?"},
+            {"MSG_ID": "TRANS_STAFF", "MSG_CONTENTS": "운송담당자명"},
+            {"MSG_ID": "TRANS_STAFF_TEL", "MSG_CONTENTS": "운송담당자전화번호"},
+            {"MSG_ID": "M000000160", "MSG_CONTENTS": "SR NO를 입력하세요"},
+            {"MSG_ID": "ALREADY_REJECT", "MSG_CONTENTS": "이미 반려된 데이터 입니다."},
+            {"MSG_ID": "M000000165", "MSG_CONTENTS": "입력값을 확인하여 주세요."},
+            {"MSG_ID": "M000000166", "MSG_CONTENTS": "비밀번호를 확인하여 주세요!"},
+            {"MSG_ID": "F000000163", "MSG_CONTENTS": "항목을 선택하여 주세요!"},
+            {"MSG_ID": "FIX_ASSET_TYPE", "MSG_CONTENTS": "고정자산유형"},
+            {"MSG_ID": "REMAIN_LIFE", "MSG_CONTENTS": "잔존년수"},
+            {"MSG_ID": "CHARGE_USER_NAME", "MSG_CONTENTS": "관리자명"},
+            {"MSG_ID": "M000000161", "MSG_CONTENTS": "청구처를 입력하세요"},
+            {"MSG_ID": "ALREADY_CANCELED", "MSG_CONTENTS": "이미 취소된 데이터입니다."},
+            {"MSG_ID": "ALREADY_CONFIRM", "MSG_CONTENTS": "이미 확정된 데이터 입니다."},
+            {"MSG_ID": "F000000160", "MSG_CONTENTS": "등록되지 않은 데이터 입니다. 삭제할 수 없습니다."},
+            {"MSG_ID": "F000000161", "MSG_CONTENTS": "필수값을 입력해주세요"},
+            {"MSG_ID": "M000000163", "MSG_CONTENTS": "All In Rate만 입력 가능합니다."},
+            {"MSG_ID": "APPR_REASON", "MSG_CONTENTS": "승인사유"},
+            {"MSG_ID": "M000000164", "MSG_CONTENTS": "진행할수 없습니다."},
+            {"MSG_ID": "M000000167", "MSG_CONTENTS": "병합하시겠습니까?"},
+            {"MSG_ID": "M000000168", "MSG_CONTENTS": "병합 취소하시겠습니까?"},
+            {"MSG_ID": "M000000169", "MSG_CONTENTS": "입고날짜를 입력해주세요"},
+            {"MSG_ID": "FIX_ASSET_YN", "MSG_CONTENTS": "고정자산관리여부"},
+            {"MSG_ID": "F000000164", "MSG_CONTENTS": "Loading Date 또는 B/L No를 입력해주세요."},
+            {"MSG_ID": "F000000165", "MSG_CONTENTS": "정말 취소하시겠습니까?"},
+            {"MSG_ID": "F000000166", "MSG_CONTENTS": "House B/L을 입력해주세요."},
+            {"MSG_ID": "F000000167", "MSG_CONTENTS": "출고날짜를 입력해주세요"}
+        ], "syssetting"
+    :
+        {
+            "G1E_SERVER_URL"
+        :
+            "http://211.196.150.66:18080/", "CHAT_SERVER_URL"
+        :
+            "http://211.196.150.66:38080"
+        }
+    }
+,
+    "TYPE"
+:
+    1
+}
