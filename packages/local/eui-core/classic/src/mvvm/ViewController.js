@@ -44,5 +44,46 @@ Ext.define('eui.mvvm.ViewController', {
                 }
             }
         });
+    },
+    transaction: function(transactionID, className, methodName, outgoingDataset, incomingDataset,
+    		additionalParameters, showLoadMask, userCallBack, timeout){
+    	var option = {
+    		url:Ext.util.Format.format('/{0}/{1}/', Util.getContextPath(), Util.getBaseUrl()),
+    		async:true,
+    		method:'POST',
+    		success: function(response, options){
+    			Ext.getBody().unmask();
+    			if(!Ext.isEmpty(response.responseText)){
+    				var returnData = Ext.decode(response.responseText),
+    				result = returnData[0].result;
+    				this.processCallback(result, incomingDataset, userCallBack);
+    			}
+    		},
+    		failure: function(response, options){
+    			Ext.Msg.alert('Status','server-side failure with status code ' + response.status);
+    			Ext.getBody().unmask();
+    			this.processCallback(null, incomingDataset, userCallBack);
+    		},
+    		jsonData: {
+    			action: className,
+    			method: methodName,
+    			tid: Ext.id(),
+    			type:'rpc',
+    			data: []
+    		},
+    		scope:this,
+    		timeout: timeout || 30000,
+    		disableCaching:false
+    	};
+    	option = this.buildJsonData(option, outgoingDataset, additionalParameters, incomingDataset);
+    	if(showLoadMask){
+    		Ext.getBody().mask('Please waiting...').dom.style.zIndex = '99999';
+	    	if(!Ext.Ajax.hasListener('requestexception')){
+	    		Ext.Ajax.on('requestexception', function (conn, response, options) {
+	    			Ext.getBody().unmask();
+	    	    });
+	    	}
+    	}
+    	Ext.Ajax.request(option);
     }
 });
