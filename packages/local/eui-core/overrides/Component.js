@@ -14,6 +14,7 @@ Ext.define('Override.Component', {
     _localeRe: /^{(.+)}$/,
     initComponent: function () {
         this.doLocale();
+//        console.log('i18n: ', Ext.getStore('i18n'))
         this.callParent();
     },
 
@@ -27,7 +28,7 @@ Ext.define('Override.Component', {
             store = Ext.getStore('i18n'),
             re = this._localeRe,
             setName, oldSetter, newSetter;
-
+        console.log('store', store)
         if(Ext.isEmpty(store)){
             /*Ext.Error.raise({
              msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다.'
@@ -64,7 +65,6 @@ Ext.define('Override.Component', {
                             id = info[1];
 
                             record = id && store.findRecord('MSG_ID', id, 0, false, false, true);
-//                            console.log('i18n: ', record.get('MSG_CONTENTS'))
                             value += (record ? record.get('MSG_CONTENTS') : id) + allVar[i].split('}')[1];
 
                         } else {
@@ -97,7 +97,6 @@ Ext.define('Override.Component', {
         for (; i < length; i++) {
             property = properties[i];
             value = me[property];
-            console.log('value:', value);
             if(value && Ext.typeOf(value) =='string' && (value.indexOf("#") != -1)){
                 setter = me._createLocaleSetter(property);
 

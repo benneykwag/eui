@@ -1,6 +1,7 @@
 $app-name:  dynamic( 'Eui.sample' );
 $image-search-path: '/Volumes/Disk2/git.projects/eui-workspace/build/development/Eui.sample/classic/resources';
 $theme-name:  dynamic( 'theme-gray' );
+$include-config: dynamic(true);;
 $include-eui-sample-application: dynamic(true);;
 $include-eui-sample-store-personnel: dynamic(true);;
 $include-eui-sample-view-leftmenu: dynamic(true);;
@@ -862,6 +863,53 @@ $include-ext-view-view: dynamic(true);;
 $include-ext-window-messagebox: dynamic(true);;
 $include-ext-window-toast: dynamic(true);;
 $include-ext-window-window: dynamic(true);;
+$include-override-component: dynamic(true);;
+$include-override-grid-column-column: dynamic(true);;
+$include-override-window-window: dynamic(true);;
+$include-util: dynamic(true);;
+$include-eui-config: dynamic(true);;
+$include-eui-dummyclass: dynamic(true);;
+$include-eui-util: dynamic(true);;
+$include-eui-button-button: dynamic(true);;
+$include-eui-container-basecontainer: dynamic(true);;
+$include-eui-container-popupcontainer: dynamic(true);;
+$include-eui-controller-initcontroller: dynamic(true);;
+$include-eui-form-fieldcontainer: dynamic(true);;
+$include-eui-form-label: dynamic(true);;
+$include-eui-form-panel: dynamic(true);;
+$include-eui-form-field-checkbox: dynamic(true);;
+$include-eui-form-field-combobox: dynamic(true);;
+$include-eui-form-field-comboboxcontroller: dynamic(true);;
+$include-eui-form-field-comboboxcontroller_: dynamic(true);;
+$include-eui-form-field-comboboxcontroller_today: dynamic(true);;
+$include-eui-form-field-combobox_: dynamic(true);;
+$include-eui-form-field-combobox_today: dynamic(true);;
+$include-eui-form-field-date: dynamic(true);;
+$include-eui-form-field-number: dynamic(true);;
+$include-eui-form-field-popuptrigger: dynamic(true);;
+$include-eui-form-field-popuptrigger2: dynamic(true);;
+$include-eui-form-field-popuptriggerset: dynamic(true);;
+$include-eui-form-field-popuptriggerset2: dynamic(true);;
+$include-eui-form-field-radio: dynamic(true);;
+$include-eui-form-field-text: dynamic(true);;
+$include-eui-form-field-textarea: dynamic(true);;
+$include-eui-form-field-trigger: dynamic(true);;
+$include-eui-form-field-triggercombo: dynamic(true);;
+$include-eui-grid-panel: dynamic(true);;
+$include-eui-grid-column-check: dynamic(true);;
+$include-eui-grid-column-column: dynamic(true);;
+$include-eui-grid-column-date: dynamic(true);;
+$include-eui-grid-column-number: dynamic(true);;
+$include-eui-mixin-basecontainer: dynamic(true);;
+$include-eui-mixin-formfield: dynamic(true);;
+$include-eui-mixin-panel: dynamic(true);;
+$include-eui-mvvm-gridrenderer: dynamic(true);;
+$include-eui-mvvm-gridviewcontroller: dynamic(true);;
+$include-eui-mvvm-hviewmodel: dynamic(true);;
+$include-eui-mvvm-viewcontroller: dynamic(true);;
+$include-eui-store-localestore: dynamic(true);;
+$include-eui-ux-popup-defaultpopup: dynamic(true);;
+$include-eui-window-notification: dynamic(true);;
 $output-paths: ("path": "../../classic/resources", "shared": "../../resources");
 
 /* ======================== ETC ======================== */
@@ -913,6 +961,14 @@ $current-package: 'theme-gray';
 $current-resource-root: $theme-gray-resource-root;
 $relative-image-path-for-uis: $theme-gray-resource-path;
 @import '../../../../../ext/classic/theme-gray/sass/etc/all';
+
+/* including package eui-core */
+$eui-core-resource-root: 'eui-core' !default;
+$eui-core-resource-path: 'eui-core/images' !default;
+$current-package: 'eui-core';
+$current-resource-root: $eui-core-resource-root;
+$relative-image-path-for-uis: $eui-core-resource-path;
+@import '../../../../../packages/local/eui-core/sass/etc/all';
 
 /* including package font-awesome */
 $font-awesome-resource-root: 'font-awesome' !default;

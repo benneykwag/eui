@@ -8,7 +8,6 @@ Ext.define('eui.controller.InitController', {
             Util.HurlPrefix = this.globalUrlPrefix;
         }
 
-
         Util.localeStoreDisplayField = this.localeStoreDisplayField;
         Util.localeStoreValueField = this.localeStoreValueField;
 

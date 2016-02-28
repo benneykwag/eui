@@ -8,7 +8,7 @@
 Ext.define('Eui.sample.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
-
+    html: '#{행추가}',
     requires: [
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',
@@ -23,8 +23,8 @@ Ext.define('Eui.sample.view.main.Main', {
     layout: 'border',
     items: [
         {
-            // xtype: 'panel' implied by default
-            title: 'Menu',
+            xtype: 'panel',
+            title: 'Menu#{행추가}',
             region: 'west',
             xtype: 'leftmenu',
             margin: '5 0 0 5',

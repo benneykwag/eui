@@ -5,15 +5,15 @@
  */
 Ext.define('Eui.sample.Application', {
     extend: 'Ext.app.Application',
-    
+    requires: [
+    ],
     name: 'Eui.sample',
 
     stores: [
-        // TODO: add global / shared stores here
     ],
-    
+
+
     launch: function () {
-        // TODO - Launch the application
     },
 
     onAppUpdate: function () {

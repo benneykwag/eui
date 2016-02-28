@@ -9,13 +9,11 @@ Ext.define('Eui.sample.view.main.MainController', {
 
     alias: 'controller.main',
 
-    onItemSelected: function (sender, record) {
-        Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirm', this);
-    },
-
-    onConfirm: function (choice) {
-        if (choice === 'yes') {
-            //
-        }
+    init: function () {
+        Ext.create('Ext.window.Window',{
+            title: '[#{F000000119}]',
+            width: 400,
+            height: 500
+        }).show();
     }
 });
