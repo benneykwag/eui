@@ -31,9 +31,9 @@ Ext.define('Override.Component', {
         console.log('store', store)
         if(Ext.isEmpty(store)){
             /*Ext.Error.raise({
-             msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다.'
+             msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다...'
              });*/
-            console.log('다국어 지원을 위한 데이터를 제공받지 못했습니다.', arguments)
+            console.log('다국어 지원을 위한 데이터를 제공받지 못했습니다...', arguments)
             return null;
         }
         if (!config) {
@@ -65,7 +65,7 @@ Ext.define('Override.Component', {
                             id = info[1];
 
                             record = id && store.findRecord('MSG_ID', id, 0, false, false, true);
-                            value += (record ? record.get('MSG_CONTENTS') : id) + allVar[i].split('}')[1];
+                            value += (record ? record.get('MSG_LABEL') : id) + allVar[i].split('}')[1];
 
                         } else {
                             value = allVar[i];

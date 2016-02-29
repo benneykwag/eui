@@ -14,6 +14,7 @@ Ext.define('Override.Component', {
     _localeRe: /^{(.+)}$/,
     initComponent: function() {
         this.doLocale();
+        //        console.log('i18n: ', Ext.getStore('i18n'))
         this.callParent();
     },
     /**
@@ -26,11 +27,12 @@ Ext.define('Override.Component', {
             store = Ext.getStore('i18n'),
             re = this._localeRe,
             setName, oldSetter, newSetter;
+        console.log('store', store);
         if (Ext.isEmpty(store)) {
             /*Ext.Error.raise({
-             msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다.'
+             msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다...'
              });*/
-            console.log('다국어 지원을 위한 데이터를 제공받지 못했습니다.', arguments);
+            console.log('다국어 지원을 위한 데이터를 제공받지 못했습니다...', arguments);
             return null;
         }
         if (!config) {
@@ -58,7 +60,6 @@ Ext.define('Override.Component', {
                             }
                             id = info[1];
                             record = id && store.findRecord('MSG_ID', id, 0, false, false, true);
-                            //                            console.log('i18n: ', record.get('MSG_CONTENTS'))
                             value += (record ? record.get('MSG_CONTENTS') : id) + allVar[i].split('}')[1];
                         } else {
                             value = allVar[i];
@@ -84,7 +85,6 @@ Ext.define('Override.Component', {
         for (; i < length; i++) {
             property = properties[i];
             value = me[property];
-            console.log('value:', value);
             if (value && Ext.typeOf(value) == 'string' && (value.indexOf("#") != -1)) {
                 setter = me._createLocaleSetter(property);
                 if (value && !Ext.isEmpty(setter)) {
@@ -92,6 +92,13 @@ Ext.define('Override.Component', {
                 }
             }
         }
+    }
+});
+
+Ext.define('Override.app.Application', {
+    override: 'Ext.app.Controller',
+    init: function() {
+        console.log('init....');
     }
 });
 
@@ -108,6 +115,13 @@ Ext.define('Override.grid.column.Column', {
     }
 });
 
+Ext.define('Override.window.Window', {
+    override: 'Ext.window.Window',
+    localeProperties: [
+        'title'
+    ]
+});
+
 /***
  * App전역 변수 설정.
  */
@@ -116,58 +130,50 @@ Ext.define('eui.Config', {
     alternateClassName: [
         'Config'
     ],
-    localeStoreValueField: 'MSG_ID',
-    localeStoreDisplayField: 'MSG_CONTENTS'
-});
-
-Ext.define('eui.controller.InitController', {
-    extend: 'Ext.app.Controller',
-    alias: 'controller.spinit',
-    constructor: function (cfg) {
-        cfg = cfg || {};
-
-        if(this.globalUrlPrefix){
-            Util.HurlPrefix = this.globalUrlPrefix;
-        }
-
-        debugger;
-        Util.localeStoreDisplayField = this.localeStoreDisplayField;
-        Util.localeStoreValueField = this.localeStoreValueField;
-
-
-//        var fileref=document.createElement("link");
-//        fileref.setAttribute("rel", "stylesheet");
-//        fileref.setAttribute("type", "text/css");
-//        fileref.setAttribute("href", 'resources/css/sprr-theme.css');
-//        document.getElementsByTagName("head")[0].appendChild(fileref);
-
-
-        var store = Ext.create('Ext.data.Store', {
-            fields: [],
-            storeId: 'i18n'
-        });
-        Ext.apply(cfg, {
-            url: Util.HurlPrefix + this.localeStoreUrl,
-            pSync: false,
-            outDs: {
-                data: Ext.getStore('i18n')
-            }
-        });
-        if(this.localeStoreUrl){
-            Util.CommonAjax(cfg);
-        }
-
-        Util.globalCheckLogin();
-
-        this.callParent(this.processInitialController(cfg));
+    localeCode: 'kr',
+    localeValueField: 'MSG_ID',
+    localeDisplayField: 'MSG_CONTENTS',
+    /***
+     *
+     */
+    internalLabelFile: 'resources/data/i18n.json',
+    /***
+     * eui-core에 필요한 텍스트 레이블 정보.
+     */
+    initLocale: function() {
+        var cfg = {
+                url: Config.internalLabelFile,
+                params: {
+                    locale: Config.localeCode
+                },
+                pSync: false,
+                pCallback: function(pScope, params, retData) {
+                    var store = Ext.create('Ext.data.Store', {
+                            fields: [],
+                            storeId: 'i18n'
+                        });
+                    store.loadData(retData.data);
+                }
+            };
+        Util.CommonAjax(cfg);
     },
-
-    processInitialController: function (config) {
-        return config;
-    },
-
-    init: function (application) {
-        console.log('init', this.localeUrl)
-
+    initCustomLocale: function() {
+        var store = Ext.getStore('i18n');
+        if (Ext.isEmpty(store)) {
+            store = Ext.create('Ext.data.Store', {
+                fields: [],
+                storeId: 'i18n'
+            });
+        }
+        var cfg = {
+                url: 'resources/data/customI18n.json',
+                params: {},
+                pSync: false,
+                pCallback: function(pScope, params, retData) {
+                    store.add(retData.data);
+                }
+            };
+        Util.CommonAjax(cfg);
     }
 });
+

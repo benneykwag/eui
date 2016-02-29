@@ -12,8 +12,7 @@ Ext.application({
         'Eui.sample.view.main.Main'
     ],
     init: function () {
-        Config.initLocale();
-//        Config.initCustomLocale();
+        eui.Config.initLocaleMessage();
     },
 
     // The name of the initial view to create. With the classic toolkit this class

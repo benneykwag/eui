@@ -864,6 +864,7 @@ $include-ext-window-messagebox: dynamic(true);;
 $include-ext-window-toast: dynamic(true);;
 $include-ext-window-window: dynamic(true);;
 $include-override-component: dynamic(true);;
+$include-override-eui-config: dynamic(true);;
 $include-override-grid-column-column: dynamic(true);;
 $include-override-window-window: dynamic(true);;
 $include-util: dynamic(true);;
