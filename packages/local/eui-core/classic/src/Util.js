@@ -648,5 +648,91 @@ Ext.define('eui.Util', {
             return record.get('MSG_CONTENTS');
         }
         return '';
+    },
+    //=================== add start ========================================//
+    config:{
+        contextPath:'eui',
+        baseUrl:'controller/router'
+    },
+    constructor: function (cfg) {
+    	this.initConfig(cfg);
+    	this.init();
+    },
+    
+    init: function(){
+    	Ext.EventManager.on(Ext.isIE ? document : window, 'keydown', function(e, t) {
+    		if (e.getKey() == e.BACKSPACE && ((!/^input$/i.test(t.tagName) && !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
+    			e.stopEvent();
+    		}
+    	});
+    	
+    	Ext.getDoc().on("contextmenu", function(ev){ ev.preventDefault();});
+    	
+    	Ext.direct.Manager.addProvider({
+    		id: 'euiprovider',
+    	    url: Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
+    	    type: 'remoting',
+    	    enableBuffer:true,
+    	    maxRetries: 0,
+    	    actions: {}
+    	});
+    },
+    sessionValidation: function(){
+    	//TODO
+    	var option = {
+    		url:Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
+    		async:true,
+    		method:'POST',
+    		success: function(response, options){
+    			if(!Ext.isEmpty(response.responseText)){
+    				var returnData = Ext.decode(response.responseText),
+    				result = returnData[0].result;
+    				this.sessionValidationCallback(result);
+    			}
+    		},
+    		failure: function(response, options){
+    			if(!Ext.isEmpty(response.responseText)){
+    				var returnData = Ext.decode(response.responseText),
+    				result = returnData[0].result;
+    				this.sessionValidationCallback(result);
+    			}
+    		},
+    		jsonData: {
+    			action: '',
+    			method: '',
+    			tid: Ext.id(),
+    			type:'rpc',
+    			data: {}
+    		},
+    		scope:this,
+    		timeout: 30000,
+    		disableCaching:false
+    	};
+    	Ext.Ajax.request(option);
+    },    
+    sessionValidationCallback:function(response){
+    	//TODO 
+    	
+    },
+    /**
+     * fgn(fully qualified name of the function. for example: my.app.service.MenuService.getMenu )
+     * dn(dataset name. for example: ds_menulist)
+     */
+    createDirectStore: function(fqn, dn, fields){
+    	return{
+    		xclass:'eui.data.DirectStore',
+    		storeId:Ext.util.Format.format('{0}-{1}',dn,Ext.id()),
+    		fields:fields,
+    		proxy:{
+    			type:'direct',
+    			directFn:fqn,
+    			reader:{
+    				type:'json',
+    				rootProperty :dn,
+    				totalProperty:'totalCount'
+    			}
+    		}
+    	};
     }
+  //=================== add end ========================================//
 });
