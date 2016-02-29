@@ -12,7 +12,7 @@ Ext.define('Eui.sample.view.main.Main', {
     requires: [
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',
-
+        'Eui.sample.view.grid.Basic',
         'Eui.sample.view.main.MainController',
         'Eui.sample.view.main.MainModel',
         'Eui.sample.view.main.List'
@@ -41,7 +41,12 @@ Ext.define('Eui.sample.view.main.Main', {
             xtype: 'tabpanel',
             itemId: 'maintab',
             layout: 'fit',
-            margin: '5 5 0 0'
+            margin: '5 5 0 0',
+            items: [
+                {
+                    xtype: 'sample-basic-grid'
+                }
+            ]
         }
     ]
 });

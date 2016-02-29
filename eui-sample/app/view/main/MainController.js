@@ -10,10 +10,6 @@ Ext.define('Eui.sample.view.main.MainController', {
     alias: 'controller.main',
 
     init: function () {
-        Ext.create('Ext.window.Window',{
-            title: '[#{F000000119}]',
-            width: 400,
-            height: 500
-        }).show();
+
     }
 });

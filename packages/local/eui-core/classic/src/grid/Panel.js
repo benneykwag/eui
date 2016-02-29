@@ -11,16 +11,11 @@ Ext.define('eui.grid.Panel', {
     ],
 
     config: {
-//        onRowAddHandler: 'onRowAdd',
-//        onRowDelHandler: 'onRowDel',
-//        onRowRegHandler: 'onRowReg',
-//        onRowModHandler: 'onRowMod',
-//        onRowSaveHandler: 'onRowSave',
-        hiddenRowAddBtn: true,
-        hiddenRowDelBtn: true,
-        hiddenRowRegBtn: true,
-        hiddenRowModBtn: true,
-        hiddenRowSaveBtn: true,
+        showRowAddBtn: true,
+        showRowDelBtn: true,
+        showRowRegBtn: true,
+        showRowModBtn: true,
+        showRowSaveBtn: true,
 
         // defaultButtons에 추가할 버튼을 정의한다.
         otherButtons: null,
@@ -205,9 +200,9 @@ Ext.define('eui.grid.Panel', {
             {
                 xtype: 'spbutton',
                 text: '#{행추가}',
-                iconCls: 'x-fa fa-plus-square',
+                iconCls: '#{행추가아이콘}',
                 scope: me,
-                hidden: me.getHiddenRowAddBtn(),
+                hidden: !me.getShowRowAddBtn(),
                 listeners: {
                     click: function () {
                         if (me.hasListeners['SPGridRowAdd'.toLowerCase()]) {
@@ -222,10 +217,10 @@ Ext.define('eui.grid.Panel', {
             },
             {
                 xtype: 'spbutton',
-                iconCls: 'x-fa fa-minus-square',
-                text: '행삭제',
+                iconCls: '#{행삭제아이콘}',
+                text: '#{행삭제}',
                 scope: me,
-                hidden: me.getHiddenRowDelBtn(),
+                hidden: !me.getShowRowDelBtn(),
                 listeners: {
                     click: function () {
                         if (me.hasListeners['SPGridRowDel'.toLowerCase()]) {
@@ -238,9 +233,9 @@ Ext.define('eui.grid.Panel', {
             },
             {
                 xtype: 'spbutton',
-                text: '등록',
-                iconCls: 'x-fa fa-table',
-                hidden: me.getHiddenRowRegBtn(),
+                text: '#{등록}',
+                iconCls: '#{등록아이콘}',
+                hidden: !me.getShowRowRegBtn(),
                 listeners: {
                     click: function () {
                         me.fireEvent('SPGridRowReg', me);
@@ -249,9 +244,9 @@ Ext.define('eui.grid.Panel', {
             },
             {
                 xtype: 'spbutton',
-                text: '수정',
-                iconCls: 'x-fa fa-th',
-                hidden: me.getHiddenRowModBtn(),
+                text: '#{수정}',
+                iconCls: '#{수정아이콘}',
+                hidden: !me.getShowRowModBtn(),
                 listeners: {
                     click: function () {
                         me.fireEvent('SPGridRowMod', me);
@@ -260,9 +255,9 @@ Ext.define('eui.grid.Panel', {
             },
             {
                 xtype: 'spbutton',
-                iconCls: 'x-fa fa-save',
-                text: '저장',
-                hidden: me.getHiddenRowSaveBtn(),
+                text: '#{저장}',
+                iconCls: '#{저장아이콘}',
+                hidden: !me.getShowRowSaveBtn(),
                 listeners: {
                     click: function () {
                         if (me.hasListeners['SPGridRowSave'.toLowerCase()]) {
@@ -270,7 +265,6 @@ Ext.define('eui.grid.Panel', {
                         } else {
                             me.onRowSave();
                         }
-
                     }
                 }
             }

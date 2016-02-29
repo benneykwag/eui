@@ -6,6 +6,13 @@ Ext.define('Eui.sample.view.LeftMenu', {
         expanded: true,
         children: [
             {
+                text: "Grid",
+                expanded: true,
+                children: [
+                    { text: 'Basic Grid', leaf: true, pgmClass: 'Eui.sample.view.grid.Basic', pgmAlias: 'sample-basic-grid'}
+                ]
+            },
+            {
                 text: "Form",
                 expanded: true,
                 children: [

@@ -28,7 +28,7 @@ Ext.define('Override.Component', {
             store = Ext.getStore('i18n'),
             re = this._localeRe,
             setName, oldSetter, newSetter;
-        console.log('store', store)
+       // console.log('store', store)
         if(Ext.isEmpty(store)){
             /*Ext.Error.raise({
              msg: '다국어 지원을 위한 데이터를 제공받지 못했습니다...'

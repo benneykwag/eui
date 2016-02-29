@@ -22,7 +22,8 @@ Ext.define('eui.Config', {
      * eui-core에 필요한 텍스트 레이블 정보.
      */
     initLocaleMessage: function () {
-        var store = Ext.create('Ext.data.Store', {
+        var me = this,
+            store = Ext.create('Ext.data.Store', {
             fields: [],
             storeId: 'i18n'
         });
@@ -35,18 +36,55 @@ Ext.define('eui.Config', {
             pCallback: function (pScope, params, retData) {
                 store.loadData(retData.data);
                 store.add(Config.data.message);
+                me.mergeMessageData();
             }
         };
         if(Config.localeUrl){
             Util.CommonAjax(cfg);
         }else{
             store.add(Config.data.message);
+            me.mergeMessageData();
         }
+    },
+
+    /***
+     * 사용자가 data.message의 일부를 교체할 경우사용된다.
+     * eui-core를 사용하는 app에서 override할 경우.
+     * Ext.define('Override.eui.Config', {
+     *      override: 'eui.Config',
+     *      message: [
+     *          {"MSG_ID": "행추가", "MSG_LABEL": "로우추가"}
+     *      ]
+     * });
+     */
+    mergeMessageData: function () {
+        var store = Ext.getStore('i18n');
+        if(!Ext.isArray(Config.message)){
+            return;
+        }
+
+        Ext.each(Config.message, function(msg){
+            var record = store.findRecord(Config.localeValueField, msg[Config.localeValueField], 0, false, false, true);
+            if(record){ // 존재하면 override한 데이터로 label을 교체한다.
+                record.set(Config.localeDisplayField, msg[Config.localeDisplayField]);
+            }else{  // 존재하지 않는다면 추가한다.
+                store.add(msg);
+            }
+        });
     },
 
     data: {
         message : [
-            {"MSG_ID": "F000000119", "MSG_LABEL": "신청일자를 입력해 주세요."}
+            {"MSG_ID": "행추가", "MSG_LABEL": "행추가"},
+            {"MSG_ID": "행추가아이콘", "MSG_LABEL": "x-fa fa-plus-square"},
+            {"MSG_ID": "행삭제", "MSG_LABEL": "행삭제"},
+            {"MSG_ID": "행삭제아이콘", "MSG_LABEL": "x-fa fa-minus-square"},
+            {"MSG_ID": "등록", "MSG_LABEL": "등록"},
+            {"MSG_ID": "등록아이콘", "MSG_LABEL": "x-fa fa-table"},
+            {"MSG_ID": "수정", "MSG_LABEL": "수정"},
+            {"MSG_ID": "수정아이콘", "MSG_LABEL": "x-fa fa-th"},
+            {"MSG_ID": "저장", "MSG_LABEL": "저장"},
+            {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"}
         ]
     }
 });
