@@ -11,11 +11,11 @@ Ext.define('eui.grid.Panel', {
     ],
 
     config: {
-        showRowAddBtn: true,
-        showRowDelBtn: true,
-        showRowRegBtn: true,
-        showRowModBtn: true,
-        showRowSaveBtn: true,
+        showRowAddBtn: false,
+        showRowDelBtn: false,
+        showRowRegBtn: false,
+        showRowModBtn: false,
+        showRowSaveBtn: false,
 
         // defaultButtons에 추가할 버튼을 정의한다.
         otherButtons: null,
@@ -123,7 +123,7 @@ Ext.define('eui.grid.Panel', {
         if (!idx) {
             idx = 0;
         }
-        console.log('추가된 레코드정보: ', data)
+        debugger;
         var store = grid.getStore();
         if (Ext.isEmpty(idx)) {
             store.add(data);

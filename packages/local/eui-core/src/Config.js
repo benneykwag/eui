@@ -9,6 +9,8 @@ Ext.define('eui.Config', {
     localeDisplayField : 'MSG_LABEL',
 
     /***
+     * 메시지 제공용 서버사이드 주소.
+     *
      * "data": [
      *      {"MSG_ID": "F000000119", "MSG_LABEL": "삭제할 데이터를 선택해 주세요."},
      *      {"MSG_ID": "F000000122", "MSG_LABEL": "신청일자를 입력해 주세요."},

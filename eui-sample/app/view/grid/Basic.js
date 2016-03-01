@@ -3,32 +3,36 @@ Ext.define('Eui.sample.view.grid.Basic', {
     xtype: 'sample-basic-grid',
     title: '기본 그리드',
 
+    requires: [
+        'eui.toolbar.Command',
+        'Eui.sample.view.grid.BasicController'
+    ],
+
+    controller: 'sample-basic-grid',
+
+    viewModel: {
+        stores: {
+
+        }
+    },
     /***
      * 페이징 툴바 사용 설정.
      */
     usePagingToolbar: true,
-
-    showRowAddBtn: true,
-    showRowDelBtn: true,
-    showRowRegBtn: true,
-    showRowModBtn: true,
-    showRowSaveBtn: true,
-
-//    listeners: {
-//        SPGridRowReg: function () {
-//            console.log('SPGridRowReg called..');
-//        },
-//        SPGridRowMod: function () {
-//            console.log('SPGridRowMod called..');
-//        },
-//        SPGridRowAdd: function () {
-//
-//        },
-//        SPGridRowSave: 'onGridRowSave'
-//    },
-
+    tbar: [
+        {
+            showRowAddBtn: true,
+            showRowDelBtn: true,
+            showRowRegBtn: true,
+            showRowModBtn: true,
+            showRowSaveBtn: true,
+            xtype: 'commandtoolbar'
+        },
+        '-'
+    ],
+    store: {},
 //    onRowAdd: function () {
-//        // this.callParent를 꼭 호출하고 arguments를 전달한다.
+//
 //        this.callParent([this, {
 //            randomInt : Ext.Number.randomInt(1, 1000000000000),
 //            CUSTOMER_NAME_ENG: 'SDS',
@@ -37,14 +41,22 @@ Ext.define('Eui.sample.view.grid.Basic', {
 //            console.log('그리드 내부에서 콜백철...')
 //        }]);
 //    },
-
+    listeners: {
+        rowreg: function () {
+            console.log('SPGridRowReg called..');
+        },
+        rowupdate: function () {
+            console.log('SPGridRowMod called..');
+        },
+        rowadd: 'onRowAdd',
+        rowsave: function () {
+            console.log('SPGridRowMod called..');
+        }
+    },
 
     columns: [
         {
-            xtype: 'rownumberer'
-        },
-        {
-            text: 'ULD No#{행추가2}',
+            text: 'ULD No',
             width: 100,
             dataIndex: 'CUSTOMER_NAME_ENG',
             editor: {
