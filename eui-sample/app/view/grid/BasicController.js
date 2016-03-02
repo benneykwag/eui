@@ -14,7 +14,6 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     },
 
     onRowAdd: function (grid) {
-
         grid.onRowAdd(grid, {
             randomInt : Ext.Number.randomInt(1, 1000000000000),
             CUSTOMER_NAME_ENG: 'SDS',
