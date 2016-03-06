@@ -324,11 +324,11 @@ Ext.define('eui.Util', {
 
         }
         config.items = [openForm];
-        var baseComponent = ownerCt.up('FMS010106V') || ownerCt.up('FMS010106V');
-        console.log('baseC', baseComponent)
-        if (baseComponent && addParentMvvm) {
+//        var baseComponent = ownerCt.up('FMS010106V') || ownerCt.up('FMS010106V');
+//        console.log('baseC', baseComponent)
+        if (ownerCt && addParentMvvm) {
 
-            return baseComponent.add(Ext.create('Ext.window.Window', config));
+            return ownerCt.add(Ext.create('Ext.window.Window', config));
         }
         return Ext.create('Ext.window.Window', config);
     },

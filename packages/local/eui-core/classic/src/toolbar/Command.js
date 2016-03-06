@@ -42,10 +42,10 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function () {
-                            if (me.hasListeners['SPGridRowDel'.toLowerCase()]) {
-                                me.fireEvent('SPGridRowDel', me);
+                            if (grid.hasListeners['rowdelete'.toLowerCase()]) {
+                                grid.fireEvent('rowdelete', grid);
                             } else {
-                                me.onRowDel(me, null, me);
+                                grid.onRowDelete(grid, null, grid);
                             }
                         }
                     }
@@ -57,7 +57,7 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowRegBtn(),
                     listeners: {
                         click: function () {
-                            me.fireEvent('SPGridRowReg', me);
+                            grid.fireEvent('rowreg', grid);
                         }
                     }
                 },
@@ -79,10 +79,25 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowSaveBtn(),
                     listeners: {
                         click: function () {
-                            if (me.hasListeners['SPGridRowSave'.toLowerCase()]) {
-                                me.fireEvent('SPGridRowSave', me);
+                            if (grid.hasListeners['rowsave'.toLowerCase()]) {
+                                grid.fireEvent('rowsave', grid);
                             } else {
-                                me.onRowSave();
+                                grid.onRowSave(grid);
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: 'spbutton',
+                    text: '#{조회}',
+                    iconCls: '#{저장아이콘}',
+                    hidden: !me.getShowRowSaveBtn(),
+                    listeners: {
+                        click: function () {
+                            if (grid.hasListeners['reload'.toLowerCase()]) {
+                                grid.fireEvent('reload', grid);
+                            } else {
+                                grid.onReload();
                             }
                         }
                     }

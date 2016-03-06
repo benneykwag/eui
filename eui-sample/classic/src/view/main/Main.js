@@ -12,14 +12,15 @@ Ext.define('Eui.sample.view.main.Main', {
     requires: [
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',
-        'Eui.sample.view.grid.Basic',
         'Eui.sample.view.main.MainController',
         'Eui.sample.view.main.MainModel',
         'Eui.sample.view.main.List'
     ],
 
     controller: 'main',
-    viewModel: 'main',
+    viewModel: {
+        type:'main'
+    },
     layout: 'border',
     items: [
         {

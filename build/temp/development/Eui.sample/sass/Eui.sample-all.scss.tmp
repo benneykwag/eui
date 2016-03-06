@@ -3,11 +3,14 @@ $image-search-path: '/Volumes/Disk2/git.projects/eui-workspace/build/development
 $theme-name:  dynamic( 'theme-gray' );
 $include-config: dynamic(true);;
 $include-eui-sample-application: dynamic(true);;
+$include-eui-sample-model-base: dynamic(true);;
 $include-eui-sample-store-personnel: dynamic(true);;
 $include-eui-sample-view-leftmenu: dynamic(true);;
 $include-eui-sample-view-form-combo: dynamic(true);;
 $include-eui-sample-view-grid-basic: dynamic(true);;
 $include-eui-sample-view-grid-basiccontroller: dynamic(true);;
+$include-eui-sample-view-grid-basicmodel: dynamic(true);;
+$include-eui-sample-view-grid-recordform: dynamic(true);;
 $include-eui-sample-view-main-list: dynamic(true);;
 $include-eui-sample-view-main-main: dynamic(true);;
 $include-eui-sample-view-main-maincontroller: dynamic(true);;

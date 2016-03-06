@@ -123,7 +123,6 @@ Ext.define('eui.grid.Panel', {
         if (!idx) {
             idx = 0;
         }
-        debugger;
         var store = grid.getStore();
         if (Ext.isEmpty(idx)) {
             store.add(data);
@@ -151,13 +150,13 @@ Ext.define('eui.grid.Panel', {
      * @param callback
      * @param scope
      */
-    onRowDel: function (grid, callback, scope) {
+    onRowDelete: function (grid, callback, scope) {
         var sel = grid.getSelection(),
             model = grid.getSelection()[0],
             list;
 
         if (!model || !model.isModel) {
-            Ext.Msg.alert('Erorr', '삭제할 항목을 선택하여 주십시오');
+            Ext.Msg.alert('Erorr', '#{삭제할 항목을 선택하여 주십시오}');
             return;
         }
         if (Ext.isArray(sel) && sel.length > 1) {
@@ -172,16 +171,16 @@ Ext.define('eui.grid.Panel', {
         }
 
         Ext.Msg.show({
-            title: '삭제',
+            title: '#{삭제}',
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: '삭제하시겠습니까?',
+            message: '#{삭제하시겠습니까?}',
             fn: function (btn) {
                 if (btn === 'yes') {
                     // 위치 고민...
-                    grid.store.remove(sel);
+//                    grid.store.remove(sel);
                     if (Ext.isFunction(callback)) {
-                        Ext.callback(callback, scope, []);
+                        Ext.callback(callback, scope, [grid.store, sel]);
                     }
                 }
             }
@@ -189,9 +188,14 @@ Ext.define('eui.grid.Panel', {
 
     },
 
-    onRowSave: function () {
+    onRowSave: function (grid) {
         var me = this;
         me.store.sync();
+    },
+
+    onReload: function () {
+        var me = this;
+        me.store.reload();
     },
 
     setBottomToolbar: function () {
