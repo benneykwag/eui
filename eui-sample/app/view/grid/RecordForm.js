@@ -6,6 +6,35 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
     hiddenSaveBtn: false,
     hiddenCloseBtn: false,
     margin: 5,
+    modelValidation: true,
+//    config: {
+        c: true,
+//    },
+//    viewModel:{
+//        formulas: {
+//            userStatus: {
+//                bind: {
+//                    bindTo: '{messageRecord}',
+//                    deep: true
+//                },
+//                set: function () {
+//                    console.log('set', arguments)
+//                },
+//                get: function (user) {
+//                    console.log('user', user.isValid())
+//                    var status = {
+//                        dirty: user ? user.dirty : true,
+//                        valid : user ? user.isValid(): false
+//                    };
+//                    status.validAndDirty = status.dirty && status.valid;
+//                    return status;
+//                }
+//            }
+//        }
+//    },
+
+    reference: 'a',
+    publishes: 'c',
     items: [
         {
             xtype:'euilabel',
@@ -13,6 +42,7 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
         },
         {
             xtype: 'euitext',
+
             bind : '{messageRecord.MSG_ID}'
         },
         {

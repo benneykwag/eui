@@ -140,7 +140,7 @@ Ext.define('eui.grid.Panel', {
             scope = grid;
         }
         if (Ext.isFunction(callback)) {
-            Ext.callback(callback, scope, []);
+            Ext.callback(callback, scope, [grid, selectionModel.getSelection()[0] ]);
         }
     },
 

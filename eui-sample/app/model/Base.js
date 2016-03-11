@@ -1,5 +1,11 @@
-Ext.define('Eui.sample.model.Base',{
+Ext.define('Eui.sample.model.Base', {
     extend: 'Ext.data.Model',
+    clientIdProperty: 'clientId',
+    idProperty: 'ID',
+    identifier: {
+        type: 'sequential',
+        prefix: 'Unsaved-'
+    },
     fields: [
         {
             name: "MSG_ID",
@@ -8,6 +14,17 @@ Ext.define('Eui.sample.model.Base',{
                 {
                     type: "length",
                     min: 3,
+                    minOnlyMessage: "Customer name must have at least 3 characters"
+                }
+            ]
+        },
+        {
+            name: "MSG_LABEL",
+            type: "string",
+            validators: [
+                {
+                    type: "length",
+                    min: 4,
                     minOnlyMessage: "Customer name must have at least 3 characters"
                 }
             ]

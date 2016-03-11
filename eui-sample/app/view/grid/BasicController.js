@@ -8,19 +8,36 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.sample-basic-grid',
-
+    requires: ['Eui.sample.model.Base'],
     init: function () {
 
     },
 
     onRowAdd: function (grid) {
-        grid.onRowAdd(grid, {
-            randomInt: Ext.Number.randomInt(1, 1000000000000),
-            CUSTOMER_NAME_ENG: 'SDS',
-            CUSTOMER_NAME_KO: 'SDS'
-        }, 0, function () {    // callback이 필요할 경우 구현한다.
-            console.log('그리드 내부에서 콜백철...')
+        var me = this,
+            session = me.getSession(),
+            selectedPage = me.getViewModel().get('currentPage'),
+            tree = me.lookupReference('tree');
+
+        var record = session.createRecord('Eui.sample.model.Base', {
+            MSG_ID: '1111122',
+            MSG_LABEL: '11022TEST'
         });
+
+        grid.onRowAdd(grid, record, 0, function () {    // callback이 필요할 경우 구현한다.
+            console.log('그리드 내부에서 콜백철...', arguments, session)
+        });
+
+
+//        grid.onRowAdd(grid, {
+//            randomInt: Ext.Number.randomInt(1, 1000000000000),
+//            CUSTOMER_NAME_ENG: 'SDS',
+//            CUSTOMER_NAME_KO: 'SDS'
+//        }, 0, function () {    // callback이 필요할 경우 구현한다.
+//            console.log('그리드 내부에서 콜백철...', arguments)
+//        });
+
+
     },
 
     onRowReg: function () {
@@ -62,7 +79,13 @@ Ext.define('Eui.sample.view.grid.BasicController', {
 
     onGridSelect: function (grid, record) {
         this.getViewModel().set("messageRecord", record);
-
-        console.log(this.getViewModel().get('messageRecord').getData());
+//        console.log('rec', record.getData())
+//        this.getViewModel().setLinks({
+//            messageRecord: {
+//                type: 'Eui.sample.model.Base',
+//                id: record.getId()
+//            }
+//        });
+//        console.log(this.getViewModel().get('messageRecord').getData());
     }
 });

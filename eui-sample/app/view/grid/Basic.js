@@ -1,9 +1,7 @@
 Ext.define('Eui.sample.view.grid.Basic', {
     extend: 'eui.grid.Panel',
     xtype: 'sample-basic-grid',
-    bind: {
-        title: '기본 1그리드{loremIpsum}'
-    },
+
 
     requires: [
         'Eui.sample.model.Base',
@@ -16,15 +14,18 @@ Ext.define('Eui.sample.view.grid.Basic', {
     viewModel: {
         type: 'sample-basic-grid'
     },
-    selModel: 'cellmodel',
+//    selModel: 'cellmodel',
+
+//    session: true,
+
     plugins: {
         ptype: 'cellediting',
         clicksToEdit: 1
     },
-//    selModel: {
-//        mode: 'SIMPLE',
-//        selType: 'checkboxmodel'
-//    },
+    selModel: {
+        mode: 'SIMPLE',
+        selType: 'checkboxmodel'
+    },
     /***
      * 페이징 툴바 사용 설정.
      */

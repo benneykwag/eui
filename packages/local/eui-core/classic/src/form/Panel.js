@@ -76,11 +76,21 @@ Ext.define('eui.form.Panel', {
             },
             {
                 xtype: 'spbutton',
-                formBind: true,
+//                formBind: true,
                 disabled: true,
+//                hidden: true,
+//                bind: {
+//                    disabled: '{!messageRecord}'
+//                },
+                bind: {
+                    disabled: '{a.c}'
+                },
+//                bind: {
+//                    disabled: '{!status.dirtyAndValid}'
+//                },
                 code: 'save',
                 iconCls: 'x-fa fa-save',
-                text: '저장',
+                text: '저장2',
                 hidden: me.getHiddenSaveBtn(),
                 listeners: {
                     click: {
