@@ -28,7 +28,8 @@
      *  - template : A package containing one or more templates.
      */
     "type": "code",
-
+    "toolkit": "classic",
+    "framework": "ext",
     /**
      * The toolkit used by this theme (only for "theme" package type).
      *
@@ -36,7 +37,7 @@
      *
      *    "toolkit": "classic",
      */
-    "toolkit": "${args.toolkit}",
+//    "toolkit": "${args.toolkit}",
 
      /**
       * The author of the package.
