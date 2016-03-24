@@ -41,12 +41,15 @@ Ext.define('Eui.sample.view.grid.BasicModel', {
                 console.log('set', arguments)
             },
             get: function (user) {
-                console.log('user', user.isValid())
+
                 var status = {
                     dirty: user ? user.dirty : true,
                     valid : user ? user.isValid(): false
                 };
                 status.validAndDirty = status.dirty && status.valid;
+
+                console.log('user', user.isValid())
+
                 return status;
             }
         }
@@ -54,7 +57,7 @@ Ext.define('Eui.sample.view.grid.BasicModel', {
     stores: {
         mystore: {
             model: 'Eui.sample.model.Base',
-            session: true,
+//            session: true,
             autoLoad: true
         }
     }

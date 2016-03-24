@@ -1,10 +1,8 @@
 Ext.define('Eui.sample.model.Base', {
     extend: 'Ext.data.Model',
-    clientIdProperty: 'clientId',
-    idProperty: 'ID',
     identifier: {
         type: 'sequential',
-        prefix: 'Unsaved-'
+        prefix: 'MSG'
     },
     fields: [
         {
@@ -41,10 +39,10 @@ Ext.define('Eui.sample.model.Base', {
         },
 
         api: {
-            create: 'resources/data/mygriddata.json',
-            read: 'resources/data/mygriddata.json',
-            update: 'resources/data/mygriddata.json',
-            destroy: 'resources/data/mygriddata.json?'
+            create: 'resources/data/mygriddata.json?create',
+            read: 'resources/data/mygriddata.json?read',
+            update: 'resources/data/mygriddata.json?update',
+            destroy: 'resources/data/mygriddata.json?destroy'
         },
         reader: {
             type: 'json',

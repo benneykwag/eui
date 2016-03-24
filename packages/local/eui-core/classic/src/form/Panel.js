@@ -82,12 +82,12 @@ Ext.define('eui.form.Panel', {
 //                bind: {
 //                    disabled: '{!messageRecord}'
 //                },
-                bind: {
-                    disabled: '{a.c}'
-                },
 //                bind: {
-//                    disabled: '{!status.dirtyAndValid}'
+//                    disabled: '{a.c}'
 //                },
+                bind: {
+                    disabled: '{!status.dirtyAndValid}'
+                },
                 code: 'save',
                 iconCls: 'x-fa fa-save',
                 text: '저장2',

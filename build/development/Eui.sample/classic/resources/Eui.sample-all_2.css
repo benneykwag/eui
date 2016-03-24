@@ -107,12 +107,12 @@
     width: 11px;
     height: 11px;
     background: url(images/tab/tab-default-close.gif) 0 0;
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
     opacity: 0.6;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3017 */
 .x-tab-default .x-tab-close-btn-over {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3086 */
@@ -121,7 +121,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3119 */
 .x-tab-default.x-tab-disabled .x-tab-close-btn {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=30);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
     opacity: 0.3;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3140 */
@@ -501,7 +501,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/layout/container/Box.scss:203 */
 .x-box-scroller-tab-bar-default.x-box-scroller-disabled {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
     cursor: default;
 }
@@ -723,7 +723,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/layout/container/Box.scss:203 */
 .x-box-scroller-breadcrumb-default.x-box-scroller-disabled {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
     cursor: default;
 }
@@ -4600,7 +4600,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2896 */
 .x-tab.x-tab-disabled.x-tab-navigation .x-tab-icon-el-navigation {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2901 */
@@ -5083,12 +5083,12 @@
     width: 11px;
     height: 11px;
     background: url(images/tab/tab-navigation-close.gif) 0 0;
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
     opacity: 0.6;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3017 */
 .x-tab-navigation .x-tab-close-btn-over {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3086 */
@@ -5097,7 +5097,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3119 */
 .x-tab-navigation.x-tab-disabled .x-tab-close-btn {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=30);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
     opacity: 0.3;
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3140 */
@@ -5357,7 +5357,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/layout/container/Box.scss:203 */
 .x-box-scroller-tab-bar-navigation.x-box-scroller-disabled {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
     cursor: default;
 }
@@ -5798,7 +5798,7 @@
 }
 /* http://localhost:1841/ext/classic/theme-neutral/sass/src/panel/Panel.scss:850 */
 .x-panel-navigation-resizable .x-panel-handle {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
 }
 /* http://localhost:1841/eui-sample/classic/sass/src/view/main/Main.scss:60 */

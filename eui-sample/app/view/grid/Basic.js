@@ -11,16 +11,14 @@ Ext.define('Eui.sample.view.grid.Basic', {
     ],
     controller: 'sample-basic-grid',
 
-    viewModel: {
-        type: 'sample-basic-grid'
-    },
+    viewModel: 'sample-basic-grid',
 //    selModel: 'cellmodel',
 
 //    session: true,
 
     plugins: {
         ptype: 'cellediting',
-        clicksToEdit: 1
+        clicksToEdit: 2
     },
     selModel: {
         mode: 'SIMPLE',
@@ -70,6 +68,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
             flex: 1,
             dataIndex: 'MSG_LABEL',
             editor: {
+                bind : "{messageRecord.MSG_LABEL}",
                 xtype: 'textfield'
 
             }

@@ -6,7 +6,6 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
     hiddenSaveBtn: false,
     hiddenCloseBtn: false,
     margin: 5,
-    modelValidation: true,
 //    config: {
         c: true,
 //    },
@@ -35,6 +34,9 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
 
     reference: 'a',
     publishes: 'c',
+    listeners: {
+        baseformsave : 'onSaveForm'
+    },
     items: [
         {
             xtype:'euilabel',
