@@ -319,8 +319,12 @@ Ext.define('eui.Util', {
         };
         config.items = null;
         if (!Ext.isEmpty(windowOption)) {
-            config = Ext.apply(config, windowOption);
-            config = Ext.apply(config, ownerCt.getViewModel());
+            for(var test in windowOption){
+                var value = windowOption[test];
+                config[test] = value;
+            }
+//            config = Ext.apply(config, windowOption);
+//            config = Ext.apply(config, ownerCt.getViewModel());
 
         }
         config.items = [openForm];
