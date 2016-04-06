@@ -1,9 +1,11 @@
-# g1
+# EUI Framework
 
-This folder is primarily a container for the top-level pieces of the application.
-While you can remove some files and folders that this application does not use,
-be sure to read below before deciding what can be deleted and what needs to be
-kept in source control.
+eui 프레임웍은 ExtJS6를 베이스로 하는 UI 프레임웍입니다. 이 프레임웍은 ExtJS의 기능을 우리현실에 맞게 수정하고
+업그레이드 하였습니다.
+사용법은 api문서를 통해 공개할 예정이며 관련 샘플 또한 워크스페이스 내부 app에 정리하여 공개합니다.
+
+추후 블로그를 통해 eui프레임웍을 이용한 ExtJS강의를 진행할 예정입니다.
+
 
 The following files are all needed to build and load the application.
 
