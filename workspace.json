@@ -3,14 +3,14 @@
      *  An array of the paths to all the applications present in this workspace
      */
     "apps": [
-        "eui-sample",
+        "eui-sample"/*,
         "MvvmEx1v5",
         "CultivateCode",
         "CrudTree",
         "architecture-cms",
         "Instrumatics",
         "Postcard",
-        "questons"
+        "questons"*/
     ],
 
     /**
