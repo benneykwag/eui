@@ -7,7 +7,10 @@ eui 프레임웍은 ExtJS6를 베이스로 하는 UI 프레임웍입니다. 이 
 추후 블로그를 통해 eui프레임웍을 이용한 ExtJS강의를 진행할 예정입니다.
 
 
-The following files are all needed to build and load the application.
+내부 파일 구조는 아래와 같습니다. 최상단 폴더는 Sencha Cmd v6.1.1.76의 의해 생성된 sencha workspace입니다.
+- sdk version : 6.1
+- Sencha Cmd Version : v6.1.1.76
+
 
  - `"app.json"` - The application descriptor which controls how the application is
    built and loaded.
