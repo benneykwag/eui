@@ -1,7 +1,8 @@
 Ext.define('Eui.sample.view.grid.Basic', {
-    extend: 'eui.grid.Panel',
+    extend: 'Ext.grid.Panel',
     xtype: 'sample-basic-grid',
 
+    title :'#{행추가2}',
 
     requires: [
         'Eui.sample.model.Base',
@@ -55,7 +56,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
 
     columns: [
         {
-            text: 'MSG_ID',
+            text: '#{행추가2}',
             width: 100,
             dataIndex: 'MSG_ID',
             editor: {

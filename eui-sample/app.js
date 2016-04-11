@@ -19,5 +19,6 @@ Ext.application({
     // will gain a "viewport" plugin if it does not extend Ext.Viewport. With the
     // modern toolkit, the main view will be added to the Viewport.
     //
-    mainView: 'Eui.sample.view.main.Main'
+    mainView: 'Eui.sample.view.grid.Basic'
+//    mainView: 'Eui.sample.view.main.Main'
 });
