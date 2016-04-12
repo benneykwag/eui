@@ -15,7 +15,7 @@ Ext.define('Override.Component', {
     initComponent: function () {
         this.doLocale();
 //        console.log('i18n: ', Ext.getStore('i18n'))
-        this.callParent();
+        this.callParent(arguments);
     },
 
     /**

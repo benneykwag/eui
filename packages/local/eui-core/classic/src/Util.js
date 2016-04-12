@@ -672,14 +672,14 @@ Ext.define('eui.Util', {
     	
     	Ext.getDoc().on("contextmenu", function(ev){ ev.preventDefault();});
     	
-    	Ext.direct.Manager.addProvider({
-    		id: 'euiprovider',
-    	    url: Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
-    	    type: 'remoting',
-    	    enableBuffer:true,
-    	    maxRetries: 0,
-    	    actions: {}
-    	});
+//    	Ext.direct.Manager.addProvider({
+//    		id: 'euiprovider',
+//    	    url: Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
+//    	    type: 'remoting',
+//    	    enableBuffer:true,
+//    	    maxRetries: 0,
+//    	    actions: {}
+//    	});
     },
     sessionValidation: function(){
     	//TODO

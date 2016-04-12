@@ -11,3 +11,7 @@ eui 프레임웍은 ExtJS6를 베이스로 하는 UI 프레임웍입니다. 이 
 내부 파일 구조는 아래와 같습니다. 최상단 폴더는 Sencha Cmd v6.1.1.76의 의해 생성된 sencha workspace입니다.
 - sdk version : 6.1
 - Sencha Cmd Version : v6.1.1.76
+
+
+- sencha -sdk ./ext generate app classic eui-sample ./eui-sample3
+- sencha -sdk ./ext generate app modern eui-sample ./eui-sample

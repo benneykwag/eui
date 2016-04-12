@@ -108,9 +108,6 @@ Ext.define('Override.grid.column.Column', {
         'text'
     ],
     initComponent: function() {
-        if (this.editor) {
-            this.cls = 'dirtymark';
-        }
         this.callParent(arguments);
     }
 });
@@ -571,9 +568,13 @@ Ext.define('eui.Util', {
             };
         config.items = null;
         if (!Ext.isEmpty(windowOption)) {
-            config = Ext.apply(config, windowOption);
-            config = Ext.apply(config, ownerCt.getViewModel());
+            for (var test in windowOption) {
+                var value = windowOption[test];
+                config[test] = value;
+            }
         }
+        //            config = Ext.apply(config, windowOption);
+        //            config = Ext.apply(config, ownerCt.getViewModel());
         config.items = [
             openForm
         ];
@@ -1404,12 +1405,12 @@ Ext.define('eui.form.Panel', {
                     //                bind: {
                     //                    disabled: '{!messageRecord}'
                     //                },
-                    bind: {
-                        disabled: '{a.c}'
-                    },
                     //                bind: {
-                    //                    disabled: '{!status.dirtyAndValid}'
+                    //                    disabled: '{a.c}'
                     //                },
+                    bind: {
+                        disabled: '{!status.dirtyAndValid}'
+                    },
                     code: 'save',
                     iconCls: 'x-fa fa-save',
                     text: '저장2',

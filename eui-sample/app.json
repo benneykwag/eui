@@ -42,14 +42,8 @@
      */
     "framework": "ext",
     
-    /**
-     * The toolkit to use. Select either "classic" or "modern".
-     */
     
     
-    /**
-     * The name of the theme for this application.
-     */
     
     /**
      * The list of required packages (with optional versions; default is "latest").
@@ -61,8 +55,8 @@
      *      ]
      */
     "requires": [
-        "eui-core",
-        "font-awesome"
+        "font-awesome",
+        "eui-core"
     ],
 
     /**
@@ -219,6 +213,7 @@
         }
     ],
 
+    
     /**
      * Settings specific to classic toolkit builds.
      */
@@ -585,5 +580,5 @@
      * Uniquely generated id for this application, used as prefix for localStorage keys.
      * Normally you should never change this value.
      */
-    "id": "332ef7a3-77bb-4421-9070-83fd55cfe4ab"
+    "id": "4fc0621a-503a-4e00-8712-e75fec7dce33"
 }
