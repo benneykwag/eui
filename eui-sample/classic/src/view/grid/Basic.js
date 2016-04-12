@@ -21,10 +21,10 @@ Ext.define('Eui.sample.view.grid.Basic', {
         ptype: 'cellediting',
         clicksToEdit: 2
     },
-//    selModel: {
-//        mode: 'SIMPLE',
-//        selType: 'checkboxmodel'
-//    },
+    selModel: {
+        mode: 'SIMPLE',
+        selType: 'checkboxmodel'
+    },
     /***
      * 페이징 툴바 사용 설정.
      */

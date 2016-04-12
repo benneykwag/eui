@@ -27,6 +27,10 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             Ext.Msg.alert('확인', '수정할 로우를 선택하세요.');
             return;
         }
+        if(records.length > 1){
+            Ext.Msg.alert('확인', '한건의 로우만 선택하세요.');
+            return;
+        }
         Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
         }, true).show();
@@ -61,16 +65,11 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             message: '그리드 정보를 저장하시겠습니까?',
             fn: function (btn) {
                 if (btn === 'yes') {
-//                    if(!grid.store.getRejectRecords()[0].isValid()){
-//                        Ext.Msg.alert('확인', grid.store.getRejectRecords()[0].getValidation().get('MSG_LABEL'));
-//                        console.log(grid.store.getRejectRecords()[0].getValidation().get('MSG_LABEL'));
-//                        return;
-//                    }
                     grid.store.checkSync({
                         success: function () {
                             Ext.Msg.alert('확인', '저장되었습니다.');
                         }
-                    })
+                    });
                 }
             }
         });
@@ -80,7 +79,16 @@ Ext.define('Eui.sample.view.grid.BasicController', {
         this.getViewModel().set("messageRecord", record);
     },
 
-    onSaveForm: function () {
-        this.getViewModel().get("messageRecord").save();
+    onSaveForm: function (form) {
+        var me = this;
+        this.getViewModel().get("messageRecord").save({
+            success: function (rec) {
+                me.getViewModel().getStore('mystore').add(rec);
+                form.up('window').close();
+            },
+            callback: function () {
+
+            }
+        });
     }
 });
