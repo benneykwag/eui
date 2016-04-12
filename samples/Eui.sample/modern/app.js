@@ -104712,6 +104712,7 @@ Ext.define('eui.Config', {
                 storeId: 'i18n'
             });
         var cfg = {
+                pMethod: 'GET',
                 url: Config.localeUrl,
                 params: {
                     locale: Config.localeCode
