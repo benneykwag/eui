@@ -61,7 +61,12 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             message: '그리드 정보를 저장하시겠습니까?',
             fn: function (btn) {
                 if (btn === 'yes') {
-                    grid.store.sync({
+//                    if(!grid.store.getRejectRecords()[0].isValid()){
+//                        Ext.Msg.alert('확인', grid.store.getRejectRecords()[0].getValidation().get('MSG_LABEL'));
+//                        console.log(grid.store.getRejectRecords()[0].getValidation().get('MSG_LABEL'));
+//                        return;
+//                    }
+                    grid.store.checkSync({
                         success: function () {
                             Ext.Msg.alert('확인', '저장되었습니다.');
                         }

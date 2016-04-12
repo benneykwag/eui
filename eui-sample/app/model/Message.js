@@ -4,10 +4,6 @@ Ext.define('Eui.sample.model.Message', {
         type: 'sequential',
         prefix: 'MSG'
     },
-    fields: [
-
-    ],
-
     proxy: {
         type: 'ajax',
         actionMethods: {
