@@ -31,6 +31,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             Ext.Msg.alert('확인', '한건의 로우만 선택하세요.');
             return;
         }
+
         Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
         }, true).show();

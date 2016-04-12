@@ -16,7 +16,7 @@ Ext.define('Eui.sample.model.Message', {
         api: {
             create: 'resources/data/mygridadddata.json?create',
             read: 'resources/data/mygriddata.json?read',
-            update: 'resources/data/mygriddata.json?update',
+            update: 'resources/data/mygridadddata.json?update',
             destroy: 'resources/data/mygriddata.json?destroy'
         },
         reader: {

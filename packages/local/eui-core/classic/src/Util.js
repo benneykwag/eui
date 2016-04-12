@@ -331,8 +331,24 @@ Ext.define('eui.Util', {
 //        var baseComponent = ownerCt.up('FMS010106V') || ownerCt.up('FMS010106V');
 //        console.log('baseC', baseComponent)
         if (ownerCt && addParentMvvm) {
-
-            return ownerCt.add(Ext.create('Ext.window.Window', config));
+            var commandtoolbar = ownerCt.down('commandtoolbar'),
+                pagingtoolbar = ownerCt.down('pagingtoolbar'),
+                window = Ext.create('Ext.window.Window', config);
+            /*if(commandtoolbar){
+                commandtoolbar.setDisabled(true);
+            }
+            if(pagingtoolbar){
+                pagingtoolbar.setDisabled(true);
+            }
+            window.addListener('close', function () {
+                if(commandtoolbar){
+                    commandtoolbar.setDisabled(false);
+                }
+                if(pagingtoolbar){
+                    pagingtoolbar.setDisabled(false);
+                }
+            });*/
+            return ownerCt.add(window);
         }
         return Ext.create('Ext.window.Window', config);
     },

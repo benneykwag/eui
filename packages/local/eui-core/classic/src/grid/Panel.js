@@ -1,6 +1,6 @@
 Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
-    alias: 'widget.spgrid',
+    alias: 'widget.euigrid',
     columnLines: true,
 //    ui: 'basicgrid',
 
