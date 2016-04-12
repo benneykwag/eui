@@ -21,10 +21,10 @@ Ext.define('Eui.sample.view.grid.Basic', {
         ptype: 'cellediting',
         clicksToEdit: 2
     },
-    selModel: {
-        mode: 'SIMPLE',
-        selType: 'checkboxmodel'
-    },
+//    selModel: {
+//        mode: 'SIMPLE',
+//        selType: 'checkboxmodel'
+//    },
     /***
      * 페이징 툴바 사용 설정.
      */
@@ -33,25 +33,23 @@ Ext.define('Eui.sample.view.grid.Basic', {
         {
             showRowAddBtn: true,
             showRowDelBtn: true,
-            showRowRegBtn: true,
-            showRowModBtn: true,
-            showRowSaveBtn: true,
+            showRegBtn: true,
+            showModBtn: true,
+            showSaveBtn: true,
+            showReloadBtn: true,
             xtype: 'commandtoolbar'
-        },
-        '-'
+        }
     ],
     bind: {
         store: '{mystore}'
     },
     listeners: {
         select: 'onGridSelect',
-        rowreg: 'onRowReg',
-        rowdelete: 'onRowDelete',
-        rowupdate: function () {
-            console.log('SPGridRowMod called..');
-        },
-        rowadd: 'onRowAdd',
-        rowsave: 'onRowSave'
+        regBtnClick: 'onRowReg',
+        rowDeleteBtnClick: 'onRowDelete',
+        modBtnClick: 'onRowMod',
+        rowAddBtnClick: 'onRowAdd',
+        saveBtnClick: 'onRowSave'
     },
 
     columns: [

@@ -188,7 +188,7 @@ Ext.define('eui.grid.Panel', {
 
     },
 
-    onRowSave: function (grid) {
+    onSave: function (grid) {
         var me = this;
         me.store.sync();
     },

@@ -14,31 +14,22 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     },
 
     onRowAdd: function (grid) {
-        var me = this,
-            session = me.getSession(),
-            selectedPage = me.getViewModel().get('currentPage'),
-            tree = me.lookupReference('tree');
-
-//        var record = session.createRecord('Eui.sample.model.Base', {
-//            MSG_ID: '1111122',
-//            MSG_LABEL: '11022TEST'
-//        });
-//
-//        grid.onRowAdd(grid, record, 0, function () {    // callback이 필요할 경우 구현한다.
-//            console.log('그리드 내부에서 콜백철...', arguments, session)
-//        });
-
-
         grid.onRowAdd(grid, {
-            randomInt: Ext.Number.randomInt(1, 1000000000000)
+            MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
         }, 0, function () {    // callback이 필요할 경우 구현한다.
-            console.log('그리드 내부에서 콜백철...', arguments)
+            console.log(' 콜백처리...', arguments)
         });
+    },
+
+    onRowMod: function (grid) {
+        Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
+            modal: true
+        }, true).show();
     },
 
     onRowReg: function () {
         this.getViewModel().set('messageRecord', Ext.create('Eui.sample.model.Base', {
-            MSG_ID: Ext.Number.randomInt(1, 1000000000000)
+            MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
         }));
 
         Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {

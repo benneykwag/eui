@@ -4,30 +4,34 @@ Ext.define('eui.toolbar.Command', {
     ui: 'plain',
 
     config: {
+        showText: true,
         showRowAddBtn: false,
         showRowDelBtn: false,
-        showRowRegBtn: false,
-        showRowModBtn: false,
-        showRowSaveBtn: false
+        showRegBtn: false,
+        showReloadBtn: false,
+        showModBtn: false,
+        showSaveBtn: false,
+        showCloseBtn: false
     },
 
     initComponent: function () {
         var me = this,
-            grid = this.up('grid');
+            owner = this.up('grid,euiform');
         Ext.apply(me, {
             items: [
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{행추가}',
                     iconCls: '#{행추가아이콘}',
                     scope: me,
+                    showText: me.getShowText(),
                     hidden: !me.getShowRowAddBtn(),
                     listeners: {
                         click: function () {
-                            if (grid.hasListeners['rowadd'.toLowerCase()]) {
-                                grid.fireEvent('rowadd', grid);
+                            if (owner.hasListeners['rowAddBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('rowAddBtnClick', owner);
                             } else {
-                                grid.onRowAdd(grid, {
+                                owner.onRowAdd(owner, {
                                     randomInt: Ext.Number.randomInt(1, 1000000000000)
                                 }, 0, null);
                             }
@@ -35,69 +39,88 @@ Ext.define('eui.toolbar.Command', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     iconCls: '#{행삭제아이콘}',
                     text: '#{행삭제}',
                     scope: me,
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function () {
-                            if (grid.hasListeners['rowdelete'.toLowerCase()]) {
-                                grid.fireEvent('rowdelete', grid);
+                            if (owner.hasListeners['rowDeleteBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('rowDeleteBtnClick', owner);
                             } else {
-                                grid.onRowDelete(grid, null, grid);
+                                owner.onRowDelete(owner, null, owner);
                             }
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{등록}',
                     iconCls: '#{등록아이콘}',
-                    hidden: !me.getShowRowRegBtn(),
+                    hidden: !me.getShowRegBtn(),
                     listeners: {
                         click: function () {
-                            grid.fireEvent('rowreg', grid);
+                            owner.fireEvent('regBtnClick', owner);
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{수정}',
                     iconCls: '#{수정아이콘}',
-                    hidden: !me.getShowRowModBtn(),
+                    hidden: !me.getShowModBtn(),
                     listeners: {
                         click: function () {
-                            me.fireEvent('SPGridRowMod', me);
+                            owner.fireEvent('modBtnClick', owner);
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{저장}',
+                    formBind: true,
                     iconCls: '#{저장아이콘}',
-                    hidden: !me.getShowRowSaveBtn(),
+                    hidden: !me.getShowSaveBtn(),
                     listeners: {
                         click: function () {
-                            if (grid.hasListeners['rowsave'.toLowerCase()]) {
-                                grid.fireEvent('rowsave', grid);
+                            if (owner.hasListeners['saveBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('saveBtnClick', owner);
                             } else {
-                                grid.onRowSave(grid);
+                                owner.onSave(owner);
                             }
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{조회}',
                     iconCls: '#{저장아이콘}',
-                    hidden: !me.getShowRowSaveBtn(),
+                    hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function () {
-                            if (grid.hasListeners['reload'.toLowerCase()]) {
-                                grid.fireEvent('reload', grid);
+                            if (owner.hasListeners['reloadBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('reloadBtnClick', owner);
                             } else {
-                                grid.onReload();
+                                owner.onReload();
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: 'euibutton',
+                    text: '#{닫기}',
+                    iconCls: 'x-fa fa-sign-out',
+                    hidden: !me.getShowCloseBtn(),
+                    listeners: {
+                        click: function () {
+                            var window = Util.getOwnerCt(this);
+                            if (Util.getOwnerCt(this).xtype === 'window') {
+                                window.close();
+                            } else {
+                                Ext.Error.raise({
+                                    msg: '닫기 버튼은 팝업에서만 사용가능합니다.'
+                                });
                             }
                         }
                     }

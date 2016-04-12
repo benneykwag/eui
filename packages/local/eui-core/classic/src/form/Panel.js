@@ -1,6 +1,6 @@
 Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.spform',
+    alias: 'widget.euiform',
     localeProperties: ['title'],
     requires: [
         'eui.button.Button',
@@ -47,7 +47,7 @@ Ext.define('eui.form.Panel', {
     initComponent: function () {
         var me = this;
         me.setHeader();
-        me.setBottomToolbar();
+//        me.setBottomToolbar();
         me.setTableLayout();
         me.callParent(arguments);
         me.on('afterrender', function () {
@@ -59,7 +59,7 @@ Ext.define('eui.form.Panel', {
         var me = this;
         var buttons = [
             {
-                xtype: 'spbutton',
+                xtype: 'euibutton',
                 formBind: true,
                 disabled: true,
                 code: 'search',
@@ -75,22 +75,11 @@ Ext.define('eui.form.Panel', {
                 }
             },
             {
-                xtype: 'spbutton',
-//                formBind: true,
-                disabled: true,
-//                hidden: true,
-//                bind: {
-//                    disabled: '{!messageRecord}'
-//                },
-//                bind: {
-//                    disabled: '{a.c}'
-//                },
-                bind: {
-                    disabled: '{!status.dirtyAndValid}'
-                },
+                xtype: 'euibutton',
+                formBind: true,
                 code: 'save',
                 iconCls: 'x-fa fa-save',
-                text: '저장2',
+                text: '저장',
                 hidden: me.getHiddenSaveBtn(),
                 listeners: {
                     click: {
@@ -101,7 +90,7 @@ Ext.define('eui.form.Panel', {
                 }
             },
             {
-                xtype: 'spbutton',
+                xtype: 'euibutton',
                 formBind: true,
                 disabled: true,
                 code: 'delete',
@@ -117,7 +106,7 @@ Ext.define('eui.form.Panel', {
                 }
             },
             {
-                xtype: 'spbutton',
+                xtype: 'euibutton',
                 code: 'delete',
                 text: '닫기',
                 iconCls: 'x-fa fa-sign-out',
@@ -134,7 +123,7 @@ Ext.define('eui.form.Panel', {
                 }
             },
             {
-                xtype: 'spbutton',
+                xtype: 'euibutton',
                 code: 'delete',
                 text: '출력',
                 iconCls: 'x-fa fa-print',
@@ -151,7 +140,7 @@ Ext.define('eui.form.Panel', {
                 }
             },
             {
-                xtype: 'spbutton',
+                xtype: 'euibutton',
                 code: 'clear',
                 text: '취소',
                 iconCls: 'x-fa fa-retweet',
@@ -195,14 +184,14 @@ Ext.define('eui.form.Panel', {
             hidden: me.getHiddenHeader(),
             items: [
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     iconCls: 'x-fa fa-print'
 //                    text: '프린트',
 //                    hidden: me.getHiddenHeaderPrintBtn()
                 },
 
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     iconCls: 'x-fa fa-sign-out',
 //                    hidden: me.getHiddenHeaderClearBtn(),
                     listeners: {
