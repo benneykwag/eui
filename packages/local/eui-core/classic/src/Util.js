@@ -391,6 +391,7 @@ Ext.define('eui.Util', {
             pCallBack = cfg.pCallback,
             pSync = cfg.pSync,
             pScope = cfg.pScope,
+            pMethod = cfg.pMethod,
             timeoutSeq = cfg.timeoutSeq,
             __scopeGrid = null;
 
@@ -447,7 +448,7 @@ Ext.define('eui.Util', {
         var rtnData = "";
         var options = {
             async: pSync,
-            method: 'POST',
+            method: (pMethod?pMethod:'GET'),
             timeout: timeoutSeq,
             disableCaching: false,
             url: pURL,

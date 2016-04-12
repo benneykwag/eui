@@ -1,7 +1,7 @@
 Ext.define('Eui.sample.view.grid.BasicModel', {
     extend : "Ext.app.ViewModel",
     alias: 'viewmodel.sample-basic-grid',
-    requires: ['Eui.sample.model.Base'],
+    requires: ['Eui.sample.model.Message'],
     data: {
         current: {
             user: null,
@@ -17,47 +17,11 @@ Ext.define('Eui.sample.view.grid.BasicModel', {
             get: function (b) {
                 return b
             }
-        },
-        status : {
-            bind : {
-                bindTo : "{messageRecord}",
-                deep : true
-            },
-            get : function(c) {
-                var d = {
-                    dirty : c ? c.dirty : false,
-                    valid : c && c.isModel ? c.isValid() : false
-                };
-                d.dirtyAndValid = d.dirty && d.valid;
-                return d
-            }
-        },
-        userStatus: {
-            bind: {
-                bindTo: '{messageRecord}',
-                deep: true
-            },
-            set: function () {
-                console.log('set', arguments)
-            },
-            get: function (user) {
-
-                var status = {
-                    dirty: user ? user.dirty : true,
-                    valid : user ? user.isValid(): false
-                };
-                status.validAndDirty = status.dirty && status.valid;
-
-                console.log('user', user.isValid())
-
-                return status;
-            }
         }
     },
     stores: {
         mystore: {
-            model: 'Eui.sample.model.Base',
-//            session: true,
+            model: 'Eui.sample.model.Message',
             autoLoad: true
         }
     }

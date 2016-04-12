@@ -8,7 +8,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.sample-basic-grid',
-    requires: ['Eui.sample.model.Base'],
+    requires: ['Eui.sample.model.Message'],
     init: function () {
 
     },
@@ -33,7 +33,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     },
 
     onRowReg: function () {
-        this.getViewModel().set('messageRecord', Ext.create('Eui.sample.model.Base', {
+        this.getViewModel().set('messageRecord', Ext.create('Eui.sample.model.Message', {
             MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
         }));
 
