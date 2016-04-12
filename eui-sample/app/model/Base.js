@@ -11,8 +11,8 @@ Ext.define('Eui.sample.model.Base', {
             validators: [
                 {
                     type: "length",
-                    min: 3,
-                    minOnlyMessage: "Customer name must have at least 3 characters"
+                    min: 10,
+                    minOnlyMessage: "MSG_ID must have at least 3 characters"
                 }
             ]
         },
@@ -23,7 +23,7 @@ Ext.define('Eui.sample.model.Base', {
                 {
                     type: "length",
                     min: 4,
-                    minOnlyMessage: "Customer name must have at least 3 characters"
+                    minOnlyMessage: "MSG_LABEL must have at least 3 characters"
                 }
             ]
         }

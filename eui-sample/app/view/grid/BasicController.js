@@ -22,6 +22,11 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     },
 
     onRowMod: function (grid) {
+        var records = grid.getSelection();
+        if(records.length == 0){
+            Ext.Msg.alert('확인', '수정할 로우를 선택하세요.');
+            return;
+        }
         Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
         }, true).show();
