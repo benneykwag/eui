@@ -5,6 +5,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
     title: '#{행추가2}',
 
     requires: [
+        'eui.grid.Panel',
         'Eui.sample.view.grid.RecordForm',
         'Eui.sample.model.Base',
         'Eui.sample.view.grid.BasicModel',
