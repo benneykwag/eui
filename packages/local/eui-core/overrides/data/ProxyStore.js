@@ -29,7 +29,8 @@ Ext.define('Override.data.ProxyStore', {
         if(this.recordsValidationCheck()){
             this.sync(option);
 
-            if(!this.needsSync){
+            // this.needsSync
+            if(!this.isSyncing){
                 Ext.Msg.alert('확인', '저장 할 레코드가 없습니다.');
             }
         }
