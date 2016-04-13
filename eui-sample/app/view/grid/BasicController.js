@@ -27,15 +27,15 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     onRowMod: function (grid) {
         var records = grid.getSelection();
         if(records.length == 0){
-            Ext.Msg.alert('확인', '수정할 로우를 선택하세요.');
+            Ext.Msg.alert(Util.getLocaleValue('CONFIRM'), Util.getLocaleValue('M90001'));
             return;
         }
         if(records.length > 1){
-            Ext.Msg.alert('확인', '한건의 로우만 선택하세요.');
+            Ext.Msg.alert(Util.getLocaleValue('M90002'), '한건의 로우만 선택하세요.');
             return;
         }
 
-        Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
+        Util.commonPopup(this.getView(), Util.getLocaleValue('M90003'), 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
         }, true).show();
     },
@@ -45,7 +45,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
         }));
 
-        Util.commonPopup(this.getView(), '메시지 등록', 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
+        Util.commonPopup(this.getView(), Util.getLocaleValue('M90003'), 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
         }, true).show();
     },
@@ -55,7 +55,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             store.remove(records);
             store.sync({
                 success: function () {
-                    Ext.Msg.alert('확인', '삭제되었습니다.');
+                    Ext.Msg.alert(Util.getLocaleValue('CONFIRM'),  Util.getLocaleValue('M90004'));
                 }
             });
         }, grid);
@@ -63,15 +63,15 @@ Ext.define('Eui.sample.view.grid.BasicController', {
 
     onRowSave: function (grid) {
         Ext.Msg.show({
-            title: '확인',
+            title: Util.getLocaleValue('CONFIRM'),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: '그리드 정보를 저장하시겠습니까?',
+            message: Util.getLocaleValue('M90005'),
             fn: function (btn) {
                 if (btn === 'yes') {
                     grid.store.checkSync({
                         success: function () {
-                            Ext.Msg.alert('확인', '저장되었습니다.');
+                            Ext.Msg.alert(Util.getLocaleValue('CONFIRM'), Util.getLocaleValue('M90006'));
                         }
                     });
                 }
