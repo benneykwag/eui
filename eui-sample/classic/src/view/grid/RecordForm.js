@@ -1,6 +1,10 @@
 Ext.define('Eui.sample.view.grid.RecordForm', {
     extend: 'eui.form.Panel',
     xtype: 'sample-basic-recordform',
+    requires: [
+        'eui.form.Label',
+        'eui.form.field.Text'
+    ],
     hiddenHeader: true,
     tableColumns:2,
     hiddenSaveBtn: false,

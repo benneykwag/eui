@@ -8,7 +8,10 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.sample-basic-grid',
-    requires: ['Eui.sample.model.Message'],
+    requires: [
+        'Eui.sample.view.grid.RecordForm',
+        'Eui.sample.model.Message'
+    ],
     init: function () {
 
     },
