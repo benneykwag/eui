@@ -64,7 +64,7 @@ Ext.define('eui.form.field.PopupTriggerSet', {
                     width: '40%',
                     readOnly: true,
                     bind: me.bindVar.NM,
-                    xtype: 'sptext'
+                    xtype: 'euitext'
                 }
             ]
         });
