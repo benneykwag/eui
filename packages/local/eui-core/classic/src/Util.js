@@ -666,7 +666,7 @@ Ext.define('eui.Util', {
         var store = Ext.getStore('i18n');
         var record = id && store.findRecord('MSG_ID', MSG_ID, 0, false, false, true);
         if (record) {
-            return record.get('MSG_CONTENTS');
+            return record.get('MSG_LABEL');
         }
         return '';
     },
