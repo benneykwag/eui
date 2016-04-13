@@ -8,7 +8,6 @@
 Ext.define('Eui.sample.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
-    html: '#{행추가}',
     requires: [
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',

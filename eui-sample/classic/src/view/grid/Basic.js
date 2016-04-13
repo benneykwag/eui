@@ -1,5 +1,5 @@
 Ext.define('Eui.sample.view.grid.Basic', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     xtype: 'sample-basic-grid',
 
     title :'#{행추가2}',
@@ -7,7 +7,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
     requires: [
         'Eui.sample.model.Base',
         'Eui.sample.view.grid.BasicModel',
-        'eui.toolbar.Command',
+       'eui.toolbar.Command',
         'Eui.sample.view.grid.BasicController'
     ],
     controller: 'sample-basic-grid',

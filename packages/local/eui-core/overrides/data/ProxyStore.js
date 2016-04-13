@@ -8,13 +8,16 @@ Ext.define('Override.data.ProxyStore', {
         var source = this.getDataSource(),
             items = source.items,
             len = items.length,
-            i;
+            i,
+            retValue = true;
 
         for (i = 0; i < len; i++) {
             if (!items[i].recordValidationCheck()) {
+                retValue = false;
                 break;
             }
         }
+        return retValue;
     },
 
     /***
@@ -23,12 +26,14 @@ Ext.define('Override.data.ProxyStore', {
      * @returns {*}
      */
     checkSync: function (option) {
-        this.recordsValidationCheck();
-        this.sync(option);
+        if(this.recordsValidationCheck()){
+            this.sync(option);
 
-        if(!this.needsSync){
-            Ext.Msg.alert('확인', '저장 할 레코드가 없습니다.');
+            if(!this.needsSync){
+                Ext.Msg.alert('확인', '저장 할 레코드가 없습니다.');
+            }
         }
+
         return this;
     }
 });
