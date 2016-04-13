@@ -7,7 +7,6 @@ Ext.define('Eui.sample.view.grid.Basic', {
     requires: [
         'eui.grid.Panel',
         'Eui.sample.view.grid.RecordForm',
-        'Eui.sample.model.Base',
         'Eui.sample.view.grid.BasicModel',
         'eui.toolbar.Command',
         'Eui.sample.view.grid.BasicController'
