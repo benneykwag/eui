@@ -23,7 +23,6 @@ Ext.define('Eui.sample.view.main.Main', {
     layout: 'border',
     items: [
         {
-            xtype: 'panel',
             title: 'Menu#{행추가}',
             region: 'west',
             xtype: 'leftmenu',

@@ -1,5 +1,5 @@
 Ext.define('Eui.sample.view.grid.Basic', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.container.Container',
     xtype: 'sample-basic-grid',
 
     title :'#{행추가2}',
