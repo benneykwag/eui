@@ -1,52 +1,45 @@
 Ext.define('Eui.sample.view.grid.Basic', {
     extend: 'Ext.panel.Panel',
     xtype: 'sample-basic-grid',
-
     title: '#{행추가2}',
-
     requires: [
-        'eui.grid.Panel',
-        'Eui.sample.view.grid.RecordForm',
-        'Eui.sample.view.grid.BasicModel',
-        'eui.toolbar.Command',
-        'Eui.sample.view.grid.BasicController'
+        'eui.grid.Panel',   // Ext.grid.Panel클래스를 확장한 eui-core용 그리드 클래스.
+        'Eui.sample.view.grid.RecordForm',      // 등록 및 수정 폼
+        'Eui.sample.view.grid.BasicModel',      // 뷰모델 클래스
+        'eui.toolbar.Command',                  // 명령버튼 제공
+        'Eui.sample.view.grid.BasicController'  // 뷰컨트롤러 클래스
     ],
     controller: 'sample-basic-grid',
-
     viewModel: 'sample-basic-grid',
-
     layout: 'fit',
-
     items: [
         {
             xtype: 'euigrid',
             plugins: {
-                ptype: 'cellediting',
-                clicksToEdit: 2
+                ptype: 'cellediting',   // 셀에디터를 추가.
+                clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
             },
-            selModel: {
+            selModel: {     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
                 mode: 'SIMPLE',
                 selType: 'checkboxmodel'
             },
-            /***
-             * 페이징 툴바 사용 설정.
-             */
+            // 그리드에 페이징 툴바를 추가.
             usePagingToolbar: true,
             tbar: [
                 {
-                    showRowAddBtn: true,
-                    showRowDelBtn: true,
-                    showRegBtn: true,
-                    showModBtn: true,
-                    showSaveBtn: true,
-                    showReloadBtn: true,
-                    xtype: 'commandtoolbar'
+                    showRowAddBtn: true,    // 행추가 버튼 활성화
+                    showRowDelBtn: true,    // 행삭제 버튼 활성화
+                    showRegBtn: true,       // 등록 버튼 활성화
+                    showModBtn: true,       // 수정 버튼 활성화
+                    showSaveBtn: true,      // 저장 버튼 활성화
+                    showReloadBtn: true,    // 조회 버튼 활성화
+                    xtype: 'commandtoolbar' // eui.toolbar.Command 클래스
                 }
             ],
             bind: {
-                store: '{mystore}'
+                store: '{mystore}'      // ViewModel클래스에 정의됨.
             },
-            listeners: {
+            listeners: {                // ViewController클래스에 정의됨.
                 select: 'onGridSelect',
                 regBtnClick: 'onRowReg',
                 rowDeleteBtnClick: 'onRowDelete',
@@ -54,7 +47,6 @@ Ext.define('Eui.sample.view.grid.Basic', {
                 rowAddBtnClick: 'onRowAdd',
                 saveBtnClick: 'onRowSave'
             },
-
             columns: [
                 {
                     text: '#{행추가2}',
@@ -72,12 +64,9 @@ Ext.define('Eui.sample.view.grid.Basic', {
                     editor: {
                         bind: "{messageRecord.MSG_LABEL}",
                         xtype: 'textfield'
-
                     }
                 }
             ]
-
         }
     ]
-
 });
