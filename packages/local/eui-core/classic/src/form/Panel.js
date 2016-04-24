@@ -51,7 +51,9 @@ Ext.define('eui.form.Panel', {
         me.setTableLayout();
         me.callParent(arguments);
         me.on('afterrender', function () {
-            this.isValid();
+            me.isValid();
+        }, me, {
+            delay: 500
         });
     },
 
