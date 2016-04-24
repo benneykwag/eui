@@ -2,15 +2,10 @@ Ext.define('Eui.sample.view.grid.BasicModel', {
     extend : "Ext.app.ViewModel",
     alias: 'viewmodel.sample-basic-grid',
     requires: ['Eui.sample.model.Message'],
-    data: {
-        current: {
-            user: null,
-            editMode: 'Edit'
-        }
-    },
     formulas : {
         messageRecord: {
             bind: {
+                // reference가 myGrid
                 bindTo: "{myGrid.selection}",
                 deep: true
             },

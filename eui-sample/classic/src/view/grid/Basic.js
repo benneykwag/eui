@@ -4,9 +4,9 @@ Ext.define('Eui.sample.view.grid.Basic', {
     title: '#{행추가2}',
     requires: [
         'eui.grid.Panel',   // Ext.grid.Panel클래스를 확장한 eui-core용 그리드 클래스.
+        'eui.toolbar.Command',                  // 명령버튼 제공
         'Eui.sample.view.grid.RecordForm',      // 등록 및 수정 폼
         'Eui.sample.view.grid.BasicModel',      // 뷰모델 클래스
-        'eui.toolbar.Command',                  // 명령버튼 제공
         'Eui.sample.view.grid.BasicController'  // 뷰컨트롤러 클래스
     ],
     controller: 'sample-basic-grid',
@@ -23,7 +23,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
                 mode: 'SIMPLE',
                 selType: 'checkboxmodel'
             },
-            // 그리드에 페이징 툴바를 추가.
+//            그리드에 페이징 툴바를 추가.
             usePagingToolbar: true,
             tbar: [
                 {

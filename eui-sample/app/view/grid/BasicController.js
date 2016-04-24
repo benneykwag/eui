@@ -18,7 +18,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
 
     onRowAdd: function (grid) {
         grid.onRowAdd(grid, {
-            MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
+            MSG_ID: 'M' + Ext.Number.randomInt(1, 1000000000)
         }, 0, function () {    // callback이 필요할 경우 구현한다.
             console.log(' 콜백처리...', arguments)
         });
@@ -26,11 +26,11 @@ Ext.define('Eui.sample.view.grid.BasicController', {
 
     onRowMod: function (grid) {
         var records = grid.getSelection();
-        if(records.length == 0){
+        if (records.length == 0) {
             Ext.Msg.alert(Util.getLocaleValue('CONFIRM'), Util.getLocaleValue('M90001'));
             return;
         }
-        if(records.length > 1){
+        if (records.length > 1) {
             Ext.Msg.alert(Util.getLocaleValue('M90002'), '한건의 로우만 선택하세요.');
             return;
         }
@@ -41,9 +41,10 @@ Ext.define('Eui.sample.view.grid.BasicController', {
     },
 
     onRowReg: function () {
-        this.getViewModel().set('messageRecord', Ext.create('Eui.sample.model.Message', {
-            MSG_ID: 'M'+Ext.Number.randomInt(1, 1000000000)
-        }));
+        var record = Ext.create('Eui.sample.model.Message', {
+            MSG_ID: 'M' + Ext.Number.randomInt(1, 1000000000)
+        })
+        this.getViewModel().set('messageRecord', record);
 
         Util.commonPopup(this.getView(), Util.getLocaleValue('M90003'), 'Eui.sample.view.grid.RecordForm', 530, 200, null, {
             modal: true
@@ -55,7 +56,7 @@ Ext.define('Eui.sample.view.grid.BasicController', {
             store.remove(records);
             store.sync({
                 success: function () {
-                    Ext.Msg.alert(Util.getLocaleValue('CONFIRM'),  Util.getLocaleValue('M90004'));
+                    Ext.Msg.alert(Util.getLocaleValue('CONFIRM'), Util.getLocaleValue('M90004'));
                 }
             });
         }, grid);
