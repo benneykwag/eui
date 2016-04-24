@@ -102,7 +102,7 @@ Ext.define('eui.grid.Panel', {
      * }
      * // 뷰컨트롤러에서 처리하려 할 경우. spgridaddrow이벤트 리스너를 구현한다.
      * listeners: {
-     *      spgridaddrow: 'myControlMethod'
+     *      rowAddBtnClick: 'myControlMethod'
      * }
      *
      * // 뷰컨트롤러의 myControlMethod
