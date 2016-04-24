@@ -75,7 +75,7 @@
     border-bottom: 1px solid #cacaca;
     background-color: #f1f6ff;
 }
-.fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/customui/grid/icon_required.png) no-repeat  5px 50%;}
+.fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/form/icon_required.png) no-repeat  5px 50%;}
 .fo-table-row-td{padding: 2px;border-right: 1px solid #cacaca;border-bottom: 1px solid #cacaca}
 
 .x-table-form-item {
