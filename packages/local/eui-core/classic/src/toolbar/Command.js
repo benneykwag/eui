@@ -16,7 +16,7 @@ Ext.define('eui.toolbar.Command', {
 
     initComponent: function () {
         var me = this,
-            owner = this.up('grid,euiform');
+            owner = this.up('grid,form');
         Ext.apply(me, {
             items: [
                 {
