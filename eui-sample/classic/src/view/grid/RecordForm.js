@@ -6,7 +6,7 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
         'eui.form.field.Text'
     ],
     hiddenHeader: true,
-    tableColumns:2,
+    tableColumns:1,
     hiddenSaveBtn: false,
     hiddenCloseBtn: false,
     margin: 5,
@@ -47,20 +47,14 @@ Ext.define('Eui.sample.view.grid.RecordForm', {
     },
     items: [
         {
-            xtype:'euilabel',
-              text: '메시지 코드'
-        },
-        {
             xtype: 'euitext',
-
+            fieldLabel:'메시지코드',
             bind : '{messageRecord.MSG_ID}'
         },
         {
-            xtype:'euilabel',
-            text: '메시지 내용'
-        },
-        {
+            fieldLabel: '메시지 내용',
             xtype: 'euitext',
+            allowBlank: false,
             bind : '{messageRecord.MSG_LABEL}'
         }
     ]
