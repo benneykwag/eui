@@ -4,7 +4,6 @@ Ext.define('eui.form.field.TextArea', {
 
     cellCls: 'fo-table-row-td',
     width: '100%',
-    hideLabel: true,
     fieldStyle: {
         display: 'inherit'
     },

@@ -17,7 +17,6 @@ Ext.define('eui.form.field.ComboBox', {
      *      재로드해야한다.
      */
     /// 기본 설정.
-    hideLabel: true,
     minChars: 1,
     editable: false,
     emptyText: '선택하세요',

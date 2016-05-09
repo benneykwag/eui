@@ -27,7 +27,6 @@ Ext.define('Eui.sample.view.form.Panel', {
             title: 'EUI 폼',
             tableColumns: 2,
             defaults: {
-                hideLabel: false,
                 allowBlank: false
             },
             items: [
@@ -51,11 +50,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                     }
                 },
                 {
-//                                        fieldStyle: 'background-color:yellow;background-image:none',
-//                    cls: 'custom',
                     allowBlank: true,
-//                    labelCls: 'td-style',
-//                    labelStyle: 'background-color:yellow;background-image:none',
                     fieldLabel: '아이디',
                     xtype: 'euitext'
                 },
