@@ -9,7 +9,7 @@ Ext.define('eui.form.CheckboxGroup', {
     width: '100%',
     initComponent: function () {
         this.setCheckboxGroupRadioGroupBindVar();
-
+        this.setAllowBlank();
         this.callParent(arguments);
     }
 });

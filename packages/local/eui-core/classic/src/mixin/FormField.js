@@ -6,6 +6,19 @@ Ext.define("eui.mixin.FormField", {
     },
 
     /**
+     * 폼필드의 allowBlank:false일 경우
+     * *를 표시하도록한다.
+     */
+    setAllowBlank: function () {
+        if(this.allowBlank!==undefined && !this.allowBlank){
+            if(!this.fieldLabel){
+                this.fieldLabel = "";
+            }
+            this.fieldLabel = '<span style="color:red">*</span>'+this.fieldLabel;
+        }
+    },
+
+    /**
      * 체크박스그룹과 라디오그룹에 바인드변수
      * 사용 편의를 위한 메소드.
      */
