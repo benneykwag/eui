@@ -4,7 +4,9 @@ Ext.define('eui.form.CheckboxGroup', {
     mixins: [
         'eui.mixin.FormField'
     ],
-
+    hideLabel: true,
+    cellCls: 'fo-table-row-td',
+    width: '100%',
     initComponent: function () {
         this.setCheckboxGroupRadioGroupBindVar();
 
