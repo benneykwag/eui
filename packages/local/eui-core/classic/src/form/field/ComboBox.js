@@ -1,6 +1,6 @@
 Ext.define('eui.form.field.ComboBox', {
     extend: 'Ext.form.field.ComboBox',
-    alias: 'widget.spcombo',
+    alias: 'widget.euicombo',
 
     requires: [
         'Util',
