@@ -407,7 +407,7 @@ Ext.define('eui.Util', {
             pCallBack = cfg.pCallback,
             pSync = cfg.pSync,
             pScope = cfg.pScope,
-            pMethod = cfg.pMethod,
+            pMethod = cfg.method,
             timeoutSeq = cfg.timeoutSeq,
             __scopeGrid = null;
 

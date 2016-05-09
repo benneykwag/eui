@@ -26,17 +26,21 @@ Ext.define("eui.mixin.FormField", {
         if(!this.getBind()){
             return;
         }
-        var bind = this.getBind(),
+
+        var me = this,
+            bind = this.getBind(),
             name = bind.value.stub.name,
             path = bind.value.stub.path,
-            recordVar = path.split('.')[1];
-
+            recordVar = path.split('.')[0];
         this.name = name;
         this.setViewModel({
             formulas: {
                 radioValue: {
                     bind: '{'+path+'}',
                     get: function (value) {
+                        if(this.get(recordVar).validate().map[name]){
+                            me.allowBlank = false;
+                        }
                         var ret = {};
                         ret[name] = value;
                         return ret;
