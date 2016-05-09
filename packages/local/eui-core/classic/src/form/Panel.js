@@ -46,7 +46,7 @@ Ext.define('eui.form.Panel', {
 
     initComponent: function () {
         var me = this;
-        me.setHeader();
+//        me.setHeader();
 //        me.setBottomToolbar();
         me.setTableLayout();
         me.callParent(arguments);
