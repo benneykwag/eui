@@ -557,8 +557,7 @@
         "classic": {
             "toolkit": "classic",
             
-            "theme": "theme-triton",
-            
+            "theme": "eui-theme",
             "sass": {
                 // "save": "classic/sass/save.scss"
             }

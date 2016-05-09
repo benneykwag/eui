@@ -9,6 +9,8 @@ Ext.application({
 
     extend: 'Eui.sample.Application',
     requires: [
+        'Eui.sample.view.grid.Basic',
+        'Eui.sample.view.form.Panel',
         'Eui.sample.view.main.Main'
     ],
     init: function () {

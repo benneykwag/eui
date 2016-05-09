@@ -16,7 +16,7 @@ Ext.define('Eui.sample.view.LeftMenu', {
                 text: "Form",
                 expanded: true,
                 children: [
-                    { text: 'Combo', leaf: true, pgmClass: 'Eui.sample.view.form.Combo', pgmAlias: 'sample-combo'}
+                    { text: 'FormPanel', leaf: true, pgmClass: 'Eui.sample.view.form.Panel', pgmAlias: 'sample-form'}
                 ]
             }
         ]
