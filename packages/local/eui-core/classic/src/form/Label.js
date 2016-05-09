@@ -12,14 +12,5 @@ Ext.define('eui.form.Label', {
             });
         }
         me.callParent(arguments);
-
-        /***
-         * form 내부에서 사용시 대상 폼필드 allowBlank설정.
-         */
-        me.on('afterrender', function(){
-            if(me.nextSibling() && me.nextSibling().isFormField ){
-                me.nextSibling().allowBlank = me.allowBlank;
-            }
-        });
     }
 });
