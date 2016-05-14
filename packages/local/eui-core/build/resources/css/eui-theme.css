@@ -75,14 +75,23 @@
     border-bottom: 1px solid #cacaca;
     background-color: #f1f6ff;
 }
-.fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/customui/grid/icon_required.png) no-repeat  5px 50%;}
-.fo-table-row-td{padding: 2px;border-right: 1px solid #cacaca;border-bottom: 1px solid #cacaca}
+.fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/form/icon_required.png) no-repeat  5px 50%;}
+.fo-table-row-td{
+    padding: 2px;
+    border-right: 1px solid #cacaca;
+    border-bottom: 1px solid #cacaca;
+    background-color: #f1f6ff;
+}
+
+.fo-table-row-td-noneborder{
+    padding: 2px 5px 2px 12px;
+}
 
 .x-table-form-item {
     margin-bottom: 0px;
 }
 
-.x-noborder-trbl {
+.fo-panel-table .x-noborder-trbl {
     border-width: 1px !important;
 }
 
@@ -91,7 +100,22 @@
     border-width: 1px 1px 1px !important;
 }
 /*필수 입력 필드에 대한 백그라운드.*/
-.x-form-text-wrap-invalid .x-form-text-default{
+.fo-panel-table .x-form-text-wrap-invalid .x-form-text-default{
     background-color: #ddb9d1;
     background-image: none;
+}
+
+.fo-panel-table .x-form-item-label-inner {
+    display: inline-block;
+    padding-left: 5px;
+}
+
+.fo-panel-table .x-form-checkboxgroup-body.x-form-item-body-default {
+    /*min-height: 32px;*/
+    /*border-left: 1px solid #cacaca;*/
+    /*border-top: 1px solid #cacaca;*/
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #d0d0d0;
 }

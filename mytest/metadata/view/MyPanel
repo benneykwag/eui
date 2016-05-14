@@ -1,0 +1,35 @@
+{
+    "type": "Ext.panel.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userAlias": "mypanel",
+        "designer|userClassName": "MyPanel",
+        "height": 250,
+        "title": "My Panel",
+        "width": 400
+    },
+    "name": "MyPanel",
+    "designerId": "ddd4b694-238e-44bd-b9b5-56abf1d43e47",
+    "viewControllerInstanceId": "ce651ed5-0255-46ef-9752-f615ef425d41",
+    "viewModelInstanceId": "86124ec3-8bed-4adf-b551-e2855ac6a575",
+    "cn": [
+        {
+            "type": "eui.button.Button",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "text": "MyButton"
+            },
+            "name": "eui button",
+            "designerId": "8fd2381b-c6a2-48d8-84eb-23255edb0544"
+        }
+    ]
+}

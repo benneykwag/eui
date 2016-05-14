@@ -2,13 +2,17 @@ Ext.define('Eui.sample.view.form.Panel', {
     extend: 'Ext.panel.Panel',
     xtype: 'sample-form',
     title: 'EUI 사용하기',
+
     requires: [
+        'Eui.sample.view.form.Controller',
         'eui.form.field.ComboBox',
         'eui.form.field.Date',
         'eui.form.CheckboxGroup',
         'eui.form.RadioGroup',
         'eui.form.field.Text'
     ],
+
+    controller: 'sample-form',
     viewModel: {},
     defaults: {
         margin: 5

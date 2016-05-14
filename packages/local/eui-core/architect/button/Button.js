@@ -1,13 +1,13 @@
 {
-    "classAlias": "widget.spbutton",
-    "className": "sprr.button.Button",
+    "classAlias": "widget.euibutton",
+    "className": "eui.button.Button",
     "inherits": "Ext.button.Button",
-    "autoName": "sprr button",
-    "helpText": "sprr button text",
+    "autoName": "eui button",
+    "helpText": "eui button text",
 
     "toolbox": {
-    "name": "SPButton",
-        "category": "Sprr Forms Fields",
-        "groups": ["Sprr"]
+    "name": "EUIButton",
+        "category": "EUI Forms Fields",
+        "groups": ["EUI"]
 }
 }

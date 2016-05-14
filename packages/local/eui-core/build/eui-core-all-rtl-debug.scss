@@ -848,7 +848,12 @@ $include-ext-window-messagebox: dynamic(false);;
 $include-ext-window-toast: dynamic(false);;
 $include-ext-window-window: dynamic(false);;
 $include-override-component: dynamic(true);;
+$include-override-container-container: dynamic(true);;
+$include-override-data-model: dynamic(true);;
+$include-override-data-proxystore: dynamic(true);;
+$include-override-form-field-base: dynamic(true);;
 $include-override-grid-column-column: dynamic(true);;
+$include-override-panel-panel: dynamic(true);;
 $include-override-window-window: dynamic(true);;
 $include-util: dynamic(true);;
 $include-eui-config: dynamic(true);;
@@ -859,9 +864,11 @@ $include-eui-container-basecontainer: dynamic(true);;
 $include-eui-container-popupcontainer: dynamic(true);;
 $include-eui-controller-initcontroller: dynamic(true);;
 $include-eui-data-directstore: dynamic(true);;
+$include-eui-form-checkboxgroup: dynamic(true);;
 $include-eui-form-fieldcontainer: dynamic(true);;
 $include-eui-form-label: dynamic(true);;
 $include-eui-form-panel: dynamic(true);;
+$include-eui-form-radiogroup: dynamic(true);;
 $include-eui-form-field-checkbox: dynamic(true);;
 $include-eui-form-field-combobox: dynamic(true);;
 $include-eui-form-field-comboboxcontroller: dynamic(true);;
@@ -892,10 +899,12 @@ $include-eui-mvvm-gridrenderer: dynamic(true);;
 $include-eui-mvvm-gridviewcontroller: dynamic(true);;
 $include-eui-mvvm-hviewmodel: dynamic(true);;
 $include-eui-mvvm-viewcontroller: dynamic(true);;
+$include-eui-panel-panel: dynamic(true);;
 $include-eui-store-localestore: dynamic(true);;
 $include-eui-toolbar-command: dynamic(true);;
 $include-eui-ux-popup-defaultpopup: dynamic(true);;
 $include-eui-window-notification: dynamic(true);;
+$include-sprr-dummyclass: dynamic(true);;
 
 
 /* ======================== ETC ======================== */

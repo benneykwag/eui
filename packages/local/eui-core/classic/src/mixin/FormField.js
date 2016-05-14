@@ -38,7 +38,8 @@ Ext.define("eui.mixin.FormField", {
                 radioValue: {
                     bind: '{'+path+'}',
                     get: function (value) {
-                        if(this.get(recordVar).validate().map[name]){
+                        var model = this.get(recordVar);
+                        if(model.isModel && this.get(recordVar).validate().map[name]){
                             me.allowBlank = false;
                         }
                         var ret = {};

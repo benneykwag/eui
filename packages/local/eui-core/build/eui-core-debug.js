@@ -15,7 +15,7 @@ Ext.define('Override.Component', {
     initComponent: function() {
         this.doLocale();
         //        console.log('i18n: ', Ext.getStore('i18n'))
-        this.callParent();
+        this.callParent(arguments);
     },
     /**
      * @private
@@ -95,11 +95,170 @@ Ext.define('Override.Component', {
     }
 });
 
+Ext.define('Override.data.Model', {
+    override: 'Ext.data.Model',
+    /***
+     * 모델 validation 처리 후 메시지 호출.
+     * @returns {boolean}
+     */
+    recordValidationCheck: function() {
+        if (!this.isValid()) {
+            var validation = this.getValidation(),
+                modified = validation.modified;
+            for (var test in modified) {
+                var value = modified[test];
+                if (value) {
+                    if (!Ext.isBoolean(validation.get(test))) {
+                        Ext.Msg.alert('확인', validation.get(test));
+                    }
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+});
+
+Ext.define('Override.data.ProxyStore', {
+    override: 'Ext.data.ProxyStore',
+    /***
+     * 모델 validat가 false인 경우 메시지를 호출해 알린다.
+     */
+    recordsValidationCheck: function() {
+        var source = this.getDataSource(),
+            items = source.items,
+            len = items.length,
+            i,
+            retValue = true;
+        for (i = 0; i < len; i++) {
+            if (!items[i].recordValidationCheck()) {
+                retValue = false;
+                break;
+            }
+        }
+        return retValue;
+    },
+    /***
+     * sync전에 레코드를 미리 확인한다.
+     * @param option
+     * @returns {*}
+     */
+    checkSync: function(option) {
+        if (this.recordsValidationCheck()) {
+            this.sync(option);
+            // this.needsSync
+            if (!this.isSyncing) {
+                Ext.Msg.alert('확인', '저장 할 레코드가 없습니다.');
+            }
+        }
+        return this;
+    }
+});
+
+Ext.define('Override.container.Container', {
+    override: 'Ext.container.Container'
+});
+
+Ext.define('Override.panel.Panel', {
+    override: 'Ext.panel.Panel',
+    localeProperties: [
+        'title'
+    ]
+});
+
 Ext.define('Override.window.Window', {
     override: 'Ext.window.Window',
     localeProperties: [
         'title'
-    ]
+    ],
+    initComponent: function() {
+        this.callParent(arguments);
+    }
+});
+
+Ext.define("eui.mixin.FormField", {
+    extend: 'Ext.Mixin',
+    mixinConfig: {},
+    /**
+     * 폼필드의 allowBlank:false일 경우
+     * *를 표시하도록한다.
+     */
+    setAllowBlank: function() {
+        if (this.allowBlank !== undefined && !this.allowBlank) {
+            if (!this.fieldLabel) {
+                this.fieldLabel = "";
+            }
+            this.fieldLabel = '<span style="color:red">*</span>' + this.fieldLabel;
+        }
+    },
+    /**
+     * 체크박스그룹과 라디오그룹에 바인드변수
+     * 사용 편의를 위한 메소드.
+     */
+    setCheckboxGroupRadioGroupBindVar: function() {
+        if (!this.getBind()) {
+            return;
+        }
+        var me = this,
+            bind = this.getBind(),
+            name = bind.value.stub.name,
+            path = bind.value.stub.path,
+            recordVar = path.split('.')[0];
+        this.name = name;
+        this.setViewModel({
+            formulas: {
+                radioValue: {
+                    bind: '{' + path + '}',
+                    get: function(value) {
+                        if (this.get(recordVar).validate().map[name]) {
+                            me.allowBlank = false;
+                        }
+                        var ret = {};
+                        ret[name] = value;
+                        return ret;
+                    },
+                    set: function(value) {
+                        this.set(path, value[name]);
+                    }
+                }
+            }
+        });
+        this.setBind({
+            value: '{radioValue}'
+        });
+    },
+    /***
+     * numberfield 등 폼필드
+     * bind설정에 경우 클래스 내부 기본값을 지워버리는 현상
+     * 을 해결하기 위함.
+     * @param value
+     */
+    setCustomDefaultValue: function(field) {
+        if (!field.getBind()) {
+            return;
+        }
+        var me = this,
+            viewModelVar = field.getBind().value.stub.path;
+        if (field.getBind() && field.getBind()['value'] && (field.getBind().value.stub.hadValue == undefined)) {
+            me.getViewModel().set(viewModelVar, field.getValue());
+        }
+    }
+});
+
+Ext.define('Override.form.field.Base', {
+    override: 'Ext.form.field.Base',
+    mixins: [
+        'eui.mixin.FormField'
+    ],
+    initComponent: function() {
+        this.setAllowBlank();
+        this.callParent(arguments);
+        this.on('render', function() {
+            if (this.previousSibling() && this.previousSibling().xtype == 'euilabel' && !this.allowBlank) {
+                this.previousSibling().addCls('fo-required');
+            }
+        });
+    }
 });
 
 Ext.define('Override.grid.column.Column', {
@@ -144,6 +303,7 @@ Ext.define('eui.Config', {
                 storeId: 'i18n'
             });
         var cfg = {
+                pMethod: 'GET',
                 url: Config.localeUrl,
                 params: {
                     locale: Config.localeCode
@@ -234,37 +394,7 @@ Ext.define('eui.Config', {
     }
 });
 
-Ext.define('eui.button.Button', {
-    extend: 'Ext.button.Button',
-    xtype: 'spbutton',
-    //    text: 'SpButton',
-    //    ui: 'basicbtn',
-    localeProperties: [
-        'text',
-        'iconCls'
-    ],
-    margin: '0 5 2 0',
-    initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
-    }
-});
-
-Ext.define('eui.button.Button', {
-    extend: 'Ext.button.Button',
-    xtype: 'spbutton',
-    //    text: 'SpButton',
-    //    ui: 'basicbtn',
-    localeProperties: [
-        'text',
-        'iconCls'
-    ],
-    margin: '0 5 2 0',
-    initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
-    }
-});
+Ext.define('sprr.DummyClass', {});
 
 Ext.define('eui.DummyClass', {});
 
@@ -581,7 +711,24 @@ Ext.define('eui.Util', {
         //        var baseComponent = ownerCt.up('FMS010106V') || ownerCt.up('FMS010106V');
         //        console.log('baseC', baseComponent)
         if (ownerCt && addParentMvvm) {
-            return ownerCt.add(Ext.create('Ext.window.Window', config));
+            var commandtoolbar = ownerCt.down('commandtoolbar'),
+                pagingtoolbar = ownerCt.down('pagingtoolbar'),
+                window = Ext.create('Ext.window.Window', config);
+            /*if(commandtoolbar){
+                commandtoolbar.setDisabled(true);
+            }
+            if(pagingtoolbar){
+                pagingtoolbar.setDisabled(true);
+            }
+            window.addListener('close', function () {
+                if(commandtoolbar){
+                    commandtoolbar.setDisabled(false);
+                }
+                if(pagingtoolbar){
+                    pagingtoolbar.setDisabled(false);
+                }
+            });*/
+            return ownerCt.add(window);
         }
         return Ext.create('Ext.window.Window', config);
     },
@@ -639,6 +786,7 @@ Ext.define('eui.Util', {
             pCallBack = cfg.pCallback,
             pSync = cfg.pSync,
             pScope = cfg.pScope,
+            pMethod = cfg.method,
             timeoutSeq = cfg.timeoutSeq,
             __scopeGrid = null;
         if (pArg) {
@@ -686,7 +834,7 @@ Ext.define('eui.Util', {
         var rtnData = "";
         var options = {
                 async: pSync,
-                method: 'POST',
+                method: (pMethod ? pMethod : 'GET'),
                 timeout: timeoutSeq,
                 disableCaching: false,
                 url: pURL,
@@ -888,7 +1036,7 @@ Ext.define('eui.Util', {
         var store = Ext.getStore('i18n');
         var record = id && store.findRecord('MSG_ID', MSG_ID, 0, false, false, true);
         if (record) {
-            return record.get('MSG_CONTENTS');
+            return record.get('MSG_LABEL');
         }
         return '';
     },
@@ -910,15 +1058,15 @@ Ext.define('eui.Util', {
         Ext.getDoc().on("contextmenu", function(ev) {
             ev.preventDefault();
         });
-        Ext.direct.Manager.addProvider({
-            id: 'euiprovider',
-            url: Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
-            type: 'remoting',
-            enableBuffer: true,
-            maxRetries: 0,
-            actions: {}
-        });
     },
+    //    	Ext.direct.Manager.addProvider({
+    //    		id: 'euiprovider',
+    //    	    url: Ext.util.Format.format('/{0}/{1}/', this.getContextPath(), this.getBaseUrl()),
+    //    	    type: 'remoting',
+    //    	    enableBuffer:true,
+    //    	    maxRetries: 0,
+    //    	    actions: {}
+    //    	});
     sessionValidation: function() {
         //TODO
         var option = {
@@ -976,6 +1124,28 @@ Ext.define('eui.Util', {
     }
 });
 //=================== add end ========================================//
+
+Ext.define('eui.button.Button', {
+    extend: 'Ext.button.Button',
+    xtype: 'euibutton',
+    //    text: 'SpButton',
+    //    ui: 'basicbtn',
+    config: {
+        showText: true
+    },
+    localeProperties: [
+        'text',
+        'iconCls'
+    ],
+    margin: '0 5 2 0',
+    initComponent: function() {
+        var me = this;
+        if (!me.getShowText()) {
+            delete me.text;
+        }
+        me.callParent(arguments);
+    }
+});
 
 /***
  * 이 컨테이너는 프로그램(각 모듈)의 최상단에 위치해 프로그램을
@@ -1240,6 +1410,21 @@ Ext.define('eui.store.LocaleStore', {
 
     }*/
 
+Ext.define('eui.form.CheckboxGroup', {
+    extend: 'Ext.form.CheckboxGroup',
+    xtype: 'euicheckboxgroup',
+    mixins: [
+        'eui.mixin.FormField'
+    ],
+    cellCls: 'fo-table-row-td',
+    width: '100%',
+    initComponent: function() {
+        this.setCheckboxGroupRadioGroupBindVar();
+        this.setAllowBlank();
+        this.callParent(arguments);
+    }
+});
+
 Ext.define('eui.form.FieldContainer', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.spfieldcontainer',
@@ -1263,7 +1448,16 @@ Ext.define('eui.form.Label', {
     localeProperties: [
         'html',
         'text'
-    ]
+    ],
+    initComponent: function() {
+        var me = this;
+        if (me.allowBlank === false) {
+            Ext.apply(me, {
+                cls: 'fo-required'
+            });
+        }
+        me.callParent(arguments);
+    }
 });
 
 /***
@@ -1325,7 +1519,7 @@ Ext.define("eui.mixin.Panel", {
 
 Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.spform',
+    alias: 'widget.euiform',
     localeProperties: [
         'title'
     ],
@@ -1370,19 +1564,21 @@ Ext.define('eui.form.Panel', {
     },
     initComponent: function() {
         var me = this;
-        me.setHeader();
-        me.setBottomToolbar();
+        //        me.setHeader();
+        //        me.setBottomToolbar();
         me.setTableLayout();
         me.callParent(arguments);
         me.on('afterrender', function() {
-            this.isValid();
+            me.isValid();
+        }, me, {
+            delay: 500
         });
     },
     setBottomToolbar: function() {
         var me = this;
         var buttons = [
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     formBind: true,
                     disabled: true,
                     code: 'search',
@@ -1398,22 +1594,11 @@ Ext.define('eui.form.Panel', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
-                    //                formBind: true,
-                    disabled: true,
-                    //                hidden: true,
-                    //                bind: {
-                    //                    disabled: '{!messageRecord}'
-                    //                },
-                    //                bind: {
-                    //                    disabled: '{a.c}'
-                    //                },
-                    bind: {
-                        disabled: '{!status.dirtyAndValid}'
-                    },
+                    xtype: 'euibutton',
+                    formBind: true,
                     code: 'save',
                     iconCls: 'x-fa fa-save',
-                    text: '저장2',
+                    text: '저장',
                     hidden: me.getHiddenSaveBtn(),
                     listeners: {
                         click: {
@@ -1424,7 +1609,7 @@ Ext.define('eui.form.Panel', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     formBind: true,
                     disabled: true,
                     code: 'delete',
@@ -1440,7 +1625,7 @@ Ext.define('eui.form.Panel', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     code: 'delete',
                     text: '닫기',
                     iconCls: 'x-fa fa-sign-out',
@@ -1457,7 +1642,7 @@ Ext.define('eui.form.Panel', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     code: 'delete',
                     text: '출력',
                     iconCls: 'x-fa fa-print',
@@ -1474,7 +1659,7 @@ Ext.define('eui.form.Panel', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     code: 'clear',
                     text: '취소',
                     iconCls: 'x-fa fa-retweet',
@@ -1516,13 +1701,13 @@ Ext.define('eui.form.Panel', {
                 hidden: me.getHiddenHeader(),
                 items: [
                     {
-                        xtype: 'spbutton',
+                        xtype: 'euibutton',
                         iconCls: 'x-fa fa-print'
                     },
                     //                    text: '프린트',
                     //                    hidden: me.getHiddenHeaderPrintBtn()
                     {
-                        xtype: 'spbutton',
+                        xtype: 'euibutton',
                         iconCls: 'x-fa fa-sign-out',
                         //                    hidden: me.getHiddenHeaderClearBtn(),
                         listeners: {
@@ -1544,6 +1729,21 @@ Ext.define('eui.form.Panel', {
         Ext.apply(me, {
             header: header
         });
+    }
+});
+
+Ext.define('eui.form.RadioGroup', {
+    extend: 'Ext.form.RadioGroup',
+    xtype: 'euiradiogroup',
+    mixins: [
+        'eui.mixin.FormField'
+    ],
+    cellCls: 'fo-table-row-td',
+    width: '100%',
+    initComponent: function() {
+        this.setCheckboxGroupRadioGroupBindVar();
+        this.setAllowBlank();
+        this.callParent(arguments);
     }
 });
 
@@ -1884,7 +2084,7 @@ Ext.define('eui.form.field.ComboBoxController', {
 
 Ext.define('eui.form.field.ComboBox', {
     extend: 'Ext.form.field.ComboBox',
-    alias: 'widget.spcombo',
+    alias: 'widget.euicombo',
     requires: [
         'Util',
         "eui.form.field.ComboBoxController"
@@ -1900,7 +2100,6 @@ Ext.define('eui.form.field.ComboBox', {
      *      재로드해야한다.
      */
     /// 기본 설정.
-    hideLabel: true,
     minChars: 1,
     editable: false,
     emptyText: '선택하세요',
@@ -3034,9 +3233,8 @@ Ext.define('eui.form.field.ComboBox_today', {
 
 Ext.define('eui.form.field.Date', {
     extend: 'Ext.form.field.Date',
-    alias: 'widget.spdate',
+    alias: 'widget.euidate',
     submitFormat: 'Ymd',
-    hideLabel: true,
     format: 'Y.m.d',
     altFormats: 'Ymd',
     value: new Date(),
@@ -3856,7 +4054,7 @@ Ext.define('eui.form.field.PopupTriggerSet', {
                     width: '40%',
                     readOnly: true,
                     bind: me.bindVar.NM,
-                    xtype: 'sptext'
+                    xtype: 'euitext'
                 }
             ]
         });
@@ -3934,7 +4132,7 @@ Ext.define('eui.form.field.PopupTriggerSet2', {
                     width: '60%',
                     readOnly: true,
                     bind: me.bindVar.NM,
-                    xtype: 'sptextfield'
+                    xtype: 'euitext'
                 }
             ]
         });
@@ -3960,13 +4158,8 @@ Ext.define('eui.form.field.Text', {
     alias: 'widget.euitext',
     cellCls: 'fo-table-row-td',
     width: '100%',
-    hideLabel: true,
     fieldStyle: {
         display: 'inherit'
-    },
-    initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
     }
 });
 
@@ -3975,7 +4168,6 @@ Ext.define('eui.form.field.TextArea', {
     alias: 'widget.sptextarea',
     cellCls: 'fo-table-row-td',
     width: '100%',
-    hideLabel: true,
     fieldStyle: {
         display: 'inherit'
     },
@@ -4110,7 +4302,7 @@ Ext.define('eui.form.field.TriggerCombo', {
 
 Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
-    alias: 'widget.spgrid',
+    alias: 'widget.euigrid',
     columnLines: true,
     //    ui: 'basicgrid',
     localeProperties: [
@@ -4196,7 +4388,7 @@ Ext.define('eui.grid.Panel', {
      * }
      * // 뷰컨트롤러에서 처리하려 할 경우. spgridaddrow이벤트 리스너를 구현한다.
      * listeners: {
-     *      spgridaddrow: 'myControlMethod'
+     *      rowAddBtnClick: 'myControlMethod'
      * }
      *
      * // 뷰컨트롤러의 myControlMethod
@@ -4280,7 +4472,7 @@ Ext.define('eui.grid.Panel', {
             }
         });
     },
-    onRowSave: function(grid) {
+    onSave: function(grid) {
         var me = this;
         me.store.sync();
     },
@@ -4478,27 +4670,6 @@ Ext.define("eui.mixin.BaseContainer", {
     extend: 'Ext.Mixin',
     mixinConfig: {},
     config: {}
-});
-
-Ext.define("eui.mixin.FormField", {
-    extend: 'Ext.Mixin',
-    mixinConfig: {},
-    /***
-     * numberfield 등 폼필드
-     * bind설정에 경우 클래스 내부 기본값을 지워버리는 현상
-     * 을 해결하기 위함.
-     * @param value
-     */
-    setCustomDefaultValue: function(field) {
-        if (!field.getBind()) {
-            return;
-        }
-        var me = this,
-            viewModelVar = field.getBind().value.stub.path;
-        if (field.getBind() && field.getBind()['value'] && (field.getBind().value.stub.hadValue == undefined)) {
-            me.getViewModel().set(viewModelVar, field.getValue());
-        }
-    }
 });
 
 Ext.define("eui.mvvm.GridViewController", {
@@ -4767,34 +4938,44 @@ Ext.define('eui.mvvm.ViewController', {
     }
 });
 
+Ext.define('eui.panel.Panel', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.euipanel'
+});
+//    ui : 'highlight'
+
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',
     ui: 'plain',
     config: {
+        showText: true,
         showRowAddBtn: false,
         showRowDelBtn: false,
-        showRowRegBtn: false,
-        showRowModBtn: false,
-        showRowSaveBtn: false
+        showRegBtn: false,
+        showReloadBtn: false,
+        showModBtn: false,
+        showSaveBtn: false,
+        showCloseBtn: false
     },
     initComponent: function() {
         var me = this,
-            grid = this.up('grid');
+            owner = this.up('grid,form');
         Ext.apply(me, {
             items: [
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{행추가}',
                     iconCls: '#{행추가아이콘}',
                     scope: me,
+                    showText: me.getShowText(),
                     hidden: !me.getShowRowAddBtn(),
                     listeners: {
                         click: function() {
-                            if (grid.hasListeners['rowadd'.toLowerCase()]) {
-                                grid.fireEvent('rowadd', grid);
+                            if (owner.hasListeners['rowAddBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('rowAddBtnClick', owner);
                             } else {
-                                grid.onRowAdd(grid, {
+                                owner.onRowAdd(owner, {
                                     randomInt: Ext.Number.randomInt(1, 1.0E12)
                                 }, 0, null);
                             }
@@ -4802,69 +4983,88 @@ Ext.define('eui.toolbar.Command', {
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     iconCls: '#{행삭제아이콘}',
                     text: '#{행삭제}',
                     scope: me,
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function() {
-                            if (grid.hasListeners['rowdelete'.toLowerCase()]) {
-                                grid.fireEvent('rowdelete', grid);
+                            if (owner.hasListeners['rowDeleteBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('rowDeleteBtnClick', owner);
                             } else {
-                                grid.onRowDelete(grid, null, grid);
+                                owner.onRowDelete(owner, null, owner);
                             }
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{등록}',
                     iconCls: '#{등록아이콘}',
-                    hidden: !me.getShowRowRegBtn(),
+                    hidden: !me.getShowRegBtn(),
                     listeners: {
                         click: function() {
-                            grid.fireEvent('rowreg', grid);
+                            owner.fireEvent('regBtnClick', owner);
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{수정}',
                     iconCls: '#{수정아이콘}',
-                    hidden: !me.getShowRowModBtn(),
+                    hidden: !me.getShowModBtn(),
                     listeners: {
                         click: function() {
-                            me.fireEvent('SPGridRowMod', me);
+                            owner.fireEvent('modBtnClick', owner);
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{저장}',
+                    formBind: true,
                     iconCls: '#{저장아이콘}',
-                    hidden: !me.getShowRowSaveBtn(),
+                    hidden: !me.getShowSaveBtn(),
                     listeners: {
                         click: function() {
-                            if (grid.hasListeners['rowsave'.toLowerCase()]) {
-                                grid.fireEvent('rowsave', grid);
+                            if (owner.hasListeners['saveBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('saveBtnClick', owner);
                             } else {
-                                grid.onRowSave(grid);
+                                owner.onSave(owner);
                             }
                         }
                     }
                 },
                 {
-                    xtype: 'spbutton',
+                    xtype: 'euibutton',
                     text: '#{조회}',
                     iconCls: '#{저장아이콘}',
-                    hidden: !me.getShowRowSaveBtn(),
+                    hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function() {
-                            if (grid.hasListeners['reload'.toLowerCase()]) {
-                                grid.fireEvent('reload', grid);
+                            if (owner.hasListeners['reloadBtnClick'.toLowerCase()]) {
+                                owner.fireEvent('reloadBtnClick', owner);
                             } else {
-                                grid.onReload();
+                                owner.onReload();
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: 'euibutton',
+                    text: '#{닫기}',
+                    iconCls: 'x-fa fa-sign-out',
+                    hidden: !me.getShowCloseBtn(),
+                    listeners: {
+                        click: function() {
+                            var window = Util.getOwnerCt(this);
+                            if (Util.getOwnerCt(this).xtype === 'window') {
+                                window.close();
+                            } else {
+                                Ext.Error.raise({
+                                    msg: '닫기 버튼은 팝업에서만 사용가능합니다.'
+                                });
                             }
                         }
                     }
