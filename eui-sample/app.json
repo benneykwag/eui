@@ -271,9 +271,6 @@
             "path": "${build.out.css.path}",
             "bundle": true,
             "exclude": ["fashion"]
-        },
-        {
-            "path":"../packages/local/eui-core/resources/css/eui-theme.css"
         }
     ],
 

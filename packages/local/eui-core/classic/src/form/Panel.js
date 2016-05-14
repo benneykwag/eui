@@ -22,7 +22,7 @@ Ext.define('eui.form.Panel', {
         'eui.mixin.Panel'
     ],
 
-    cls: 'fo-panel-table',
+    cls: 'eui-form-table',
     collapsed: false,
     collapsible: false,
     modelValidation: true,
