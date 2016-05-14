@@ -106,15 +106,18 @@ Ext.define('Eui.sample.view.form.Panel', {
                     columns: 6,
                     vertical: true,
                     bind: {
-                        value: '{regMember.rb}'
+                        value: '{regMember.job}'
+                    },
+                    defaults: {
+                        name: 'job'
                     },
                     items: [
-                        { boxLabel: 'Item 1', name: 'rb', inputValue: '1' },
-                        { boxLabel: 'Item 2', name: 'rb', inputValue: '2'},
-                        { boxLabel: 'Item 3', name: 'rb', inputValue: '3' },
-                        { boxLabel: 'Item 4', name: 'rb', inputValue: '4' },
-                        { boxLabel: 'Item 5', name: 'rb', inputValue: '5' },
-                        { boxLabel: 'Item 6', name: 'rb', inputValue: '6' }
+                        { boxLabel: 'Item 1', inputValue: 'A1' },
+                        { boxLabel: 'Item 2', inputValue: 'A2'},
+                        { boxLabel: 'Item 3', inputValue: 'A3' },
+                        { boxLabel: 'Item 4', inputValue: 'A4' },
+                        { boxLabel: 'Item 5', inputValue: 'A5' },
+                        { boxLabel: 'Item 6', inputValue: 'A6' }
                     ]
                 },
                 {

@@ -13,10 +13,11 @@ Ext.define('Eui.sample.view.form.Controller', {
 
     setRecord: function () {
         this.getViewModel().set('regMember', Ext.create('Eui.sample.model.Base', {
-            memberFlag: 'S',
+            memberFlag: 'N',
+            userId: '홍길동',
             gender: 'F',
-            job: ['1','4'],
-            company : 'CCMP'
+            job: ['A1', 'A3'],
+            company: 'CCMP'
         }));
     },
 
@@ -30,9 +31,9 @@ Ext.define('Eui.sample.view.form.Controller', {
                 param: data
             },
             pCallback: function (v, params, result) {
-                if(result.success){
+                if (result.success) {
                     Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
-                }else{
+                } else {
                     Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
                 }
             }
