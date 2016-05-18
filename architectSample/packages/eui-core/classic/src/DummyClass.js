@@ -1,0 +1,2 @@
+Ext.define('eui.DummyClass', {
+});

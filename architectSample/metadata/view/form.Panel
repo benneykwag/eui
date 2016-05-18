@@ -1,0 +1,133 @@
+{
+    "type": "Ext.panel.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "container|align": "stretch",
+        "defaults": [
+            "{",
+            "margin: 5",
+            "}"
+        ],
+        "designer|userAlias": "sampleform",
+        "designer|userClassName": "form.Panel",
+        "height": null,
+        "layout": "hbox",
+        "title": "EUI 사용하기",
+        "width": null
+    },
+    "name": "MyPanel",
+    "designerId": "1d8c49bb-8766-4e04-8729-3fda2545e456",
+    "viewControllerInstanceId": "22f93700-0483-4f97-b40f-24cc52ba46ec",
+    "viewModelInstanceId": "006f0c73-35f2-428c-955e-6d70c41016ec",
+    "cn": [
+        {
+            "type": "eui.form.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "bodyPadding": null,
+                "defaults": [
+                    "{",
+                    "allowBlank: false",
+                    "}"
+                ],
+                "designer|uiInterfaceName": "default-framed",
+                "frame": true,
+                "layout|flex": 1,
+                "tableColumns": 2,
+                "title": "EUI 폼"
+            },
+            "name": "Form_Panel1",
+            "designerId": "06e4cd0e-7390-42c7-af4f-354ee95e4ab5",
+            "cn": [
+                {
+                    "type": "eui.form.RadioGroup",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "회원구분",
+                        "value": [
+                            "{regMember.memberFlag}"
+                        ]
+                    },
+                    "name": "MyRadioGorup",
+                    "configAlternates": {
+                        "value": "binding"
+                    },
+                    "designerId": "64e04509-d3c3-4b8b-91eb-769acdf82c68",
+                    "cn": [
+                        {
+                            "type": "Ext.form.field.Radio",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "boxLabel": "일반",
+                                "checked": true,
+                                "fieldLabel": null,
+                                "inputValue": "N",
+                                "name": null
+                            },
+                            "name": "MyRadio",
+                            "designerId": "6ca550c1-7c96-4224-9db0-cbfaf4268a34"
+                        },
+                        {
+                            "type": "Ext.form.field.Radio",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "boxLabel": "관리자",
+                                "fieldLabel": null
+                            },
+                            "name": "MyRadio1",
+                            "designerId": "452feb82-51ae-4dbe-8b79-2cc370cac719"
+                        }
+                    ]
+                },
+                {
+                    "type": "eui.form.field.Text",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "아이디",
+                        "layout|anchor": null
+                    },
+                    "name": "Form_text",
+                    "designerId": "51544dbe-995b-40d2-a4ee-d7231988b4ed"
+                },
+                {
+                    "type": "eui.form.field.Text",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "비밀번호",
+                        "layout|anchor": null
+                    },
+                    "name": "Form_text1",
+                    "designerId": "3a8fcbc5-3d69-4d28-bed7-4495e539e734"
+                }
+            ]
+        }
+    ]
+}

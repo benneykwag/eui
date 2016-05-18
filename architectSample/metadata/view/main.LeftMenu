@@ -1,0 +1,107 @@
+{
+    "type": "Ext.tree.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "defaultListenerScope": true,
+        "designer|userAlias": "leftmenu",
+        "designer|userClassName": "main.LeftMenu",
+        "root": [
+            " {",
+            "        expanded: true,",
+            "        children: [",
+            "            {",
+            "                text: \"Grid\",",
+            "                expanded: true,",
+            "                children: [",
+            "                    { text: 'Basic Grid', leaf: true, pgmClass: 'euisa.view.grid.Basic', pgmAlias: 'samplebasicgrid'}",
+            "                ]",
+            "            },",
+            "            {",
+            "                text: \"Form\",",
+            "                expanded: true,",
+            "                children: [",
+            "                    { text: 'FormPanel', leaf: true, pgmClass: 'euisa.view.form.Panel', pgmAlias: 'sampleform'}",
+            "                ]",
+            "            }",
+            "        ]",
+            "    }"
+        ],
+        "rootVisible": false,
+        "title": "My Tree Panel",
+        "width": 150
+    },
+    "name": "MyTreePanel",
+    "designerId": "6c788bb7-876a-4e65-83f1-86bc9ad99413",
+    "viewControllerInstanceId": "a3f2789f-6d49-4e45-b4a5-b96f128f1a80",
+    "viewModelInstanceId": "8a16f3db-6194-4aa1-a898-2ef8e6086bf7",
+    "cn": [
+        {
+            "type": "Ext.tree.View",
+            "reference": {
+                "name": "viewConfig",
+                "type": "object"
+            },
+            "codeClass": null,
+            "name": "MyTreeView",
+            "designerId": "6b582347-2b6a-4d28-862e-3e66c8bc67e7"
+        },
+        {
+            "type": "basiceventbinding",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "onTreepanelItemClick",
+                "implHandler": [
+                    "if (record.get('leaf') === true) {",
+                    "    var mainTabObj = Ext.ComponentQuery.query('#maintab');",
+                    "",
+                    "",
+                    "    // var centerpanel = this.AccountMain().down('maintab');",
+                    "    var pgm = {",
+                    "        pgmClass: 'Ext.panel.Panel',",
+                    "        pgmAlias: 'panel'",
+                    "    };",
+                    "    if (record.get('pgmClass')) {",
+                    "        pgm = {",
+                    "            pgmClass: record.get('pgmClass'),",
+                    "            pgmAlias: record.get('pgmAlias')",
+                    "        };",
+                    "    }",
+                    "",
+                    "    var tab = mainTabObj[0].down('[itemId=' + pgm.pgmClass + ']');",
+                    "    if(!tab){",
+                    "        Ext.require(pgm.pgmClass, function () {",
+                    "            var className = Ext.ClassManager.getNameByAlias('widget.' + pgm.pgmAlias);",
+                    "            var ViewClass = Ext.ClassManager.get(pgm.pgmClass);",
+                    "            tab = new ViewClass();",
+                    "            if (Ext.isEmpty(record.get('pgmClass'))) {",
+                    "                tab.add({",
+                    "                    xtype: 'TemplateA'",
+                    "                });",
+                    "            }",
+                    "",
+                    "            tab.title = record.get('text');",
+                    "            tab.itemId = pgm.pgmClass;",
+                    "            tab.closable = true;",
+                    "            mainTabObj[0].add(tab);",
+                    "        });",
+                    "    }",
+                    "    mainTabObj[0].setActiveItem(tab);",
+                    "",
+                    "}"
+                ],
+                "name": "itemclick",
+                "scope": "me"
+            },
+            "name": "onTreepanelItemClick",
+            "designerId": "cae01fd2-7610-4c29-a146-d604e23983a5"
+        }
+    ]
+}

@@ -51,6 +51,11 @@
         <copy todir="${workspace.dir}/euiSa/packages/eui-core">
             <fileset dir="${workspace.dir}/packages/local/eui-core"/>
         </copy>
+
+        <delete dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui-core/1.0.1"/>
+        <copy todir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui-core/1.0.1">
+            <fileset dir="${workspace.dir}/packages/local/eui-core"/>
+        </copy>
     </target>
 
     <!--<target name="copy.test">-->

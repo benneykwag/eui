@@ -1,0 +1,78 @@
+{
+    "type": "Ext.container.Viewport",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userAlias": "mainmain",
+        "designer|userClassName": "main.Main",
+        "layout": "border"
+    },
+    "designerId": "2ff60bbe-2af7-44cb-a14b-02ad2c19fa03",
+    "viewControllerInstanceId": "d22d4da9-9fd7-4335-82ab-ec05ed81cb7b",
+    "viewModelInstanceId": "3f085e8a-1f98-4f88-9ae2-ff200cfbf466",
+    "cn": [
+        {
+            "type": "Ext.tab.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "itemId": "maintab",
+                "layout|region": "center",
+                "margin": "5 5 0 0"
+            },
+            "name": "MyTabPanel",
+            "designerId": "f7c57d9a-7a52-4e59-ad37-f2b70bd81744",
+            "cn": [
+                {
+                    "type": "linkedinstance",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "name": "form.panel",
+                    "designerId": "4773902f-7594-4632-8ba8-d3a8f60b1250",
+                    "masterInstanceId": "1d8c49bb-8766-4e04-8729-3fda2545e456",
+                    "cn": [
+                        {
+                            "type": "Ext.tab.Tab",
+                            "reference": {
+                                "name": "tabConfig",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "name": "TabConfig",
+                            "designerId": "11833f45-2886-41b7-ba27-879fe53f5c04"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "linkedinstance",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "collapsible": true,
+                "layout|region": "west",
+                "layout|split": true,
+                "margin": "5 0 0 5",
+                "title": "Menu#{행추가아이콘}",
+                "width": 200
+            },
+            "name": "main.leftmenu",
+            "designerId": "f67b7cb3-80b8-449f-950d-7fb05ba688cd",
+            "masterInstanceId": "6c788bb7-876a-4e65-83f1-86bc9ad99413"
+        }
+    ]
+}

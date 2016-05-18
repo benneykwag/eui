@@ -70,6 +70,16 @@
                 "css": [
                     "eui-core-all.css"
                 ]
+            },
+            {
+                "definition": "form/RadioGroup.js",
+                "className": "eui.form.RadioGroup",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
             }
         ]
     }

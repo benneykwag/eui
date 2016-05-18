@@ -1,0 +1,36 @@
+{
+    "type": "Ext.app.Application",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "name": "euisa",
+        "views": [
+            "main.Main",
+            "main.LeftMenu",
+            "form.Panel"
+        ]
+    },
+    "name": "Application",
+    "designerId": "application",
+    "cn": [
+        {
+            "type": "basicfunction",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "init",
+                "implHandler": [
+                    "eui.Config.initLocaleMessage();"
+                ]
+            },
+            "name": "init",
+            "designerId": "cdf024f0-92e6-4e0b-ab6d-c7d78ea86242"
+        }
+    ]
+}
