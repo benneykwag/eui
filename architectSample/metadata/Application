@@ -10,7 +10,8 @@
         "views": [
             "main.Main",
             "main.LeftMenu",
-            "form.Panel"
+            "form.Panel",
+            "form.CompanyCombo"
         ]
     },
     "name": "Application",

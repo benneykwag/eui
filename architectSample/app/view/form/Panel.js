@@ -19,10 +19,16 @@ Ext.define('euisa.view.form.Panel', {
 
     requires: [
         'euisa.view.form.PanelViewModel',
+        'euisa.view.form.CompanyCombo',
         'eui.form.Panel',
         'eui.form.RadioGroup',
         'Ext.form.field.Radio',
-        'eui.form.field.Text'
+        'eui.form.field.Text',
+        'eui.form.CheckboxGroup',
+        'eui.form.field.Date',
+        'eui.form.field.ComboBox',
+        'eui.form.field.File',
+        'eui.form.field.Number'
     ],
 
     viewModel: {
@@ -45,6 +51,7 @@ Ext.define('euisa.view.form.Panel', {
             defaults: {
                 allowBlank: false
             },
+            layout: 'table',
             title: 'EUI 폼',
             tableColumns: 2,
             items: [
@@ -58,12 +65,12 @@ Ext.define('euisa.view.form.Panel', {
                         {
                             xtype: 'radiofield',
                             boxLabel: '일반',
-                            checked: true,
                             inputValue: 'N'
                         },
                         {
                             xtype: 'radiofield',
-                            boxLabel: '관리자'
+                            boxLabel: '관리자',
+                            inputValue: 'S'
                         }
                     ]
                 },
@@ -73,7 +80,106 @@ Ext.define('euisa.view.form.Panel', {
                 },
                 {
                     xtype: 'euitext',
-                    fieldLabel: '비밀번호'
+                    fieldLabel: '비밀번호',
+                    inputType: 'password'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: '비밀번호확인',
+                    inputType: 'password'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: '성명'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: '이메일',
+                    inputType: 'email'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: '연락처'
+                },
+                {
+                    xtype: 'euiradiogroup',
+                    fieldLabel: '성별',
+                    bind: {
+                        value: '{regMember.gender}'
+                    },
+                    items: [
+                        {
+                            xtype: 'radiofield',
+                            boxLabel: '남성',
+                            inputValue: 'M'
+                        },
+                        {
+                            xtype: 'radiofield',
+                            boxLabel: '여성',
+                            inputValue: 'F'
+                        }
+                    ]
+                },
+                {
+                    xtype: 'euicheckboxgroup',
+                    colspan: 2,
+                    defaults: {
+                        name: 'job'
+                    },
+                    fieldLabel: '직업',
+                    columns: 6,
+                    vertical: true,
+                    bind: {
+                        value: '{regMember.job}'
+                    },
+                    items: [
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '회사원',
+                            inputValue: 'A1'
+                        },
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '연구원',
+                            inputValue: 'A2'
+                        },
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '연구원',
+                            inputValue: 'A2'
+                        },
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '연구원',
+                            inputValue: 'A2'
+                        },
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '연구원',
+                            inputValue: 'A2'
+                        },
+                        {
+                            xtype: 'checkboxfield',
+                            boxLabel: '연구원',
+                            inputValue: 'A2'
+                        }
+                    ]
+                },
+                {
+                    xtype: 'euidate',
+                    fieldLabel: '생년월일'
+                },
+                {
+                    xtype: 'companycombo',
+                    fieldLabel: '회사'
+                },
+                {
+                    xtype: 'euifile',
+                    fieldLabel: '파일'
+                },
+                {
+                    xtype: 'euinumber',
+                    fieldLabel: '연봉'
                 }
             ]
         }

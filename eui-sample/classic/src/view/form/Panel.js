@@ -108,7 +108,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                     ]
                 },
                 {
-                    colspan: 3,
+                    colspan: 2,
                     xtype: 'euicheckboxgroup',
                     fieldLabel: 'Two Columns',
                     columns: 6,

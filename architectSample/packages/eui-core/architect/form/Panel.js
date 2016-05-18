@@ -24,6 +24,12 @@
         {
             "name":"tableColumns",
             "type":"number"
+        },
+        {
+            "name": "layout",
+            "type":"string",
+            "initialValue":"table"
+
         }
     ]
 }

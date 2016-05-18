@@ -47,8 +47,8 @@
             </fileset>
         </copy>
 
-        <delete dir="${workspace.dir}/euiSa/packages/eui-core"/>
-        <copy todir="${workspace.dir}/euiSa/packages/eui-core">
+        <delete dir="${workspace.dir}/architectSample/packages/eui-core"/>
+        <copy todir="${workspace.dir}/architectSample/packages/eui-core">
             <fileset dir="${workspace.dir}/packages/local/eui-core"/>
         </copy>
 

@@ -80,6 +80,46 @@
                 "css": [
                     "eui-core-all.css"
                 ]
+            },
+            {
+                "definition": "form/CheckboxGroup.js",
+                "className": "eui.form.CheckboxGroup",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/ComboBox.js",
+                "className": "eui.form.field.ComboBox",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/File.js",
+                "className": "eui.form.field.File",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/Number.js",
+                "className": "eui.form.field.Number",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
             }
         ]
     }

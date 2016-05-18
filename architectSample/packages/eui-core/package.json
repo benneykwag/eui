@@ -20,7 +20,7 @@
     },
     "output": "${package.dir}/build",
     "local": true,
-    "sass": {
+    "sass" : {
         "namespace": "Eui.core",
         "etc": "${package.dir}/sass/etc/all.scss,${package.dir}/${toolkit.name}/sass/etc/all.scss",
         "var": "${package.dir}/sass/var,${package.dir}/${toolkit.name}/sass/var",
@@ -29,7 +29,7 @@
     "classpath": "${package.dir}/src,${package.dir}/${toolkit.name}/src",
     "overrides": "${package.dir}/overrides,${package.dir}/${toolkit.name}/overrides",
     "requires": [],
-    "architect": {
+    "architect":{
         "compatFrameworks": [
             "ext60"
         ],
@@ -39,6 +39,8 @@
                 "className": "eui.button.Button",
                 "js": [
                     "../build/eui-core-debug.js"
+                ],
+                "css": [
                 ]
             },
             {
@@ -46,6 +48,8 @@
                 "className": "eui.form.field.Text",
                 "js": [
                     "../build/eui-core-debug.js"
+                ],
+                "css": [
                 ]
             },
             {
@@ -53,6 +57,8 @@
                 "className": "eui.form.field.Date",
                 "js": [
                     "../build/eui-core-debug.js"
+                ],
+                "css": [
                 ]
             },
             {
@@ -60,13 +66,61 @@
                 "className": "eui.form.Panel",
                 "js": [
                     "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/RadioGroup.js",
+                "className": "eui.form.RadioGroup",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/CheckboxGroup.js",
+                "className": "eui.form.CheckboxGroup",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/ComboBox.js",
+                "className": "eui.form.field.ComboBox",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/File.js",
+                "className": "eui.form.field.File",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/Number.js",
+                "className": "eui.form.field.Number",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
                 ]
             }
         ]
-    },
-    "css": [
-        {
-            "path": "resources/css/eui-core-all.css"
-        }
-    ]
+    }
 }

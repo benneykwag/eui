@@ -6,7 +6,7 @@
     "helpText": "eui button text",
 
     "toolbox": {
-        "name": "Button",
+        "name": "My Button",
         "category": "EUI Form Fields",
         "groups": ["EUI"]
     }
