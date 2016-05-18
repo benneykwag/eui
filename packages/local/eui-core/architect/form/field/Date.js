@@ -1,14 +1,14 @@
 /*Ext.define('d',*/
     {
-        "classAlias": "widget.spdatefield",
-        "className": "sprr.form.field.Date",
+        "classAlias": "widget.euidate",
+        "className": "eui.form.field.Date",
         "inherits": "Ext.form.field.Date",
         "autoName": "DateField",
-        "helpText": "SPDatefield",
+        "helpText": "Datefield",
         "toolbox": {
             "name": "Date",
-            "category": "Sprr Forms Fields",
-            "groups": ["Sprr"]
+            "category": "EUI Form Fields",
+            "groups": ["EUI"]
         },
         "configs":[
         {

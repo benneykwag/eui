@@ -1,6 +1,6 @@
 Ext.define('eui.form.field.Number', {
     extend: 'Ext.form.field.Number',
-    alias: 'widget.spnumber',
+    alias: 'widget.euinumber',
 
     cellCls: 'fo-table-row-td',
     hideTrigger: true,

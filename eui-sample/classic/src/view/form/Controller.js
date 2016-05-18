@@ -17,6 +17,7 @@ Ext.define('Eui.sample.view.form.Controller', {
             userId: '홍길동',
             gender: 'F',
             job: ['A1', 'A3'],
+            payment1: 120011000,
             company: 'CCMP'
         }));
     },

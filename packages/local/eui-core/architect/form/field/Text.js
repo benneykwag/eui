@@ -1,22 +1,29 @@
-/*Ext.define('d',*/
+{
+    "classAlias": "widget.euitext",
+    "className": "eui.form.field.Text",
+    "inherits": "Ext.form.field.Text",
+    "autoName": "Form_text",
+    "helpText": "Form_text",
+    "toolbox": {
+    "name": "TextField",
+        "category": "EUI Form Fields",
+        "groups": ["EUI"]
+},
+    "events":[
     {
-        "classAlias": "widget.sptextfield",
-        "className": "sprr.form.field.Text",
-        "inherits": "Ext.form.field.Text",
-        "autoName": "TextField",
-        "helpText": "SPTextfield",
-        "toolbox": {
-            "name": "Text",
-            "category": "Sprr Forms Fields",
-            "groups": ["Sprr"]
-        },
-        "configs":[
+        "name":"baseformsearch",
+        "params":[
             {
-                name:"allowBlank",
-                type:"boolean"
+                "name":"form",
+                "type":"object"
             }
         ]
     }
-
-/*
-)*/
+],
+    "configs": [
+    {
+        "name":"tableColumns",
+        "type":"number"
+    }
+]
+}

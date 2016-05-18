@@ -34,4 +34,31 @@
             <target name="-after-build"/>
     -->
 
+    <target name="-before-build">
+        <delete dir="${workspace.dir}/packages/local/eui-core/resources/css">
+            <include name="**/eui-core-all*.css"/>
+        </delete>
+    </target>
+
+    <target name="-after-build">
+        <copy todir="${workspace.dir}/packages/local/eui-core/resources/css">
+            <fileset dir="${workspace.dir}/packages/local/eui-core/build/resources">
+                <include name="**/eui-core-all*.css"/>
+            </fileset>
+        </copy>
+
+        <delete dir="${workspace.dir}/euiSa/packages/eui-core"/>
+        <copy todir="${workspace.dir}/euiSa/packages/eui-core">
+            <fileset dir="${workspace.dir}/packages/local/eui-core"/>
+        </copy>
+    </target>
+
+    <!--<target name="copy.test">-->
+        <!--<copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">-->
+            <!--<fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />-->
+        <!--</copy>-->
+        <!--<delete  verbose="true" overwrite="true" force="true">-->
+            <!--<fileset dir="c:/myDir" includes="sub_dir/**"/>-->
+        <!--</delete>-->
+    <!--</target>-->
 </project>

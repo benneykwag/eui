@@ -6,8 +6,8 @@
     "helpText": "eui button text",
 
     "toolbox": {
-    "name": "EUIButton",
-        "category": "EUI Forms Fields",
+        "name": "Button",
+        "category": "EUI Form Fields",
         "groups": ["EUI"]
-}
+    }
 }

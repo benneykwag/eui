@@ -1,13 +1,11 @@
 Ext.define('eui.form.field.TextArea', {
     extend: 'Ext.form.field.TextArea',
-    alias: 'widget.sptextarea',
+    alias: 'widget.euitextarea',
 
     cellCls: 'fo-table-row-td',
     width: '100%',
-    fieldStyle: {
-        display: 'inherit'
-    },
-    height: 70,
+
+    height: 100,
     initComponent: function() {
         var me = this;
         me.callParent(arguments);

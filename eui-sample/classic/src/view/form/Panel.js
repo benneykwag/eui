@@ -4,6 +4,12 @@ Ext.define('Eui.sample.view.form.Panel', {
     title: 'EUI 사용하기',
 
     requires: [
+        'eui.form.field.TextArea',
+        'eui.form.field.HtmlEditor',
+        'eui.form.field.Display',
+        'eui.form.field.Number',
+        'eui.form.field.File',
+        'Eui.sample.view.form.CompanyCombo',
         'Eui.sample.view.form.Controller',
         'eui.form.field.ComboBox',
         'eui.form.field.Date',
@@ -13,7 +19,9 @@ Ext.define('Eui.sample.view.form.Panel', {
     ],
 
     controller: 'sample-form',
-    viewModel: {},
+    viewModel: {
+
+    },
     defaults: {
         margin: 5
     },
@@ -126,8 +134,36 @@ Ext.define('Eui.sample.view.form.Panel', {
                 },
                 {
                     fieldLabel: '회사',
-                    editable: true,
-                    xtype: 'euicombo'
+                    xtype: 'companycombo'
+                },
+                {
+                    fieldLabel:'파일',
+                    allowBlank: true,
+                    xtype:'euifile'
+                },
+                {
+                    fieldLabel:'연봉',
+                    bind: '{regMember.payment1}',
+                    xtype:'euinumber'
+                },
+                {
+                    xtype:'euidisplay',
+                    fieldLabel:'DESC',
+                    value:'ddd'
+                },
+                {
+                    fieldLabel: '성명',
+                    xtype: 'euitext'
+                },
+                {
+                    height: 150,
+                    fieldLabel:'자기소개',
+                    xtype:'euihtmleditor'
+                },
+                {
+                    height: 150,
+                    fieldLabel:'경력기술',
+                    xtype:'euitextarea'
                 }
             ],
             buttons: [

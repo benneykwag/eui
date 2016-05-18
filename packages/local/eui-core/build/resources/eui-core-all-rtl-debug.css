@@ -1,1 +1,83 @@
-/* Error: Reference to undeclared variable : $font_icon_font_family at : /Volumes/Disk2/git.projects/eui-workspace/ext/packages/core/sass/var/list/TreeItem.scss:57 */
+/* undefined:3 */
+.fo-table-row {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border-left: 1px solid #cacaca;
+    border-top: 1px solid #cacaca;
+}
+/* undefined:4 */
+.fo-table-row-th {
+    width: 150px;
+    padding: 0 5px 0 12px;
+    color: #666;
+    font-weight: normal;
+    letter-spacing: -1px;
+    white-space: nowrap;
+    border-right: 1px solid #cacaca;
+    border-bottom: 1px solid #cacaca;
+    background-color: #f1f6ff;
+}
+/* undefined:15 */
+.fo-table-row-th label.fo-required {
+    margin: 0 0 0 -12px;
+    padding: 0 5px 0 12px;
+    background: url(../images/form/icon_required.png) no-repeat 5px 50%;
+}
+/* undefined:16 */
+.fo-table-row-td {
+    padding: 2px;
+    border-right: 1px solid #cacaca;
+    border-bottom: 1px solid #cacaca;
+    background-color: #f1f6ff;
+}
+/* undefined:23 */
+.fo-table-row-td-noneborder {
+    padding: 2px 5px 2px 12px;
+}
+/* undefined:27 */
+.x-table-form-item {
+    margin-bottom: 0px;
+}
+/* undefined:31 */
+.eui-form-table .x-noborder-trbl {
+    border-width: 1px !important;
+}
+/* undefined:36 */
+.x-accordion-item .x-grid-header-ct {
+    border-width: 1px 1px 1px !important;
+}
+/* undefined:40 */
+.eui-form-table .x-form-text-wrap-invalid .x-form-text-default {
+    background-color: #ddb9d1;
+    background-image: none;
+}
+/* undefined:45 */
+.eui-form-table .x-form-item-label-inner {
+    display: inline-block;
+    padding-left: 5px;
+}
+/* undefined:50 */
+.eui-form-table .x-form-checkboxgroup-body.x-form-item-body-default {
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #d0d0d0;
+}
+/* undefined:60 */
+.eui-form-table .x-autocontainer-form-item,
+.x-anchor-form-item,
+.x-vbox-form-item,
+.x-table-form-item {
+    margin-bottom: 0px !important;
+}
+/* undefined:64 */
+.eui-form-table .x-form-display-field-default {
+    min-height: 32px;
+    font: 300 13px/17px 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
+    color: #404040;
+    padding-top: 5px;
+    padding-left: 5px;
+    margin-top: 0px !important;
+    background-color: white;
+}

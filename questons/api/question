@@ -1,7 +1,0 @@
-        {
-            "id": 1,
-            "questionText": "Turku is the third largest city by population of which European country?",
-            "required": true,
-            "stepId": 1,
-            "type": "textfield"
-         }

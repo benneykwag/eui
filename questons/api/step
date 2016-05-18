@@ -1,8 +1,0 @@
-{
-    data: [{
-        "id": 1,
-        "title": "Round 1",
-        "introduction": "Welcome to Round One!",
-        "questionnaireId": 1
-     }]
-}

@@ -210,7 +210,8 @@ Ext.define("eui.mixin.FormField", {
                 radioValue: {
                     bind: '{' + path + '}',
                     get: function(value) {
-                        if (this.get(recordVar).validate().map[name]) {
+                        var model = this.get(recordVar);
+                        if (model.isModel && this.get(recordVar).validate().map[name]) {
                             me.allowBlank = false;
                         }
                         var ret = {};
@@ -1542,7 +1543,7 @@ Ext.define('eui.form.Panel', {
     mixins: [
         'eui.mixin.Panel'
     ],
-    cls: 'fo-panel-table',
+    cls: 'eui-form-table',
     collapsed: false,
     collapsible: false,
     modelValidation: true,
@@ -3255,9 +3256,31 @@ Ext.define('eui.form.field.Date', {
     }
 });
 
+Ext.define('eui.form.field.Display', {
+    extend: 'Ext.form.field.Display',
+    alias: 'widget.euidisplay',
+    width: '100%',
+    cellCls: 'fo-table-row-td'
+});
+
+Ext.define('eui.form.field.File', {
+    extend: 'Ext.form.field.File',
+    alias: 'widget.euifile',
+    width: '100%',
+    cellCls: 'fo-table-row-td'
+});
+
+Ext.define('eui.form.field.HtmlEditor', {
+    extend: 'Ext.form.field.HtmlEditor',
+    alias: 'widget.euihtmleditor',
+    width: '100%',
+    height: 100,
+    cellCls: 'fo-table-row-td'
+});
+
 Ext.define('eui.form.field.Number', {
     extend: 'Ext.form.field.Number',
-    alias: 'widget.spnumber',
+    alias: 'widget.euinumber',
     cellCls: 'fo-table-row-td',
     hideTrigger: true,
     mouseWheelEnabled: false,
@@ -4165,13 +4188,10 @@ Ext.define('eui.form.field.Text', {
 
 Ext.define('eui.form.field.TextArea', {
     extend: 'Ext.form.field.TextArea',
-    alias: 'widget.sptextarea',
+    alias: 'widget.euitextarea',
     cellCls: 'fo-table-row-td',
     width: '100%',
-    fieldStyle: {
-        display: 'inherit'
-    },
-    height: 70,
+    height: 100,
     initComponent: function() {
         var me = this;
         me.callParent(arguments);

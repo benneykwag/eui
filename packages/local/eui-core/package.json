@@ -7,8 +7,8 @@
     "creator": "anonymous",
     "summary": "Short summary",
     "detailedDescription": "Long description of package",
-    "version": "1.0.0",
-    "compatVersion": "1.0.0",
+    "version": "1.0.1",
+    "compatVersion": "1.0.1",
     "format": "1",
     "slicer": {
         "js": [
@@ -41,6 +41,34 @@
                     "../build/eui-core-debug.js"
                 ],
                 "css": [
+                ]
+            },
+            {
+                "definition": "form/field/Text.js",
+                "className": "eui.form.field.Text",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                ]
+            },
+            {
+                "definition": "form/field/Date.js",
+                "className": "eui.form.field.Date",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                ]
+            },
+            {
+                "definition": "form/Panel.js",
+                "className": "eui.form.Panel",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
                 ]
             }
         ]
