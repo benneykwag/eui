@@ -30,8 +30,7 @@ Ext.define('Eui.sample.view.main.Main', {
             width: 200,
             collapsible: true, // make collapsible
             itemId: 'west-region-container',
-            split: true,
-            layout: 'fit'
+            split: true
         },
         {
             title: 'Main View',
@@ -39,7 +38,6 @@ Ext.define('Eui.sample.view.main.Main', {
             // specified
             xtype: 'tabpanel',
             itemId: 'maintab',
-            layout: 'fit',
             margin: '5 5 0 0',
             items: [
                 {

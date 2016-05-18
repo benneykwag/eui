@@ -1,4 +1,4 @@
-Ext.define('Eui.sample.view.LeftMenu', {
+Ext.define('Eui.sample.view.main.LeftMenu', {
     alias: 'widget.leftmenu',
     extend: 'Ext.tree.Panel',
     rootVisible: false,
@@ -26,7 +26,7 @@ Ext.define('Eui.sample.view.LeftMenu', {
     },
     listeners: {
         itemclick: function (self, record, item, index, event) {
-            if (record.get('leaf') == true) {
+            if (record.get('leaf') === true) {
                 var mainTabObj = Ext.ComponentQuery.query('#maintab');
 
 
