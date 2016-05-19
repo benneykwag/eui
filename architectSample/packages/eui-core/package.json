@@ -31,6 +31,7 @@
     "requires": [],
     "architect":{
         "compatFrameworks": [
+            "ext51",
             "ext60"
         ],
         "classes": [
@@ -114,6 +115,16 @@
             {
                 "definition": "form/field/Number.js",
                 "className": "eui.form.field.Number",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "form/field/Display.js",
+                "className": "eui.form.field.Display",
                 "js": [
                     "../build/eui-core-debug.js"
                 ],

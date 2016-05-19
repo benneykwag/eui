@@ -6,6 +6,9 @@
     },
     "codeClass": null,
     "userConfig": {
+        "models": [
+            "Base"
+        ],
         "name": "euisa",
         "views": [
             "main.Main",

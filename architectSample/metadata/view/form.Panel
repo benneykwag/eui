@@ -108,9 +108,15 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "fieldLabel": "아이디"
+                        "fieldLabel": "아이디",
+                        "value": [
+                            "{regMember.MSG_ID}"
+                        ]
                     },
                     "name": "Form_text",
+                    "configAlternates": {
+                        "value": "binding"
+                    },
                     "designerId": "51544dbe-995b-40d2-a4ee-d7231988b4ed"
                 },
                 {
@@ -406,8 +412,60 @@
                     },
                     "name": "NumberField",
                     "designerId": "2febdbf0-50b2-404a-81a5-a780917a24e2"
+                },
+                {
+                    "type": "eui.form.field.Display",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "참고사항",
+                        "value": "연봉은 희망연봉입니다."
+                    },
+                    "name": "DisplayField",
+                    "designerId": "11c8f5d6-496f-4cb1-b92a-35f0ead3687f"
+                },
+                {
+                    "type": "eui.form.field.Date",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "입사희망일"
+                    },
+                    "name": "DateField1",
+                    "designerId": "8f4d7421-fe84-489b-b088-94d7c90c86dc"
                 }
             ]
+        },
+        {
+            "type": "viewcontrollereventbinding",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "onPanelRender",
+                "implHandler": [
+                    "this.getViewModel().set('regMember', Ext.create('euisa.model.Base', {",
+                    "    memberFlag: 'N',",
+                    "    userId: '홍길동',",
+                    "    gender: 'F',",
+                    "    job: ['A1', 'A3'],",
+                    "    payment1: 120011000,",
+                    "    company: 'CCMP'",
+                    "}));"
+                ],
+                "name": "render",
+                "scope": "me"
+            },
+            "name": "onPanelRender",
+            "designerId": "0a3347ca-42d8-431c-82f8-d2a0ab33dcc8"
         }
     ]
 }

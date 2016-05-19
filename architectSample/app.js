@@ -19,9 +19,20 @@ Ext.Loader.setConfig({
 });
 
 
+Ext.Loader.setPath('eui.form.field.Text','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.field.Date','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.Panel','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.RadioGroup','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.CheckboxGroup','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.field.ComboBox','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.field.File','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.Number','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.form.field.Display','packages/eui-core/src/../build/eui-core-debug.js');
 
 Ext.application({
+    models: [
+        'Base'
+    ],
     views: [
         'main.Main',
         'main.LeftMenu',

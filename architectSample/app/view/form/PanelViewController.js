@@ -15,5 +15,17 @@
 
 Ext.define('euisa.view.form.PanelViewController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.sampleform'
+    alias: 'controller.sampleform',
+
+    onPanelRender: function(component, eOpts) {
+        this.getViewModel().set('regMember', Ext.create('euisa.model.Base', {
+            memberFlag: 'N',
+            userId: '홍길동',
+            gender: 'F',
+            job: ['A1', 'A3'],
+            payment1: 120011000,
+            company: 'CCMP'
+        }));
+    }
+
 });

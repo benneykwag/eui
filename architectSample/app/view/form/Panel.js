@@ -19,6 +19,7 @@ Ext.define('euisa.view.form.Panel', {
 
     requires: [
         'euisa.view.form.PanelViewModel',
+        'euisa.view.form.PanelViewController',
         'euisa.view.form.CompanyCombo',
         'eui.form.Panel',
         'eui.form.RadioGroup',
@@ -28,9 +29,11 @@ Ext.define('euisa.view.form.Panel', {
         'eui.form.field.Date',
         'eui.form.field.ComboBox',
         'eui.form.field.File',
-        'eui.form.field.Number'
+        'eui.form.field.Number',
+        'eui.form.field.Display'
     ],
 
+    controller: 'sampleform',
     viewModel: {
         type: 'sampleform'
     },
@@ -76,7 +79,10 @@ Ext.define('euisa.view.form.Panel', {
                 },
                 {
                     xtype: 'euitext',
-                    fieldLabel: '아이디'
+                    fieldLabel: '아이디',
+                    bind: {
+                        value: '{regMember.MSG_ID}'
+                    }
                 },
                 {
                     xtype: 'euitext',
@@ -180,9 +186,21 @@ Ext.define('euisa.view.form.Panel', {
                 {
                     xtype: 'euinumber',
                     fieldLabel: '연봉'
+                },
+                {
+                    xtype: 'euidisplay',
+                    fieldLabel: '참고사항',
+                    value: '연봉은 희망연봉입니다.'
+                },
+                {
+                    xtype: 'euidate',
+                    fieldLabel: '입사희망일'
                 }
             ]
         }
-    ]
+    ],
+    listeners: {
+        render: 'onPanelRender'
+    }
 
 });
