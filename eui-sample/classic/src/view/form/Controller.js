@@ -14,7 +14,8 @@ Ext.define('Eui.sample.view.form.Controller', {
     setRecord: function () {
         this.getViewModel().set('regMember', Ext.create('Eui.sample.model.Base', {
             memberFlag: 'N',
-            userId: '홍길동',
+            userId: 'eui',
+            userName: '이유아이',
             gender: 'F',
             job: ['A1', 'A3'],
             payment1: 120011000,

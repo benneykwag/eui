@@ -19,6 +19,7 @@ Ext.Loader.setConfig({
 });
 
 
+Ext.Loader.setPath('eui.button.Button','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.Text','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.Date','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.Panel','packages/eui-core/src/../build/eui-core-debug.js');
@@ -28,16 +29,20 @@ Ext.Loader.setPath('eui.form.field.ComboBox','packages/eui-core/src/../build/eui
 Ext.Loader.setPath('eui.form.field.File','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.Number','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.Display','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.grid.Panel','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.toolbar.Command','packages/eui-core/src/../build/eui-core-debug.js');
 
 Ext.application({
     models: [
-        'Base'
+        'Base',
+        'Message'
     ],
     views: [
         'main.Main',
         'main.LeftMenu',
         'form.Panel',
-        'form.CompanyCombo'
+        'form.CompanyCombo',
+        'grid.Basic'
     ],
     name: 'euisa',
 

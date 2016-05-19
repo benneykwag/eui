@@ -1,16 +1,20 @@
 /*Ext.define('d',*/
 {
-    "classAlias": "widget.spgrid",
-    "className": "sprr.grid.Panel",
+    "classAlias": "widget.euigrid",
+    "className": "eui.grid.Panel",
     "inherits": "Ext.grid.Panel",
-    "autoName": "MyGrid",
-    "helpText": "MyGrid",
+    "autoName": "Grid",
+    "helpText": "Grid",
     "toolbox": {
-        "name": "SPGrid",
-        "category": "Sprr Grids Grid",
-        "groups": ["Sprr"]
+        "name": "Grid",
+        "category": "EUI Grid",
+        "groups": ["EUI"]
     },
     configs: [
+        {
+            name:"usePagingToolbar",
+            type:"boolean"
+        },
         {
             name: 'hiddenRowAddBtn',
             type: 'boolean'

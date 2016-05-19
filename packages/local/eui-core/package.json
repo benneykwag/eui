@@ -131,6 +131,26 @@
                 "css": [
                     "eui-core-all.css"
                 ]
+            },
+            {
+                "definition": "grid/Panel.js",
+                "className": "eui.grid.Panel",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
+            },
+            {
+                "definition": "toolbar/Command.js",
+                "className": "eui.toolbar.Command",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
             }
         ]
     }

@@ -30,7 +30,10 @@ Ext.define('euisa.view.form.Panel', {
         'eui.form.field.ComboBox',
         'eui.form.field.File',
         'eui.form.field.Number',
-        'eui.form.field.Display'
+        'eui.form.field.Display',
+        'Ext.toolbar.Toolbar',
+        'Ext.toolbar.Fill',
+        'eui.button.Button'
     ],
 
     controller: 'sampleform',
@@ -81,7 +84,7 @@ Ext.define('euisa.view.form.Panel', {
                     xtype: 'euitext',
                     fieldLabel: '아이디',
                     bind: {
-                        value: '{regMember.MSG_ID}'
+                        value: '{regMember.userId}'
                     }
                 },
                 {
@@ -96,7 +99,10 @@ Ext.define('euisa.view.form.Panel', {
                 },
                 {
                     xtype: 'euitext',
-                    fieldLabel: '성명'
+                    fieldLabel: '성명',
+                    bind: {
+                        value: '{regMember.userName}'
+                    }
                 },
                 {
                     xtype: 'euitext',
@@ -195,6 +201,26 @@ Ext.define('euisa.view.form.Panel', {
                 {
                     xtype: 'euidate',
                     fieldLabel: '입사희망일'
+                }
+            ],
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [
+                        {
+                            xtype: 'tbfill'
+                        },
+                        {
+                            xtype: 'euibutton',
+                            formBind: true,
+                            text: '확인'
+                        },
+                        {
+                            xtype: 'euibutton',
+                            text: '취소'
+                        }
+                    ]
                 }
             ]
         }

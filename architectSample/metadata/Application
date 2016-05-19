@@ -7,14 +7,16 @@
     "codeClass": null,
     "userConfig": {
         "models": [
-            "Base"
+            "Base",
+            "Message"
         ],
         "name": "euisa",
         "views": [
             "main.Main",
             "main.LeftMenu",
             "form.Panel",
-            "form.CompanyCombo"
+            "form.CompanyCombo",
+            "grid.Basic"
         ]
     },
     "name": "Application",

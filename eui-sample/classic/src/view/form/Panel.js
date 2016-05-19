@@ -64,6 +64,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                 {
                     allowBlank: true,
                     fieldLabel: '아이디',
+                    bind: '{regMember.userId}',
                     xtype: 'euitext'
                 },
                 {
@@ -76,6 +77,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                 },
                 {
                     fieldLabel: '성명',
+                    bind: '{regMember.userName}',
                     xtype: 'euitext'
                 },
                 {

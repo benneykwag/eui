@@ -1,6 +1,3 @@
-/***
- * PopUp을 위한 Container
- */
 Ext.define('eui.container.PopupContainer', {
     extend: 'Ext.container.Container',
     alias: 'widget.sppopupcontainer',

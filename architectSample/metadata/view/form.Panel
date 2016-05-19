@@ -110,7 +110,7 @@
                     "userConfig": {
                         "fieldLabel": "아이디",
                         "value": [
-                            "{regMember.MSG_ID}"
+                            "{regMember.userId}"
                         ]
                     },
                     "name": "Form_text",
@@ -155,9 +155,15 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "fieldLabel": "성명"
+                        "fieldLabel": "성명",
+                        "value": [
+                            "{regMember.userName}"
+                        ]
                     },
                     "name": "Form_text3",
+                    "configAlternates": {
+                        "value": "binding"
+                    },
                     "designerId": "65d7c5e4-108b-484e-8427-7469cea30444"
                 },
                 {
@@ -439,6 +445,63 @@
                     },
                     "name": "DateField1",
                     "designerId": "8f4d7421-fe84-489b-b088-94d7c90c86dc"
+                },
+                {
+                    "type": "Ext.toolbar.Toolbar",
+                    "reference": {
+                        "name": "dockedItems",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dock": "bottom"
+                    },
+                    "name": "MyToolbar1",
+                    "designerId": "6fd41d15-4b5a-4475-b14d-26330ec0d56a",
+                    "cn": [
+                        {
+                            "type": "Ext.toolbar.Fill",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null
+                            },
+                            "name": "MyFill",
+                            "designerId": "040f3e44-8d49-4efb-9d53-3f61a51cb2b9"
+                        },
+                        {
+                            "type": "eui.button.Button",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "formBind": true,
+                                "layout|flex": null,
+                                "text": "확인"
+                            },
+                            "name": "eui button",
+                            "designerId": "6163cfcc-d0d4-4ebb-99d1-39f88260b59c"
+                        },
+                        {
+                            "type": "eui.button.Button",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null,
+                                "text": "취소"
+                            },
+                            "name": "eui button1",
+                            "designerId": "b39aa664-f3a0-4541-8401-507cf7f73ad9"
+                        }
+                    ]
                 }
             ]
         },
@@ -454,7 +517,8 @@
                 "implHandler": [
                     "this.getViewModel().set('regMember', Ext.create('euisa.model.Base', {",
                     "    memberFlag: 'N',",
-                    "    userId: '홍길동',",
+                    "    userId: 'eui',",
+                    "    userName: '이유아이',",
                     "    gender: 'F',",
                     "    job: ['A1', 'A3'],",
                     "    payment1: 120011000,",
