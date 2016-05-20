@@ -54,10 +54,17 @@
         {
             name: 'onRowSaveHandler',
             type: 'string'
-        },
+        }
+    ],
+    "events": [
         {
-            "name":"hbuttons",
-            "type": "array"
+            "name": "regbtnclick",
+            "params": [
+                {
+                    "name": "button",
+                    "type": "object"
+                }
+            ]
         }
     ]
 }
