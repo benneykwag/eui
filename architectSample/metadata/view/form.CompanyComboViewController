@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "formcompanycombo",
+        "designer|userClassName": "form.CompanyComboViewController"
+    },
+    "designerId": "000d32de-4896-4259-900a-0dca036d5142"
+}

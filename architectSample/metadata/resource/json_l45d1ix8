@@ -1,0 +1,14 @@
+{
+    "type": "jsonresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "json_l45d1ix8",
+        "url": "resources/data/mygriddata.json"
+    },
+    "name": "json1",
+    "designerId": "4ad4a6e0-2a9a-42e7-959b-a3c1d1ebf5b2"
+}

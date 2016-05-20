@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "samplebasicgrid",
+        "designer|userClassName": "grid.BasicViewController"
+    },
+    "designerId": "c09a8539-51ea-4275-8521-362fbd2824b6"
+}

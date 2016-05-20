@@ -1,0 +1,28 @@
+{
+    "type": "eui.form.field.ComboBox",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "autoLoadOnValue": true,
+        "designer|userAlias": "companycombo",
+        "designer|userClassName": "form.CompanyCombo",
+        "displayField": "name",
+        "editable": false,
+        "emptyText": "선택하세요",
+        "fieldLabel": "Label",
+        "store": [
+            "{cmpstore}"
+        ],
+        "valueField": "code"
+    },
+    "name": "ComboBox",
+    "configAlternates": {
+        "store": "binding"
+    },
+    "designerId": "7467c48e-d1aa-4b22-b69b-56f746f70940",
+    "viewControllerInstanceId": "000d32de-4896-4259-900a-0dca036d5142",
+    "viewModelInstanceId": "e8cbb443-131a-4775-a9ec-293efe5dc2fa"
+}

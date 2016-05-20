@@ -1,0 +1,197 @@
+{
+    "type": "Ext.panel.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "samplebasicgrid",
+        "designer|userClassName": "grid.Basic",
+        "height": null,
+        "layout": "fit",
+        "title": "#{행추가2}",
+        "width": null
+    },
+    "name": "MyPanel",
+    "designerId": "d61fdc46-49d5-4fc6-82d2-886f1847ae48",
+    "viewControllerInstanceId": "c09a8539-51ea-4275-8521-362fbd2824b6",
+    "viewModelInstanceId": "d10a2499-fdf5-40db-9b26-62f543a85754",
+    "cn": [
+        {
+            "type": "eui.grid.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "store": [
+                    "{mystore}"
+                ],
+                "title": null,
+                "usePagingToolbar": true
+            },
+            "name": "Grid",
+            "configAlternates": {
+                "store": "binding"
+            },
+            "designerId": "1aba7719-1137-461b-9c24-f2b6044ba0d3",
+            "cn": [
+                {
+                    "type": "Ext.grid.column.Column",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "MSG_ID",
+                        "text": "MSG_ID",
+                        "width": 100
+                    },
+                    "name": "MyColumn",
+                    "designerId": "9caff2d9-f6fa-4588-9b53-a86cbe221c6a",
+                    "cn": [
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "editor",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "value": [
+                                    "{messageRecord.MSG_ID}"
+                                ]
+                            },
+                            "name": "MyTextField",
+                            "configAlternates": {
+                                "value": "binding"
+                            },
+                            "designerId": "70a82aa5-c465-448b-8941-f191701efd23"
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.grid.column.Column",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "MSG_LABEL",
+                        "flex": 1,
+                        "text": "MSG_LABEL"
+                    },
+                    "name": "MyColumn1",
+                    "designerId": "b822e388-370b-48b7-9e38-3679ec63b614",
+                    "cn": [
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "editor",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "value": [
+                                    "{messageRecord.MSG_LABEL}"
+                                ]
+                            },
+                            "name": "MyTextField1",
+                            "configAlternates": {
+                                "value": "binding"
+                            },
+                            "designerId": "6f62fc45-a442-490e-86f5-a04dd115ea09"
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.view.Table",
+                    "reference": {
+                        "name": "viewConfig",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "name": "MyTable",
+                    "designerId": "a58f3f22-ce2c-4477-a9a4-9d989326cdf0"
+                },
+                {
+                    "type": "Ext.grid.plugin.CellEditing",
+                    "reference": {
+                        "name": "plugins",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "name": "MyCellEditingPlugin",
+                    "designerId": "f7ba8c78-b6e2-46a4-b828-ec5b4bc5b481"
+                },
+                {
+                    "type": "Ext.selection.CheckboxModel",
+                    "reference": {
+                        "name": "selModel",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "mode": "SINGLE"
+                    },
+                    "name": "MyCheckboxSelectionModel",
+                    "designerId": "f430dfaa-0b59-41f8-bad4-efe8113bacd7"
+                },
+                {
+                    "type": "Ext.toolbar.Toolbar",
+                    "reference": {
+                        "name": "dockedItems",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dock": "top"
+                    },
+                    "name": "MyToolbar",
+                    "designerId": "07528d6a-96f5-4ce0-a9c3-94db7d53ad2a",
+                    "cn": [
+                        {
+                            "type": "eui.toolbar.Command",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null,
+                                "showCloseBtn": false,
+                                "showModBtn": true,
+                                "showRegBtn": true,
+                                "showReloadBtn": true,
+                                "showRowAddBtn": true,
+                                "showRowDelBtn": true,
+                                "showSaveBtn": true
+                            },
+                            "name": "Commandtoolbar",
+                            "designerId": "39605e36-ff37-4343-9cca-43e02817a6ab"
+                        }
+                    ]
+                },
+                {
+                    "type": "viewcontrollereventbinding",
+                    "reference": {
+                        "name": "listeners",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fn": "onEuigridSelect",
+                        "name": "select",
+                        "scope": "me"
+                    },
+                    "name": "onEuigridSelect",
+                    "designerId": "5035e116-1df9-42cf-8848-45ded67b5298"
+                }
+            ]
+        }
+    ]
+}

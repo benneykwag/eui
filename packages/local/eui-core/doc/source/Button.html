@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.button.Button&#39;, {
+    extend: &#39;Ext.button.Button&#39;,
+    xtype: &#39;euibutton&#39;,
+//    text: &#39;SpButton&#39;,
+//    ui: &#39;basicbtn&#39;,
+
+    config: {
+        showText: true
+    },
+
+    localeProperties: [&#39;text&#39;,&#39;iconCls&#39;],
+    margin: &#39;0 5 2 0&#39;,
+    initComponent: function() {
+        var me = this;
+        if(!me.getShowText()){
+            delete me.text;
+        }
+        me.callParent(arguments);
+    }
+});</pre>
+</body>
+</html>

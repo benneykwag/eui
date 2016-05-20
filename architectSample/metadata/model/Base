@@ -1,0 +1,51 @@
+{
+    "type": "Ext.data.Model",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Base"
+    },
+    "name": "MyModel",
+    "designerId": "3b36206d-12a3-4c46-978f-400ecb155e60",
+    "cn": [
+        {
+            "type": "Ext.data.field.Field",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "name": "MSG_ID"
+            },
+            "name": "MyField1",
+            "designerId": "987daee5-301f-4d94-9340-180258dd63ce",
+            "cn": [
+                {
+                    "type": "lengthvalidation",
+                    "reference": {
+                        "name": "validators",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "min": 10,
+                        "minOnlyMessage": "최소 10자 이상입니다."
+                    },
+                    "name": "MyLengthValidation",
+                    "designerId": "e2611f59-85f3-4ba3-9629-74553ff07805",
+                    "customConfigs": [
+                        {
+                            "group": "(Custom Properties)",
+                            "name": "minOnlyMessage",
+                            "type": "string"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "type": "Ext.app.ViewModel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "samplebasicgrid",
+        "designer|userClassName": "grid.BasicViewModel"
+    },
+    "designerId": "d10a2499-fdf5-40db-9b26-62f543a85754",
+    "cn": [
+        {
+            "type": "jsonstore",
+            "reference": {
+                "name": "stores",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "autoLoad": false,
+                "model": "Message",
+                "name": "mystore"
+            },
+            "name": "MyJsonStore",
+            "designerId": "e5219e7b-4ad6-4541-b6c6-14db5b5f1a34"
+        }
+    ]
+}

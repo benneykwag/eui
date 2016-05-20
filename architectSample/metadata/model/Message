@@ -1,0 +1,80 @@
+{
+    "type": "Ext.data.Model",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Message",
+        "identifier": [
+            "{",
+            "type: 'sequential',",
+            "        prefix: 'MSG'",
+            "}"
+        ]
+    },
+    "name": "MyModel",
+    "designerId": "4945f1c5-f042-465e-ba41-be941e70c747",
+    "cn": [
+        {
+            "type": "Ext.data.proxy.Ajax",
+            "reference": {
+                "name": "proxy",
+                "type": "object"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "actionMethods": [
+                    "{",
+                    "            read: 'GET',",
+                    "            create: 'POST',",
+                    "            update: 'POST',",
+                    "            destroy: 'POST'",
+                    "        }"
+                ],
+                "api": [
+                    "{",
+                    "            create: 'resources/data/mygridadddata.json?create',",
+                    "            read: 'resources/data/mygriddata.json?read',",
+                    "            update: 'resources/data/mygridadddata.json?update',",
+                    "            destroy: 'resources/data/mygriddata.json?destroy'",
+                    "        }"
+                ]
+            },
+            "name": "MyAjaxProxy2",
+            "designerId": "f62be09a-a886-476a-9bc3-df261d30478a",
+            "cn": [
+                {
+                    "type": "Ext.data.reader.Json",
+                    "reference": {
+                        "name": "reader",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "rootProperty": [
+                            "'data'"
+                        ]
+                    },
+                    "name": "MyJsonReader2",
+                    "designerId": "b00960b5-a88c-4e03-86a8-b4e1a3291698"
+                },
+                {
+                    "type": "Ext.data.writer.Json",
+                    "reference": {
+                        "name": "writer",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "allowSingle": false,
+                        "writeAllFields": true
+                    },
+                    "name": "MyJsonWriter",
+                    "designerId": "2e34a04a-4d22-4460-806e-971ddc5dcaa5"
+                }
+            ]
+        }
+    ]
+}
