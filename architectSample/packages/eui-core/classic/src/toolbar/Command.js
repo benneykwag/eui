@@ -28,8 +28,8 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowAddBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners['rowAddBtnClick'.toLowerCase()]) {
-                                owner.fireEvent('rowAddBtnClick', owner);
+                            if (owner.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowaddbtnclick', owner);
                             } else {
                                 owner.onRowAdd(owner, {
                                     randomInt: Ext.Number.randomInt(1, 1000000000000)
@@ -46,8 +46,8 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners['rowDeleteBtnClick'.toLowerCase()]) {
-                                owner.fireEvent('rowDeleteBtnClick', owner);
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
                             } else {
                                 owner.onRowDelete(owner, null, owner);
                             }
@@ -61,7 +61,7 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRegBtn(),
                     listeners: {
                         click: function () {
-                            owner.fireEvent('regBtnClick', owner);
+                            owner.fireEvent('regbtnclick', owner);
                         }
                     }
                 },
@@ -72,7 +72,7 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowModBtn(),
                     listeners: {
                         click: function () {
-                            owner.fireEvent('modBtnClick', owner);
+                            owner.fireEvent('modbtnclick', owner);
                         }
                     }
                 },
@@ -84,8 +84,8 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowSaveBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners['saveBtnClick'.toLowerCase()]) {
-                                owner.fireEvent('saveBtnClick', owner);
+                            if (owner.hasListeners['savebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('savebtnclick', owner);
                             } else {
                                 owner.onSave(owner);
                             }
@@ -99,8 +99,8 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners['reloadBtnClick'.toLowerCase()]) {
-                                owner.fireEvent('reloadBtnClick', owner);
+                            if (owner.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('reloadbtnclick', owner);
                             } else {
                                 owner.onReload();
                             }

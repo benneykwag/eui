@@ -19,7 +19,7 @@
             },
             "codeClass": null,
             "userConfig": {
-                "autoLoad": false,
+                "autoLoad": true,
                 "model": "Message",
                 "name": "mystore"
             },

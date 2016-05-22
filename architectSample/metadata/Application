@@ -16,7 +16,8 @@
             "main.LeftMenu",
             "form.Panel",
             "form.CompanyCombo",
-            "grid.Basic"
+            "grid.Basic",
+            "Grid1"
         ]
     },
     "name": "Application",

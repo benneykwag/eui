@@ -1,3 +1,107 @@
+/**
+ * Ext.grid.Panel 클래스를 확장했다.
+ *
+ * A ComboBox is like a combination of a traditional HTML text `<input>` field and a `<select>`
+ * field; the user is able to type freely into the field, and/or pick values from a dropdown selection
+ * list. The user can input any value by default, even if it does not appear in the selection list;
+ * to prevent free-form values and restrict them to items in the list, set {@link #forceSelection} to `true`.
+ *
+ * The selection list's options are populated from any {@link Ext.data.Store}, including remote
+ * stores. The data items in the store are mapped to each option's displayed text and backing value via
+ * the {@link #valueField} and {@link #displayField} configurations, respectively.
+ *
+ * If your store is not remote, i.e. it depends only on local data and is loaded up front, you should be
+ * sure to set the {@link #queryMode} to `'local'`, as this will improve responsiveness for the user.
+ *
+ * # Example usage:
+ *
+ *     @example
+ *     // The data store containing the list of states
+ *     var states = Ext.create('Ext.data.Store', {
+ *         fields: ['abbr', 'name'],
+ *         data : [
+ *             {"abbr":"AL", "name":"Alabama"},
+ *             {"abbr":"AK", "name":"Alaska"},
+ *             {"abbr":"AZ", "name":"Arizona"}
+ *         ]
+ *     });
+ *
+ *     // Create the combo box, attached to the states data store
+ *     Ext.create('Ext.form.ComboBox', {
+ *         fieldLabel: 'Choose State',
+ *         store: states,
+ *         queryMode: 'local',
+ *         displayField: 'name',
+ *         valueField: 'abbr',
+ *         renderTo: Ext.getBody()
+ *     });
+ *
+ * # Events
+ *
+ * To do something when something in ComboBox is selected, configure the select event:
+ *
+ *     var cb = Ext.create('Ext.form.ComboBox', {
+ *         // all of your config options
+ *         listeners:{
+ *              scope: yourScope,
+ *              'select': yourFunction
+ *         }
+ *     });
+ *
+ *     // Alternatively, you can assign events after the object is created:
+ *     var cb = new Ext.form.field.ComboBox(yourOptions);
+ *     cb.on('select', yourFunction, yourScope);
+ *
+ * # Multiple Selection
+ *
+ * ComboBox also allows selection of multiple items from the list; to enable multi-selection set the
+ * {@link #multiSelect} config to `true`.
+ *
+ * # Filtered Stores
+ *
+ * If you have a local store that is already filtered, you can use the {@link #lastQuery} config option
+ * to prevent the store from having the filter being cleared on first expand.
+ *
+ * ## Customized combobox
+ *
+ * Both the text shown in dropdown menu and text field can be easily customized:
+ *
+ *     @example
+ *     var states = Ext.create('Ext.data.Store', {
+ *         fields: ['abbr', 'name'],
+ *         data : [
+ *             {"abbr":"AL", "name":"Alabama"},
+ *             {"abbr":"AK", "name":"Alaska"},
+ *             {"abbr":"AZ", "name":"Arizona"}
+ *         ]
+ *     });
+ *
+ *     Ext.create('Ext.form.ComboBox', {
+ *         fieldLabel: 'Choose State',
+ *         store: states,
+ *         queryMode: 'local',
+ *         valueField: 'abbr',
+ *         renderTo: Ext.getBody(),
+ *         // Template for the dropdown menu.
+ *         // Note the use of the "x-list-plain" and "x-boundlist-item" class,
+ *         // this is required to make the items selectable.
+ *         tpl: Ext.create('Ext.XTemplate',
+ *             '<ul class="x-list-plain"><tpl for=".">',
+ *                 '<li role="option" class="x-boundlist-item">{abbr} - {name}</li>',
+ *             '</tpl></ul>'
+ *         ),
+ *         // template for the content inside text field
+ *         displayTpl: Ext.create('Ext.XTemplate',
+ *             '<tpl for=".">',
+ *                 '{abbr} - {name}',
+ *             '</tpl>'
+ *         )
+ *     });
+ *
+ * See also the {@link #listConfig} option for additional configuration of the dropdown.
+ *
+ */
+
 Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.euigrid',
@@ -9,6 +113,30 @@ Ext.define('eui.grid.Panel', {
     mixins: [
         'eui.mixin.Panel'
     ],
+
+    /**
+     * @event rowaddbtnclick
+     * eui.toolbar.Command를 사용할 경우 "추가"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event rowdeletebtnClick
+     * eui.toolbar.Command를 사용할 경우 "삭제"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event regbtnclick
+     * eui.toolbar.Command를 사용할 경우 "등록"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event modbtnclick
+     * eui.toolbar.Command를 사용할 경우 "수정"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
 
     config: {
         showRowAddBtn: false,

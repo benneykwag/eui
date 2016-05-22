@@ -3,8 +3,8 @@
     "settings": {
         "cmd": {
             "license": "commercial",
-            "cmdVersion": "6.1.1.76",
-            "frameworkVersion": "6.0.1.250"
+            "cmdVersion": "6.1.2.15",
+            "frameworkVersion": "6.0.2.437"
         },
         "canvasControls": {
             "viewportSize": {
@@ -25,13 +25,22 @@
         "generateArchitectVersion": true,
         "projectHasEnabledWebServer": true
     },
-    "xdsVersion": "3.5.0",
-    "xdsBuild": 268,
+    "xdsVersion": "3.5.1",
+    "xdsBuild": 348,
     "schemaVersion": 1,
     "upgradeVersion": 310000000001,
     "framework": "ext60",
     "viewOrderMap": {
         "view": [
+            "e8cbb443-131a-4775-a9ec-293efe5dc2fa",
+            "d22a699b-f0c7-40c4-b463-8c2e63589091",
+            "9ca7e7ec-c801-4843-a557-fbcfa67c4f7c",
+            "7467c48e-d1aa-4b22-b69b-56f746f70940",
+            "000d32de-4896-4259-900a-0dca036d5142",
+            "90403a81-fab9-4a75-a6b4-99d1f3f70b28",
+            "d61fdc46-49d5-4fc6-82d2-886f1847ae48",
+            "d10a2499-fdf5-40db-9b26-62f543a85754",
+            "c09a8539-51ea-4275-8521-362fbd2824b6",
             "2ff60bbe-2af7-44cb-a14b-02ad2c19fa03",
             "3f085e8a-1f98-4f88-9ae2-ff200cfbf466",
             "d22d4da9-9fd7-4335-82ab-ec05ed81cb7b",
@@ -40,13 +49,7 @@
             "a3f2789f-6d49-4e45-b4a5-b96f128f1a80",
             "1d8c49bb-8766-4e04-8729-3fda2545e456",
             "006f0c73-35f2-428c-955e-6d70c41016ec",
-            "22f93700-0483-4f97-b40f-24cc52ba46ec",
-            "7467c48e-d1aa-4b22-b69b-56f746f70940",
-            "e8cbb443-131a-4775-a9ec-293efe5dc2fa",
-            "000d32de-4896-4259-900a-0dca036d5142",
-            "d61fdc46-49d5-4fc6-82d2-886f1847ae48",
-            "d10a2499-fdf5-40db-9b26-62f543a85754",
-            "c09a8539-51ea-4275-8521-362fbd2824b6"
+            "22f93700-0483-4f97-b40f-24cc52ba46ec"
         ],
         "store": [],
         "controller": [],

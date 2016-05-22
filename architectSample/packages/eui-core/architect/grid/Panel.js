@@ -54,10 +54,53 @@
         {
             name: 'onRowSaveHandler',
             type: 'string'
+        }
+    ],
+    "events": [
+        {
+            "name": "regbtnclick",
+            "params": [
+                {
+                    "name": "owner",
+                    "type": "object"
+                }
+            ]
         },
         {
-            "name":"hbuttons",
-            "type": "array"
+            "name": "rowdeletebtnclick",
+            "params": [
+                {
+                    "name": "grid",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "modbtnclick",
+            "params": [
+                {
+                    "name": "owner",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "rowaddbtnclick",
+            "params": [
+                {
+                    "name": "grid",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "savebtnclick",
+            "params": [
+                {
+                    "name": "owner",
+                    "type": "object"
+                }
+            ]
         }
     ]
 }

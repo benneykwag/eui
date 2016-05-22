@@ -1,6 +1,3 @@
-/***
- * formpanel, panel, gridpanel 등의 공통 사항.
- */
 Ext.define("eui.mixin.Panel", {
     extend: 'Ext.Mixin',
 

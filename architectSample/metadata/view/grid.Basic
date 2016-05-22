@@ -32,12 +32,98 @@
                 "title": null,
                 "usePagingToolbar": true
             },
-            "name": "Grid",
+            "name": "Grid2",
             "configAlternates": {
                 "store": "binding"
             },
-            "designerId": "1aba7719-1137-461b-9c24-f2b6044ba0d3",
+            "designerId": "b49d5e08-b1c2-47b0-bbea-7b0ecbefa8ff",
             "cn": [
+                {
+                    "type": "Ext.view.Table",
+                    "reference": {
+                        "name": "viewConfig",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "name": "MyTable2",
+                    "designerId": "9e5015d6-03a8-4e5e-ad19-a977950eb161"
+                },
+                {
+                    "type": "Ext.toolbar.Toolbar",
+                    "reference": {
+                        "name": "dockedItems",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dock": "top"
+                    },
+                    "name": "MyToolbar",
+                    "designerId": "07528d6a-96f5-4ce0-a9c3-94db7d53ad2a",
+                    "cn": [
+                        {
+                            "type": "eui.toolbar.Command",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null,
+                                "showCloseBtn": false,
+                                "showModBtn": true,
+                                "showRegBtn": true,
+                                "showReloadBtn": true,
+                                "showRowAddBtn": true,
+                                "showRowDelBtn": true,
+                                "showSaveBtn": true
+                            },
+                            "name": "Commandtoolbar",
+                            "designerId": "39605e36-ff37-4343-9cca-43e02817a6ab"
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.grid.plugin.CellEditing",
+                    "reference": {
+                        "name": "plugins",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "name": "MyCellEditingPlugin",
+                    "designerId": "f7ba8c78-b6e2-46a4-b828-ec5b4bc5b481"
+                },
+                {
+                    "type": "Ext.selection.CheckboxModel",
+                    "reference": {
+                        "name": "selModel",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "mode": "SINGLE"
+                    },
+                    "name": "MyCheckboxSelectionModel",
+                    "designerId": "f430dfaa-0b59-41f8-bad4-efe8113bacd7"
+                },
+                {
+                    "type": "viewcontrollereventbinding",
+                    "reference": {
+                        "name": "listeners",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fn": "onEuigridSelect",
+                        "implHandler": [
+                            "//"
+                        ],
+                        "name": "select",
+                        "scope": "me"
+                    },
+                    "name": "onEuigridSelect",
+                    "designerId": "f46cefa7-9407-40da-a45e-b0140160be24"
+                },
                 {
                     "type": "Ext.grid.column.Column",
                     "reference": {
@@ -85,8 +171,8 @@
                         "flex": 1,
                         "text": "MSG_LABEL"
                     },
-                    "name": "MyColumn1",
-                    "designerId": "b822e388-370b-48b7-9e38-3679ec63b614",
+                    "name": "MyColumn3",
+                    "designerId": "c77bfe5c-0d58-4e86-98d9-109d26f38088",
                     "cn": [
                         {
                             "type": "Ext.form.field.Text",
@@ -104,75 +190,7 @@
                             "configAlternates": {
                                 "value": "binding"
                             },
-                            "designerId": "6f62fc45-a442-490e-86f5-a04dd115ea09"
-                        }
-                    ]
-                },
-                {
-                    "type": "Ext.view.Table",
-                    "reference": {
-                        "name": "viewConfig",
-                        "type": "object"
-                    },
-                    "codeClass": null,
-                    "name": "MyTable",
-                    "designerId": "a58f3f22-ce2c-4477-a9a4-9d989326cdf0"
-                },
-                {
-                    "type": "Ext.grid.plugin.CellEditing",
-                    "reference": {
-                        "name": "plugins",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "name": "MyCellEditingPlugin",
-                    "designerId": "f7ba8c78-b6e2-46a4-b828-ec5b4bc5b481"
-                },
-                {
-                    "type": "Ext.selection.CheckboxModel",
-                    "reference": {
-                        "name": "selModel",
-                        "type": "object"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "mode": "SINGLE"
-                    },
-                    "name": "MyCheckboxSelectionModel",
-                    "designerId": "f430dfaa-0b59-41f8-bad4-efe8113bacd7"
-                },
-                {
-                    "type": "Ext.toolbar.Toolbar",
-                    "reference": {
-                        "name": "dockedItems",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "dock": "top"
-                    },
-                    "name": "MyToolbar",
-                    "designerId": "07528d6a-96f5-4ce0-a9c3-94db7d53ad2a",
-                    "cn": [
-                        {
-                            "type": "eui.toolbar.Command",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "layout|flex": null,
-                                "showCloseBtn": false,
-                                "showModBtn": true,
-                                "showRegBtn": true,
-                                "showReloadBtn": true,
-                                "showRowAddBtn": true,
-                                "showRowDelBtn": true,
-                                "showSaveBtn": true
-                            },
-                            "name": "Commandtoolbar",
-                            "designerId": "39605e36-ff37-4343-9cca-43e02817a6ab"
+                            "designerId": "d4039baa-d41b-4d74-bc7c-84676f03c10f"
                         }
                     ]
                 },
@@ -184,12 +202,12 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "fn": "onEuigridSelect",
-                        "name": "select",
+                        "fn": "onEuigridRegbtnClick",
+                        "name": "regbtnclick",
                         "scope": "me"
                     },
-                    "name": "onEuigridSelect",
-                    "designerId": "5035e116-1df9-42cf-8848-45ded67b5298"
+                    "name": "onEuigridRegbtnClick",
+                    "designerId": "3cb9689d-55c1-4bb3-b578-02b097376e86"
                 }
             ]
         }

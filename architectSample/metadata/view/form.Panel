@@ -380,20 +380,6 @@
                     "designerId": "0753956f-905a-4386-8ffd-419d97a39b97"
                 },
                 {
-                    "type": "linkedinstance",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "fieldLabel": "회사"
-                    },
-                    "name": "form.companycombo",
-                    "designerId": "036f7503-4b49-4798-aab7-e7ced7b34a7f",
-                    "masterInstanceId": "7467c48e-d1aa-4b22-b69b-56f746f70940"
-                },
-                {
                     "type": "eui.form.field.File",
                     "reference": {
                         "name": "items",
