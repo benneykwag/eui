@@ -61,7 +61,43 @@
             "name": "regbtnclick",
             "params": [
                 {
-                    "name": "button",
+                    "name": "owner",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "rowdeletebtnclick",
+            "params": [
+                {
+                    "name": "grid",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "modbtnclick",
+            "params": [
+                {
+                    "name": "owner",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "rowaddbtnclick",
+            "params": [
+                {
+                    "name": "grid",
+                    "type": "object"
+                }
+            ]
+        },
+        {
+            "name": "savebtnclick",
+            "params": [
+                {
+                    "name": "owner",
                     "type": "object"
                 }
             ]

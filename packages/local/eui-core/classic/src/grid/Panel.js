@@ -1,3 +1,35 @@
+/**
+ * Ext.grid.Panel 클래스를 확장했다.
+ *
+ * # Events
+ *
+ * eui.toolbar.Command를 배치할 경우 해당 클래스의 버튼에서 발생하는 이벤트를 감지합니다.
+ *
+ *     var cb = Ext.create('eui.grid.Panel', {
+ *         // all of your config options
+ *         columns: [
+ *              {
+ *                  text: 'MSG_ID',
+ *                  width: 100,
+ *                  dataIndex: 'MSG_ID'
+ *              },
+ *              {
+ *                  text: 'MSG_LABEL',
+ *                  flex: 1,
+ *                  dataIndex: 'MSG_LABEL'
+ *              }
+ *         ]
+ *         listeners:{  // 각 버튼들의 리스너 구현.
+ *              regbtnclick: 'onRowReg',
+ *              rowdeletebtnclick: 'onRowDelete',
+ *              modbtnclick: 'onRowMod',
+ *              rowaddbtnclick: 'onRowAdd',
+ *              savebtnclick: 'onRowSave'
+ *         }
+ *     });
+ *
+ */
+
 Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.euigrid',
@@ -9,6 +41,30 @@ Ext.define('eui.grid.Panel', {
     mixins: [
         'eui.mixin.Panel'
     ],
+
+    /**
+     * @event rowaddbtnclick
+     * eui.toolbar.Command를 사용할 경우 "추가"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event rowdeletebtnClick
+     * eui.toolbar.Command를 사용할 경우 "삭제"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event regbtnclick
+     * eui.toolbar.Command를 사용할 경우 "등록"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+    /**
+     * @event modbtnclick
+     * eui.toolbar.Command를 사용할 경우 "수정"버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
 
     config: {
         showRowAddBtn: false,

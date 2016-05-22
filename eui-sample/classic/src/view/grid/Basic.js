@@ -41,11 +41,11 @@ Ext.define('Eui.sample.view.grid.Basic', {
             },
             listeners: {                // ViewController클래스에 정의됨.
                 select: 'onGridSelect',
-                regBtnClick: 'onRowReg',
-                rowDeleteBtnClick: 'onRowDelete',
-                modBtnClick: 'onRowMod',
-                rowAddBtnClick: 'onRowAdd',
-                saveBtnClick: 'onRowSave'
+                regbtnclick: 'onRowReg',
+                rowdeletebtnclick: 'onRowDelete',
+                modbtnclick: 'onRowMod',
+                rowaddbtnclick: 'onRowAdd',
+                savebtnclick: 'onRowSave'
             },
             columns: [
                 {

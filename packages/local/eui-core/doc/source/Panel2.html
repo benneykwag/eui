@@ -15,34 +15,90 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.grid.Panel&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-grid-Panel'>/**
+</span> * Ext.grid.Panel 클래스를 확장했다.
+ *
+ * # Events
+ *
+ * eui.toolbar.Command를 배치할 경우 해당 클래스의 버튼에서 발생하는 이벤트를 감지합니다.
+ *
+ *     var cb = Ext.create(&#39;eui.grid.Panel&#39;, {
+ *         // all of your config options
+ *         columns: [
+ *              {
+ *                  text: &#39;MSG_ID&#39;,
+ *                  width: 100,
+ *                  dataIndex: &#39;MSG_ID&#39;
+ *              },
+ *              {
+ *                  text: &#39;MSG_LABEL&#39;,
+ *                  flex: 1,
+ *                  dataIndex: &#39;MSG_LABEL&#39;
+ *              }
+ *         ]
+ *         listeners:{  // 각 버튼들의 리스너 구현.
+ *              regbtnclick: &#39;onRowReg&#39;,
+ *              rowdeletebtnclick: &#39;onRowDelete&#39;,
+ *              modbtnclick: &#39;onRowMod&#39;,
+ *              rowaddbtnclick: &#39;onRowAdd&#39;,
+ *              savebtnclick: &#39;onRowSave&#39;
+ *         }
+ *     });
+ *
+ */
+
+Ext.define(&#39;eui.grid.Panel&#39;, {
     extend: &#39;Ext.grid.Panel&#39;,
     alias: &#39;widget.euigrid&#39;,
-    columnLines: true,
-//    ui: &#39;basicgrid&#39;,
-
+<span id='eui-grid-Panel-property-columnLines'>    columnLines: true,
+</span><span id='eui-grid-Panel-property-localeProperties'>//    ui: &#39;basicgrid&#39;,
+</span>
     localeProperties: [&#39;title&#39;],
 
     mixins: [
         &#39;eui.mixin.Panel&#39;
     ],
 
+<span id='eui-grid-Panel-event-rowaddbtnclick'>    /**
+</span>     * @event rowaddbtnclick
+     * eui.toolbar.Command를 사용할 경우 &quot;추가&quot;버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+<span id='eui-grid-Panel-event-rowdeletebtnClick'>    /**
+</span>     * @event rowdeletebtnClick
+     * eui.toolbar.Command를 사용할 경우 &quot;삭제&quot;버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+<span id='eui-grid-Panel-event-regbtnclick'>    /**
+</span>     * @event regbtnclick
+     * eui.toolbar.Command를 사용할 경우 &quot;등록&quot;버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
+<span id='eui-grid-Panel-event-modbtnclick'>    /**
+</span>     * @event modbtnclick
+     * eui.toolbar.Command를 사용할 경우 &quot;수정&quot;버튼을 클릭하면 발생하는 이벤트.
+     * @param {eui.grid.Panel} grid commandtoolbar를 사용하는 그리드나 폼
+     */
+
     config: {
-        showRowAddBtn: false,
-        showRowDelBtn: false,
-        showRowRegBtn: false,
-        showRowModBtn: false,
-        showRowSaveBtn: false,
+<span id='eui-grid-Panel-cfg-showRowAddBtn'>        showRowAddBtn: false,
+</span><span id='eui-grid-Panel-cfg-showRowDelBtn'>        showRowDelBtn: false,
+</span><span id='eui-grid-Panel-cfg-showRowRegBtn'>        showRowRegBtn: false,
+</span><span id='eui-grid-Panel-cfg-showRowModBtn'>        showRowModBtn: false,
+</span><span id='eui-grid-Panel-cfg-showRowSaveBtn'>        showRowSaveBtn: false,
+</span>
+<span id='eui-grid-Panel-cfg-otherButtons'>        // defaultButtons에 추가할 버튼을 정의한다.
+</span>        otherButtons: null,
 
-        // defaultButtons에 추가할 버튼을 정의한다.
-        otherButtons: null,
-
-        usePagingToolbar: false
-    },
+<span id='eui-grid-Panel-cfg-usePagingToolbar'>        usePagingToolbar: false
+</span>    },
 
 
-    initComponent: function () {
-        var me = this;
+<span id='eui-grid-Panel-method-initComponent'>    initComponent: function () {
+</span>        var me = this;
 
         me.setBottomToolbar();
 
@@ -50,8 +106,8 @@
 
     },
 
-    checkComplete: function (editor, context) {
-        var view = context.grid.getView(),
+<span id='eui-grid-Panel-method-checkComplete'>    checkComplete: function (editor, context) {
+</span>        var view = context.grid.getView(),
             rowIdx = context.rowIdx,
             record = context.record,
             nodeId = context.node.id;
@@ -65,7 +121,7 @@
 
     },
 
-<span id='global-method-checkDeselect'>    /***
+<span id='eui-grid-Panel-method-checkDeselect'>    /***
 </span>     * 그리드 내부 에디터
      * @param editor
      * @param context
@@ -80,12 +136,12 @@
         Ext.get(nodeId).select(&#39;.x-grid-row-checker&#39;).elements[0].click()
     },
 
-    onRender: function (cmp) {
-        this.setPagingToolbarStore();
+<span id='eui-grid-Panel-method-onRender'>    onRender: function (cmp) {
+</span>        this.setPagingToolbarStore();
         this.callParent(arguments);
     },
 
-<span id='global-method-setPagingToolbarStore'>    /***
+<span id='eui-grid-Panel-method-setPagingToolbarStore'>    /***
 </span>     * Paging Toolbar store를 설정한다.
      */
     setPagingToolbarStore: function () {
@@ -101,7 +157,7 @@
         }
     },
 
-<span id='global-method-onRowAdd'>    /***
+<span id='eui-grid-Panel-method-onRowAdd'>    /***
 </span>     * 행추가 처리.
      * @param grid
      * @param data
@@ -161,7 +217,7 @@
         }
     },
 
-<span id='global-method-onRowDelete'>    /***
+<span id='eui-grid-Panel-method-onRowDelete'>    /***
 </span>     * 선택된 로우를 삭제처리한다.
      * @param grid
      * @param callback
@@ -205,18 +261,18 @@
 
     },
 
-    onSave: function (grid) {
-        var me = this;
+<span id='eui-grid-Panel-method-onSave'>    onSave: function (grid) {
+</span>        var me = this;
         me.store.sync();
     },
 
-    onReload: function () {
-        var me = this;
+<span id='eui-grid-Panel-method-onReload'>    onReload: function () {
+</span>        var me = this;
         me.store.reload();
     },
 
-    setBottomToolbar: function () {
-        var me = this;
+<span id='eui-grid-Panel-method-setBottomToolbar'>    setBottomToolbar: function () {
+</span>        var me = this;
         var buttons = [
             {
                 xtype: &#39;spbutton&#39;,

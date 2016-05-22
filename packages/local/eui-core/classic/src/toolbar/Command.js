@@ -46,8 +46,8 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners['rowdeletebtnClick'.toLowerCase()]) {
-                                owner.fireEvent('rowdeletebtnClick', owner);
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
                             } else {
                                 owner.onRowDelete(owner, null, owner);
                             }

@@ -45,8 +45,8 @@
                     hidden: !me.getShowRowAddBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners[&#39;rowAddBtnClick&#39;.toLowerCase()]) {
-                                owner.fireEvent(&#39;rowAddBtnClick&#39;, owner);
+                            if (owner.hasListeners[&#39;rowaddbtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;rowaddbtnclick&#39;, owner);
                             } else {
                                 owner.onRowAdd(owner, {
                                     randomInt: Ext.Number.randomInt(1, 1000000000000)
@@ -63,8 +63,8 @@
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners[&#39;rowDeleteBtnClick&#39;.toLowerCase()]) {
-                                owner.fireEvent(&#39;rowDeleteBtnClick&#39;, owner);
+                            if (owner.hasListeners[&#39;rowdeletebtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;rowdeletebtnclick&#39;, owner);
                             } else {
                                 owner.onRowDelete(owner, null, owner);
                             }
@@ -78,7 +78,7 @@
                     hidden: !me.getShowRegBtn(),
                     listeners: {
                         click: function () {
-                            owner.fireEvent(&#39;regBtnClick&#39;, owner);
+                            owner.fireEvent(&#39;regbtnclick&#39;, owner);
                         }
                     }
                 },
@@ -89,7 +89,7 @@
                     hidden: !me.getShowModBtn(),
                     listeners: {
                         click: function () {
-                            owner.fireEvent(&#39;modBtnClick&#39;, owner);
+                            owner.fireEvent(&#39;modbtnclick&#39;, owner);
                         }
                     }
                 },
@@ -101,8 +101,8 @@
                     hidden: !me.getShowSaveBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners[&#39;saveBtnClick&#39;.toLowerCase()]) {
-                                owner.fireEvent(&#39;saveBtnClick&#39;, owner);
+                            if (owner.hasListeners[&#39;savebtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;savebtnclick&#39;, owner);
                             } else {
                                 owner.onSave(owner);
                             }
@@ -116,8 +116,8 @@
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function () {
-                            if (owner.hasListeners[&#39;reloadBtnClick&#39;.toLowerCase()]) {
-                                owner.fireEvent(&#39;reloadBtnClick&#39;, owner);
+                            if (owner.hasListeners[&#39;reloadbtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;reloadbtnclick&#39;, owner);
                             } else {
                                 owner.onReload();
                             }
