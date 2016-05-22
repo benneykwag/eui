@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="eui-core" default=".help">
+    <property file="build.properties" />
     <!--
     The build-impl.xml file imported here contains the guts of the build process. It is
     a great idea to read that file to understand how the process works, but it is best to
@@ -56,6 +57,54 @@
         <copy todir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui-core/1.0.1">
             <fileset dir="${workspace.dir}/packages/local/eui-core"/>
         </copy>
+    </target>
+
+    <target name="-before-pkg" description="Sencha Cmd package extension point">
+
+        <antcall target="docs" />
+
+    </target>
+
+
+    <target name="docs" description="Generates JSDuck API documentation">
+
+       <!-- JSDuck should be installed and made available via your PATH. See: https://github.com/senchalabs/jsduck/wiki/Installation -->
+        <condition property="jsDuckExecutable" value="jsduck.exe">
+            <os family="windows" />
+        </condition>
+        <condition property="jsDuckExecutable" value="jsduck">
+            <os family="unix" />
+        </condition>
+
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="./docs" />
+        </delete>
+
+        <!-- For some reason, deleting and re-adding the docs folder often causes a write error. A slight delay usually avoids this. -->
+        <sleep seconds="2" />
+
+        <!-- Create updated JSDuck configuration file. -->
+        <loadfile property="jsduck.config" srcFile=".jsduck/jsduck.template.json">
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </loadfile>
+        <echo message="${jsduck.config}" file="jsduck.json" />
+
+        <echo message="Generating API documentation..." />
+        <exec executable="${jsDuckExecutable}" timeout="20000" failonerror="true" />
+
+
+
+
+        <!--<echo message="Applying custom JSDuck theme..." />-->
+        <!--<copy todir="docs" overwrite="true">-->
+            <!--<fileset file=".jsduck/theme/favicon.ico"></fileset>-->
+        <!--</copy>-->
+        <!--<copy todir="docs/theme/resources">-->
+            <!--<fileset dir=".jsduck/theme/resources"></fileset>-->
+        <!--</copy>-->
+
     </target>
 
     <!--<target name="copy.test">-->

@@ -28,6 +28,55 @@
  *         }
  *     });
  *
+
+ * # Multiple Selection
+ *
+ * ComboBox also allows selection of multiple items from the list; to enable multi-selection set the
+ * {@link #multiSelect} config to `true`.
+ *
+ * # Filtered Stores
+ *
+ * If you have a local store that is already filtered, you can use the {@link #lastQuery} config option
+ * to prevent the store from having the filter being cleared on first expand.
+ *
+ * ## Customized combobox
+ *
+ * Both the text shown in dropdown menu and text field can be easily customized:
+ *
+ *     @example
+ *     var states = Ext.create('Ext.data.Store', {
+ *         fields: ['abbr', 'name'],
+ *         data : [
+ *             {"abbr":"AL", "name":"Alabama"},
+ *             {"abbr":"AK", "name":"Alaska"},
+ *             {"abbr":"AZ", "name":"Arizona"}
+ *         ]
+ *     });
+ *
+ *     Ext.create('Ext.form.ComboBox', {
+ *         fieldLabel: 'Choose State',
+ *         store: states,
+ *         queryMode: 'local',
+ *         valueField: 'abbr',
+ *         renderTo: Ext.getBody(),
+ *         // Template for the dropdown menu.
+ *         // Note the use of the "x-list-plain" and "x-boundlist-item" class,
+ *         // this is required to make the items selectable.
+ *         tpl: Ext.create('Ext.XTemplate',
+ *             '<ul class="x-list-plain"><tpl for=".">',
+ *                 '<li role="option" class="x-boundlist-item">{abbr} - {name}</li>',
+ *             '</tpl></ul>'
+ *         ),
+ *         // template for the content inside text field
+ *         displayTpl: Ext.create('Ext.XTemplate',
+ *             '<tpl for=".">',
+ *                 '{abbr} - {name}',
+ *             '</tpl>'
+ *         )
+ *     });
+ *
+ * See also the {@link #listConfig} option for additional configuration of the dropdown.
+ *
  */
 
 Ext.define('eui.grid.Panel', {

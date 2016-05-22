@@ -1,57 +1,34 @@
 /**
  * Ext.grid.Panel 클래스를 확장했다.
  *
- * A ComboBox is like a combination of a traditional HTML text `<input>` field and a `<select>`
- * field; the user is able to type freely into the field, and/or pick values from a dropdown selection
- * list. The user can input any value by default, even if it does not appear in the selection list;
- * to prevent free-form values and restrict them to items in the list, set {@link #forceSelection} to `true`.
- *
- * The selection list's options are populated from any {@link Ext.data.Store}, including remote
- * stores. The data items in the store are mapped to each option's displayed text and backing value via
- * the {@link #valueField} and {@link #displayField} configurations, respectively.
- *
- * If your store is not remote, i.e. it depends only on local data and is loaded up front, you should be
- * sure to set the {@link #queryMode} to `'local'`, as this will improve responsiveness for the user.
- *
- * # Example usage:
- *
- *     @example
- *     // The data store containing the list of states
- *     var states = Ext.create('Ext.data.Store', {
- *         fields: ['abbr', 'name'],
- *         data : [
- *             {"abbr":"AL", "name":"Alabama"},
- *             {"abbr":"AK", "name":"Alaska"},
- *             {"abbr":"AZ", "name":"Arizona"}
- *         ]
- *     });
- *
- *     // Create the combo box, attached to the states data store
- *     Ext.create('Ext.form.ComboBox', {
- *         fieldLabel: 'Choose State',
- *         store: states,
- *         queryMode: 'local',
- *         displayField: 'name',
- *         valueField: 'abbr',
- *         renderTo: Ext.getBody()
- *     });
- *
  * # Events
  *
- * To do something when something in ComboBox is selected, configure the select event:
+ * eui.toolbar.Command를 배치할 경우 해당 클래스의 버튼에서 발생하는 이벤트를 감지합니다.
  *
- *     var cb = Ext.create('Ext.form.ComboBox', {
+ *     var cb = Ext.create('eui.grid.Panel', {
  *         // all of your config options
- *         listeners:{
- *              scope: yourScope,
- *              'select': yourFunction
+ *         columns: [
+ *              {
+ *                  text: 'MSG_ID',
+ *                  width: 100,
+ *                  dataIndex: 'MSG_ID'
+ *              },
+ *              {
+ *                  text: 'MSG_LABEL',
+ *                  flex: 1,
+ *                  dataIndex: 'MSG_LABEL'
+ *              }
+ *         ]
+ *         listeners:{  // 각 버튼들의 리스너 구현.
+ *              regbtnclick: 'onRowReg',
+ *              rowdeletebtnclick: 'onRowDelete',
+ *              modbtnclick: 'onRowMod',
+ *              rowaddbtnclick: 'onRowAdd',
+ *              savebtnclick: 'onRowSave'
  *         }
  *     });
  *
- *     // Alternatively, you can assign events after the object is created:
- *     var cb = new Ext.form.field.ComboBox(yourOptions);
- *     cb.on('select', yourFunction, yourScope);
- *
+
  * # Multiple Selection
  *
  * ComboBox also allows selection of multiple items from the list; to enable multi-selection set the
