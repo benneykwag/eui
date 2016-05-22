@@ -1111,14 +1111,27 @@ Ext.define('Ext.data.NodeInterface', {
                  * @private
                  * @param {Boolean} [erase=false] True to erase the node using the configured
                  * proxy.
+                 * @param {Boolean} [resetChildren=false] True to reset child nodes
                  */
-                clear: function(erase) {
-                    var me = this;
+                clear: function(erase, resetChildren) {
+                    var me = this,
+                        data;
 
                     // clear any references from the node
                     me.parentNode = me.previousSibling = me.nextSibling = null;
+                    
                     if (erase) {
                         me.firstChild = me.lastChild = me.childNodes = null;
+                    }
+                    
+                    // This is used by TreeStore for clearing root node state on reload
+                    if (resetChildren) {
+                        me.firstChild = me.lastChild = null;
+                        me.childNodes.length = 0;
+                        
+                        if (me.data) {
+                            me.data.children = null;
+                        }
                     }
                 },
 
@@ -1405,7 +1418,6 @@ Ext.define('Ext.data.NodeInterface', {
                  * Removes all child nodes from this node.
                  * @param {Boolean} [erase=false] True to erase the node using the configured
                  * proxy.
-                 * @return {Ext.data.NodeInterface} this
                  * @return {Ext.data.NodeInterface} this
                  */
                 removeAll: function(erase, suppressEvents, fromParent) {
@@ -1989,8 +2001,9 @@ Ext.define('Ext.data.NodeInterface', {
                  * @param {Boolean} [recursive=false] True to recursively expand all the children
                  * @param {Function} [callback] The function to execute once all the children are expanded
                  * @param {Object} [scope] The scope to run the callback in
+                 * @param singleExpand (private)
                  */
-                expandChildren: function(recursive, callback, scope, /* private */ singleExpand) {
+                expandChildren: function(recursive, callback, scope, singleExpand) {
                     var me = this,
                         origCallback, i, allNodes, expandNodes, ln, node, treeStore;
 

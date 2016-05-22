@@ -307,7 +307,7 @@ Ext.define('Ext.plugin.PullRefresh', {
 
     /**
      * Snaps the List back to the top after a pullrefresh is complete
-     * @param {Boolean=} force Force the snapback to occur regardless of state {optional}
+     * @param {Boolean} force Force the snapback to occur regardless of state {optional}
      */
     snapBack: function(force) {
         var me = this,

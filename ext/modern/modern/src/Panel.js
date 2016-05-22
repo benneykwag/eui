@@ -3,8 +3,7 @@
  * that when you {@link #showBy} another component, the container will appear in a rounded black box with a 'tip'
  * pointing to a reference component.
  *
- * If you don't need this extra functionality, you should use {@link Ext.Container} instead. See the
- * [Overlays example](#!/example/overlays) for more use cases.
+ * If you don't need this extra functionality, you should use {@link Ext.Container} instead.
  *
  *      @example miniphone preview
  *
@@ -76,14 +75,40 @@ Ext.define('Ext.Panel', {
          */
         bodyBorder: null,
 
+        /**
+         * @cfg {Boolean/Object} header
+         * Pass as `false` to prevent a header from being created.
+         *
+         * You may also assign a header with a config object (optionally containing an `xtype`)
+         * to custom-configure your panel's header.
+         *
+         * See {@link Ext.panel.Header} for all the options that may be specified here.
+         */
         header: null,
 
+        /**
+         * @cfg {String} icon
+         * @inheritdoc Ext.panel.Header#icon
+         */
         icon: null,
 
+        /**
+         * @cfg {String} iconCls
+         * @inheritdoc Ext.panel.Header#iconCls
+         */
         iconCls: null,
 
+        /**
+         * @cfg {String/Object} title
+         * @inheritdoc Ext.panel.Header#title
+         */
         title: null,
 
+        /**
+         * @cfg {Object[]/Ext.panel.Tool[]} tools
+         * An array of {@link Ext.panel.Tool} configs/instances to be added to the header tool area. The tools are stored as
+         * child components of the header container.
+         */
         tools: null
     },
 

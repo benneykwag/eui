@@ -837,11 +837,11 @@ Ext.define('Ext.data.Model', {
      */
     /**
      * @cfg {String/Object/String[]/Object[]} hasMany
-     * One or more {@link #hasMany HasMany associations} for this model.
+     * One or more HasMany associations for this model.
      */
     /**
      * @cfg {String/Object/String[]/Object[]} belongsTo
-     * One or more {@link #belongsTo BelongsTo associations} for this model.
+     * One or more BelongsTo associations for this model.
      */
 
     /**
@@ -1072,8 +1072,10 @@ Ext.define('Ext.data.Model', {
             // end up with nothing modified and not dirty
             dirty = !(opt && opt.dirty === false && !commit),
             modifiedFieldNames = null,
+            dirtyRank = 0,
+            associations = me.associations,
             currentValue, field, idChanged, key, name, oldId, comparator, dep, dependents,
-            i, dirtyRank=0, numFields, newId, rankedFields, reference, value, values;
+            i, numFields, newId, rankedFields, reference, value, values, roleName;
 
         if (single) {
             values = me._singleProp;
@@ -1232,6 +1234,11 @@ Ext.define('Ext.data.Model', {
         if (idChanged) {
             me.id = newId;
             me.callJoined('onIdChanged', [oldId, newId]);
+            if (associations) {
+                for (roleName in associations) {
+                    associations[roleName].onIdChanged(me, oldId, newId);
+                }
+            }
         }
 
         if (commit) {
@@ -2179,6 +2186,7 @@ Ext.define('Ext.data.Model', {
         options.internalCallback = function(operation) {
             var args = [me, operation],
                 success = operation.wasSuccessful();
+                
             if (success) {
                 Ext.callback(options.success, scope, args);
             } else {
@@ -3281,7 +3289,6 @@ Ext.define('Ext.data.Model', {
             makeInitializeFn: function (cls) {
                 var code = ['var '],
                     body = ['\nreturn function (e) {\n    var data = e.data, v;\n'],
-                    fieldVars = [],
                     work = 0,
                     bc, ec, // == beginClone, endClone
                     convert, expr, factory, field, fields, fs, hasDefValue, i, length;
@@ -3297,7 +3304,7 @@ Ext.define('Ext.data.Model', {
                     // name. These are used to access properties of the field (e.g., the convert
                     // method or defaultValue).
                     field = fields[i];
-                    fieldVars[i] = fs = 'f' + i;
+                    fs = 'f' + i;
                     convert = field.convert;
 
                     if (i) {

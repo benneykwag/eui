@@ -107,7 +107,6 @@ Ext.define('Ext.window.Toast', {
      * Set this to `false` to make toasts appear and disappear without animation.
      * This is helpful with applications' unit and integration testing.
      */
-    animate: true,
 
     // Pixels between each notification
     spacing: 6,
@@ -139,6 +138,17 @@ Ext.define('Ext.window.Toast', {
     // Caching coordinates to be able to align to final position of siblings being animated
     xPos: 0,
     yPos: 0,
+
+    constructor: function(config) {
+        config = config || {};
+        if (config.animate === undefined) {
+            config.animate = Ext.isBoolean(this.animate) ? this.animate : Ext.enableFx;
+        }
+        this.enableAnimations = config.animate;
+        delete config.animate;
+
+        this.callParent([config]);
+    },
 
     initComponent: function() {
         var me = this;
@@ -427,7 +437,7 @@ Ext.define('Ext.window.Toast', {
 
         Ext.Array.include(activeToasts, me);
 
-        if (me.animate) {
+        if (me.enableAnimations) {
             // Repeating from coordinates makes sure the windows does not flicker
             // into the center of the viewport during animation
             xy = el.getXY();
@@ -487,7 +497,7 @@ Ext.define('Ext.window.Toast', {
 
             me.stopAnimation();
             
-            if (me.animate) {
+            if (me.enableAnimations) {
                 el.animate({
                     to: {
                         x: me.xPos,
@@ -592,7 +602,7 @@ Ext.define('Ext.window.Toast', {
             me.cancelAutoClose();
 
             if (el) {
-                if (me.animate) {
+                if (me.enableAnimations) {
                     el.fadeOut({
                         opacity: 0,
                         easing: 'easeIn',

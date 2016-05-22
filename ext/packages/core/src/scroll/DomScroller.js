@@ -95,7 +95,7 @@ Ext.define('Ext.scroll.DomScroller', {
             // There is an IE8 override of this method; when making changes here
             // don't forget to update the override as well
             var me = this,
-                element = me.getElement(),
+                element = me.getScrollElement(),
                 maxPosition, dom, to, xInf, yInf,
                 i;
 
@@ -176,7 +176,7 @@ Ext.define('Ext.scroll.DomScroller', {
         DomScroller.document = new DomScroller({
             x: true,
             y: true,
-            element: document.body
+            element: document.documentElement
         });
     });
 });

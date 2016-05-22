@@ -403,7 +403,7 @@ describe("Ext.tab.Panel", function() {
             it("should not overwrite closeText with undefined", function() {
                 var tab = addChild().tab;
                 
-                expect(tab.closeText).toBe('Close Tab');
+                expect(tab.closeText).toBe('removable');
             });
             
             it("should overwrite closeText when specified in tab config", function() {
@@ -1504,7 +1504,7 @@ describe("Ext.tab.Panel", function() {
                     tabPanel.loader.load();
                     mockComplete("[{title: 'Tab 3'}, {title: 'Tab 4'}]");
 
-                    expect(tabPanel.setActiveTab).wasNotCalled();
+                    expect(tabPanel.setActiveTab).not.toHaveBeenCalled();
                 });
 
                 it('should not call setActiveTab when activeItem is null', function () {
@@ -1516,7 +1516,7 @@ describe("Ext.tab.Panel", function() {
                     tabPanel.loader.load();
                     mockComplete("[{title: 'Tab 3'}, {title: 'Tab 4'}]");
 
-                    expect(tabPanel.setActiveTab).wasNotCalled();
+                    expect(tabPanel.setActiveTab).not.toHaveBeenCalled();
                 });
             });
 
@@ -1545,7 +1545,7 @@ describe("Ext.tab.Panel", function() {
                     tabPanel.loader.load();
                     mockComplete("[{title: 'Tab 3'}, {title: 'Tab 4'}]");
 
-                    expect(tabPanel.setActiveTab).wasNotCalled();
+                    expect(tabPanel.setActiveTab).not.toHaveBeenCalled();
                 });
             });
 
@@ -1917,8 +1917,21 @@ describe("Ext.tab.Panel", function() {
             tabPanel.setTabPosition('left');
             expect(tabPanel.tabBar.dock).toBe('bottom');
         });
-
-
+    });
+    
+    describe("enable/disable", function() {
+        beforeEach(function() {
+            createTabPanelWithTabs(2, {
+                activeTab: 1,
+                disabled: true
+            });
+        });
+        
+        it("should activate tab when enabled", function() {
+            tabPanel.enable();
+            
+            expect(tabPanel.tabBar.activeTab.card.itemId).toBe('item2');
+        });
     });
     
     describe("ARIA", function() {

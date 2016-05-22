@@ -78,14 +78,21 @@ Ext.define('Ext.event.gesture.LongPress', {
         }
     },
 
-    fail: function() {
+    fail: function(msg) {
         clearTimeout(this.timer);
 
-        return this.callParent(arguments);
+        return this.callParent([msg]);
     },
 
     reset: function() {
-        this.isLongPress = this.startPoint = null;
+        var me = this,
+            timer = me.timer;
+
+        if (timer) {
+            clearTimeout(timer);
+        }
+        me.timer = me.isLongPress = me.startPoint = null;
+        me.callParent();
     },
 
     fire: function(eventName) {

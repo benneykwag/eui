@@ -110,7 +110,7 @@ Ext.define('Ext.tree.Column', {
         while (parent && (rootVisible || parent.data.depth > 0)) {
             parentData = parent.data;
             lines[rootVisible ? parentData.depth : parentData.depth - 1] =
-                    parentData.isLast ? 0 : 1;
+                    parent.isLastVisible() ? 0 : 1;
             parent = parent.parentNode;
         }
         

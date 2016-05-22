@@ -1,5 +1,8 @@
+/* global expect, spyOn, Ext, jasmine, xdescribe, describe */
+
 describe("Ext.util.Floating", function() {
-    var component;
+    var component,
+        describeGoodBrowsers = Ext.isWebKit || Ext.isGecko || Ext.isChrome ? describe : xdescribe;
 
     function makeComponent(cfg){
         component = new Ext.Component(Ext.apply({
@@ -422,12 +425,7 @@ describe("Ext.util.Floating", function() {
             });
 
             it("should keep the floater aligned on scroll", function() {
-                var alignToSpy = spyOn(floater, 'alignTo').andCallThrough();
-
                 floater.alignTo(c.getEl().down('.align'), 'tl-bl');
-
-                // We've called it once;
-                expect(alignToSpy.callCount).toBe(1);
 
                 expect(floater.getEl().getTop()).toBe(200);
 
@@ -435,14 +433,12 @@ describe("Ext.util.Floating", function() {
 
                 c.getScrollable().getElement().dom.scrollTop = 50;
 
-
                 waitsFor(function() {
                     return spy.callCount === 1;
                 });
 
                 runs(function() {
                     // Should realign on scroll event
-                    expect(alignToSpy.callCount).toBe(2);
                     expect(floater.getEl().getTop()).toBe(150);
                     c.getScrollable().getElement().dom.scrollTop = 100;
                 });
@@ -453,7 +449,6 @@ describe("Ext.util.Floating", function() {
 
                 runs(function() {
                     // Should realign on scroll event
-                    expect(alignToSpy.callCount).toBe(3);
                     expect(floater.getEl().getTop()).toBe(100);
                 });
             });
@@ -493,12 +488,7 @@ describe("Ext.util.Floating", function() {
             });
 
             it("should keep the floater aligned on scroll", function() {
-                var alignToSpy = spyOn(floater, 'alignTo').andCallThrough();
-
                 floater.alignTo(c.down('#align'), 'tl-bl');
-
-                // We've called it once;
-                expect(alignToSpy.callCount).toBe(1);
 
                 expect(floater.getEl().getTop()).toBe(200);
 
@@ -506,14 +496,12 @@ describe("Ext.util.Floating", function() {
 
                 c.getScrollable().getElement().dom.scrollTop = 50;
 
-
                 waitsFor(function() {
                     return spy.callCount === 1;
                 });
 
                 runs(function() {
                     // Should realign on scroll event
-                    expect(alignToSpy.callCount).toBe(2);
                     expect(floater.getEl().getTop()).toBe(150);
                     c.getScrollable().getElement().dom.scrollTop = 100;
                 });
@@ -524,7 +512,6 @@ describe("Ext.util.Floating", function() {
 
                 runs(function() {
                     // Should realign on scroll event
-                    expect(alignToSpy.callCount).toBe(3);
                     expect(floater.getEl().getTop()).toBe(100);
                 });
             });
@@ -633,7 +620,7 @@ describe("Ext.util.Floating", function() {
             });
 
             it("should keep the floater aligned on scroll", function() {
-                var alignToSpy = spyOn(floater, 'alignTo').andCallThrough();
+                var alignToSpy = spyOn(floater.mixins.positionable, 'alignTo').andCallThrough();
 
                 floater.alignTo(c.getEl().down('.align'), 'tl-bl');
 
@@ -680,7 +667,7 @@ describe("Ext.util.Floating", function() {
             });
 
             it("should keep the floater aligned on scroll", function() {
-                var alignToSpy = spyOn(floater, 'alignTo').andCallThrough();
+                var alignToSpy = spyOn(floater.mixins.positionable, 'alignTo').andCallThrough();
 
                 floater.alignTo(c.down('#align'), 'tl-bl');
 
@@ -722,5 +709,215 @@ describe("Ext.util.Floating", function() {
             });
         });
     });
+    
+    describeGoodBrowsers('Chained aligning and scrolling and clipping', function() {
+        var panel;
 
+        beforeEach(function() {
+            // We test clipping behaviour
+            Ext.menu.Menu.prototype.alignOnScroll = true;
+
+            var items = [];
+
+            for (var i = 0; i < 10; i++) {
+                items.push({
+                    xtype: 'combobox',
+                    itemId: 'combo' + (i + 1),
+                    fieldLabel: 'ComboBox' + (i + 1),
+                    store: [
+                        'Foo',
+                        'Bar',
+                        'Bletch',
+                        'Ik',
+                        'Screeble',
+                        'Raz',
+                        'Poot',
+                        'Honk',
+                        'Flap',
+                        'Gibber',
+                        'Tweet'
+                    ]
+                }, {
+                    xtype: 'grid',
+                    itemId: 'grid' + (i + 1),
+                    title: 'Small Grid',
+                    frame: true,
+                    width: 220,
+                    style: 'margin:0 0 5px 100px',
+                    columns: [{
+                        text: 'Col 1',
+                        dataIndex: 'col1'
+                    }, {
+                        text: 'Col 2',
+                        dataIndex: 'col2'
+                    }],
+                    store: {
+                        fields: ['col1', 'col2'],
+                        data: [
+                            {col1: 'grid' + (i + 1) + '/1', col2: 'grid' + (i + 1) + '/2'}
+                        ]
+                    }
+                }, {
+                    xtype: 'button',
+                    itemId: 'button' + (i + 1),
+                    text: 'Button',
+                    style: 'margin:0 0 5px 100px',
+                    menu: [{
+                        text: 'Button Menu 1'
+                    }, {
+                        text: 'Button Menu 2'
+                    }]
+                });
+            }
+            panel = new Ext.form.Panel({
+                frame: true,
+                style: 'marginTop:50px',
+                scrollable: true,
+                title: 'Lots of Combos',
+                height: 400, width: 600,
+                renderTo: document.body,
+                items: items
+            });
+        });
+        afterEach(function() {
+            // We test clipping behaviour
+            Ext.menu.Menu.prototype.alignOnScroll = false;
+            panel.destroy();
+        });
+
+        it('should clip at the top when scrolling a floater outside the top boundary', function() {
+            var grid1 = panel.down('#grid1'),
+                col = grid1.down('gridcolumn'),
+                headerMenu,
+                columnsItem,
+                columnsMenu,
+                headerMenuY,
+                scrolledHeaderMenuY,
+                columnsMenuY,
+                scrolledColumnsMenuY;
+
+            jasmine.fireMouseEvent(col, 'mouseover');
+            jasmine.fireMouseEvent(col.triggerEl, 'click');
+            headerMenu = col.activeMenu;
+            columnsItem = headerMenu.child('[text=Columns]');
+            jasmine.fireMouseEvent(columnsItem.el, 'mouseover');
+            
+            waitsFor(function() {
+                columnsMenu = columnsItem.menu;
+                return columnsMenu && columnsMenu.isVisible();
+            });
+            runs(function() {
+                headerMenuY = headerMenu.getY();
+                columnsMenuY = columnsMenu.getY();
+                panel.scrollBy(0, 100);
+            });
+            waitsFor(function() {
+                return !!headerMenu.el.dom.style.clip;
+            });
+            runs(function() {
+                scrolledHeaderMenuY = headerMenu.getY();
+                scrolledColumnsMenuY = columnsMenu.getY();
+                var overflow = Math.max(0, panel.body.getY() - scrolledHeaderMenuY);
+
+                // Menus should BOTH have bumped upwards by exactly the amount we scrolled
+                expect(scrolledHeaderMenuY).toBe(headerMenuY - 100);
+                expect(scrolledColumnsMenuY).toBe(columnsMenuY - 100);
+
+                // And the overflowing top of it shuold have been clipped off.
+                // Note that some browsers return comma separated values for the clip rect.
+                expect(Ext.String.startsWith(headerMenu.el.dom.style.clip, 'rect(' + overflow + 'px')).toBe(true);
+            });
+        });
+
+        it('should not clip at the bottom when floater extends outside the bottom boundary and anchor is fully visible', function() {
+            var grid9 = panel.down('#grid9'),
+                col = grid9.down('gridcolumn'),
+                headerMenu,
+                columnsItem,
+                columnsMenu;
+
+            panel.getScrollable().scrollIntoView(grid9.el);
+
+            jasmine.fireMouseEvent(col, 'mouseover');
+            jasmine.fireMouseEvent(col.triggerEl, 'click');
+            headerMenu = col.activeMenu;
+            columnsItem = headerMenu.child('[text=Columns]');
+            jasmine.fireMouseEvent(columnsItem.el, 'mouseover');
+
+            waitsFor(function() {
+                columnsMenu = columnsItem.menu;
+                return columnsMenu && columnsMenu.isVisible();
+            });
+            runs(function() {
+                // No clipping
+                expect(columnsMenu.el.dom.style.clip).toBe('');
+            });
+        });
+
+        // If the flaoters overflow the scroll area, but we've reached the scroll end, and there's not enough scroll left
+        // to bring them into view, then the floaters must be made available.
+        it("should clip at the bottom when scrolling a floater's anchor outside the bottom boundary", function() {
+            var grid10 = panel.down('#grid10'),
+                col = grid10.down('gridcolumn'),
+                headerMenu,
+                columnsItem,
+                columnsMenu,
+                headerMenuY,
+                scrolledHeaderMenuY,
+                columnsMenuY,
+                scrolledColumnsMenuY;
+
+            panel.getScrollable().scrollIntoView(grid10.el);
+
+            jasmine.fireMouseEvent(col, 'mouseover');
+            jasmine.fireMouseEvent(col.triggerEl, 'click');
+            headerMenu = col.activeMenu;
+            columnsItem = headerMenu.child('[text=Columns]');
+            jasmine.fireMouseEvent(columnsItem.el, 'mouseover');
+            
+            waitsFor(function() {
+                columnsMenu = columnsItem.menu;
+                return columnsMenu && columnsMenu.isVisible();
+            });
+            runs(function() {
+                // Header menu still visible because its anchor element is within the view
+                expect(headerMenu.el.dom.style.clip).toBe('');
+
+                // Columns menu overflows the bottom but it is NOT cliped because
+                // it cannot be scrolled into view
+                expect(columnsMenu.el.dom.style.clip).toBe('');
+
+                headerMenuY = headerMenu.getY();
+                columnsMenuY = columnsMenu.getY();
+                panel.scrollBy(0, -20);
+            });
+            waitsFor(function() {
+                return headerMenu.getY() === headerMenuY + 20 && columnsMenu.getY() === columnsMenuY + 20;
+            });
+            runs(function() {
+                scrolledHeaderMenuY = headerMenu.getY();
+                scrolledColumnsMenuY = columnsMenu.getY();
+
+                // Menus should BOTH have bumped upwards by exactly the amount we scrolled
+                expect(scrolledHeaderMenuY).toBe(headerMenuY + 20);
+                expect(scrolledColumnsMenuY).toBe(columnsMenuY + 20);
+
+                // Must not have been clipped because we're at the bottom of the scroll
+                expect(headerMenu.el.dom.style.clip).toBe('');
+                panel.scrollBy(0, -20);
+            });
+            waitsFor(function() {
+                return headerMenu.getY() === scrolledHeaderMenuY + 20 && columnsMenu.getY() === scrolledColumnsMenuY + 20;
+            });
+            runs(function() {
+                var hmOverflow = Math.max(0, panel.body.getConstrainRegion().bottom - headerMenu.el.getY()),
+                    cmOverflow = Math.max(0, panel.body.getConstrainRegion().bottom - columnsMenu.el.getY());
+
+                // The header trigger ell is clipped, so both menus should be clipped out of visibility.
+                // Note that some browsers return comma separated values for the clip rect.
+                expect(Ext.String.startsWith( headerMenu.el.dom.style.clip, 'rect(' + hmOverflow + 'px')).toBe(true);
+                expect(Ext.String.startsWith(columnsMenu.el.dom.style.clip, 'rect(' + cmOverflow + 'px')).toBe(true);
+            });
+        });
+    });
 });

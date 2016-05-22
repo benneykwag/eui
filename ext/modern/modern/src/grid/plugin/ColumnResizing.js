@@ -9,66 +9,122 @@ Ext.define('Ext.grid.plugin.ColumnResizing', {
     alias: 'plugin.gridcolumnresizing',
 
     config: {
-        grid: null
+        grid: null,
+
+        /**
+         * @cfg {Boolean} realtime
+         * When true the whole column will resize in real-time as the user drags. When false only the header will resize
+         * until the interaction is done.
+         */
+        realtime: false
     },
 
-    init: function(grid) {
+    resizerCls: Ext.baseCSSPrefix + 'grid-with-column-resize',
+
+    init: function (grid) {
         this.setGrid(grid);
+        this._resizeMarker = grid.resizeMarker;
+        this._resizeMarkerParent = this._resizeMarker.parent();
     },
 
-    updateGrid: function(grid, oldGrid) {
+    updateGrid: function (grid, oldGrid) {
+        var cls = this.resizerCls;
+
         if (oldGrid) {
             oldGrid.getHeaderContainer().renderElement.un({
-                pinchstart: 'onContainerPinchStart',
-                pinch: 'onContainerPinch',
-                pinchend: 'onContainerPinchEnd',
-                scope: this
+                touchstart: 'onContainerTouchStart',
+                touchmove: 'onContainerTouchMove',
+                touchend: 'onContainerTouchEnd',
+                scope: this,
+                priority: 100
             });
+            oldGrid.removeCls(cls);
         }
 
         if (grid) {
             grid.getHeaderContainer().renderElement.on({
-                pinchstart: 'onContainerPinchStart',
-                pinch: 'onContainerPinch',
-                pinchend: 'onContainerPinchEnd',
+                touchstart: 'onContainerTouchStart',
+                touchmove: 'onContainerTouchMove',
+                touchend: 'onContainerTouchEnd',
                 scope: this
             });
+            grid.addCls(cls);
         }
     },
 
-    onContainerPinchStart: function(e) {
+    onContainerTouchStart: function (e) {
         var target = e.getTarget('.' + Ext.baseCSSPrefix + 'grid-column'),
+            resizer = e.getTarget('.' + Ext.baseCSSPrefix + 'grid-column-resizer'),
+            grid = this.getGrid(),
             column;
 
-        if (target) {
-            column = Ext.getCmp(target.id);
+        if (resizer && !e.multitouch && target && !this._resizeColumn) {
+            column = Ext.Component.fromElement(target);
+
             if (column && column.getResizable()) {
-                this.startColumnWidth = column.getWidth();
-                this.resizeColumn = column;
-                this.startDistance = e.distance;
+                this._startColumnWidth = column.getComputedWidth();
+                this._minColumnWidth = column.getMinWidth();
+                this._resizeColumn = column;
+                this._startX = e.getX();
                 column.renderElement.addCls(Ext.baseCSSPrefix + 'grid-column-resizing');
-            } else {
-                e.preventDefault();
+                // Prevent drag and longpress gestures being triggered by this mousedown
+                e.cancelGesture();
+
+                if (!this.getRealtime()) {
+                    this._resizeMarker.show();
+                    this._resizeMarker.setLeft(column.el.getOffsetsTo(this._resizeMarkerParent)[0] + this._startColumnWidth);
+                } else {
+                    column.setWidth(this._startColumnWidth);
+                }
+            }
+        } else if (e.multitouch && this._resizeColumn) {
+            this.endResize();
+        }
+    },
+
+    onContainerTouchMove: function (e) {
+        // Single touch only
+        if (e.isMultitouch) {
+            this.endResize();
+            return;
+        }
+
+        if (this._resizeColumn) {
+            var column = this._resizeColumn,
+                resizeAmount = e.getX() - this._startX;
+
+            if (column) {
+                this.currentColumnWidth = Math.max(Math.ceil(this._startColumnWidth + resizeAmount), this._minColumnWidth);
+
+                if (this.getRealtime()) {
+                    column.setWidth(this.currentColumnWidth);
+                    column.renderElement.setWidth(this.currentColumnWidth);
+                } else {
+                    this._resizeMarker.setLeft(column.el.getOffsetsTo(this._resizeMarkerParent)[0] + this.currentColumnWidth);
+                }
+
+                e.stopEvent();
             }
         }
     },
 
-    onContainerPinch: function(e) {
-        var column = this.resizeColumn,
-            resizeAmount = e.distance - this.startDistance;
-
-        if (column) {
-            this.currentColumnWidth = Math.ceil(this.startColumnWidth + resizeAmount);
-            column.renderElement.setWidth(this.currentColumnWidth);
+    onContainerTouchEnd: function (e) {
+        if (this._resizeColumn) {
+            e.stopEvent();
+            this.endResize();
         }
     },
 
-    onContainerPinchEnd: function() {
-        var column = this.resizeColumn;
+    endResize: function () {
+        var column = this._resizeColumn,
+            grid = this.getGrid();
         if (column) {
-            column.setWidth(this.currentColumnWidth + 1);
+            if (!this.getRealtime()) {
+                grid.resizeMarker.hide();
+            }
+            column.setWidth(this.currentColumnWidth);
             column.renderElement.removeCls(Ext.baseCSSPrefix + 'grid-column-resizing');
-            delete this.resizeColumn;
+            delete this._resizeColumn;
         }
     }
 });

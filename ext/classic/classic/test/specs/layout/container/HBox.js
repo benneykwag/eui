@@ -2861,6 +2861,16 @@ describe("Ext.layout.container.HBox", function(){
         });
 
         describe("preserving scroll state", function() {
+            var endSpy;
+
+            beforeEach(function() {
+                endSpy = jasmine.createSpy();
+            });
+
+            afterEach(function() {
+                endSpy = null;
+            });
+
             it("should restore the horizontal/vertical scroll position with user scrolling", function() {
                 makeCt({
                     width: 400,
@@ -2874,20 +2884,26 @@ describe("Ext.layout.container.HBox", function(){
                         height: 500
                     }]
                 });
-                
                 var scrollable = ct.getScrollable();
+                scrollable.on('scrollend', endSpy);
                 scrollable.scrollTo(50, 30);
-                
-                // Make sure that we're where we want to be
-                var position = scrollable.getPosition();
-                expect(position).toEqual({ x: 50, y: 30 });
-                
-                ct.setSize(401, 401);
-                
-                var position = scrollable.getPosition();
-
-                // There IS no y overflow, so the y scroll request cannot have had any effect
-                expect(position).toEqual({ x: 50, y: 0 });
+                waitsFor(function() {
+                    return endSpy.callCount > 0;
+                });
+                runs(function() {
+                    ct.setSize(401, 401);
+                });
+                waitsFor(function() {
+                    var pos = scrollable.getPosition();
+                    return pos.x > 0 && pos.y > 0;
+                });
+                runs(function() {
+                    var pos = scrollable.getPosition();
+                    expect(pos).toEqual({
+                        x: 50,
+                        y: 30
+                    });
+                });
             });
 
             it("should restore the horizontal/vertical scroll position with programmatic scrolling", function() {
@@ -2907,20 +2923,26 @@ describe("Ext.layout.container.HBox", function(){
                         height: 500
                     }]
                 });
-                
                 var scrollable = ct.getScrollable();
+                scrollable.on('scrollend', endSpy);
                 scrollable.scrollTo(50, 30);
-                
-                // Make sure that we're where we want to be
-                var position = scrollable.getPosition();
-                expect(position).toEqual({ x: 50, y: 30 });
-                
-                ct.setSize(401, 401);
-                
-                var position = scrollable.getPosition();
-
-                // There IS no y overflow, so the y scroll request cannot have had any effect
-                expect(position).toEqual({ x: 50, y: 0 });
+                waitsFor(function() {
+                    return endSpy.callCount > 0;
+                });
+                runs(function() {
+                    ct.setSize(401, 401);
+                });
+                waitsFor(function() {
+                    var pos = scrollable.getPosition();
+                    return pos.x > 0 && pos.y > 0;
+                });
+                runs(function() {
+                    var pos = scrollable.getPosition();
+                    expect(pos).toEqual({
+                        x: 50,
+                        y: 30
+                    });
+                });
             });
         });
     });

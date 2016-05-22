@@ -169,16 +169,6 @@ Ext.define('Ext.layout.container.Box', {
         alignRoundingMethod: 'round'
     },
 
-    /**
-     * @cfg {Number} flex
-     * This configuration option is to be applied to **child items** of the container
-     * managed by this layout. Each child item with a flex property will be flexed
-     * (horizontally in `hbox`, vertically in `vbox`) according to each item's
-     * **relative** flex value compared to the sum of all items with a flex value
-     * specified. Any child items that have either a `flex = 0` or `flex = undefined`
-     * will not be 'flexed' (the initial size will not be changed).
-     */
-
     itemCls: Ext.baseCSSPrefix + 'box-item',
     targetCls: Ext.baseCSSPrefix + 'box-layout-ct',
     targetElCls: Ext.baseCSSPrefix + 'box-target',
@@ -217,7 +207,7 @@ Ext.define('Ext.layout.container.Box', {
         var me = this,
             type;
 
-        me.callParent(arguments);
+        me.callParent([config]);
 
         me.setVertical(me.vertical);
 
@@ -392,7 +382,6 @@ Ext.define('Ext.layout.container.Box', {
             style = me.innerCt.dom.style,
             names = me.names,
             overflowHandler = me.overflowHandler,
-            scrollable = owner.getScrollable(),
             scrollPos;
 
         ownerContext.boxNames = names;
@@ -410,24 +399,11 @@ Ext.define('Ext.layout.container.Box', {
 
         ownerContext.stretchMaxPartner = smp && ownerContext.context.getCmp(smp);
 
-        me.callParent(arguments);
+        me.callParent([ownerContext]);
 
         ownerContext.innerCtContext = ownerContext.getEl('innerCt', me);
         ownerContext.targetElContext = ownerContext.getEl('targetEl', me);
-
-        if (scrollable) {
-            ownerContext.ownerScrollable = scrollable;
-
-            // If we have a scrollable, save the positions regardless of whether we can scroll in that direction
-            // since the scrollable may be configured with x: false, y: false, which means it can only be
-            // controlled programmatically
-            scrollPos = scrollable.getPosition();
-
-            // Only restore if the component was actually scrolled in the first place
-            if (scrollPos.x || scrollPos.y) {
-                ownerContext.scrollRestore = scrollPos;
-            }
-        }
+        ownerContext.ownerScrollable = owner.getScrollable();
 
         // Don't allow sizes burned on to the innerCt to influence measurements.
         style.width = style.height = '';
@@ -451,7 +427,7 @@ Ext.define('Ext.layout.container.Box', {
             overflowHandler.beginLayoutCycle(ownerContext, firstCycle);
         }
 
-        me.callParent(arguments);
+        me.callParent([ownerContext, firstCycle]);
 
         // Cache several of our string concat/compare results (since width/heightModel can
         // change if we are invalidated, we cannot do this in beginLayout)
@@ -568,8 +544,10 @@ Ext.define('Ext.layout.container.Box', {
                     totalFlex += flex;
                     flexedItems.push(childContext);
                     minWidth += child[minWidthName] || 0;
-                } else { // a %age width...
-                    match = percentageRe.exec(child[names.width]);
+                }
+                // a %age width. Note that we are testing the value that is
+                // assigned to match.
+                else if (match = percentageRe.exec(child[names.width])) {
                     childContext.percentageParallel = parseFloat(match[1]) / 100;
                     ++percentageWidths;
                 }
@@ -1141,7 +1119,6 @@ Ext.define('Ext.layout.container.Box', {
             invalidateScrollX = ownerContext.invalidateScrollX,
             invalidateScrollY = ownerContext.invalidateScrollY,
             overflowHandler = me.overflowHandler,
-            scrollRestore = ownerContext.scrollRestore,
             dom, el, overflowX, overflowY, styles;
 
         if (overflowHandler) {
@@ -1189,9 +1166,6 @@ Ext.define('Ext.layout.container.Box', {
                 }
             }
         }
-        if (scrollRestore) {
-            ownerContext.ownerScrollable.scrollTo(scrollRestore.x, scrollRestore.y);
-        }
     },
 
     finishedLayout: function(ownerContext) {
@@ -1200,7 +1174,7 @@ Ext.define('Ext.layout.container.Box', {
         if (overflowHandler) {
             overflowHandler.finishedLayout(ownerContext);
         }
-        this.callParent(arguments);
+        this.callParent([ownerContext]);
     },
 
     getLayoutItems: function() {
@@ -1371,7 +1345,7 @@ Ext.define('Ext.layout.container.Box', {
             // Buttons will gain a split param
             split = me.enableSplitters && item.split && !item.isButton;
 
-        me.callParent(arguments);
+        me.callParent([item, index]);
 
         if (split) {
             if (split === true) {
@@ -1400,7 +1374,7 @@ Ext.define('Ext.layout.container.Box', {
             overflowHandler = me.overflowHandler,
             el;
             
-        me.callParent(arguments);
+        me.callParent([comp, isDestroying]);
 
         if (splitter && owner.contains(splitter)) {
             owner.doRemove(splitter, true);

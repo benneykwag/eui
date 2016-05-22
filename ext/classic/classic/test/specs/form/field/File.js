@@ -20,7 +20,7 @@ describe("Ext.form.field.File", function(){
         
         it("should default to readOnly", function(){
             expect(field.readOnly).toBe(true);
-        }) ;   
+        });   
         
         it("should default to have a button", function(){
             expect(field.buttonOnly).toBe(false);
@@ -125,6 +125,24 @@ describe("Ext.form.field.File", function(){
             runs(function() {
                 expect(blurSpy).toHaveBeenCalled();
             });
+        });
+    });
+    
+    describe("reset", function() {
+        beforeEach(function() {
+            makeField({
+                renderTo: Ext.getBody()
+            });
+            
+            field.reset(true);
+        });
+        
+        it("should assign button id to file input name", function() {
+            expect(field.button.fileInputEl.dom.name).toBe(field.button.id);
+        });
+        
+        it("should reassign ariaEl to new file input el", function() {
+            expect(field.button.ariaEl).toBe(field.button.fileInputEl);
         });
     });
 });

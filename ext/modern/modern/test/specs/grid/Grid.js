@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect */
+
 describe("Ext.grid.Grid", function() {
 
     var Model = Ext.define(null, {
@@ -16,6 +18,15 @@ describe("Ext.grid.Grid", function() {
     });
 
     var grid, store, colMap;
+
+    function spyOnEvent(object, eventName, fn) {
+        var obj = {
+            fn: fn || Ext.emptyFn
+        },
+        spy = spyOn(obj, "fn");
+        object.addListener(eventName, obj.fn);
+        return spy;
+    }
 
     function makeStore(rows) {
         var data = [],
@@ -115,6 +126,20 @@ describe("Ext.grid.Grid", function() {
     function refreshColSizes() {
         var cols = grid.query('column');
         Ext.event.publisher.ElementSize.instance.syncRefresh(cols);
+    }
+
+    function resizeColumn(column, by) {
+        var el = column.resizer,
+            colBox = column.el.getBox(),
+            fromMx = colBox.x + colBox.width - 2,
+            fromMy = colBox.y + colBox.height / 2;
+
+        // Mousedown on the header to drag
+        Ext.testHelper.touchStart(el, {x: fromMx, y: fromMy});
+
+        // Move to resize
+        Ext.testHelper.touchMove(el, {x: fromMx + by, y: fromMy});
+        Ext.testHelper.touchEnd(el, {x: fromMx + by, y: fromMy});
     }
 
     // In this method we don't test for exact sizing, rather
@@ -341,6 +366,145 @@ describe("Ext.grid.Grid", function() {
                     colMap.colf1.setFlex(2);
                     colMap.colf2.setWidth(50);
                     expectSizes();
+                });
+            });
+        });
+
+        describe("align", function() {
+            function expectAlignCls(col, cls) {
+                var cells = getCells(col);
+                cells.forEach(function(cell) {
+                    expect(cell.element).toHaveCls(cls);
+                });
+            }
+
+            it("should add the column align class to cells", function() {
+                makeGrid([{
+                    align: 'left',
+                    itemId: 'colf1'
+                }, {
+                    align: 'center',
+                    itemId: 'colf2'
+                }, {
+                    align: 'right',
+                    itemId: 'colf3'
+                }]);
+                renderWithRefresh();
+
+                expectAlignCls(colMap.colf1, 'x-grid-cell-align-left');
+                expectAlignCls(colMap.colf2, 'x-grid-cell-align-center');
+                expectAlignCls(colMap.colf3, 'x-grid-cell-align-right');
+            });
+
+            it("should give precedence to the cell cfg", function() {
+                makeGrid([{
+                    align: 'center',
+                    itemId: 'colf1',
+                    cell: {
+                        align: 'right'
+                    }
+                }]);
+                renderWithRefresh();
+                expectAlignCls(colMap.colf1, 'x-grid-cell-align-right');
+            });
+        });
+
+        describe("resizable", function() {
+            describe("visibility", function() {
+                it("should not show the resizer if the grid doesn't have the plugin", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: true
+                    }]);
+                    renderWithRefresh();
+
+                    expect(colMap.colf1.resizer.isVisible()).toBe(false);
+                });
+
+                it("should not show the resizer with resizable: false", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: false
+                    }], null, {
+                        plugins: [{
+                            type: 'gridcolumnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    expect(colMap.colf1.resizer.isVisible()).toBe(false);
+                });
+
+                it("should show the resizer with resizable: true and the plugin", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: true
+                    }], null, {
+                        plugins: [{
+                            type: 'gridcolumnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    expect(colMap.colf1.resizer.isVisible()).toBe(true);
+                });
+
+                it("should be able to toggle the resizer on", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: false
+                    }], null, {
+                        plugins: [{
+                            type: 'gridcolumnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    var col = colMap.colf1;
+
+                    expect(col.resizer.isVisible()).toBe(false);
+                    col.setResizable(true);
+                    expect(col.resizer.isVisible()).toBe(true);
+                });
+
+                it("should be able to toggle the resizer off", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: true
+                    }], null, {
+                        plugins: [{
+                            type: 'gridcolumnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    var col = colMap.colf1;
+
+                    expect(col.resizer.isVisible()).toBe(true);
+                    col.setResizable(false);
+                    expect(col.resizer.isVisible()).toBe(false);
+                });
+                it('should not fire drag events on headercontainer during resize', function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        resizable: true,
+                        width: 100
+                    }], null, {
+                        plugins: [{
+                            type: 'gridcolumnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    var col = colMap.colf1,
+                        colWidth = col.getWidth(),
+                        dragSpy = spyOnEvent(grid.getHeaderContainer().el, 'drag');
+
+                    resizeColumn(col, 10);
+                    runs(function() {
+                        expect(col.getWidth()).toBe(colWidth + 10);
+                        expect(dragSpy).not.toHaveBeenCalled();
+                    });
                 });
             });
         });

@@ -66,8 +66,8 @@
  *         title: 'Results', // the title becomes the title of the tab
  *     });
  *
- *     myTabPanel.add(myNewGrid); // {@link Ext.tab.Panel} implicitly uses {@link Ext.layout.container.Card Card}
- *     myTabPanel.{@link Ext.tab.Panel#setActiveTab setActiveTab}(myNewGrid);
+ *     myTabPanel.add(myNewGrid); // Ext.tab.Panel implicitly uses Ext.layout.container.Card
+ *     myTabPanel.setActiveTab.(myNewGrid);
  *
  * The example above adds a newly created GridPanel to a TabPanel. Note that a TabPanel uses {@link
  * Ext.layout.container.Card} as its layout manager which means all its child items are sized to {@link
@@ -779,11 +779,11 @@ Ext.define('Ext.container.Container', {
      * If adding multiple new child Components, pass them as an array to the `add` method,
      * so that only one layout recalculation is performed.
      *
-     *     tb = new {@link Ext.toolbar.Toolbar}({
+     *     tb = new Ext.toolbar.Toolbar({
      *         renderTo: document.body
      *     });  // toolbar is rendered
      *     // add multiple items.
-     *     // ({@link #defaultType} for {@link Ext.toolbar.Toolbar Toolbar} is 'button')
+     *     // default type for Toolbar is 'button')
      *     tb.add([{text:'Button 1'}, {text:'Button 2'}]);
      *
      * To inject components between existing ones, use the {@link #insert} method.
@@ -1059,10 +1059,7 @@ Ext.define('Ext.container.Container', {
         }
     },
 
-    /**
-     * Disables all child input fields and buttons.
-     */
-    disable: function(silent, /* private */fromParent) {
+    disable: function(silent, fromParent) {
         var me = this,
             wasDisabled = me.disabled,
             itemsToDisable, len, i;
@@ -1080,10 +1077,7 @@ Ext.define('Ext.container.Container', {
         return me;
     },
 
-    /**
-     * Enables all child input fields and buttons.
-     */
-    enable: function(silent, /* private */fromParent) {
+    enable: function(silent, fromParent) {
         var me = this,
             wasDisabled = me.disabled,
             itemsToDisable, len, i;
@@ -1169,9 +1163,13 @@ Ext.define('Ext.container.Container', {
      * @return {Ext.dom.Element} the focus holding element.
      */
     getFocusEl: function() {
-        var delegate = this.getDefaultFocus();
+        var delegate;
 
-        if (delegate) {
+        if (this.enableFocusableContainer) {
+            return this.getFocusableContainerEl();
+        }
+        // Assignment in conditional is intentional
+        else if (delegate = this.getDefaultFocus()) {
             return delegate;
         }
         else if (this.focusable) {
@@ -1387,7 +1385,7 @@ Ext.define('Ext.container.Container', {
     /**
      * @protected
      * Called when a raw config object is added to this container either during initialization of the {@link #cfg-items} config,
-     * or when new items are {@link #method-add added), or {@link #method-insert inserted}.
+     * or when new items are {@link #method-add added}, or {@link #method-insert inserted}.
      *
      * This method converts the passed object into an instanced child component.
      *
@@ -1599,6 +1597,11 @@ Ext.define('Ext.container.Container', {
         this.repositionFloatingItems();
     },
 
+    /**
+     * @inheritdoc
+     * @protected
+     * @template
+     */
     onResize: function() {
         this.callParent(arguments);
         this.repositionFloatingItems();

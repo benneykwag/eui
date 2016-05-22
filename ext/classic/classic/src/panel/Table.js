@@ -14,7 +14,7 @@
 Ext.define('Ext.panel.Table', {
     extend: 'Ext.panel.Panel',
 
-    alias: 'widget.tablepanel',
+    xtype: 'tablepanel',
     
     requires: [
         'Ext.layout.container.Fit'
@@ -684,13 +684,16 @@ Ext.define('Ext.panel.Table', {
 
         // Whatever kind of View we have, be it a TableView, or a LockingView, we are interested in the selection model
         me.selModel = me.view.getSelectionModel();
-        if (me.selModel.isRowModel) {
-            me.selModel.on({
-                scope: me,
-                lastselectedchanged: me.updateBindSelection,
-                selectionchange: me.updateBindSelection
-            });
-        }
+
+        // We update the bound selection whenever the selectionchange event fires.
+        // Even a CellModel, or a SpreadsheetModel in cell selection mode can yield
+        // the *records* that are selected, and it is the first record which is published
+        // to the selection property.
+        me.selModel.on({
+            scope: me,
+            lastselectedchanged: me.updateBindSelection,
+            selectionchange: me.updateBindSelection
+        });
 
         // Relay events from the View whether it be a LockingView, or a regular GridView
         me.relayEvents(me.view, [
@@ -856,7 +859,7 @@ Ext.define('Ext.panel.Table', {
             'rowkeydown',
             /**
              * @event beforeitemkeydown
-             * @inheritdoc Ext.view.Table#beforeitemkeydown
+             * @inheritdoc Ext.view.View#beforeitemkeydown
              */
             'beforeitemkeydown',
             /**
@@ -866,7 +869,7 @@ Ext.define('Ext.panel.Table', {
             'itemkeydown',
             /**
              * @event beforeitemkeyup
-             * @inheritdoc Ext.view.Table#beforeitemkeyup
+             * @inheritdoc Ext.view.View#beforeitemkeyup
              */
             'beforeitemkeyup',
             /**
@@ -876,7 +879,7 @@ Ext.define('Ext.panel.Table', {
             'itemkeyup',
             /**
              * @event beforeitemkeypress
-             * @inheritdoc Ext.view.Table#beforeitemkeypress
+             * @inheritdoc Ext.view.View#beforeitemkeypress
              */
             'beforeitemkeypress',
             /**
@@ -985,11 +988,6 @@ Ext.define('Ext.panel.Table', {
              */
             'containerkeypress',
             /**
-             * @event selectionchange
-             * @inheritdoc Ext.selection.Model#selectionchange
-             */
-            'selectionchange',
-            /**
              * @event beforeselect
              * @inheritdoc Ext.selection.RowModel#beforeselect
              */
@@ -1010,6 +1008,18 @@ Ext.define('Ext.panel.Table', {
              */
             'deselect'
         ]);
+
+        // Only relay the event if it's not SpreadsheetModel.
+        // SpreadsheetModel fires it directly through the Panel.
+        if (!me.selModel.isSpreadsheetModel) {
+            me.relayEvents(me.view, [
+                /**
+                 * @event selectionchange
+                 * @inheritdoc Ext.selection.Model#selectionchange
+                 */
+                'selectionchange'
+            ]);
+        }
 
         me.callParent();
         if (me.enableLocking) {
@@ -1180,6 +1190,16 @@ Ext.define('Ext.panel.Table', {
         me.callParent();
     },
 
+    onHide: function(animateTarget, cb, scope) {
+        this.getView().onOwnerGridHide();
+        this.callParent([animateTarget, cb, scope]);
+    },
+
+    onShow: function() {
+        this.callParent();
+        this.getView().onOwnerGridShow();
+    },
+
     /**
      * Gets the {@link Ext.grid.header.Container headercontainer} for this grid / tree.
      * @return {Ext.grid.header.Container} headercontainer
@@ -1318,9 +1338,7 @@ Ext.define('Ext.panel.Table', {
             sorter = state.sort,
             storeState = state.storeState,
             store = me.store,
-            columns = state.columns;
-
-        delete state.columns;
+            columns = state.columns = me.buildColumnHash(state.columns);
 
         // Ensure superclass has applied *its* state.
         // Component saves dimensions (and anchor/flex) plus collapsed state.
@@ -1347,6 +1365,49 @@ Ext.define('Ext.panel.Table', {
         // New storeState which encapsulates groupers, sorters and filters.
         else if (storeState) {
             store.applyState(storeState);
+        }
+    },
+
+    buildColumnHash: function(columns) {
+        var len = columns.length,
+            columnState,
+            i,
+            result;
+
+        // Create a useable state lookup hash from which each column
+        // may look up its state based upon its stateId
+        // {
+        //      col_name: {
+        //          index: 0,
+        //          width: 100,
+        //          locked: true
+        //      },
+        //      col_details: {
+        //          index: 1,
+        //          width: 200,
+        //          columns: {
+        //              col_details_1: {
+        //                  index: 0,
+        //                  width: 100
+        //              },
+        //              col_details_2: {
+        //                  index: 1,
+        //                  width: 100
+        //              }
+        //          }
+        //      },
+        // }
+        if (columns) {
+            result = {};
+            for (i = 0, len = columns.length; i < len; i++) {
+                columnState = columns[i];
+                columnState.index = i;
+                if (columnState.columns) {
+                    columnState.columns = this.buildColumnHash(columnState.columns);
+                }
+                result[columnState.id] = columnState;
+            }
+            return result;
         }
     },
 
@@ -1412,7 +1473,8 @@ Ext.define('Ext.panel.Table', {
                 emptyText: me.emptyText || ''
             }, me.viewConfig);
 
-            if (scrollable != null) {
+            // Impose our calculated scrollable config only if scrollability is not configured.
+            if (!('scrollable' in viewConfig || 'scroll' in viewConfig || 'autoScroll' in viewConfig) && scrollable != null) {
                 viewConfig.scrollable = scrollable;
                 me.scrollable = null;
             }
@@ -1471,11 +1533,8 @@ Ext.define('Ext.panel.Table', {
             this.view.setScrollable(scrollable);
         }
 
-        return scrollable;
-    },
-
-    getScrollable: function() {
-        return null;
+        // Return undefined from applier, so that the setter
+        // does NOT set a scrollable in the grid.
     },
 
     /**
@@ -1517,11 +1576,14 @@ Ext.define('Ext.panel.Table', {
     },
 
     scrollByDeltaY: function(yDelta, animate) {
-        this.getView().scrollBy(0, yDelta, animate);
+        // xDelta should be null here not 0! We're not scrolling horizontally,
+        // and the Scroller is sensitive to these things.
+        this.getView().scrollBy(null, yDelta, animate);
     },
 
     scrollByDeltaX: function(xDelta, animate) {
-        this.getView().scrollBy(xDelta, 0, animate);
+        // Ditto yDelta.
+        this.getView().scrollBy(xDelta, null, animate);
     },
 
     afterCollapse: function() {
@@ -1538,20 +1600,7 @@ Ext.define('Ext.panel.Table', {
 
     restoreScrollPos: Ext.emptyFn,
 
-    onHeaderResize: function() {
-        var scroller = this.view.getScrollable(),
-            size;
-
-        if (scroller && scroller.isTouchScroller) {
-            size = scroller.getSize();
-            if (size) {
-                scroller.setSize({
-                    x: this.headerCt.getTableWidth(),
-                    y: size.y
-                });
-            }
-        }
-    },
+    onHeaderResize: Ext.emptyFn,
 
     // Update the view when a header moves
     onHeaderMove: function(headerCt, header, colsToMove, fromIdx, toIdx) {
@@ -1827,15 +1876,15 @@ Ext.define('Ext.panel.Table', {
     },
 
     /**
-     * A convenience method that fires {@link #reconfigure} with the store param.  To set the store AND change columns,
-     * use the {@link #reconfigure reconfigure method}.
+     * A convenience method that fires {@link #method-reconfigure} with the store param.  To set the store AND change columns,
+     * use the {@link #method-reconfigure reconfigure method}.
      *
      * @param {Ext.data.Store} [store] The new store.
      */
     setStore: function (store) {
-        this.reconfigure(store);
+        this.reconfigure(store, undefined, true);
 
-        if (this.autoLoad && !store.isEmptyStore && !(store.loading || store.isLoaded())) {
+        if (store && this.autoLoad && !store.isEmptyStore && !(store.loading || store.isLoaded())) {
             store.load();
         }
     },
@@ -1860,15 +1909,16 @@ Ext.define('Ext.panel.Table', {
      * @param {Ext.data.Store/Object} [store] The new store instance or store config. You can 
      * pass `null` if no new store.
      * @param {Object[]} [columns] An array of column configs
+     * @param allowUnbind (private)
      */
-    reconfigure: function(store, columns) {
+    reconfigure: function(store, columns, allowUnbind) {
         var me = this,
             oldStore = me.store,
             headerCt = me.headerCt,
             lockable = me.lockable,
             oldColumns = headerCt ? headerCt.items.getRange() : me.columns,
             view = me.getView(),
-            block, refreshCounter;
+            block, refreshCounter, storeChanged, columnsChanged;
 
         // Allow optional store argument to be fully omitted, and the columns argument to be solo
         if (arguments.length === 1 && Ext.isArray(store)) {
@@ -1890,7 +1940,7 @@ Ext.define('Ext.panel.Table', {
         Ext.suspendLayouts();
 
         if (lockable) {
-            me.reconfigureLockable(store, columns);
+            me.reconfigureLockable(store, columns, allowUnbind);
         } else {
             // Prevent the view from refreshing until we have resumed layouts and any columns are rendered
             block = view.blockRefresh;
@@ -1901,9 +1951,13 @@ Ext.define('Ext.panel.Table', {
             //
             // Note that we need to process the store first in case one or more passed columns (if there are any)
             // have active gridfilters with values which would filter the currently-bound store.
+            if (!store && allowUnbind) {
+                store = Ext.StoreManager.lookup('ext-empty-store');
+            }
             if (store && store !== oldStore) {
                 me.unbindStore();
                 me.bindStore(store);
+                storeChanged = true;
             }
 
             if (columns) {
@@ -1911,7 +1965,10 @@ Ext.define('Ext.panel.Table', {
                 delete me.scrollXPos;
                 headerCt.removeAll();
                 headerCt.add(columns);
+                columnsChanged = true;
             }
+            
+            headerCt.onOwnerGridReconfigure(storeChanged, columnsChanged);
 
             view.blockRefresh = block;
             refreshCounter = view.refreshCounter;
@@ -1932,7 +1989,11 @@ Ext.define('Ext.panel.Table', {
     beforeDestroy: function(){
         var me = this,
             task = me.scrollTask;
-            
+        
+        if (me.lockable) {
+            me.destroyLockable();
+        }
+        
         if (task) {
             task.cancel();
             me.scrollTask = null;
@@ -1943,9 +2004,7 @@ Ext.define('Ext.panel.Table', {
 
     onDestroy: function(){
         var me = this;
-        if (me.lockable) {
-            me.destroyLockable();
-        }
+        
         me.unbindStore();
         me.callParent();
         me.columns = me.storeRelayers = me.columnManager = me.visibleColumnManager = null;

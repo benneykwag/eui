@@ -17,7 +17,7 @@ describe("Ext.grid.column.Action", function(){
         return cell;
     }
 
-    function makeGrid(gridCfg, storeCfg) {
+    function makeGrid(gridCfg, storeCfg, actionHandler) {
         store = new Ext.data.Store(Ext.apply({
             fields: ['text', 'actionCls'],
             data: [{
@@ -38,7 +38,7 @@ describe("Ext.grid.column.Action", function(){
                 header: 'Action',
                 renderer: Ext.emptyFn,
                 items: [{
-                    handler: Ext.emptyFn,
+                    handler: actionHandler|| Ext.emptyFn,
                     isDisabled: Ext.emptyFn
                 }]
             }],
@@ -65,6 +65,66 @@ describe("Ext.grid.column.Action", function(){
         Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
 
         store = grid = view = actionColumn = Ext.destroy(grid);
+    });
+
+    describe('Actioning items from actionable mode', function() {
+        it('should refocus the action item upon focus reversion when action item focuses outwards', function() {
+            makeGrid({
+                columns: [{
+                    dataIndex: 'text',
+                    header: 'Text'
+                }, {
+                    xtype: 'actioncolumn',
+                    dataIndex: 'actionCls',
+                    header: 'Action',
+                    renderer: Ext.emptyFn,
+                    items: [{
+                        handler: function() {
+                            msgBox = Ext.MessageBox.alert('Title', 'Message');
+                        },
+                        isDisabled: Ext.emptyFn
+                    }, {
+                        handler: Ext.emptyFn,
+                        isDisabled: Ext.emptyFn
+                    }]
+                }]
+            });
+            var msgBox,
+                navModel = grid.getNavigationModel(),
+                actionItemEl;
+
+            // Navigate to te action column
+            navModel.setPosition(0, 1);
+
+            // Enter actionable mode
+            jasmine.fireKeyEvent(navModel.getPosition().getCell(true), 'keydown', Ext.event.Event.ENTER);
+
+            // Check that worked
+            expect(grid.actionableMode).toBe(true);
+            actionItemEl = Ext.Element.getActiveElement();
+
+            // Activate the item.
+            jasmine.fireKeyEvent(actionItemEl, 'keydown', Ext.event.Event.SPACE);
+            
+            expect(Ext.getCmp(msgBox.id)).toBe(msgBox);
+
+            // MsgBox window must contains focus
+            waitsFor(function() {
+                return msgBox.isVisible() === true && msgBox.containsFocus;
+            });
+            
+            runs(function() {
+
+                // Hide the message box
+                msgBox.hide();
+
+                // SHould revert focus back into grid in same mode that it left.
+                expect(grid.actionableMode).toBe(true);
+
+                // Focus should have reverted back to the action item
+                expect(Ext.Element.getActiveElement()).toBe(actionItemEl);
+            });
+        });
     });
 
     describe('events', function () {
@@ -229,6 +289,30 @@ describe("Ext.grid.column.Action", function(){
         afterEach(function() {
             scope1 = scope2 = col = null;
         });
+
+        it("should not throw an exception if the grid is destroyed in the handler", function() {
+             makeHandlerGrid({
+                 handler: function() {
+                     grid.destroy();
+                 }
+             });
+ 
+             // We can't catch any exceptions thrown by synthetic events,
+             // so a standard toThrow() or even try/catch won't do the job
+             // here. They will hit onerror though, so use that.
+             var onError = window.onerror;
+             window.onerror = spy1.andCallFake(function() {
+                 if (onError) {
+                     onError();
+                 }
+             });
+ 
+             triggerAction();
+ 
+             expect(spy1.callCount).toBe(0);
+ 
+             window.onerror = onError;
+         });
         
         describe("handler priority", function() {
             it("should use a handler on the column", function() {

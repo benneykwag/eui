@@ -385,6 +385,15 @@ Ext.define('Ext.grid.selection.Rows', {
         },
 
         /**
+         * @private
+         * Called through {@link Ext.grid.selection.SpreadsheetModel#getLastSelected} by {@link Ext.panel.Table#updateBindSelection} when publishing the `selection` property.
+         * It should yield the last record selected.
+         */
+        getLastSelected: function() {
+            return this.selectedRecords.last();
+        },
+
+        /**
          * @return {Number[]}
          * @private
          */

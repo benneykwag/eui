@@ -259,6 +259,27 @@ describe('Ext.draw.Surface', function () {
             expect(s1.getDirty()).toBe(false);
         });
 
+        it("should be dirty when items are removed but surface is not destroyed", function () {
+            var sprite = new Ext.draw.sprite.Rect({});
+
+            s1.add(sprite);
+            s1.removeAll();
+
+            expect(s1.getDirty()).toBe(true);
+
+            s1.destroy();
+        });
+
+        it("should not be dirty when surface is destroyed", function () {
+            var sprite = new Ext.draw.sprite.Rect({});
+
+            s1.add(sprite);
+            s1.setDirty(false);
+            s1.destroy();
+            
+            expect(s1.getDirty()).toBe(false);           
+        });
+
         it("should increment dirtyPredecessorCount of all successors (not just immediate) when set to true", function () {
             s3.waitFor(s2);
             s5.waitFor(s4);

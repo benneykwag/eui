@@ -155,6 +155,11 @@ Ext.define('Ext.data.ChainedStore', {
         me.onUpdate(record, type, modifiedFieldNames, info);
         me.fireEvent('update', me, record, type, modifiedFieldNames, info);
     },
+    
+    onCollectionUpdateKey: function(source, details) {
+        // Must react to upstream Collection key update by firing idchanged event
+        this.fireEvent('idchanged', this, details.item, details.oldKey, details.newKey);
+    },
 
     onUpdate: Ext.emptyFn,
 

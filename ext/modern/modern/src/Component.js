@@ -943,8 +943,8 @@ Ext.define('Ext.Component', {
          *
          * @since 6.0.1
          */
-        fromElement: function(node, limit, selector) {
-            return Ext.ComponentManager.fromElement(node, limit, selector);
+        fromElement: function(el, limit, selector) {
+            return Ext.ComponentManager.fromElement(el, limit, selector);
         }
     },
 
@@ -1480,7 +1480,7 @@ Ext.define('Ext.Component', {
      * the class to be removed.
      * @chainable
      */
-    toggleCls: function(className, /* private */ state) {
+    toggleCls: function(className, state) {
         var oldCls = this.getCls(),
             newCls = oldCls ? oldCls.slice() : [];
 

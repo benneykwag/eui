@@ -187,32 +187,36 @@ describe("Ext.grid.column.Check", function() {
         });
 
         describe("events", function() {
-            it("should pass the column, record index & new checked state for beforecheckchange", function() {
-                var arg1, arg2, arg3;
+            it("should pass the column, record index, new checked state & record for beforecheckchange", function() {
+                var arg1, arg2, arg3, arg4;
                 makeGrid();
-                col.on('beforecheckchange', function(a, b, c) {
+                col.on('beforecheckchange', function(a, b, c, d) {
                     arg1 = a;
                     arg2 = b;
-                    arg3 = c; 
+                    arg3 = c;
+                    arg4 = d;
                 });
                 triggerCellMouseEvent('mousedown', 0);
                 expect(arg1).toBe(col);
                 expect(arg2).toBe(0);
                 expect(arg3).toBe(false);
+                expect(arg4).toBe(store.getAt(0));
             });
             
-            it("should pass the column, record index & new checked state for checkchange", function() {
-                var arg1, arg2, arg3;
+            it("should pass the column, record index, new checked state & record for checkchange", function() {
+                var arg1, arg2, arg3, arg4;
                 makeGrid();
-                col.on('checkchange', function(a, b, c) {
+                col.on('checkchange', function(a, b, c, d) {
                     arg1 = a;
                     arg2 = b;
-                    arg3 = c; 
+                    arg3 = c;
+                    arg4 = d;
                 });
                 triggerCellMouseEvent('mousedown', 2);
                 expect(arg1).toBe(col);
                 expect(arg2).toBe(2);
                 expect(arg3).toBe(true);
+                expect(arg4).toBe(store.getAt(2));
             });
             
             it("should not fire fire checkchange if beforecheckchange returns false", function() {

@@ -134,3 +134,11 @@
 .#{$prefix}grid-grouped .#{$prefix}grid-row-tpl.#{$prefix}grid-header-wrap {
     border-top: 0;
 }
+
+.#{$prefix}grid-resize-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+}

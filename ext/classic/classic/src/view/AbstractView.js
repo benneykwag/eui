@@ -778,11 +778,27 @@ Ext.define('Ext.view.AbstractView', {
             navigationModel = me.getNavigationModel(),
             focusPosition;
 
+        // This is set on mousedown on the scrollbar in IE/Edge.
+        // Those browsers focus the element on mousedown on its scrollbar
+        // which is not what we want, so throw focus back in this
+        // situation.
+        // See Ext.view.navigationModel for this being set.
+        if (focusPosition === 'scrollbar') {
+            e.relatedTarget.focus();
+            return;
+        }
+
         // Disable tabbability of elements within this view.
         me.toggleChildrenTabbability(false);
         
         if (!me.itemFocused && me.all.getCount()) {
-            focusPosition = navigationModel.getLastFocused();
+
+            // SHIFT+TAB hit the tab guard - focus last item.
+            if (e.event.getTarget() === me.tabGuardEl) {
+                focusPosition = me.all.getCount() - 1;
+            } else {
+                focusPosition = navigationModel.getLastFocused();
+            }
             navigationModel.setPosition(focusPosition || 0, e.event, null, !focusPosition);
 
             // We now contain focus is that was successful
@@ -794,7 +810,7 @@ Ext.define('Ext.view.AbstractView', {
         // which will then bounce it back to the last focused item.
         // That would effectively make Shift-Tab unusable.
         if (me.itemFocused) {
-            this.el.dom.setAttribute('tabIndex', '-1');
+            me.el.dom.setAttribute('tabIndex', '-1');
         }
 
         me.callParent([e]);
@@ -939,6 +955,24 @@ Ext.define('Ext.view.AbstractView', {
             
             me.cleanupData();
         }
+
+        // The tabGuardEl is only needed before focus has entered the view to prevent
+        // naturally tabbable interior elements from attracting focus when using SHIFT+TAB
+        // from after the view. Once focus has entered, we disable tabbability on interior
+        // elements so it will not be needed.
+        // Subsequent *full* refreshes will destroy it.
+        // Buffer rendered refreshes are more granular, and do not destroy extraneous
+        // DOM, but this does not matter because tha tabGuardEl will be tabIndex="-1"
+        // so out of the tab order.
+        if (!me.tabGuardEl) {
+            // We only need an "after" tab guard.
+            // The View el is tabIndex="0", so captures forward TAB.
+            // It's only SHIFT+TAB that we have to guard against.
+            me.tabGuardEl = me.el.createChild({
+                cls: Ext.baseCSSPrefix + 'tab-guard ' + Ext.baseCSSPrefix + 'tab-guard-after',
+                tabIndex: "0"
+            }, null, true);
+        }
     },
 
     addEmptyText: function() {       
@@ -1005,7 +1039,21 @@ Ext.define('Ext.view.AbstractView', {
     clearViewEl: function() {
         var me = this,
             targetEl = me.getTargetEl(),
+            all = me.all,
+            store = me.getStore(),
+            i, removedItems, removedRecs,
             nodeContainerIsTarget = me.getNodeContainer() === targetEl;
+
+        // We must ensure that the itemremove event is fired EVERY time an item is removed from the
+        // view. This is so that widgets rendered into a view by a WidgetColumn can be recycled.
+        if (me.hasListeners.itemremove) {
+            removedItems = all.slice();
+            removedRecs = [];
+            for (i = all.startIndex; i <= all.endIndex; i++) {
+                removedRecs.push(store.getByInternalId(all.item(i, true).getAttribute('data-recordId')));  
+            }
+            me.fireEvent('itemremove', removedRecs, all.startIndex, removedItems, me);
+        }
 
         me.clearEmptyEl();
         // If nodeContainer is the el, just clear the innerHTML. Otherwise, we need
@@ -1066,11 +1114,12 @@ Ext.define('Ext.view.AbstractView', {
 
     /**
      * Function which can be overridden to provide custom formatting for each Record that is used by this
-     * DataView's {@link #tpl template} to render each node.
+     * DataView's {@link Ext.view.AbstractView#cfg-tpl template} to render each node.
      * @param {Object/Object[]} data The raw data object that was used to create the Record.
      * @param {Number} recordIndex the index number of the Record being prepared for rendering.
      * @param {Ext.data.Model} record The Record being prepared for rendering.
-     * @return {Array/Object} The formatted data in a format expected by the internal {@link #tpl template}'s overwrite() method.
+     * @return {Array/Object} The formatted data in a format expected by the internal
+     * {@link Ext.view.AbstractView#cfg-tpl template}'s overwrite() method.
      * (either an array if your params are numeric (i.e. {0}) or an object (i.e. {foo: 'bar'}))
      * @since 2.3.0
      */
@@ -1172,7 +1221,11 @@ Ext.define('Ext.view.AbstractView', {
             if (me.throttledUpdate) {
                 me.statics().queueRecordChange(me, store, record, operation, modifiedFieldNames);
             } else {
-                me.handleUpdate.apply(me, arguments);
+                // Cannot use arguments array.
+                // TableView's signature acceses these arguments plus one more of its own.
+                // Event firing passes the addListener options object as rge final parameter
+                // and we must not pass that.
+                me.handleUpdate(store, record, operation, modifiedFieldNames, details);
             }
         }
     },
@@ -1183,7 +1236,7 @@ Ext.define('Ext.view.AbstractView', {
             node,
             selModel = me.getSelectionModel();
 
-        if (me.viewReady) {
+        if (me.viewReady && !me.refreshNeeded) {
             index = me.dataSource.indexOf(record);
 
             // If the record has been removed from the data source since the changes were made, do nothing
@@ -1276,7 +1329,7 @@ Ext.define('Ext.view.AbstractView', {
             nodes,
             selModel = me.getSelectionModel();
 
-        if (me.rendered) {
+        if (me.rendered && !me.refreshNeeded) {
             // If we are adding into an empty view, we must refresh in order that the *full tpl* is applied
             // which might create boilerplate content *around* the record nodes.
             if (me.all.getCount() === 0) {
@@ -1344,12 +1397,8 @@ Ext.define('Ext.view.AbstractView', {
             fireItemRemove = me.hasListeners.itemremove,
             currIdx, i, record, nodes, node, restoreFocus;
 
-        if (rows.getCount()) {
+        if (me.rendered && !me.refreshNeeded && rows.getCount()) {
             if (me.dataSource.getCount() === 0) {
-                // Refresh so emptyText can be applied if necessary
-                if (fireItemRemove) {
-                    me.fireEvent('itemremove', records, index, me.getNodes(index, index + records.length - 1));
-                }
                 me.refresh();
             } else {
                 // If this view contains focus, this will return
@@ -1408,14 +1457,18 @@ Ext.define('Ext.view.AbstractView', {
             store = me.dataSource || me.store,
             navModel = me.getNavigationModel(),
             lastFocusedIndex = navModel.recordIndex,
-            lastFocusedRec = navModel.record;
+            lastFocusedRec = navModel.record,
+            containsFocus = me.el.contains(Ext.Element.getActiveElement());
 
-        // Check if we really have focus.
-        // Some NavigationModels record position with focus outside of the view.
-        // This happens in BoundLists when focus stays in the bound field.
-        if (me.el.contains(Ext.Element.getActiveElement())) {
+        // If there is a position to restore...
+        if (lastFocusedRec) {
+            // Check if we really have focus.
+            // Some NavigationModels record position with focus outside of the view.
+            // This happens in BoundLists when focus stays in the bound field.
             // Blur the focused descendant, but do not trigger focusLeave.
-            me.el.dom.focus();
+            if (containsFocus) {
+                me.el.dom.focus();
+            }
 
             // The following function will attempt to refocus back to the same record if it is still there,
             // or the same item index.
@@ -1426,7 +1479,7 @@ Ext.define('Ext.view.AbstractView', {
                     // Adjust expectations of where we are able to refocus according to what kind of destruction
                     // might have been wrought on this view's DOM during focus save.
                     lastFocusedIndex = Math.min(lastFocusedIndex, me.all.getCount() - 1);
-                    navModel.setPosition(store.contains(lastFocusedRec) ? lastFocusedRec : lastFocusedIndex, null, null, true);
+                    navModel.setPosition(store.contains(lastFocusedRec) ? lastFocusedRec : lastFocusedIndex, null, null, true, !containsFocus);
                 }
             };
         }
@@ -1472,7 +1525,7 @@ Ext.define('Ext.view.AbstractView', {
             selModel = me.getSelectionModel(),
             navModel = me.getNavigationModel();
 
-        selModel.bindStore(store);
+        selModel.bindStore(store, initial);
         selModel.bindComponent(store ? me : null);
         me.mixins.storeholder.bindStore.apply(me, arguments);
 
@@ -1482,7 +1535,7 @@ Ext.define('Ext.view.AbstractView', {
         // If we have already achieved our first layout, refresh immediately.
         // If we bind to the Store before the first layout, then beforeLayout will
         // call doFirstRefresh
-        if (store && me.componentLayoutCounter) {
+        if (store && me.componentLayoutCounter && !me.blockRefresh) {
             // If not the initial bind, we enforce noDefer.
             me.doFirstRefresh(store, !initial);
         }
@@ -1507,7 +1560,7 @@ Ext.define('Ext.view.AbstractView', {
             // on first layout, refresh regardless of record count.
             // Template may contain boilerplate HTML outside of record iteration loop.
             // Also, emptyText is appended by the refresh method.
-            if (store && !store.isLoading()) {
+            if (store && !me.deferRefreshForLoad(store)) {
                 me.refresh();
             }
         }
@@ -1599,7 +1652,7 @@ Ext.define('Ext.view.AbstractView', {
         // If this refresh event is fire from a store load, then use the 
         // preserveScrollOnReLoad setting to decide whether to preserve scroll position
         if (store.loadCount > me.lastRefreshLoadCount) {
-            me.preserveScrollOnRefresh = me.preserveScrollOnReLoad;
+            me.preserveScrollOnRefresh = me.preserveScrollOnReload;
         }
         me.refreshView();
         me.preserveScrollOnRefresh = preserveScrollOnRefresh;
@@ -1899,6 +1952,10 @@ Ext.define('Ext.view.AbstractView', {
     },
 
     privates: {
+        deferRefreshForLoad: function(store) {
+            return store.isLoading();
+        },
+
         toggleChildrenTabbability: function(enableTabbing) {
             var focusEl = this.getTargetEl();
 

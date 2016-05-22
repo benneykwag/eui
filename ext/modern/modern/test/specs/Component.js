@@ -95,41 +95,41 @@ describe('Ext.Component', function() {
             describe("no prefix/suffix", function() {
                 it("should convert the cls to an array and add it to the component", function() {
                     component.addCls('one');
-                    expect(spy).wasCalledWith(['one'], null);
+                    expect(spy).toHaveBeenCalledWith(['one'], null);
                     expect(component.getCls()).toEqual(['one']);
 
                     component.addCls('two');
-                    expect(spy).wasCalledWith(['one', 'two'], ['one']);
+                    expect(spy).toHaveBeenCalledWith(['one', 'two'], ['one']);
                     expect(component.getCls()).toEqual(['one', 'two']);
                 });
 
                 it("should add each of the cls to the component", function() {
                     component.addCls(['one', 'two']);
-                    expect(spy).wasCalledWith(['one', 'two'], null);
+                    expect(spy).toHaveBeenCalledWith(['one', 'two'], null);
                     expect(component.getCls()).toEqual(['one', 'two']);
 
                     component.addCls(['two', 'three']);
-                    expect(spy).wasCalledWith(['one', 'two', 'three'], ['one', 'two']);
+                    expect(spy).toHaveBeenCalledWith(['one', 'two', 'three'], ['one', 'two']);
                     expect(component.getCls()).toEqual(['one', 'two', 'three']);
                 });
 
                 it("should allow for adding both strings and arrays", function() {
                     component.addCls('one');
-                    expect(spy).wasCalledWith(['one'], null);
+                    expect(spy).toHaveBeenCalledWith(['one'], null);
                     expect(component.getCls()).toEqual(['one']);
 
                     component.addCls(['two', 'three']);
-                    expect(spy).wasCalledWith(['one', 'two', 'three'], ['one']);
+                    expect(spy).toHaveBeenCalledWith(['one', 'two', 'three'], ['one']);
                     expect(component.getCls()).toEqual(['one', 'two', 'three']);
                 });
 
                 it("should allow for adding both strings and arrays (reverse)", function() {
                     component.addCls(['two', 'three']);
-                    expect(spy).wasCalledWith(['two', 'three'], null);
+                    expect(spy).toHaveBeenCalledWith(['two', 'three'], null);
                     expect(component.getCls()).toEqual(['two', 'three']);
 
                     component.addCls('one');
-                    expect(spy).wasCalledWith(['two', 'three', 'one'], ['two', 'three']);
+                    expect(spy).toHaveBeenCalledWith(['two', 'three', 'one'], ['two', 'three']);
                     expect(component.getCls()).toEqual(['two', 'three', 'one']);
                 });
             });
@@ -137,41 +137,41 @@ describe('Ext.Component', function() {
             describe("prefix", function() {
                 it("should convert the cls to an array and add it to the component", function() {
                     component.addCls('one', 'x-');
-                    expect(spy).wasCalledWith(['x-one'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one'], null);
                     expect(component.getCls()).toEqual(['x-one']);
 
                     component.addCls('two', 'x-');
-                    expect(spy).wasCalledWith(['x-one', 'x-two'], ['x-one']);
+                    expect(spy).toHaveBeenCalledWith(['x-one', 'x-two'], ['x-one']);
                     expect(component.getCls()).toEqual(['x-one', 'x-two']);
                 });
 
                 it("should add each of the cls to the component", function() {
                     component.addCls(['one', 'two'], 'x-');
-                    expect(spy).wasCalledWith(['x-one', 'x-two'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one', 'x-two'], null);
                     expect(component.getCls()).toEqual(['x-one', 'x-two']);
 
                     component.addCls(['two', 'three'], 'x-');
-                    expect(spy).wasCalledWith(['x-one', 'x-two', 'x-three'], ['x-one', 'x-two']);
+                    expect(spy).toHaveBeenCalledWith(['x-one', 'x-two', 'x-three'], ['x-one', 'x-two']);
                     expect(component.getCls()).toEqual(['x-one', 'x-two', 'x-three']);
                 });
 
                 it("should allow for adding both strings and arrays", function() {
                     component.addCls('one', 'x-');
-                    expect(spy).wasCalledWith(['x-one'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one'], null);
                     expect(component.getCls()).toEqual(['x-one']);
 
                     component.addCls(['two', 'three'], 'x-');
-                    expect(spy).wasCalledWith(['x-one', 'x-two', 'x-three'], ['x-one']);
+                    expect(spy).toHaveBeenCalledWith(['x-one', 'x-two', 'x-three'], ['x-one']);
                     expect(component.getCls()).toEqual(['x-one', 'x-two', 'x-three']);
                 });
 
                 it("should allow for adding both strings and arrays (reverse)", function() {
                     component.addCls(['two', 'three'], 'x-');
-                    expect(spy).wasCalledWith(['x-two', 'x-three'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-two', 'x-three'], null);
                     expect(component.getCls()).toEqual(['x-two', 'x-three']);
 
                     component.addCls('one', 'x-');
-                    expect(spy).wasCalledWith(['x-two', 'x-three', 'x-one'], ['x-two', 'x-three']);
+                    expect(spy).toHaveBeenCalledWith(['x-two', 'x-three', 'x-one'], ['x-two', 'x-three']);
                     expect(component.getCls()).toEqual(['x-two', 'x-three', 'x-one']);
                 });
             });
@@ -179,41 +179,41 @@ describe('Ext.Component', function() {
             describe("suffix", function() {
                 it("should convert the cls to an array and add it to the component", function() {
                     component.addCls('one', null, '-y');
-                    expect(spy).wasCalledWith(['one-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['one-y'], null);
                     expect(component.getCls()).toEqual(['one-y']);
 
                     component.addCls('two', null, '-y');
-                    expect(spy).wasCalledWith(['one-y', 'two-y'], ['one-y']);
+                    expect(spy).toHaveBeenCalledWith(['one-y', 'two-y'], ['one-y']);
                     expect(component.getCls()).toEqual(['one-y', 'two-y']);
                 });
 
                 it("should add each of the cls to the component", function() {
                     component.addCls(['one', 'two'], null, '-y');
-                    expect(spy).wasCalledWith(['one-y', 'two-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['one-y', 'two-y'], null);
                     expect(component.getCls()).toEqual(['one-y', 'two-y']);
 
                     component.addCls(['two', 'three'], null, '-y');
-                    expect(spy).wasCalledWith(['one-y', 'two-y', 'three-y'], ['one-y', 'two-y']);
+                    expect(spy).toHaveBeenCalledWith(['one-y', 'two-y', 'three-y'], ['one-y', 'two-y']);
                     expect(component.getCls()).toEqual(['one-y', 'two-y', 'three-y']);
                 });
 
                 it("should allow for adding both strings and arrays", function() {
                     component.addCls('one', null, '-y');
-                    expect(spy).wasCalledWith(['one-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['one-y'], null);
                     expect(component.getCls()).toEqual(['one-y']);
 
                     component.addCls(['two', 'three'], null, '-y');
-                    expect(spy).wasCalledWith(['one-y', 'two-y', 'three-y'], ['one-y']);
+                    expect(spy).toHaveBeenCalledWith(['one-y', 'two-y', 'three-y'], ['one-y']);
                     expect(component.getCls()).toEqual(['one-y', 'two-y', 'three-y']);
                 });
 
                 it("should allow for adding both strings and arrays (reverse)", function() {
                     component.addCls(['two', 'three'], null, '-y');
-                    expect(spy).wasCalledWith(['two-y', 'three-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['two-y', 'three-y'], null);
                     expect(component.getCls()).toEqual(['two-y', 'three-y']);
 
                     component.addCls('one', null, '-y');
-                    expect(spy).wasCalledWith(['two-y', 'three-y', 'one-y'], ['two-y', 'three-y']);
+                    expect(spy).toHaveBeenCalledWith(['two-y', 'three-y', 'one-y'], ['two-y', 'three-y']);
                     expect(component.getCls()).toEqual(['two-y', 'three-y', 'one-y']);
                 });
             });
@@ -221,41 +221,41 @@ describe('Ext.Component', function() {
             describe("prefix + suffix", function() {
                 it("should convert the cls to an array and add it to the component", function() {
                     component.addCls('one', 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y'], null);
                     expect(component.getCls()).toEqual(['x-one-y']);
 
                     component.addCls('two', 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y', 'x-two-y'], ['x-one-y']);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y', 'x-two-y'], ['x-one-y']);
                     expect(component.getCls()).toEqual(['x-one-y', 'x-two-y']);
                 });
 
                 it("should add each of the cls to the component", function() {
                     component.addCls(['one', 'two'], 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y', 'x-two-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y', 'x-two-y'], null);
                     expect(component.getCls()).toEqual(['x-one-y', 'x-two-y']);
 
                     component.addCls(['two', 'three'], 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y', 'x-two-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y', 'x-two-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
                     expect(component.getCls()).toEqual(['x-one-y', 'x-two-y', 'x-three-y']);
                 });
 
                 it("should allow for adding both strings and arrays", function() {
                     component.addCls('one', 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y'], null);
                     expect(component.getCls()).toEqual(['x-one-y']);
 
                     component.addCls(['two', 'three'], 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-one-y', 'x-two-y', 'x-three-y'], ['x-one-y']);
+                    expect(spy).toHaveBeenCalledWith(['x-one-y', 'x-two-y', 'x-three-y'], ['x-one-y']);
                     expect(component.getCls()).toEqual(['x-one-y', 'x-two-y', 'x-three-y']);
                 });
 
                 it("should allow for adding both strings and arrays (reverse)", function() {
                     component.addCls(['two', 'three'], 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-two-y', 'x-three-y'], null);
+                    expect(spy).toHaveBeenCalledWith(['x-two-y', 'x-three-y'], null);
                     expect(component.getCls()).toEqual(['x-two-y', 'x-three-y']);
 
                     component.addCls('one', 'x-', '-y');
-                    expect(spy).wasCalledWith(['x-two-y', 'x-three-y', 'x-one-y'], ['x-two-y', 'x-three-y']);
+                    expect(spy).toHaveBeenCalledWith(['x-two-y', 'x-three-y', 'x-one-y'], ['x-two-y', 'x-three-y']);
                     expect(component.getCls()).toEqual(['x-two-y', 'x-three-y', 'x-one-y']);
                 });
             });
@@ -294,7 +294,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('one');
 
-                        expect(spy).wasCalledWith(null, ['one']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one']);
                         expect(component.getCls()).toEqual(null);
                     });
 
@@ -303,7 +303,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one']);
 
-                        expect(spy).wasCalledWith(null, ['one']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -321,7 +321,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('two');
 
-                        expect(spy).wasCalledWith(['one'], ['one', 'two']);
+                        expect(spy).toHaveBeenCalledWith(['one'], ['one', 'two']);
                         expect(component.getCls()).toEqual(['one']);
                     });
 
@@ -330,7 +330,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one']);
 
-                        expect(spy).wasCalledWith(['two'], ['one', 'two']);
+                        expect(spy).toHaveBeenCalledWith(['two'], ['one', 'two']);
                         expect(component.getCls()).toEqual(['two']);
                     });
 
@@ -339,7 +339,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one', 'two']);
 
-                        expect(spy).wasCalledWith(null, ['one', 'two']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one', 'two']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -373,7 +373,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('one', 'x-');
 
-                        expect(spy).wasCalledWith(null, ['x-one']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one']);
                         expect(component.getCls()).toEqual(null);
                     });
 
@@ -382,7 +382,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], 'x-');
 
-                        expect(spy).wasCalledWith(null, ['x-one']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -400,7 +400,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('two', 'x-');
 
-                        expect(spy).wasCalledWith(['x-one'], ['x-one', 'x-two']);
+                        expect(spy).toHaveBeenCalledWith(['x-one'], ['x-one', 'x-two']);
                         expect(component.getCls()).toEqual(['x-one']);
                     });
 
@@ -409,7 +409,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], 'x-');
 
-                        expect(spy).wasCalledWith(['x-two'], ['x-one', 'x-two']);
+                        expect(spy).toHaveBeenCalledWith(['x-two'], ['x-one', 'x-two']);
                         expect(component.getCls()).toEqual(['x-two']);
                     });
 
@@ -418,7 +418,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one', 'two'], 'x-');
 
-                        expect(spy).wasCalledWith(null, ['x-one', 'x-two']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one', 'x-two']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -452,7 +452,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('one', null, '-y');
 
-                        expect(spy).wasCalledWith(null, ['one-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one-y']);
                         expect(component.getCls()).toEqual(null);
                     });
 
@@ -461,7 +461,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], null, '-y');
 
-                        expect(spy).wasCalledWith(null, ['one-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one-y']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -479,7 +479,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('two', null, '-y');
 
-                        expect(spy).wasCalledWith(['one-y'], ['one-y', 'two-y']);
+                        expect(spy).toHaveBeenCalledWith(['one-y'], ['one-y', 'two-y']);
                         expect(component.getCls()).toEqual(['one-y']);
                     });
 
@@ -488,7 +488,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], null, '-y');
 
-                        expect(spy).wasCalledWith(['two-y'], ['one-y', 'two-y']);
+                        expect(spy).toHaveBeenCalledWith(['two-y'], ['one-y', 'two-y']);
                         expect(component.getCls()).toEqual(['two-y']);
                     });
 
@@ -497,7 +497,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one', 'two'], null, '-y');
 
-                        expect(spy).wasCalledWith(null, ['one-y', 'two-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['one-y', 'two-y']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -531,7 +531,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('one', 'x-', '-y');
 
-                        expect(spy).wasCalledWith(null, ['x-one-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one-y']);
                         expect(component.getCls()).toEqual(null);
                     });
 
@@ -540,7 +540,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(null, ['x-one-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one-y']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -558,7 +558,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls('two', 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-one-y'], ['x-one-y', 'x-two-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-one-y'], ['x-one-y', 'x-two-y']);
                         expect(component.getCls()).toEqual(['x-one-y']);
                     });
 
@@ -567,7 +567,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-two-y'], ['x-one-y', 'x-two-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-two-y'], ['x-one-y', 'x-two-y']);
                         expect(component.getCls()).toEqual(['x-two-y']);
                     });
 
@@ -576,7 +576,7 @@ describe('Ext.Component', function() {
 
                         component.removeCls(['one', 'two'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(null, ['x-one-y', 'x-two-y']);
+                        expect(spy).toHaveBeenCalledWith(null, ['x-one-y', 'x-two-y']);
                         expect(component.getCls()).toEqual(null);
                     });
                 });
@@ -598,7 +598,7 @@ describe('Ext.Component', function() {
 
                     component.setCls('one');
 
-                    expect(spy).wasCalledWith(['one'], null);
+                    expect(spy).toHaveBeenCalledWith(['one'], null);
                     expect(component.getCls()).toEqual(['one']);
                 });
 
@@ -607,7 +607,7 @@ describe('Ext.Component', function() {
 
                     component.setCls(['one', 'two']);
 
-                    expect(spy).wasCalledWith(['one', 'two'], null);
+                    expect(spy).toHaveBeenCalledWith(['one', 'two'], null);
                     expect(component.getCls()).toEqual(['one', 'two']);
                 });
             });
@@ -625,7 +625,7 @@ describe('Ext.Component', function() {
 
                     component.setCls('two');
 
-                    expect(spy).wasCalledWith(['two'], ['one']);
+                    expect(spy).toHaveBeenCalledWith(['two'], ['one']);
                     expect(component.getCls()).toEqual(['two']);
                 });
 
@@ -634,7 +634,7 @@ describe('Ext.Component', function() {
 
                     component.setCls(['two', 'three']);
 
-                    expect(spy).wasCalledWith(['two', 'three'], ['one']);
+                    expect(spy).toHaveBeenCalledWith(['two', 'three'], ['one']);
                     expect(component.getCls()).toEqual(['two', 'three']);
                 });
             });
@@ -652,7 +652,7 @@ describe('Ext.Component', function() {
 
                     component.setCls('three');
 
-                    expect(spy).wasCalledWith(['three'], ['one', 'two']);
+                    expect(spy).toHaveBeenCalledWith(['three'], ['one', 'two']);
                     expect(component.getCls()).toEqual(['three']);
                 });
 
@@ -661,7 +661,7 @@ describe('Ext.Component', function() {
 
                     component.setCls(['four', 'three']);
 
-                    expect(spy).wasCalledWith(['four', 'three'], ['one', 'two']);
+                    expect(spy).toHaveBeenCalledWith(['four', 'three'], ['one', 'two']);
                     expect(component.getCls()).toEqual(['four', 'three']);
                 });
             });
@@ -683,7 +683,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('two', 'one');
 
-                        expect(spy).wasCalledWith(['one'], null);
+                        expect(spy).toHaveBeenCalledWith(['one'], null);
                         expect(component.getCls()).toEqual(['one']);
                     });
 
@@ -692,7 +692,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['three', 'four']);
 
-                        expect(spy).wasCalledWith(['three', 'four'], null);
+                        expect(spy).toHaveBeenCalledWith(['three', 'four'], null);
                         expect(component.getCls()).toEqual(['three', 'four']);
                     });
                 });
@@ -710,7 +710,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'two');
 
-                        expect(spy).wasCalledWith(['two'], ['one']);
+                        expect(spy).toHaveBeenCalledWith(['two'], ['one']);
                         expect(component.getCls()).toEqual(['two']);
                     });
 
@@ -719,7 +719,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two']);
 
-                        expect(spy).wasCalledWith(['two'], ['one']);
+                        expect(spy).toHaveBeenCalledWith(['two'], ['one']);
                         expect(component.getCls()).toEqual(['two']);
                     });
 
@@ -728,7 +728,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two', 'three']);
 
-                        expect(spy).wasCalledWith(['two', 'three'], ['one']);
+                        expect(spy).toHaveBeenCalledWith(['two', 'three'], ['one']);
                         expect(component.getCls()).toEqual(['two', 'three']);
                     });
                 });
@@ -746,7 +746,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'three');
 
-                        expect(spy).wasCalledWith(['two', 'three'], ['one', 'two']);
+                        expect(spy).toHaveBeenCalledWith(['two', 'three'], ['one', 'two']);
                         expect(component.getCls()).toEqual(['two', 'three']);
                     });
 
@@ -755,7 +755,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['four', 'three']);
 
-                        expect(spy).wasCalledWith(['four', 'three'], ['one', 'two']);
+                        expect(spy).toHaveBeenCalledWith(['four', 'three'], ['one', 'two']);
                         expect(component.getCls()).toEqual(['four', 'three']);
                     });
                 });
@@ -773,7 +773,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('two', 'one', 'x-');
 
-                        expect(spy).wasCalledWith(['x-one'], null);
+                        expect(spy).toHaveBeenCalledWith(['x-one'], null);
                         expect(component.getCls()).toEqual(['x-one']);
                     });
 
@@ -782,7 +782,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['three', 'four'], 'x-');
 
-                        expect(spy).wasCalledWith(['x-three', 'x-four'], null);
+                        expect(spy).toHaveBeenCalledWith(['x-three', 'x-four'], null);
                         expect(component.getCls()).toEqual(['x-three', 'x-four']);
                     });
                 });
@@ -800,7 +800,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'two', 'x-');
 
-                        expect(spy).wasCalledWith(['x-two'], ['x-one']);
+                        expect(spy).toHaveBeenCalledWith(['x-two'], ['x-one']);
                         expect(component.getCls()).toEqual(['x-two']);
                     });
 
@@ -809,7 +809,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two'], 'x-');
 
-                        expect(spy).wasCalledWith(['x-two'], ['x-one']);
+                        expect(spy).toHaveBeenCalledWith(['x-two'], ['x-one']);
                         expect(component.getCls()).toEqual(['x-two']);
                     });
 
@@ -818,7 +818,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two', 'three'], 'x-');
 
-                        expect(spy).wasCalledWith(['x-two', 'x-three'], ['x-one']);
+                        expect(spy).toHaveBeenCalledWith(['x-two', 'x-three'], ['x-one']);
                         expect(component.getCls()).toEqual(['x-two', 'x-three']);
                     });
                 });
@@ -836,7 +836,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'three', 'x-');
 
-                        expect(spy).wasCalledWith(['x-two', 'x-three'], ['x-one', 'x-two']);
+                        expect(spy).toHaveBeenCalledWith(['x-two', 'x-three'], ['x-one', 'x-two']);
                         expect(component.getCls()).toEqual(['x-two', 'x-three']);
                     });
 
@@ -845,7 +845,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['four', 'three'], 'x-');
 
-                        expect(spy).wasCalledWith(['x-four', 'x-three'], ['x-one', 'x-two']);
+                        expect(spy).toHaveBeenCalledWith(['x-four', 'x-three'], ['x-one', 'x-two']);
                         expect(component.getCls()).toEqual(['x-four', 'x-three']);
                     });
                 });
@@ -863,7 +863,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('two', 'one', null, '-y');
 
-                        expect(spy).wasCalledWith(['one-y'], null);
+                        expect(spy).toHaveBeenCalledWith(['one-y'], null);
                         expect(component.getCls()).toEqual(['one-y']);
                     });
 
@@ -872,7 +872,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['three', 'four'], null, '-y');
 
-                        expect(spy).wasCalledWith(['three-y', 'four-y'], null);
+                        expect(spy).toHaveBeenCalledWith(['three-y', 'four-y'], null);
                         expect(component.getCls()).toEqual(['three-y', 'four-y']);
                     });
                 });
@@ -890,7 +890,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'two', null, '-y');
 
-                        expect(spy).wasCalledWith(['two-y'], ['one-y']);
+                        expect(spy).toHaveBeenCalledWith(['two-y'], ['one-y']);
                         expect(component.getCls()).toEqual(['two-y']);
                     });
 
@@ -899,7 +899,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two'], null, '-y');
 
-                        expect(spy).wasCalledWith(['two-y'], ['one-y']);
+                        expect(spy).toHaveBeenCalledWith(['two-y'], ['one-y']);
                         expect(component.getCls()).toEqual(['two-y']);
                     });
 
@@ -908,7 +908,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two', 'three'], null, '-y');
 
-                        expect(spy).wasCalledWith(['two-y', 'three-y'], ['one-y']);
+                        expect(spy).toHaveBeenCalledWith(['two-y', 'three-y'], ['one-y']);
                         expect(component.getCls()).toEqual(['two-y', 'three-y']);
                     });
                 });
@@ -926,7 +926,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'three', null, '-y');
 
-                        expect(spy).wasCalledWith(['two-y', 'three-y'], ['one-y', 'two-y']);
+                        expect(spy).toHaveBeenCalledWith(['two-y', 'three-y'], ['one-y', 'two-y']);
                         expect(component.getCls()).toEqual(['two-y', 'three-y']);
                     });
 
@@ -935,7 +935,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['four', 'three'], null, '-y');
 
-                        expect(spy).wasCalledWith(['four-y', 'three-y'], ['one-y', 'two-y']);
+                        expect(spy).toHaveBeenCalledWith(['four-y', 'three-y'], ['one-y', 'two-y']);
                         expect(component.getCls()).toEqual(['four-y', 'three-y']);
                     });
                 });
@@ -953,7 +953,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('two', 'one', 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-one-y'], null);
+                        expect(spy).toHaveBeenCalledWith(['x-one-y'], null);
                         expect(component.getCls()).toEqual(['x-one-y']);
                     });
 
@@ -962,7 +962,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one', 'two'], ['three', 'four'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-three-y', 'x-four-y'], null);
+                        expect(spy).toHaveBeenCalledWith(['x-three-y', 'x-four-y'], null);
                         expect(component.getCls()).toEqual(['x-three-y', 'x-four-y']);
                     });
                 });
@@ -980,7 +980,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'two', 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-two-y'], ['x-one-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-two-y'], ['x-one-y']);
                         expect(component.getCls()).toEqual(['x-two-y']);
                     });
 
@@ -989,7 +989,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-two-y'], ['x-one-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-two-y'], ['x-one-y']);
                         expect(component.getCls()).toEqual(['x-two-y']);
                     });
 
@@ -998,7 +998,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls(['one'], ['two', 'three'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-two-y', 'x-three-y'], ['x-one-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-two-y', 'x-three-y'], ['x-one-y']);
                         expect(component.getCls()).toEqual(['x-two-y', 'x-three-y']);
                     });
                 });
@@ -1016,7 +1016,7 @@ describe('Ext.Component', function() {
 
                         component.replaceCls('one', 'three', 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-two-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-two-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
                         expect(component.getCls()).toEqual(['x-two-y', 'x-three-y']);
                     });
 
@@ -1024,7 +1024,7 @@ describe('Ext.Component', function() {
                         expect(component.getCls()).toEqual(['x-one-y', 'x-two-y']);
                         component.replaceCls(['one', 'two'], ['four', 'three'], 'x-', '-y');
 
-                        expect(spy).wasCalledWith(['x-four-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
+                        expect(spy).toHaveBeenCalledWith(['x-four-y', 'x-three-y'], ['x-one-y', 'x-two-y']);
                         expect(component.getCls()).toEqual(['x-four-y', 'x-three-y']);
                     });
                 });

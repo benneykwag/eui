@@ -4182,7 +4182,7 @@ describe('Ext.promise.Promise', function() {
                     eventuallyResolvesTo(promise, 'abcd', true);
                 });
 
-                it('Array of three functions with an initial value', function() {
+                it('Array of three functions with an initial value and scope', function() {
                     var fns = [verifyScope(createAppenderFn('b'), targetScope), verifyScope(createAppenderFn('c'), targetScope), verifyScope(createAppenderFn('d'), targetScope)];
 
                     promise = Deferred.pipeline(fns, 'a', targetScope);
@@ -4292,7 +4292,7 @@ describe('Ext.promise.Promise', function() {
                     eventuallyResolvesTo(promise, 'abcd', true);
                 });
 
-                it('Promise of an Array of three functions with an initial value', function() {
+                it('Promise of an Array of three functions with an initial value and scope', function() {
                     var fns = [verifyScope(createAppenderFn('b'), targetScope), verifyScope(createAppenderFn('c'), targetScope), verifyScope(createAppenderFn('d'), targetScope)];
 
                     promise = Deferred.pipeline(Deferred.resolved(fns), 'a', targetScope);

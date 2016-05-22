@@ -294,7 +294,7 @@ var Ext = Ext || {};
         <local name="base.path"/>
         <property name="base.path" value="${framework.dir}"/>
 
-        <delete file="${base.dir}/bootstrap-manifest.js"/>
+        <delete file="${base.path}/bootstrap-manifest.js"/>
 
         <x-compile refid="${compiler.ref.id}">
             <![CDATA[

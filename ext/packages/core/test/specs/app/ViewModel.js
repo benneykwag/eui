@@ -105,6 +105,99 @@ describe("Ext.app.ViewModel", function() {
         Ext.data.Model.schema.clear(true);
     });
 
+    describe("isReadOnly", function() {
+         describe("always readOnly bindings", function() {
+             it("should be true for template bindings", function() {
+                 createViewModel();
+                 var b = viewModel.bind('Hello {foo}', Ext.emptyFn);
+                 expect(b.isReadOnly()).toBe(true);
+             });
+
+             it("should be true for multi bindings", function() {
+                 createViewModel();
+                 var b = viewModel.bind({
+                     a: '{foo}',
+                     b: '{bar}'
+                 }, Ext.emptyFn);
+                 expect(b.isReadOnly()).toBe(true);
+             });
+         });
+
+         describe("normal bindings", function() {
+             it("should not be readOnly by default", function() {
+                 createViewModel();
+                 var b = viewModel.bind('{foo}', Ext.emptyFn);
+                 expect(b.isReadOnly()).toBe(false);
+             });
+
+             it("should not be readOnly when options are passed", function() {
+                 createViewModel();
+                 var b = viewModel.bind('{foo}', Ext.emptyFn, null, {
+                     single: true
+                 });
+                 expect(b.isReadOnly()).toBe(false);
+             });
+
+             it("should be readOnly when twoWay is set to false", function() {
+                 createViewModel();
+                 var b = viewModel.bind('{foo}', Ext.emptyFn, null, {
+                     twoWay: false
+                 });
+                 expect(b.isReadOnly()).toBe(true);
+             });
+         });
+
+         describe("formulas", function() {
+             it("should be readOnly if there is no set", function() {
+                 createViewModel(false, {
+                     formulas: {
+                         foo: function() {
+                             return 1;
+                         }
+                     }
+                 });
+                 var b = viewModel.bind('{foo}', Ext.emptyFn);
+                 expect(b.isReadOnly()).toBe(true);
+             });
+
+             it("should be readOnly if there is a set but is marked as twoWay: false", function() {
+                 createViewModel(false, {
+                     formulas: {
+                         foo: {
+                             get: function() {
+                                 return 1;
+                             },
+                             set: function() {
+                                 this.set('x', 1);
+                             }
+                         }
+                     }
+                 });
+                 var b = viewModel.bind('{foo}', Ext.emptyFn, null, {
+                     twoWay: false
+                 });
+                 expect(b.isReadOnly()).toBe(true);
+             });
+
+             it("should not be readOnly if there is a set", function() {
+                 createViewModel(false, {
+                     formulas: {
+                         foo: {
+                             get: function() {
+                                 return 1;
+                             },
+                             set: function() {
+                                 this.set('x', 1);
+                             }
+                         }
+                     }
+                 });
+                 var b = viewModel.bind('{foo}', Ext.emptyFn);
+                 expect(b.isReadOnly()).toBe(false);
+             });
+         });
+     });
+
     describe("getting/setting values", function() {
         beforeEach(function() {
             createViewModel();
@@ -678,8 +771,12 @@ describe("Ext.app.ViewModel", function() {
                                 });
                             });
                             notify();
-                            expect(spy.callCount).toBe(1);
-                            expectArgs(null, undefined);
+                            if (bindFirst) {
+                                expect(spy.callCount).toBe(1);
+                                expectArgs(null, undefined);
+                            } else {
+                                expect(spy).not.toHaveBeenCalled();
+                            }
                         });
 
                         it("should set the child value correctly when overwriting a hierarchy over multiple ticks", function() {
@@ -817,6 +914,39 @@ describe("Ext.app.ViewModel", function() {
         }
         createSuite(false);
         createSuite(true);
+
+        describe("data types", function() {
+            describe("dates", function() {
+                it("should change when setting an initial date", function() {
+                    var d = new Date(2010, 0, 1);
+                    bindNotify('{val}', spy);
+                    setNotify('val', d);
+                    expectArgs(d, undefined);
+                });
+
+                it("should change when setting a new date", function() {
+                    var d1 = new Date(2010, 0, 1),
+                        d2 = new Date(2000, 3, 15);
+
+                    setNotify('val', d1);
+                    bindNotify('{val}', spy);
+                    spy.reset();
+                    setNotify('val', d2);
+                    expectArgs(d2, d1);
+                });
+
+                it("should not change when setting the same date with a different reference", function() {
+                    var d1 = new Date(2010, 0, 1),
+                        d2 = new Date(2010, 0, 1);
+
+                    setNotify('val', d1);
+                    bindNotify('{val}', spy);
+                    spy.reset();
+                    setNotify('val', d2);
+                    expect(spy).not.toHaveBeenCalled();
+                });
+            });
+        });
         
         describe("firing order", function() {
             it("should fire children before parents", function() {
@@ -1527,6 +1657,21 @@ describe("Ext.app.ViewModel", function() {
                             binding.setValue('newStreet');
                             notify();
                             expect(address.get('street')).toBe('newStreet');
+                        });
+
+                        it("should update when a parent reference is nulled out after setting only the top level reference", function() {
+                            var comment = makeRecord(Comment, 101, {
+                                userId: 1
+                            });
+                            makeUser(1);
+                            comment.setUser(user);
+
+                            var binding = viewModel.bind('{comment.user}', spy);
+                            setNotify('comment', comment);
+                            spy.reset();
+                            setNotify('comment', null);
+                            expect(spy.callCount).toBe(1);
+                            expectArgs(null, comment.getUser());
                         });
                     });
                 });

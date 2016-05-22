@@ -106,7 +106,7 @@ Ext.define('Ext.chart.axis.Axis', {
          * like `spacing`, `padding`, `font` that receives a string or number and
          * returns a new string with the modified values.
          *
-         * For more supported values, see the configurations for {@link Ext.chart.label.Label}.
+         * For more supported values, see the configurations for {@link Ext.chart.sprite.Label}.
          */
         label: undefined,
 
@@ -252,6 +252,7 @@ Ext.define('Ext.chart.axis.Axis', {
         /**
          * @cfg {Number} [majorTickSteps=0]
          * Forces the number of major ticks to the specified value.
+         * Both {@link #minimum} and {@link #maximum} should be specified.
          */
         majorTickSteps: 0,
 
@@ -866,7 +867,7 @@ Ext.define('Ext.chart.axis.Axis', {
         } else if (me.masterAxis) {
             return me.masterAxis.range;
         }
-        if (Ext.isNumber(me.getMinimum() + me.getMaximum())) {
+        if ( Ext.isNumber(me.getMinimum()) && Ext.isNumber(me.getMaximum()) ) {
             return me.range = [me.getMinimum(), me.getMaximum()];
         }
         var min = Infinity,

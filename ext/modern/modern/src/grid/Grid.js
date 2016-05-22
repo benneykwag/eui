@@ -382,6 +382,18 @@ Ext.define('Ext.grid.Grid', {
      * @param {Ext.grid.column.Column} column The sorted column.
      * @param {String} direction The direction of the sort on this Column. Either 'asc' or 'desc'.
      */
+    
+    customScrollCls: Ext.baseCSSPrefix + 'scroll-scroller-has-width',
+
+    getElementConfig: function() {
+        var config = this.callParent();
+        config.children.push({
+            reference: 'resizeMarker',
+            className: 'x-grid-resize-marker',
+            hidden: true
+        });
+        return config;
+    },
 
     initialize: function() {
         var me = this,
@@ -401,7 +413,9 @@ Ext.define('Ext.grid.Grid', {
         }
         container.add(headerContainer);
 
-        me.scrollElement.addCls(Ext.baseCSSPrefix + 'grid-scrollelement');
+        // We add a class here because we want to control the width of the scroll
+        // element, we don't want it to be auto
+        me.scrollElement.addCls(me.customScrollCls);
     },
 
     applyTitleBar: function(titleBar) {

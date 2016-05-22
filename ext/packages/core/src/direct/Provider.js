@@ -5,11 +5,11 @@
  *
  *     Provider
  *     |
- *     +---{@link Ext.direct.JsonProvider JsonProvider}
+ *     +---JsonProvider
  *         |
- *         +---{@link Ext.direct.PollingProvider PollingProvider}
+ *         +---PollingProvider
  *         |
- *         +---{@link Ext.direct.RemotingProvider RemotingProvider}
+ *         +---RemotingProvider
  *
  * @abstract
  */

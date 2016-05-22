@@ -122,11 +122,34 @@ Ext.define('Ext.grid.filters.filter.Base', {
     },
 
     addStoreFilter: function (filter) {
-        this.getGridStore().getFilters().add(filter);
+        var filters = this.getGridStore().getFilters(),
+        idx = filters.indexOf(filter),
+        existing = idx !== -1 ? filters.getAt(idx) : null,
+        sameValue;
+
+        // If the filter being added doesn't exist in the collection we should add it.
+        // But if there is a filter with the same id (indexOf tests for the same id), we should
+        // check if the value and property are the same and if they are not, the filter should be
+        // added to replace the older one.
+        if (!existing) {
+            filters.add(filter);
+        } else {
+            if (existing.getValue() === filter.getValue()) {
+                sameValue = true;
+            } else if (Ext.isArray(filter.getValue()) && Ext.Array.equals(existing.getValue(), filter.getValue())) {
+                sameValue = true;
+            }
+
+            if (!(sameValue && existing.getProperty() === filter.getProperty())) {
+                filters.add(filter);
+            }
+        }
     },
 
     createFilter: function (config, key) {
-        return new Ext.util.Filter(this.getFilterConfig(config, key));
+        var filter = new Ext.util.Filter(this.getFilterConfig(config, key));
+        filter.isGridFilter = true;
+        return filter;
     },
 
     // Note that some derived classes may need to do specific processing and will have its own version of this method
@@ -193,7 +216,13 @@ Ext.define('Ext.grid.filters.filter.Base', {
      */
     onValueChange: function (field, e) {
         var me = this,
+            keyCode = e.getKey(),
             updateBuffer = me.updateBuffer;
+
+        // Don't process tabs!
+        if (keyCode === e.TAB) {
+            return;
+        }
 
         //<debug>
         if (!field.isFormField) {
@@ -202,7 +231,7 @@ Ext.define('Ext.grid.filters.filter.Base', {
         //</debug>
 
         if (field.isValid()) {
-            if (e.getKey() === e.RETURN) {
+            if (keyCode === e.RETURN) {
                 me.menu.hide();
                 return;
             }
@@ -260,10 +289,6 @@ Ext.define('Ext.grid.filters.filter.Base', {
         if (me.active !== active) {
             me.active = active;
 
-            // The store filter will be updated, but we don't want to recreate the list store or the menu items in the
-            // onDataChanged listener so we need to set this flag.
-            me.preventDefault = true;
-
             filterCollection = me.getGridStore().getFilters();
             filterCollection.beginUpdate();
             if (active) {
@@ -273,8 +298,6 @@ Ext.define('Ext.grid.filters.filter.Base', {
             }
 
             filterCollection.endUpdate();
-
-            me.preventDefault = false;
 
             // Make sure we update the 'Filters' menu item.
             if (menuItem && menuItem.activeFilter === me) {
@@ -311,3 +334,4 @@ Ext.define('Ext.grid.filters.filter.Base', {
         this.getGridStore().getFilters().notify('endupdate');
     }
 });
+

@@ -384,6 +384,18 @@ Ext.define("Ext.locale.en_GB.grid.filters.filter.String", {
     emptyText: "Enter Filter Text..."
 });
 
+Ext.define("Ext.locale.en_GB.view.MultiSelectorSearch", {
+    override: 'Ext.view.MultiSelectorSearch' ,
+    searchText: 'Search...'
+});
+
+Ext.define("Ext.locale.en_GB.view.MultiSelector", {
+    override: 'Ext.view.MultiSelector',
+    emptyText: 'Nothing selected',
+    removeRowTip: 'Remove this item',
+    addToolText: 'Search for items to add'
+});
+
 // This is needed until we can refactor all of the locales into individual files
 Ext.define("Ext.locale.en_GB.Component", {	
     override: "Ext.Component"

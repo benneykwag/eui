@@ -80,7 +80,7 @@ Ext.define('Ext.app.bind.BaseBinding', {
             //    but something under us has changed. For example a link stub or a model field binding
             // 3) If the value has changed
             // 4) If the value is an array. It's difficult to tell if the underlying data changed
-            if (!me.calls || me.deep || previous !== value || Ext.isArray(value)) {
+            if (!me.calls || me.deep || me.valueChanged(value, previous)) {
                 ++me.calls;
                 me.lastValue = value;
 
@@ -96,6 +96,19 @@ Ext.define('Ext.app.bind.BaseBinding', {
                     me.destroy();
                 }
             }
+        },
+
+        valueChanged: function(value, previous) {
+            var ret = true;
+
+            if (previous !== value) {
+                if (value && previous && value instanceof Date && previous instanceof Date) {
+                    ret = value.getTime() !== previous.getTime();
+                }
+            } else {
+                ret = Ext.isArray(value);
+            }
+            return ret;
         }
     }
 });

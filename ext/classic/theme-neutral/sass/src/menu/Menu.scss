@@ -332,14 +332,14 @@
         background-color: $ui-separator-background-color;
         width: $ui-separator-size;
 
-        @if $include-rtl {
-            &.#{$prefix}rtl {
-                left: auto;
-                right: $ui-icon-separator-indent;
-            }
-        }
     }
 
+    @if $include-rtl {
+        .#{$prefix}rtl > .#{$prefix}menu-icon-separator {
+            left: auto;
+            right: $ui-icon-separator-indent;
+        }
+    }
     .#{$prefix}menu-item-#{$ui} {
         border-width: $ui-item-border-width;
         cursor: $ui-item-cursor;

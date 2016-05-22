@@ -57,7 +57,7 @@
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 10, y: 10 });
         });
-        waits(maxDuration - 30);
+        waits(maxDuration - 60);
         runs(function() {
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 10, y: 10 });
@@ -144,6 +144,33 @@
         runs(function() {
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 11, y: 11 });
+        });
+        waitsForAnimation();
+        runs(function() {
+            expect(doubleTapHandler).toHaveBeenCalled();
+        });
+    });
+
+    it("should fire a doubletap if done after a touchend is vetoed", function() {
+        targetEl.on('touchend', function(e) {
+            e.stopEvent();
+        }, null, {single: true});
+
+        runs(function() {
+            start({ id: 1, x: 400, y: 10 });
+            end({ id: 1, x: 400, y: 10 });
+        });
+        waits(maxDuration + 100);
+        runs(function() {
+            expect(doubleTapHandler).not.toHaveBeenCalled();
+            start({ id: 2, x: 10, y: 10 });
+            end({ id: 2, x: 10, y: 10 });
+        });
+        waits(maxDuration - 60);
+        runs(function() {
+            expect(doubleTapHandler).not.toHaveBeenCalled();
+            start({ id: 3, x: 10, y: 10 });
+            end({ id: 3, x: 10, y: 10 });
         });
         waitsForAnimation();
         runs(function() {

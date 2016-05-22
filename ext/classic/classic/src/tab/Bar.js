@@ -261,7 +261,8 @@ Ext.define('Ext.tab.Bar', {
     },
 
     onRender: function() {
-        var me = this;
+        var me = this,
+            overflowHandler = this.layout.overflowHandler;
 
         me.callParent();
 
@@ -270,6 +271,10 @@ Ext.define('Ext.tab.Bar', {
                 mousemove: me.onMouseMove, 
                 scope: me
             });
+        }
+
+        if (overflowHandler && overflowHandler.type === 'menu') {
+            overflowHandler.menu.on('click', 'onOverflowMenuItemClick', me);
         }
     },
     
@@ -692,6 +697,19 @@ Ext.define('Ext.tab.Bar', {
                 }
                 else {
                     me.doActivateTab(tab);
+                }
+            }
+        },
+        
+        onOverflowMenuItemClick: function (menu, item, e, eOpts) {
+            var tab = item && item.masterComponent,
+                overflowHandler = this.layout.overflowHandler;
+
+            if (tab && !tab.isDisabled()) {
+                this.doActivateTab(tab);
+                // set focus to menuTrigger so that it doesn't revert to previous activeTab
+                if (overflowHandler.menuTrigger) {
+                    overflowHandler.menuTrigger.focus();
                 }
             }
         },

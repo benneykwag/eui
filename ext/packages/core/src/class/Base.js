@@ -464,10 +464,11 @@ var noArgs = [],
          * @param {Object} members
          */
         addInheritableStatics: function(members) {
-            var inheritableStatics,
+            var me = this,
+                prototype = me.prototype,
+                inheritableStatics,
                 hasInheritableStatics,
-                prototype = this.prototype,
-                name, member;
+                name, member, current;
 
             inheritableStatics = prototype.$inheritableStatics;
             hasInheritableStatics = prototype.$hasInheritableStatics;
@@ -478,18 +479,23 @@ var noArgs = [],
             }
 
             //<debug>
-            var className = Ext.getClassName(this) + '.';
+            var className = Ext.getClassName(me) + '.';
             //</debug>
 
             for (name in members) {
                 if (members.hasOwnProperty(name)) {
                     member = members[name];
+                    current = me[name];
                     //<debug>
                     if (typeof member == 'function') {
                         member.name = className + name;
                     }
                     //</debug>
-                    this[name] = member;
+                    if (typeof current === 'function' && !current.$isClass && !current.$nullFn) {
+                        member.$previous = current;
+                    }
+
+                    me[name] = member;
 
                     if (!hasInheritableStatics[name]) {
                         hasInheritableStatics[name] = true;
@@ -498,7 +504,7 @@ var noArgs = [],
                 }
             }
 
-            return this;
+            return me;
         },
 
         /**
@@ -843,7 +849,9 @@ var noArgs = [],
          */
         mixin: function(name, mixinClass) {
             var me = this,
-                mixin, prototype, key, statics, i, ln, staticName, mixinValue, mixins;
+                mixin, prototype, key, statics, i, ln, 
+                mixinName, staticName, mixinValue, mixins,
+                mixinStatics;
 
             if (typeof name !== 'string') {
                 mixins = name;
@@ -857,7 +865,7 @@ var noArgs = [],
                     // mixins: {
                     //     foo: ...
                     // }
-                    for (var mixinName in mixins) {
+                    for (mixinName in mixins) {
                         me.mixin(mixinName, mixins[mixinName]);
                     }
                 }
@@ -895,7 +903,7 @@ var noArgs = [],
                     // mixin's methods win, we also want its reference to be preserved.
                     Ext.applyIf(prototype.mixins, mixinValue);
                 }
-                else if (!(key === 'mixinId' || key === 'config') && (prototype[key] === undefined)) {
+                else if (!(key === 'mixinId' || key === 'config' || key === '$inheritableStatics') && (prototype[key] === undefined)) {
                     prototype[key] = mixinValue;
                 }
             }
@@ -905,13 +913,15 @@ var noArgs = [],
             statics = mixin.$inheritableStatics;
 
             if (statics) {
+                mixinStatics = {};
                 for (i = 0, ln = statics.length; i < ln; i++) {
                     staticName = statics[i];
 
                     if (!me.hasOwnProperty(staticName)) {
-                        me[staticName] = mixinClass[staticName];
+                        mixinStatics[staticName] = mixinClass[staticName];
                     }
                 }
+                me.addInheritableStatics(mixinStatics);
             }
             //</feature>
 
@@ -1046,7 +1056,9 @@ var noArgs = [],
     //</feature>
 
     Base.addMembers({
-        /** @private */
+        /**
+         * @private
+         */
         $className: 'Ext.Base',
 
         /**
@@ -1477,9 +1489,10 @@ var noArgs = [],
          * @method
          * @param {String/Object} name The name of the property to set, or a set of key value pairs to set.
          * @param {Object} [value] The value to set for the name parameter.
+         * @param options (private)
          * @return {Ext.Base} this
          */
-        setConfig: function(name, value, /* private */ options) {
+        setConfig: function(name, value, options) {
             // options can have the following properties:
             // - defaults `true` to only set the config(s) that have not been already set on
             // this instance.
@@ -1567,7 +1580,7 @@ var noArgs = [],
 
         /**
          * Adds a "destroyable" object to an internal list of objects that will be destroyed
-         * when this instance is destroyed (via `{@link #destroy}`).
+         * when this instance is destroyed (via `{@link #method-destroy}`).
          * @param {String} name
          * @param {Object} value
          * @return {Object} The `value` passed.

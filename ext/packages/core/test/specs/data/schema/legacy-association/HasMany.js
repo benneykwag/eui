@@ -53,8 +53,9 @@ describe("Ext.data.association.HasMany_legacy", function() {
             Ext.undefine('spec.Foo');
         });
         
-        var expectFn = function(key) {
-            expect(Ext.isFunction(spec.Foo.prototype[key])).toBe(true);
+        var expectFn = function(key, o) {
+            o = o || spec.Foo;
+            expect(Ext.isFunction(o.prototype[key])).toBe(true);
         }
         
         it("should read a single string", function() {
@@ -151,6 +152,32 @@ describe("Ext.data.association.HasMany_legacy", function() {
             });
             var o = new spec.Foo();
             expect(o.posts().getTrackRemoved()).toBe(false);
+        });
+
+        it("should setup the correct inverse when using a name", function() {
+            Ext.define('spec.Foo', {
+                extend: 'Ext.data.Model',
+                hasMany: {
+                    model: 'Post',
+                    name: 'comments'
+                }
+            });
+
+            expectFn('comments');
+            expectFn('getFoo', spec.Post);
+        });
+
+        it("should respect a role config", function() {
+            Ext.define('spec.Foo', {
+                extend: 'Ext.data.Model',
+                hasMany: {
+                    model: 'Post',
+                    role: 'comments'
+                }
+            });
+
+            expectFn('comments');
+            expectFn('getFoo', spec.Post);
         });
     });
     

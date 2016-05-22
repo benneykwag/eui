@@ -128,7 +128,7 @@ describe("Ext.form.field.Base", function() {
             });
             c.setFieldLabel('Foo');
             c.render(Ext.getBody());
-            expect(c.labelEl.dom.firstChild).hasHTML('Foo');
+            expect(c.labelTextEl.dom).hasHTML('Foo');
         });
 
         it("should set a configured label", function() {
@@ -137,7 +137,7 @@ describe("Ext.form.field.Base", function() {
                 fieldLabel: 'Foo',
                 renderTo: Ext.getBody()
             });
-            expect(c.labelEl.dom.firstChild).hasHTML('Foo');
+            expect(c.labelTextEl.dom).hasHTML('Foo');
         });
 
         it("should not hide an empty label with hideEmptyLabel: false", function() {
@@ -174,7 +174,7 @@ describe("Ext.form.field.Base", function() {
                 fieldLabel: 'Foo'
             });
             c.setFieldLabel('Bar');
-            expect(c.labelEl.dom.firstChild).hasHTML('Bar');
+            expect(c.labelTextEl.dom).hasHTML('Bar');
         });
 
         it("should append the separator when explicitly set", function() {
@@ -184,7 +184,7 @@ describe("Ext.form.field.Base", function() {
                 fieldLabel: 'Foo'
             });
             c.setFieldLabel('Bar');
-            expect(c.labelEl.dom.firstChild).hasHTML('Bar:');
+            expect(c.labelTextEl.dom).hasHTML('Bar:');
         });
 
         it("should only append the separator if the label doesn't end with the separator when explicitly set", function() {
@@ -194,7 +194,7 @@ describe("Ext.form.field.Base", function() {
                 fieldLabel: 'Foo'
             });
             c.setFieldLabel('Bar:');
-            expect(c.labelEl.dom.firstChild).hasHTML('Bar:');
+            expect(c.labelTextEl.dom).hasHTML('Bar:');
         });
 
         it("should append the separator when implicitly set", function() {
@@ -203,7 +203,7 @@ describe("Ext.form.field.Base", function() {
                 renderTo: Ext.getBody(),
                 fieldLabel: 'Foo'
             });
-            expect(c.labelEl.dom.firstChild).hasHTML('Foo:');
+            expect(c.labelTextEl.dom).hasHTML('Foo:');
         });
 
         it("should only append the separator if the label doesn't end with the separator when implicitly set", function() {
@@ -212,7 +212,7 @@ describe("Ext.form.field.Base", function() {
                 renderTo: Ext.getBody(),
                 fieldLabel: 'Foo:'
             });
-            expect(c.labelEl.dom.firstChild).hasHTML('Foo:');
+            expect(c.labelTextEl.dom).hasHTML('Foo:');
         });
 
         it("should hide the label if an empty one is set with hideEmptyLabel: true", function() {

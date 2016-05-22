@@ -1,3 +1,5 @@
+/* global expect, Ext, jasmine, xdescribe, MockAjaxManager */
+
 describe("Ext.grid.selection.SpreadsheetModel", function() {
     
     var grid, view, store, selModel, colRef,
@@ -54,17 +56,6 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
     }
 
     function makeGrid(columns, cfg, selModelCfg, storeCfg, locked) {
-        Ext.define('spec.SpreadsheetModel', {
-            extend: 'Ext.data.Model',
-            fields: [
-                'field1',
-                'field2',
-                'field3',
-                'field4',
-                'field5'
-            ]
-        });
-
         selModel = new Ext.grid.selection.SpreadsheetModel(Ext.apply({
             dragSelect: true,
             cellSelect: true,
@@ -136,6 +127,17 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
     }
     
     beforeEach(function() {
+        Ext.define('spec.SpreadsheetModel', {
+            extend: 'Ext.data.Model',
+            fields: [
+                'field1',
+                'field2',
+                'field3',
+                'field4',
+                'field5'
+            ]
+        });
+
         // Override so that we can control asynchronous loading
         loadStore = Ext.data.ProxyStore.prototype.load = function() {
             proxyStoreLoad.apply(this, arguments);
@@ -154,6 +156,26 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
         selModel = grid = store = view = null;
         Ext.undefine('spec.SpreadsheetModel');
         Ext.data.Model.schema.clear();
+    });
+
+    smDescribe('with a bound store', function() {
+        it('should not throw an exception', function() {
+            expect(function() {
+                makeGrid(null, {
+                    viewModel: {
+                        stores: {
+                            people: {
+                                model: 'spec.SpreadsheetModel'
+                            }
+                        }
+                    },
+                    bind: {
+                        store: '{people}'
+                    },
+                    store: null
+                });
+            }).not.toThrow();
+        });
     });
 
     smDescribe("Non-rendered operation", function() {
@@ -334,6 +356,87 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             // Activating the header as a column select should NOT sort
             expect(spy).not.toHaveBeenCalled();
         });
+        it('should allow click/drag selection of columns when cell and row selection is disabled', function() {
+            makeGrid(null, null, {
+                cellSelect: false,
+                rowSelect: false,
+                columnSelect: true
+            });
+
+            var c2 = findCell(2, 2),
+                c3 = findCell(3, 3),
+                c4 = findCell(4, 4),
+                sel;
+
+            jasmine.fireMouseEvent(c2, 'mousedown');
+            jasmine.fireMouseEvent(c2, 'mousemove');
+            jasmine.fireMouseEvent(c3, 'mousemove');
+            jasmine.fireMouseEvent(c4, 'mousemove');
+            jasmine.fireMouseEvent(c4, 'mouseup');
+            
+            sel = selModel.getSelected();
+
+            // That swipe from 2,2 to 4,4 should have selected three columns
+            expect(sel.isColumns).toBe(true);
+            expect(sel.getCount()).toBe(3);
+            expect(isColumnSelected(2)).toBe(true);
+            expect(isColumnSelected(3)).toBe(true);
+            expect(isColumnSelected(4)).toBe(true);
+
+            // Should have selected all cells under column 2, 3 and 4
+            expect(view.el.query('.'+view.selectedCellCls).length).toBe(view.el.query(colRef[2].getCellSelector()).length + view.el.query(colRef[3].getCellSelector()).length + view.el.query(colRef[4].getCellSelector()).length);
+        });
+        it('should allow click/SHIFT click selection of columns when cell and row selection is disabled', function() {
+            makeGrid(null, null, {
+                cellSelect: false,
+                rowSelect: false,
+                columnSelect: true
+            });
+
+            var c2 = findCell(2, 2),
+                c4 = findCell(4, 4),
+                sel;
+
+            jasmine.fireMouseEvent(c2, 'click');
+            jasmine.fireMouseEvent(c4, 'click', null, null, null, true); // SHIFT/click
+            
+            sel = selModel.getSelected();
+
+            // Click on 2,2, and SHIFT/click on 4,4 will select 3 columns
+            expect(sel.isColumns).toBe(true);
+            expect(sel.getCount()).toBe(3);
+            expect(isColumnSelected(2)).toBe(true);
+            expect(isColumnSelected(3)).toBe(true);
+            expect(isColumnSelected(4)).toBe(true);
+
+            // Should have selected all cells under column 2, 3 and 4
+            expect(view.el.query('.'+view.selectedCellCls).length).toBe(view.el.query(colRef[2].getCellSelector()).length + view.el.query(colRef[3].getCellSelector()).length + view.el.query(colRef[4].getCellSelector()).length);
+        });
+        it('should allow click/CTRL click selection of columns when cell and row selection is disabled', function() {
+            makeGrid(null, null, {
+                cellSelect: false,
+                rowSelect: false,
+                columnSelect: true
+            });
+
+            var c2 = findCell(2, 2),
+                c4 = findCell(4, 4),
+                sel;
+
+            jasmine.fireMouseEvent(c2, 'click');
+            jasmine.fireMouseEvent(c4, 'click', null, null, null, null, true); // CTRL/click
+            
+            sel = selModel.getSelected();
+
+            // Click on 2,2, and SHIFT/click on 4,4 will select columns 2 and 4
+            expect(sel.isColumns).toBe(true);
+            expect(sel.getCount()).toBe(2);
+            expect(isColumnSelected(2)).toBe(true);
+            expect(isColumnSelected(4)).toBe(true);
+
+            // Should have selected all cells under column 2, 3 and 4
+            expect(view.el.query('.'+view.selectedCellCls).length).toBe(view.el.query(colRef[2].getCellSelector()).length + view.el.query(colRef[4].getCellSelector()).length);
+        });
     }); 
 
     smDescribe("Row selection", function() {
@@ -434,7 +537,36 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             });
 
             // Only the data should be here, NOT the row number
-            expect(data.text).toBe('2.1\t2.2\t2.3\t2.4\t2.5')
+            expect(data.text).toBe('2.1\t2.2\t2.3\t2.4\t2.5');
+        });
+
+        // https://sencha.jira.com/browse/EXTJS-19404
+        it("should fire selectionchange event only once", function() {
+            makeGrid();
+            
+            var selChangeSpy = spyOnEvent(grid, 'selectionchange');
+            
+            clickRowNumberer(1);
+            
+            expect(selChangeSpy.callCount).toBe(1);
+         });
+
+        describe("checkboxSelect", function() {
+            it("should not select the checkbox while dragging before the pointer is out of the checkbox", function() {
+                var checkbox;
+                makeGrid(null, {
+                    selModel: {
+                        type: 'spreadsheet',
+                        checkboxSelect: true,
+                        checkboxColumnIndex: 1
+                    }
+                });
+
+                checkbox = findCell(0,1).down('.x-grid-row-checker').dom;
+                jasmine.fireMouseEvent(checkbox, 'mousedown');
+                jasmine.fireMouseEvent(checkbox, 'mousemove');
+                expect(isRowSelected(0)).toBe(false);
+            });
         });
     });
     
@@ -537,7 +669,18 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             });
 
             // Only the data should be here, NOT the row number
-            expect(data.text).toBe('2.1\t2.2\t2.3\t2.4\t2.5')
+            expect(data.text).toBe('2.1\t2.2\t2.3\t2.4\t2.5');
+        });
+
+        // https://sencha.jira.com/browse/EXTJS-19404
+        it("should fire selectionchange event only once", function() {
+            makeGrid();
+
+            var selChangeSpy = spyOnEvent(grid, 'selectionchange');
+
+            clickRowNumberer(1);
+            
+            expect(selChangeSpy.callCount).toBe(1);
         });
     });
     
@@ -574,6 +717,23 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             jasmine.fireMouseEvent(c2, 'mousemove');
             jasmine.fireMouseEvent(c4, 'mousemove');
             jasmine.fireMouseEvent(c4, 'mouseup');
+
+            // Should have selected the 3 cells spanned
+            expect(view.el.query('.'+view.selectedCellCls).length).toBe(3);
+
+            expect( isCellSelected(2, 2) &&
+                    isCellSelected(2, 3) &&
+                    isCellSelected(2, 4)).toBe(true);
+        });
+        it("should work when the mouseup is outside the grid", function() {
+            makeGrid();
+            var c2 = findCell(2, 2),
+                c4 = findCell(2, 4);
+
+            jasmine.fireMouseEvent(c2, 'mousedown');
+            jasmine.fireMouseEvent(c2, 'mousemove');
+            jasmine.fireMouseEvent(c4, 'mousemove');
+            jasmine.fireMouseEvent(document.body, 'mouseup');
 
             // Should have selected the 3 cells spanned
             expect(view.el.query('.'+view.selectedCellCls).length).toBe(3);
@@ -625,7 +785,7 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             });
 
             runs(function() {
-                jasmine.fireKeyEvent(c5, 'keydown', Ext.event.Event.RIGHT, true)
+                jasmine.fireKeyEvent(c5, 'keydown', Ext.event.Event.RIGHT, true);
             });
 
             // We expect nothing to happen
@@ -649,6 +809,38 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             jasmine.fireMouseEvent(findCell(5, 5), 'click');
             expect(view.el.query('.'+view.selectedCellCls).length).toBe(1);
             expect(isCellSelected(5, 5)).toBe(true);
+        });
+    });
+
+    smDescribe("With editor", function() {
+        it("should be able to select the text inside of an editor", function() {
+            var c1, plugin, editor, field;
+            makeGrid([{
+                text : 'Field 1',
+                dataIndex : 'field1',
+                editor : {
+                    xtype : 'textfield'
+                }
+            },{
+                text : 'Field 2',
+                dataIndex : 'field2'
+            }],{
+                plugins: {
+                    ptype: 'cellediting'
+                }
+            });
+            
+            c1 = findCell(0, 1);
+            jasmine.fireMouseEvent(c1, 'dblclick');
+
+            plugin = grid.findPlugin('cellediting');
+            editor = plugin.getActiveEditor();
+            field = editor.field;
+
+            jasmine.fireMouseEvent(field.el, 'mousedown');
+            jasmine.fireMouseEvent(field.el, 'mousemove');
+
+            expect(editor.editing).toBe(true);
         });
     });
 
@@ -760,7 +952,7 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
         var viewModel, spy, columns;
 
         function createGrid(gridCfg, selModelCfg, storeCfg) {
-            selModel = new Ext.selection.RowModel(selModelCfg || {});
+            selModel = new Ext.grid.selection.SpreadsheetModel(selModelCfg || {});
 
             grid = new Ext.grid.Panel(Ext.apply({
                 store: new Ext.data.Store(Ext.apply({
@@ -1379,13 +1571,16 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
     });
 
     describe('reconfigure', function() {
-        var newColumnSet;
+        var newColumnSet,
+            visibleColumns;
 
         beforeEach(function() {
             makeGrid(null, null, {
-                checkboxSelect: true
+                checkboxSelect: true,
+                checkboxColumnIndex: 1
             });
             newColumnSet = Ext.clone(grid.initialConfig.columns);
+            visibleColumns = grid.getVisibleColumnManager().getColumns();
         });
         it('should re-insert the checkbox and row numberer columns on reconfigure', function() {
             var columns = grid.getVisibleColumnManager().getColumns();
@@ -1393,10 +1588,18 @@ describe("Ext.grid.selection.SpreadsheetModel", function() {
             // There should be the checkbox column and the rpw numberer column in addition to the initial column set
             expect(columns.length).toBe(newColumnSet.length + 2);
 
+            // Should be RowNumberer at column zero, and checkbox obeying checkboxColumnIndex at column 1
+            expect(visibleColumns[0].isRowNumberer).toBe(true);
+            expect(visibleColumns[1].isCheckerHd).toBe(true);
+
             grid.reconfigure(null, newColumnSet);
 
             // There should be the checkbox column and the rpw numberer column in addition to the initial column set
             expect(columns.length).toBe(newColumnSet.length + 2);
+
+            // Should be RowNumberer at column zero, and checkbox obeying checkboxColumnIndex at column 1
+            expect(visibleColumns[0].isRowNumberer).toBe(true);
+            expect(visibleColumns[1].isCheckerHd).toBe(true);
         });
     });
 });

@@ -274,8 +274,12 @@ Ext.define('Ext.event.publisher.Gesture', {
 
         for (i = 0; i < ln; i++) {
             recognizer = recognizers[i];
-            if (recognizer.isActive && recognizer[methodName].call(recognizer, e) === false) {
-                recognizer.isActive = false;
+            if (recognizer.isActive) {
+                if (e.gestureCancelled) {
+                    recognizer.onEventCancelled(e);
+                } else if (recognizer[methodName].call(recognizer, e) === false) {
+                    recognizer.isActive = false;
+                }
             }
         }
     },
@@ -364,7 +368,9 @@ Ext.define('Ext.event.publisher.Gesture', {
         // support touch events, or "compatibility" mouse events on browsers that
         // support pointer events.  If this is the case, do not proceed with gesture
         // recognition.
-        if (e) {
+        //
+        // Also allow handlers to call the cancelGesture method to cancel gesture recognition.
+        if (e && !e.gestureCancelled) {
             if (!e.button || e.button < 1) {
                 // mouse gestures (and pointer gestures triggered by a mouse) can only be
                 // initiated using the left button (0).  button value < 0 is also acceptable
@@ -454,17 +460,25 @@ Ext.define('Ext.event.publisher.Gesture', {
 
         me.updateTouches(e, true);
 
-        me.invokeRecognizers(me.isCancelEvent[e.type] ? 'onTouchCancel' : 'onTouchEnd', e);
-
-        if (!me.activeTouches.length) {
-            // no more active touches - invoke onEnd to indicate the end of the gesture
-            me.isStarted = false;
-            me.invokeRecognizers('onEnd', e);
-
-            // Gesture is finished, safe to resume garbage collection so that any target
-            // elements destroyed while gesture was in progress can be collected
-            if (Ext.enableGarbageCollector) {
-                Ext.dom.GarbageCollector.resume();
+        // If an exception is thrown in any of the recognizers, we still need to run
+        // the cleanup. Otherwise the gesture might get "stuck" and *every* pointer event
+        // after that will fire the same handlers over and over, potentially spewing
+        // the same exceptions endlessly. See https://sencha.jira.com/browse/EXTJS-15674.
+        // We don't want to mask the original exception though, let it propagate.
+        try {
+            me.invokeRecognizers(me.isCancelEvent[e.type] ? 'onTouchCancel' : 'onTouchEnd', e);
+        }
+        finally {
+            if (!me.activeTouches.length) {
+                // no more active touches - invoke onEnd to indicate the end of the gesture
+                me.isStarted = false;
+                me.invokeRecognizers('onEnd', e);
+    
+                // Gesture is finished, safe to resume garbage collection so that any target
+                // elements destroyed while gesture was in progress can be collected
+                if (Ext.enableGarbageCollector) {
+                    Ext.dom.GarbageCollector.resume();
+                }
             }
         }
     },

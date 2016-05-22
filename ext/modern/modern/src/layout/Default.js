@@ -226,7 +226,7 @@ Ext.define('Ext.layout.Default', {
         // setting of docked on the component will occur before add to the container
         if (item.initialized) {
             if (oldDocked) {
-                this.undockItem(item);
+                this.undockItem(item, oldDocked);
             }
             if (docked) {
                 this.dockItem(item);
@@ -376,13 +376,14 @@ Ext.define('Ext.layout.Default', {
         return null;
     },
 
-    undockItem: function(item) {
+    undockItem: function(item, oldDocked) {
         var me = this,
             dockedItems = me.dockedItems,
-            lastBorderMask, lastBorderCollapse;
+            lastBorderMask, lastBorderCollapse,
+            dockWrapper = item.$dockWrapper;
 
-        if (item.$dockWrapper) {
-            item.$dockWrapper.removeItem(item);
+        if (dockWrapper) {
+            dockWrapper.removeItem(item, oldDocked);
         }
 
         if (me.container.initialized) {

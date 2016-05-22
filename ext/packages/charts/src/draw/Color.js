@@ -409,14 +409,14 @@ Ext.define('Ext.draw.Color', {
          * @return {Ext.draw.Color}
          * @static
          */
-        fly: function (r, g, b, a) {
+        fly: function (red, green, blue, alpha) {
             switch (arguments.length) {
                 case 1:
-                    flyColor.setFromString(r);
+                    flyColor.setFromString(red);
                     break;
                 case 3:
                 case 4:
-                    flyColor.setRGB(r, g, b, a);
+                    flyColor.setRGB(red, green, blue, alpha);
                     break;
                 default:
                     return null;
@@ -586,7 +586,7 @@ Ext.define('Ext.draw.Color', {
          *
          * @param {Number} h Hue component [0..360)
          * @param {Number} s Saturation component [0..1]
-         * @param {Number} l Value component [0..1]
+         * @param {Number} v Value component [0..1]
          * @return {Ext.draw.Color}
          * @static
          */
@@ -606,12 +606,12 @@ Ext.define('Ext.draw.Color', {
          *
          * If the string is not recognized, fromString returns rgba(0,0,0,0).
          *
-         * @param {String} Color Color as string.
+         * @param {String} color Color as string.
          * @return {Ext.draw.Color}
          * @static
          */
-        fromString: function (string) {
-            return (new this(0, 0, 0, 0)).setFromString(string);
+        fromString: function (color) {
+            return (new this(0, 0, 0, 0)).setFromString(color);
         },
 
         /**
@@ -634,21 +634,22 @@ Ext.define('Ext.draw.Color', {
          *     // Returns black when no arguments given.
          *     Ext.draw.Color.create();
          *
-         * @param {Ext.draw.Color/String/Number[]/Number} [red] Red component (0..255),
+         * @param {Ext.draw.Color/String/Number[]/Number} rgba
          * CSS color string or array of all components.
-         * @param {Number} [green] Green component (0..255)
-         * @param {Number} [blue] Blue component (0..255)
-         * @param {Number} [alpha=1] Alpha component (0..1)
+         * @param {Number} [rgba.red] Red component (0..255)
+         * @param {Number} [rgba.green] Green component (0..255)
+         * @param {Number} [rgba.blue] Blue component (0..255)
+         * @param {Number} [rgba.alpha=1] Alpha component (0..1)
          * @return {Ext.draw.Color}
          * @static
          */
-        create: function (arg) {
-            if (arg instanceof this) {
-                return arg;
-            } else if (Ext.isArray(arg)) {
-                return new Ext.draw.Color(arg[0], arg[1], arg[2], arg[3]);
-            } else if (Ext.isString(arg)) {
-                return Ext.draw.Color.fromString(arg);
+        create: function (rgba) {
+            if (rgba instanceof this) {
+                return rgba;
+            } else if (Ext.isArray(rgba)) {
+                return new Ext.draw.Color(rgba[0], rgba[1], rgba[2], rgba[3]);
+            } else if (Ext.isString(rgba)) {
+                return Ext.draw.Color.fromString(rgba);
             } else if (arguments.length > 2) {
                 return new Ext.draw.Color(arguments[0], arguments[1], arguments[2], arguments[3]);
             } else {

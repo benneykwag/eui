@@ -1,13 +1,15 @@
+/* global Ext, expect, jasmine */
+
 describe("Ext.window.Window", function() {
     var win, container;
     
     function makeWindow(config, noShow) {
-        config = Ext.apply(config || {}, {
+        config = Ext.apply({
             width: 200,
             height: 200,
             x: 10,
             y: 10
-        });
+        }, config);
         
         win = new Ext.window.Window(config);
         
@@ -288,7 +290,7 @@ describe("Ext.window.Window", function() {
             x = win.getLocalX();
             y = win.getLocalY();
             cw = container.getWidth();
-            ww = win.getWidth(),
+            ww = win.getWidth();
             box = Ext.Element.parseBox(win.constraintInsets);
             // We need to subtract 1 because the position
             // is constraintInset exclusive
@@ -316,7 +318,9 @@ describe("Ext.window.Window", function() {
             win = new Ext.window.Window({
                 height: 100, width: 100, header: false, maximized: true
             });
-            expect(function() { win.show() }).not.toThrow();
+            expect(function() {
+                win.show();
+            }).not.toThrow();
 
             // If maximizing a headerless window did not throw an error, we're good (EXTJSIV-8820)
         });
@@ -590,7 +594,7 @@ describe("Ext.window.Window", function() {
 
                 panelBody = panel.body;
                 win = panel.down('window');
-                borderTop = parseInt(win.header.el.getStyle('border-top'));
+                borderTop = parseInt(win.header.el.getStyle('border-top'), 10);
             });
 
             afterEach(function () {
@@ -608,6 +612,245 @@ describe("Ext.window.Window", function() {
                 winXY = win.getXY();
 
                 toggle(8);
+            });
+        });
+
+        describe("starting maximized", function() {
+            describe("without animation", function() {
+                it("should disable the drag/drop", function() {
+                    makeWindow({
+                        maximized: true
+                    });
+                    expect(win.dd.disabled).toBe(true);
+                }); 
+
+                it("should disable the resizer", function() {
+                    makeWindow({
+                        maximized: true
+                    });
+                    expect(win.resizer.disabled).toBe(true);
+                });
+
+                it("should have the tool be restore", function() {
+                    makeWindow({
+                        maximized: true,
+                        maximizable: true,
+                        closable: false
+                    });
+
+                    var tool = win.tools[0];
+                    expect(tool.type).toBe('restore');
+                    expect(tool.toolEl).toHaveCls('x-tool-maximize');
+                });
+
+                it("should not fire the maximize event", function() {
+                    var spy = jasmine.createSpy();
+
+                    makeWindow({
+                        maximized: true,
+                        maximizable: true,
+                        closable: false,
+                        listeners: {
+                            maximize: spy
+                        }
+                    });
+                    expect(spy.callCount).toBe(0);
+                });
+
+                describe("restoring", function() {
+                    it("should set the tool type back to maximize", function() {
+                        makeWindow({
+                            maximized: true,
+                            maximizable: true,
+                            closable: false
+                        });
+                        win.restore();
+                        expect(win.tools[0].type).toBe('maximize');
+                    });
+
+                    it("should restore configured dimensions", function() {
+                        makeWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250
+                        });
+                        win.restore();
+                        expect(win.getWidth()).toBe(250);
+                        expect(win.getHeight()).toBe(250);
+                    });
+
+                    it("should restore to a configured position", function() {
+                        makeWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250
+                        });
+                        win.restore();
+                        expect(win.getX()).toBe(10);
+                        expect(win.getY()).toBe(10);
+                    });
+
+                    it("should restore to a 0,0 with no position configured", function() {
+                        makeWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250,
+                            x: null,
+                            y: null
+                        });
+                        win.restore();
+                        expect(win.getX()).toBe(0);
+                        expect(win.getY()).toBe(0);
+                    });
+                });
+            });
+
+            describe("with animation", function() {
+                var animTarget;
+
+                function waitsForAnim() {
+                    waitsFor(function() {
+                        return !win.getActiveAnimation();
+                    });
+                }
+
+                function makeAnimWindow(cfg) {
+                    cfg.animateTarget = animTarget;
+                    makeWindow(cfg);
+                }
+
+                beforeEach(function() {
+                    animTarget = Ext.getBody().createChild({
+                        style: 'width: 100px; height: 100px; position: absolute; top: 50px; left: 50px'
+                    });
+                });
+
+                afterEach(function() {
+                    animTarget = Ext.destroy(animTarget);
+                    win.animateTarget = null;
+                });
+
+                it("should disable the drag/drop", function() {
+                    makeAnimWindow({
+                        maximized: true
+                    });
+                    waitsForAnim();
+                    runs(function() {
+                        expect(win.dd.disabled).toBe(true);
+                    });
+                }); 
+
+                it("should disable the resizer", function() {
+                    makeAnimWindow({
+                        maximized: true
+                    });
+                    waitsForAnim();
+                    runs(function() {
+                        expect(win.resizer.disabled).toBe(true);
+                    });
+                });
+
+                it("should have the tool be restore", function() {
+                    makeAnimWindow({
+                        maximized: true,
+                        maximizable: true,
+                        closable: false
+                    });
+                    waitsForAnim();
+                    runs(function() {
+                        var tool = win.tools[0];
+                        expect(tool.type).toBe('restore');
+                        expect(tool.toolEl).toHaveCls('x-tool-maximize');
+                    });
+                });
+
+                it("should not fire the maximize event", function() {
+                    var spy = jasmine.createSpy();
+
+                    makeWindow({
+                        maximized: true,
+                        maximizable: true,
+                        closable: false,
+                        listeners: {
+                            maximize: spy
+                        }
+                    });
+                    waitsForAnim();
+                    runs(function() {
+                        expect(spy.callCount).toBe(0);
+                    });
+                });
+
+                describe("restoring", function() {
+                    it("should set the tool type back to maximize", function() {
+                        makeAnimWindow({
+                            maximized: true,
+                            maximizable: true,
+                            closable: false
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            win.restore();
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            expect(win.tools[0].type).toBe('maximize');
+                        });
+                    });
+
+                    it("should restore configured dimensions", function() {
+                        makeAnimWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            win.restore();
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            expect(win.getWidth()).toBe(250);
+                            expect(win.getHeight()).toBe(250);
+                        });
+                    });
+
+                    it("should restore to a configured position", function() {
+                        makeAnimWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            win.restore();
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            expect(win.getX()).toBe(10);
+                            expect(win.getY()).toBe(10);
+                        });
+                    });
+
+                    it("should restore to a 0,0 with no position configured", function() {
+                        makeAnimWindow({
+                            maximized: true,
+                            width: 250,
+                            height: 250,
+                            x: null,
+                            y: null
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            win.restore();
+                        });
+                        waitsForAnim();
+                        runs(function() {
+                            expect(win.getX()).toBe(0);
+                            expect(win.getY()).toBe(0);
+                        });
+                    });
+                });
             });
         });
     });
@@ -695,6 +938,14 @@ describe("Ext.window.Window", function() {
 
         expect(header.items.getAt(1).type).toBe('minimize');
         expect(header.items.getAt(2).type).toBe('maximize');
+    });
+    
+    describe("focusability", function() {
+        it("should have focusable: true", function() {
+            makeWindow();
+            
+            expect(win.focusable).toBe(true);
+        });
     });
 
     describe("defaultFocus", function() {
@@ -1244,5 +1495,101 @@ describe("Ext.window.Window", function() {
             makeTabSuite(false);
             makeTabSuite(true);
         }
+    });
+
+    describe('nested Windows', function() {
+        it('should disable tabbing in tha parent window', function() {
+            Ext.define('spec.window.TestOneWindow', {
+                extend: 'Ext.window.Window',
+                alias: 'widget.testonewindow',
+                title: "Test Window 1",
+                height: 500,
+                width: 400,
+                modal: true,
+                defaultType: 'button',
+                items: [{
+                    xtype	: 'button',
+                    text	: 'Open Window 2',
+                    listeners: {
+                        click	: function() {
+                            win2 = win1.add({
+                                xtype: 'testtwowindow'
+                            });
+                            win2.show();
+                        }
+                    }
+                }, {
+                    xtype	: 'button',
+                    text	: 'Test Button 1'
+                }, {
+                    xtype: 'button',
+                    text:' Test Button 2'
+                }]
+            });
+
+            Ext.define('spec.window.TestTwoWindow', {
+                extend: 'Ext.window.Window',
+                alias: 'widget.testtwowindow',
+                title: "Test Window 2",
+                height: 300,
+                width: 300,
+                modal: true,
+                defaultType: 'button',
+                items: [{
+                    xtype: 'textfield'
+                }, {
+                    xtype: 'textfield'
+                }, {
+                    xtype	: 'button',
+                    text	: 'Open Window 3'
+                }, {
+                    xtype	: 'button',
+                    text	: 'Test Button 3'
+                }, {
+                    xtype: 'button',
+                    text:' Test Button 4'
+                }]
+            });
+ 
+            var rootPanel = Ext.create('Ext.panel.Panel', {
+                title: 'Hello',
+                renderTo: Ext.getBody(),
+                width: 800,
+                height: 500,
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'top',
+                    items: [{
+                        xtype:'button',
+                        text: 'Open Window 1',
+                        handler: function() {
+                            win1 = Ext.create({
+                                xtype: 'testonewindow'
+                            });
+                            win1.show();
+                        }
+                    }]
+                }]
+            }),
+            button1 = rootPanel.down('button[text=Open Window 1]'),
+            button2,
+            win1, win2;
+
+            jasmine.fireMouseEvent(button1.el, 'click');
+
+            // Three buttons in the body, before and after tab guard and the header FocusableContainer.
+            expect(win1.el.findTabbableElements().length).toBe(6);
+
+            button2 = win1.down('button[text=Open Window 2]');
+            jasmine.fireMouseEvent(button2.el, 'click');
+
+            // Should all be untabbable now
+            expect(win1.el.findTabbableElements().length).toBe(0);
+
+            // Three buttons, two input fields in the body, before and after tab guard and the header FocusableContainer.
+            expect(win2.el.findTabbableElements().length).toBe(8);
+
+            Ext.destroy([rootPanel, win1, win2]);
+        });
     });
 });

@@ -14,10 +14,14 @@ Ext.define('Ext.view.TableLayout', {
             owner = me.owner,
             ownerGrid = owner.ownerGrid,
             partner = owner.lockingPartner,
+            partnerVisible = partner && partner.grid.isVisible(),
             context = ownerContext.context;
 
-        // Flag whether we need to do row height synchronization
-        ownerContext.doSyncRowHeights = partner && partner.grid.isVisible() && ownerGrid.syncRowHeight;
+        // Flag whether we need to do row height synchronization.
+        // syncRowHeightOnNextLayout is a one time flag used when some code knows it has changed data height
+        // and that the upcoming layout must sync row heights even if the grid is configured not to for
+        // general row rendering.
+        ownerContext.doSyncRowHeights = partnerVisible && (ownerGrid.syncRowHeight || ownerGrid.syncRowHeightOnNextLayout);
 
         if (!me.columnFlusherId) {
             me.columnFlusherId = me.id + '-columns';
@@ -34,13 +38,14 @@ Ext.define('Ext.view.TableLayout', {
         // the other side's layout context. If the locked or normal side is hidden then
         // we should treat it as thoguh we were laying out a single grid, so don't setup the partners.
         // This is typically if a grid is configured with locking but starts with no locked columns.
-        if (ownerContext.doSyncRowHeights) {
+        if (partnerVisible) {
             if (!ownerContext.lockingPartnerContext) {
                 (ownerContext.lockingPartnerContext = context.getCmp(partner)).
                     lockingPartnerContext = ownerContext;
             }
-
-            ownerContext.rowHeightSynchronizer = me.owner.syncRowHeightBegin();
+            if (ownerContext.doSyncRowHeights) {
+                ownerContext.rowHeightSynchronizer = me.owner.syncRowHeightBegin();
+            }
         }
 
         // Grab a ContextItem for the header container (and make sure the TableLayout can
@@ -68,7 +73,7 @@ Ext.define('Ext.view.TableLayout', {
             state = ownerContext.state,
             columnFlusher, otherSynchronizer, synchronizer, rowHeightFlusher,
             bodyDom = owner.body.dom,
-            bodyHeight, ctSize, overflowY;
+            bodyHeight, ctSize, overflowY, normalView, lockedViewHorizScrollBar, normalViewHorizScrollBar;
 
         // Shortcut when empty grid - let the base handle it.
         // EXTJS-14844: Even when no data rows (all.getCount() === 0) there may be summary rows to size.
@@ -159,6 +164,43 @@ Ext.define('Ext.view.TableLayout', {
             }
             ownerContext.setProp('viewOverflowY', overflowY);
         }
+
+        // Adjust the presence of X scrollability depending upon whether the headers
+        // overflow, and scrollbars take up space.
+        // This has two purposes.
+        //
+        // For lockable assemblies, if there is horizontal overflow in the normal side,
+        // The locked side (which shrinkwraps the columns) must be set to overflow: scroll
+        // in order that it has acquires a matching horizontal scrollbar.
+        //
+        // If no locking, then if there is no horizontal overflow, we set overflow-x: hidden
+        // This avoids "pantom" scrollbars which are only caused by the presence of another scrollbar.
+        if (me.done && Ext.getScrollbarSize().height && Ext.supports.touchScroll !== 2) {
+            if (lockingPartnerContext && owner.isLockedView) {
+                normalView = owner.lockingPartner;
+                lockedViewHorizScrollBar = owner.scrollFlags.x && ownerContext.headerContext.state.boxPlan.tooNarrow;
+                normalViewHorizScrollBar = normalView.scrollFlags.x && lockingPartnerContext.headerContext.state.boxPlan.tooNarrow;
+
+                if (lockedViewHorizScrollBar !== normalViewHorizScrollBar) {
+                    if (normalViewHorizScrollBar) {
+                        lockingPartnerContext.setProp('overflowX', true);
+                        ownerContext.setProp('overflowX', 'scroll');
+                    } else {
+                        ownerContext.setProp('overflowX', true);
+                        lockingPartnerContext.setProp('overflowX', 'scroll');
+                    }
+                } else {
+                    ownerContext.setProp('overflowX', normalViewHorizScrollBar);
+                    lockingPartnerContext.setProp('overflowX', lockedViewHorizScrollBar);
+                }
+                ownerContext.setProp('overflowY', 'scroll');
+            }
+            // No locking sides, ensure X scrolling is on if there is overflow, but not if there is no overflow
+            // This eliminates "phantom" scrollbars which are only caused by other scrollbars
+            else if (!owner.isAutoTree) {
+                ownerContext.setProp('overflowX', !!ownerContext.headerContext.state.boxPlan.tooNarrow);
+            }
+        }
     },
 
     measureContentHeight: function (ownerContext) {
@@ -245,6 +287,7 @@ Ext.define('Ext.view.TableLayout', {
 
     finishedLayout: function(ownerContext) {
         var me = this,
+            ownerGrid = me.owner.ownerGrid,
             nodeContainer = Ext.fly(me.owner.getNodeContainer());
 
         me.callParent([ ownerContext ]);
@@ -256,6 +299,10 @@ Ext.define('Ext.view.TableLayout', {
         // Inform any buffered renderer about completion of the layout of its view
         if (me.owner.bufferedRenderer) {
             me.owner.bufferedRenderer.afterTableLayout(ownerContext);
+        }
+        
+        if (ownerGrid) {
+            ownerGrid.syncRowHeightOnNextLayout = false;
         }
     }
 });

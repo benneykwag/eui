@@ -100,4 +100,44 @@ describe("Ext.event.publisher.Gesture", function() {
             delete EdgeSwipe.onStart;
         });
     });
+    
+    describe("execptions in recognizers", function() {
+        var gesture = Ext.event.publisher.Gesture.instance,
+            helper = Ext.testHelper,
+            targetEl;
+        
+        beforeEach(function() {
+            targetEl = Ext.getBody().createChild({
+                id: 'gesture-target'
+            });
+            
+            targetEl.on('tap', function() {
+                throw new Error("This error is expected and can't be handled, don't worry about it :)");
+            });
+        });
+        
+        afterEach(function() {
+            targetEl.destroy();
+            targetEl = null;
+        });
+        
+        // For some reason the exception is NOT get caught by outer try/catch block!
+        // TODO Revisit and find out what the heck is going on here.
+        xit("should allow the exception to propagate", function() {
+            expect(function() {
+                helper.touchStart(targetEl, { id: 1, x: 1, y: 1 });
+                helper.touchEnd(targetEl, { id: 1, x: 1, y: 1 });
+            }).toThrow('foo');
+        });
+        
+        it("should finish gesture an exception is thrown in recognizer", function() {
+            try {
+                helper.touchStart(targetEl, { id: 1, x: 1, y: 1 });
+                helper.touchEnd(targetEl, { id: 1, x: 1, y: 1 });
+            }
+            catch (e) {};
+            
+            expect(gesture.isStarted).toBe(false);
+        });
+    });
 });

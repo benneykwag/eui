@@ -56,13 +56,13 @@ Ext.define('Ext.form.field.FileButton', {
         
         args.inputCls = me.inputCls;
         args.inputName = me.inputName || me.id;
-        args.tabIndex = me.tabIndex || null;
+        args.tabIndex = me.tabIndex != null ? me.tabIndex : null;
         args.role = me.ariaRole;
         
         return args;
     },
     
-    afterRender: function(){
+    afterRender: function() {
         var me = this;
         
         me.callParent(arguments);
@@ -77,7 +77,7 @@ Ext.define('Ext.form.field.FileButton', {
         });
     },
     
-    fireChange: function(e){
+    fireChange: function(e) {
         this.fireEvent('change', this, e, this.fileInputEl.dom.value);
     },
     
@@ -87,17 +87,19 @@ Ext.define('Ext.form.field.FileButton', {
      * invisible, and floated on top of the button's other content so that it will receive the
      * button's clicks.
      */
-    createFileInput : function(isTemporary) {
+    createFileInput: function(isTemporary) {
         var me = this,
-            fileInputEl = me.fileInputEl = me.el.createChild({
-                name: me.inputName,
-                id: !isTemporary ? me.id + '-fileInputEl' : undefined,
-                cls: me.inputCls,
-                tag: 'input',
-                type: 'file',
-                size: 1,
-                role: 'button'
-            });
+            fileInputEl;
+        
+        fileInputEl = me.fileInputEl = me.el.createChild({
+            name: me.inputName || me.id,
+            id: !isTemporary ? me.id + '-fileInputEl' : undefined,
+            cls: me.inputCls + (me.getInherited().rtl ? ' ' + Ext.baseCSSPrefix + 'rtl' : ''),
+            tag: 'input',
+            type: 'file',
+            size: 1,
+            role: 'button'
+        });
 
         // This is our focusEl
         fileInputEl.dom.setAttribute('data-componentid', me.id);
@@ -140,10 +142,16 @@ Ext.define('Ext.form.field.FileButton', {
         // We do not add listeners to focusEls now.
         // The Focus event publisher calls into Components on focus and blur
         var me = this;
+        
         if (remove) {
             me.fileInputEl.destroy();
         }
+        
         me.createFileInput(!remove);
+        
+        if (remove) {
+            me.ariaEl = me.fileInputEl;
+        }
     },
     
     restoreInput: function(el) {

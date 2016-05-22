@@ -63,7 +63,7 @@ Ext.define('Ext.grid.column.Column', {
     extend: 'Ext.Component',
     alternateClassName: 'Ext.grid.column.Template',
 
-    xtype: [ 'column', 'templatecolumn' ],
+    xtype: ['column', 'templatecolumn'],
 
     config: {
         /**
@@ -287,11 +287,27 @@ Ext.define('Ext.grid.column.Column', {
 
         /**
          * @cfg {Number} computedWidth
-         * The computed width for this column, may come from either 
+         * The computed width for this column, may come from either
          * {@link #width} or {@link #flex}.
          * @readonly
          */
         computedWidth: null
+    },
+
+    getElementConfig: function () {
+        return {
+            reference: 'element',
+            children: [
+                {
+                    reference: 'trigger',
+                    className: 'x-grid-column-trigger'
+                },
+                {
+                    reference: 'resizer',
+                    className: 'x-grid-column-resizer'
+                }
+            ]
+        };
     },
 
     applyTpl: function (tpl) {
@@ -302,7 +318,7 @@ Ext.define('Ext.grid.column.Column', {
         return tpl;
     },
 
-    updateAlign: function(align, oldAlign) {
+    updateAlign: function (align, oldAlign) {
         var prefix = Ext.baseCSSPrefix + 'grid-column-align-';
         if (oldAlign) {
             this.removeCls(prefix + align);
@@ -312,7 +328,7 @@ Ext.define('Ext.grid.column.Column', {
         }
     },
 
-    initialize: function() {
+    initialize: function () {
         this.callParent();
 
         this.element.on({
@@ -322,19 +338,23 @@ Ext.define('Ext.grid.column.Column', {
         });
     },
 
-    onColumnTap: function(e) {
+    onColumnTap: function (e) {
         this.fireEvent('tap', this, e);
     },
 
-    onColumnLongPress: function(e) {
+    onColumnLongPress: function (e) {
         this.fireEvent('longpress', this, e);
     },
 
-    updateText: function(text) {
+    updateResizable: function(resizable) {
+        this.resizer.toggleCls(Ext.baseCSSPrefix + 'grid-column-resizable', resizable);
+    },
+
+    updateText: function (text) {
         this.setHtml(text || '&#160;');
     },
 
-    updateWidth: function(width, oldWidth) {
+    updateWidth: function (width, oldWidth) {
         this.callParent([width, oldWidth]);
         // If width === null, it means we've been set to flex and the, layout
         // is trying to update us, don't want to trigger here
@@ -343,7 +363,7 @@ Ext.define('Ext.grid.column.Column', {
         }
     },
 
-    updateFlex: function(flex, oldFlex) {
+    updateFlex: function (flex, oldFlex) {
         var me = this,
             listener = me.resizeListener;
 
@@ -355,19 +375,19 @@ Ext.define('Ext.grid.column.Column', {
         }
     },
 
-    onFlexResize: function() {
+    onFlexResize: function () {
         this.setComputedWidth(this.element.getWidth(false, true));
     },
 
-    getComputedWidth: function() {
+    getComputedWidth: function () {
         return this.isVisible(true) ? this.callParent() : 0;
     },
 
-    updateComputedWidth: function(computedWidth, oldComputedWidth) {
+    updateComputedWidth: function (computedWidth, oldComputedWidth) {
         this.fireEvent('columnresize', this, computedWidth, oldComputedWidth);
     },
 
-    updateDataIndex: function(dataIndex) {
+    updateDataIndex: function (dataIndex) {
         var editor = this.getEditor();
         if (editor) {
             editor.name = dataIndex;
@@ -376,7 +396,7 @@ Ext.define('Ext.grid.column.Column', {
         }
     },
 
-    updateSortDirection: function(direction, oldDirection) {
+    updateSortDirection: function (direction, oldDirection) {
         if (!this.getSortable()) {
             return;
         }
@@ -394,8 +414,66 @@ Ext.define('Ext.grid.column.Column', {
         this.fireEvent('sort', this, direction, oldDirection);
     },
 
-    destroy: function() {
+    destroy: function () {
         this.resizeListener = Ext.destroy(this.resizeListener);
         this.callParent();
     }
+
+    /**
+     * @method getEditor
+     * Returns the value of {@link #editor}
+     *
+     * **Note:** This method will only have an implementation if the
+     * {@link Ext.grid.plugin.Editable Editing plugin} has been enabled on the grid.
+     *
+     * @return {Mixed} The editor value.
+     */
+    /**
+     * @method setEditor
+     * @chainable
+     * Sets the form field to be used for editing.
+     *
+     * **Note:** This method will only have an implementation if the
+     * {@link Ext.grid.plugin.Editable Editing plugin} has been enabled on the grid.
+     *
+     * @param {Object} field An object representing a field to be created. You must
+     * include the column's dataIndex as the value of the field's name property when
+     * setting the editor field.
+     *
+     *     column.setEditor({
+     *         xtype: 'textfield',
+     *         name: column.getDataIndex()
+     *     });
+     *
+     * @return {Ext.column.Column} this
+     */
+
+    /**
+     * @method getDefaultEditor
+     * Returns the value of {@link #defaultEditor}
+     *
+     * **Note:** This method will only have an implementation if the
+     * {@link Ext.grid.plugin.Editable Editing plugin} has been enabled on the grid.
+     *
+     * @return {Mixed} The defaultEditor value.
+     */
+    /**
+     * @method setDefaultEditor
+     * @chainable
+     * Sets the default form field to be used for editing.
+     *
+     * **Note:** This method will only have an implementation if the
+     * {@link Ext.grid.plugin.Editable Editing plugin} has been enabled on the grid.
+     *
+     * @param {Object} field An object representing a field to be created. You must
+     * include the column's dataIndex as the value of the field's name property when
+     * setting the default editor field.
+     *
+     *     column.setDefaultEditor({
+     *         xtype: 'textfield',
+     *         name: column.getDataIndex()
+     *     });
+     *
+     * @return {Ext.column.Column} this
+     */
 });

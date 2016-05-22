@@ -52,7 +52,6 @@
  * @singleton
  * @alternateClassName Ext.Direct
  */
-
 Ext.define('Ext.direct.Manager', {
     singleton: true,
 

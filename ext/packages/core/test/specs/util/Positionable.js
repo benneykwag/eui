@@ -489,6 +489,67 @@ describe("Ext.util.Positionable", function() {
                     expect(region.left).toBe(21);
                 });
             });
+            
+            // IE9 disabled because https://sencha.jira.com/browse/EXTJS-19483
+            (Ext.isIE9 ? xdescribe : describe)("getClientRegion", function() {
+                var scrollbarSize = Ext.getScrollbarSize(),
+                    el, region;
+                
+                function addScrollStyle(axis) {
+                    el.setStyle('overflow-' + axis, 'scroll');
+                }
+                
+                beforeEach(function() {
+                    el = isComponent ? positionable.el : positionable;
+                    
+                    // Default width and height of 40px is not enough
+                    // to display scrollbars in some browsers
+                    el.dom.style.width = el.dom.style.height = '100px';
+                    el.dom.style.backgroundColor = 'red';
+                    
+                    region = positionable.getRegion();
+                });
+                
+                it("should be the same as Region with no scrollbars", function() {
+                    var clientRegion = positionable.getClientRegion();
+                    
+                    expect(clientRegion.equals(region)).toBe(true);
+                });
+                
+                it("should account for vertical scrollbar", function() {
+                    addScrollStyle('y');
+                    
+                    var clientRegion = positionable.getClientRegion();
+                    
+                    expect(clientRegion.top).toBe(region.top);
+                    expect(clientRegion.right).toBe(region.right - scrollbarSize.width);
+                    expect(clientRegion.bottom).toBe(region.bottom);
+                    expect(clientRegion.left).toBe(region.left);
+                });
+                
+                it("should account for horizontal scrollbar", function() {
+                    addScrollStyle('x');
+                    
+                    var clientRegion = positionable.getClientRegion();
+                    
+                    expect(clientRegion.top).toBe(region.top);
+                    expect(clientRegion.right).toBe(region.right);
+                    expect(clientRegion.bottom).toBe(region.bottom - scrollbarSize.height);
+                    expect(clientRegion.left).toBe(region.left);
+                });
+                
+                it("should account for both scrollbars", function() {
+                    addScrollStyle('x');
+                    addScrollStyle('y');
+                    
+                    var clientRegion = positionable.getClientRegion();
+                    
+                    expect(clientRegion.top).toBe(region.top);
+                    expect(clientRegion.right).toBe(region.right - scrollbarSize.width);
+                    expect(clientRegion.bottom).toBe(region.bottom - scrollbarSize.height);
+                    expect(clientRegion.left).toBe(region.left);
+                });
+            });
 
             describe("getX", function() {
                 it("should return the x position", function(){

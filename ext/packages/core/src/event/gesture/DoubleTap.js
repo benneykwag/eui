@@ -146,11 +146,17 @@ Ext.define('Ext.event.gesture.DoubleTap', {
     },
 
     reset: function() {
-        var me = this;
+        var me = this,
+            timer = me.singleTapTimer;
+
+        if (timer) {
+            clearTimeout(timer);
+        }
 
         me.startTime = me.lastTapTime = 0;
 
         me.lastStartPoint = me.startPoint = me.singleTapTimer = null;
+        me.callParent();
     }
 }, function(DoubleTap) {
     var gestures = Ext.manifest.gestures;

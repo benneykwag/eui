@@ -268,8 +268,15 @@ Ext.define('Ext.form.field.Date', {
      * @inheritdoc
      */
     valuePublishEvent: ['select', 'blur'],
+
+    componentCls: Ext.baseCSSPrefix + 'form-field-date',
     
     ariaRole: 'combobox',
+
+    /** @private */
+    rawDate: null,
+    /** @private */
+    rawDateText: '',
 
     initComponent: function() {
         var me = this,
@@ -297,6 +304,13 @@ Ext.define('Ext.form.field.Date', {
         // If a String value was supplied, try to convert it to a proper Date
         if (Ext.isString(value)) {
             me.value = me.rawToValue(value);
+            me.rawDate = me.value;
+            me.rawDateText = me.parseDate(me.value);
+        }
+        else {
+            me.value = value || null;
+            me.rawDate = me.value;
+            me.rawDateText = me.value ? me.parseDate(me.value) : '';
         }
 
         me.callParent();
@@ -457,7 +471,12 @@ Ext.define('Ext.form.field.Date', {
     },
 
     rawToValue: function(rawValue) {
-        return this.parseDate(rawValue) || rawValue || null;
+        var me = this;
+
+        if (rawValue === me.rawDateText) {
+            return me.rawDate;
+        }
+        return me.parseDate(rawValue) || rawValue || null;
     },
 
     valueToRaw: function(value) {
@@ -476,7 +495,8 @@ Ext.define('Ext.form.field.Date', {
      *
      *     //Pass a date object:
      *     var dt = new Date('5/4/2006');
-     *     dateField.setValue(dt);
+     *     dateField.me = this,
+     *     setValue(dt);
      *
      *     //Pass a date string (default format):
      *     dateField.setValue('05/04/2006');
@@ -488,6 +508,23 @@ Ext.define('Ext.form.field.Date', {
      * @param {String/Date} date The date or valid date string
      * @return {Ext.form.field.Date} this
      */
+    setValue: function(v) {
+        var me = this;
+
+        if (Ext.isDate(v)) {
+            me.rawDate  = v;
+            me.rawDateText = me.formatDate(v);
+        }
+        else {
+            me.rawDate = me.rawToValue(v);
+            me.rawDateText = me.formatDate(v);
+            if (me.rawDate === v) {
+                me.rawDate = null;
+                me.rawDateText = '';
+            }
+        }
+        me.callParent(arguments);
+    },
 
     /**
      * Attempts to parse a given string value using a given {@link Ext.Date#parse date format}.
@@ -520,9 +557,19 @@ Ext.define('Ext.form.field.Date', {
      */
     getSubmitValue: function() {
         var format = this.submitFormat || this.format,
-            value = this.getValue();
+            value = this.rawDate;
 
         return value ? Ext.Date.format(value, format) : '';
+    },
+
+    /**
+     * Returns the current data value of the field. The type of value returned is particular to the type of the
+     * particular field (e.g. a Date object for {@link Ext.form.field.Date}), as the result of calling {@link #rawToValue} on
+     * the field's {@link #processRawValue processed} String value. To return the raw String value, see {@link #getRawValue}.
+     * @return {Object} value The field value
+     */
+    getValue: function() {
+        return this.rawDate || null;
     },
 
     /**
@@ -602,6 +649,7 @@ Ext.define('Ext.form.field.Date', {
         var me = this;
 
         me.setValue(d);
+        me.rawDate = d;
         me.fireEvent('select', me, d);
         
         // Focus the inputEl first and then collapse. We configure
@@ -623,7 +671,7 @@ Ext.define('Ext.form.field.Date', {
      * Sets the Date picker's value to match the current field value when expanding.
      */
     onExpand: function() {
-        var value = this.getValue();
+        var value = this.rawDate;
         this.picker.setValue(Ext.isDate(value) ? value : new Date());
     },
 

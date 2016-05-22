@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect, spyOn */
+
 describe('grid-moving-columns', function () {
     var transformStyleName = 'webkitTransform' in document.documentElement.style ? 'webkitTransform' : 'transform',
         GridModel = Ext.define(null, {
@@ -4014,6 +4016,85 @@ describe('grid-moving-columns', function () {
                         });
                     });
                 });
+            });
+        });
+
+        describe('Dropping before group columns', function() {
+            it('should be able to move before the first item of a group column', function() {
+                grid = Ext.create('Ext.grid.Panel', {
+                    title: 'Simpsons',
+                    store: {
+                        storeId: 'simpsonsStore',
+                        fields: ['name', 'email', 'phone', 'phone1', 'phone2', 'phone3', 'phone4'],
+                        data: [{
+                            name: 'Lisa',
+                            email: 'lisa@simpsons.com',
+                            phone: '555-111-1224',
+                            phone1: '555-111-1111',
+                            phone2: '555-111-2222',
+                            phone3: '555-111-3333',
+                            phone4: '555-111-4444'
+                        }]
+                    },
+                    columnLines: true,
+                    columns: [{
+                        text: 'Name',
+                        dataIndex: 'name',
+                        flex: 1,
+                        minWidth: 100
+                    }, {
+                        text: 'Email',
+                        dataIndex: 'email',
+                        flex: 1,
+                        minWidth: 100
+                    }, {
+                        text: 'Phone',
+                        columns: [{
+                            dataIndex: 'phone1',
+                            text: 'Phone 1'
+                        }, {
+                            dataIndex: 'phone2',
+                            text: 'Phone 2'
+                        }, {
+                            dataIndex: 'phone3',
+                            text: 'Phone 3'
+                        }, {
+                            dataIndex: 'phone4',
+                            text: 'Phone 4'
+                        }]
+                    }, {
+                        text: 'Phones',
+                        columns: [{
+                            dataIndex: 'phone1',
+                            text: 'Phones 1'
+                        }, {
+                            dataIndex: 'phone2',
+                            text: 'Phones 2'
+                        }, {
+                            dataIndex: 'phone3',
+                            text: 'Phones 3'
+                        }, {
+                            dataIndex: 'phone4',
+                            text: 'Phones 4'
+                        }]
+                    }],
+                    renderTo: Ext.getBody()
+                });
+                store = grid.store;
+
+                var name = grid.down('[text=Name]'),
+                    phone = grid.down('[text=Phone]'),
+                    headers = '';
+
+                // Drag to the left of "Phone".
+                dragColumn(name, phone);
+
+                // Get new header text order
+                Ext.Array.each(grid.getVisibleColumnManager().getColumns(), function(c) {
+                    headers += c.text;
+                });
+                
+                expect(headers).toBe('EmailNamePhone 1Phone 2Phone 3Phone 4Phones 1Phones 2Phones 3Phones 4');
             });
         });
     });

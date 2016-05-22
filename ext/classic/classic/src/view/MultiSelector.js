@@ -144,12 +144,15 @@ Ext.define('Ext.view.MultiSelector', {
     },
 
     processRowEvent: function (type, view, cell, recordIndex, cellIndex, e, record, row) {
-        if (e.type !== 'click') {
-            return;
-        }
+        var body = Ext.getBody();
 
-        if (Ext.fly(cell).hasCls(Ext.baseCSSPrefix + 'multiselector-remove')) {
+        if (e.type === 'click' || (e.type === 'keydown' && (e.keyCode === e.SPACE || e.keyCode === e.ENTER))) {
+
+            // Deleting the focused row will momentarily focusLeave
+            // That would dismiss the popup, so disable that.
+            body.suspendFocusEvents();
             this.store.remove(record);
+            body.resumeFocusEvents();
             if (this.searchPopup) {
                 this.searchPopup.deselectRecords(record);
             }
@@ -161,23 +164,36 @@ Ext.define('Ext.view.MultiSelector', {
             this.removeRowText + '</span>';
     },
 
-    beforeDestroy: function() {
-        Ext.un({
-            mousedown: 'onDismissSearch',
-            scope: this
-        });
-        this.callParent();
+    onFocusLeave: function(e) {
+        this.onDismissSearch();
+        this.callParent([e]);
+    },
+
+    afterComponentLayout: function(width, height, prevWidth, prevHeight) {
+        var me = this,
+            popup = me.searchPopup;
+
+        me.callParent([width, height, prevWidth, prevHeight]);
+        if (popup && popup.isVisible()) {
+            popup.showBy(me, me.popupAlign);
+        }
     },
 
     privates: {
+        popupAlign: 'tl-tr?',
+
+        onGlobalScroll: function (scroller) {
+            // Collapse if the scroll is anywhere but inside the popup
+            if (!this.searchPopup.owns(scroller.getElement())) {
+                this.onDismissSearch();
+            }
+        },
+
         onDismissSearch: function (e) {
             var searchPopup = this.searchPopup;
-
-            if (searchPopup && !(searchPopup.owns(e.getTarget()) || this.owns(e.getTarget()))) {
-                Ext.un({
-                    mousedown: 'onDismissSearch',
-                    scope: this
-                });
+            if (searchPopup && (!e || !(searchPopup.owns(e.getTarget()) || this.owns(e.getTarget())))) {
+                this.scrollListeners.destroy();
+                this.touchListeners.destroy();
                 searchPopup.hide();
             }
         },
@@ -191,7 +207,8 @@ Ext.define('Ext.view.MultiSelector', {
                 searchPopup = Ext.merge({
                     owner: me,
                     field: me.fieldName,
-                    floating: true
+                    floating: true,
+                    alignOnScroll: false
                 }, me.getSearch());
                 me.searchPopup = searchPopup = me.add(searchPopup);
 
@@ -202,10 +219,24 @@ Ext.define('Ext.view.MultiSelector', {
                 }
             }
 
-            searchPopup.showBy(me, 'tl-tr?');
-            Ext.on({
-                mousedown: 'onDismissSearch',
-                scope: me
+            searchPopup.showBy(me, me.popupAlign);
+            me.scrollListeners = Ext.on({
+                scroll: 'onGlobalScroll',
+                scope: me,
+                destroyable: true
+            });
+
+            // Dismiss on touch outside this component tree.
+            // Because touch platforms do not focus document.body on touch
+            // so no focusleave would occur to trigger a collapse.
+            me.touchListeners = Ext.getDoc().on({
+                // Do not translate on non-touch platforms.
+                // mousedown will blur the field.
+                translate:false,
+                touchstart: me.onDismissSearch,
+                scope: me,
+                delegated: false,
+                destroyable: true
             });
         }
     }

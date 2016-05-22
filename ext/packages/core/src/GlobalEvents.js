@@ -196,7 +196,7 @@ Ext.define('Ext.GlobalEvents', {
 
     /**
      * @member Ext
-     * @method
+     * @method un
      * Shorthand for {@link Ext.GlobalEvents#removeListener}.
      * @inheritdoc Ext.util.Observable#removeListener
      */

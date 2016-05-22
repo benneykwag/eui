@@ -1,3 +1,5 @@
+/* global Ext, MockAjaxManager, expect, spyOn, jasmine, xit */
+
 describe('Ext.grid.plugin.BufferedRenderer', function () {
     var store, grid, tree, view, plugin,
         synchronousLoad = true,
@@ -170,6 +172,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
         }, treeCfg || {}));
 
         view = tree.view;
+        return tree;
     }
 
     function completeWithData(data) {
@@ -369,7 +372,8 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                         store: new Ext.data.BufferedStore({
                             model: Person,
                             leadingBufferZone: 300,
-                            pageSize: 100
+                            pageSize: 100,
+                            autoDestroy: true
                         })
                     });
 
@@ -503,7 +507,8 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             store = new Ext.data.BufferedStore({
                 model: Person,
                 leadingBufferZone: 300,
-                pageSize: 100
+                pageSize: 100,
+                autoDestroy: true
             });
 
             grid = new Ext.grid.Panel({
@@ -585,7 +590,8 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             store = new Ext.data.BufferedStore({
                 model: Person,
                 leadingBufferZone: 300,
-                pageSize: 100
+                pageSize: 100,
+                autoDestroy: true
             });
 
             grid = new Ext.grid.Panel({
@@ -1677,7 +1683,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
     describe('gridpanel', function () {
         describe('locking grid', function () {
-            function doIt(reconfigure) {
+            function doIt(reconfigure, afterScrollToEnd) {
                 var columns = [{
                     text: 'Col 1',
                     dataIndex: 'field1',
@@ -1719,7 +1725,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 view = grid.view.normalView;
                 nodeCache = view.all;
 
-                if (reconfigure) {
+                if (reconfigure && !afterScrollToEnd) {
                     grid.reconfigure(null, columns);
                 }
 
@@ -1734,6 +1740,10 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 }, 'last node to scroll into view', 10000, 50);
 
                 runs(function () {
+                    if (reconfigure && afterScrollToEnd) {
+                        grid.reconfigure(null, columns);
+                    }
+
                     expect(view.el.down('.x-grid-item-container').getHeight() === view.lockingPartner.el.down('.x-grid-item-container').getHeight()).toBe(true);
                 });
             }
@@ -1744,6 +1754,10 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
             it('should have the same height for each locking partner when scrolling after a reconfigure', function () {
                 doIt(true);
+            });
+
+            it('should have the same height for each locking partner when scrolling after a reconfigure when scrolled to end', function () {
+                doIt(true, true);
             });
         });
 
@@ -2018,11 +2032,11 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                     success: true,
                     totally: 1000,
                     data: [{
-                        first: 'First',
-                        last: 'Last'
+                        first: 'load2 - First1',
+                        last: 'load2 - Last1'
                     }, {
-                        first: 'First',
-                        last: 'Last'
+                        first: 'load2 - First2',
+                        last: 'load2 - Last2'
                     }],
                     metaData: {
                         root: 'data',
@@ -2037,11 +2051,20 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                         }]
                     }
                 },
-                wasCalled = false;
+                initialData = [
+                    {'name': 'Lisa', 'email': 'lisa@simpsons.com', 'phone': '555-111-1224', 'age': 14},
+                    {'name': 'Lisa', 'email': 'aunt_lisa@simpsons.com', 'phone': '555-111-1274', 'age': 34},
+                    {'name': 'Bart', 'email': 'bart@simpsons.com', 'phone': '555-222-1234', 'age': 12},
+                    {'name': 'Homer', 'email': 'homer@simpsons.com', 'phone': '555-222-1244', 'age': 44},
+                    {'name': 'Marge', 'email': 'marge@simpsons.com', 'phone': '555-222-1254', 'age': 41}
+                ],
+                wasCalled = false,
+                initialColumnCount,
+                newColumnCount;
 
                 makeGrid(null, {
                     data: null,
-                    fields: [],
+                    fields: ['name', 'email'],
                     leadingBufferZone: 50,
                     pageSize: 25,
                     proxy: {
@@ -2055,18 +2078,23 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                         }
                     }
                 });
+                store.load();
+                completeWithData(initialData);
 
-                // Overriding the PageMap method to return a value > 0 when there isn't a representative
-                // page map will reproduce the bug.
-                spyOn(store.data, 'getCount').andCallFake(function () {
-                    store.totalCount = 1000;
-                    return 25;
-                });
+                // No metadata in initial payload
+                expect(wasCalled).toBe(false);
+                expect(store.getCount()).toBe(5);
+                initialColumnCount = grid.getVisibleColumnManager().getColumns().length;
 
                 store.load();
                 completeWithData(successData);
 
+                // Check that reconfigure has been successful
+                newColumnCount = grid.getVisibleColumnManager().getColumns().length;
                 expect(wasCalled).toBe(true);
+                expect(store.getCount()).toBe(2);
+                expect(newColumnCount).toBe(2);
+                expect(newColumnCount).toBeLessThan(initialColumnCount);
             });
 
             describe('with grouping feature', function () {
@@ -2540,7 +2568,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                     }, {
                         text: 'Task5',
                         dataIndex: 'task5'
-                    }],
+                    }]
                 }, 1000);
             }
 
@@ -2594,7 +2622,8 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 proxy: {
                     type: 'memory',
                     data: makeData(52)
-                }
+                },
+                autoDestroy: true
             });
             store.load();
             var store1 = new Ext.data.Store({
@@ -2730,6 +2759,121 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             // Should have scrolled all the way to the end
             expect(view.all.endIndex).toBe(999);
             expect(view.bufferedRenderer.getLastVisibleRowIndex()).toBe(999);
+        });
+    });
+    
+    // https://sencha.jira.com/browse/EXTJS-19454
+    // Bug manifests when a buffer rendered tree is added by state restoration
+    // on DOM scrolling devices when touch is enabled.
+    describe('scroll range stretching correctly when DOM TouchScrolling is used', function() {
+        var touch = Ext.supports.Touch,
+            touchEvents = Ext.supports.TouchEvents,
+            touchScroll = Ext.supports.touchScroll,
+            container;
+
+        afterEach(function() {
+            Ext.destroy(container, tree);
+
+            // Restore to platform defaults
+            Ext.supports.touchScroll = touchScroll;
+            Ext.supports.TouchEvents = touchEvents;
+            Ext.supports.Touch = touch;
+        });
+
+        // If this is a DOM scrolling platform, test that a DOM scrolling TouchScroller always creates a spacer
+        if (touchScroll === 1 || !touchScroll) {
+            it('should always create a spacer on DOM scrolling platforms', function() {
+
+                // Fake up the touch scrolling environment which triggers the bug
+                Ext.supports.touchScroll = 1;
+                Ext.supports.TouchEvents = true;
+                Ext.supports.Touch = true;
+
+                container = new Ext.container.Container({
+                    stateful: true,
+                    layout: 'fit',
+                    height: 400,
+                    width: 600,
+                    renderTo: document.body,
+                    initState: function() {
+                        this.add(makeTree({
+                            rootVisible: false,
+                            renderTo: null
+                        }, 500));
+                    }
+                });
+
+                // There must ALWAYS be a spacer to create a virtual scroll range
+                expect(view.getScrollable()._spacer).not.toBeUndefined();
+            });
+        }
+    });
+    
+    describe('delayed data returning after scroll position has moved', function() {
+        it('should not render the returned data block if the scroll position has moved on since the load was requested', function() {
+            var Person = Ext.define(null, {
+                extend: 'Ext.data.Model',
+                fields: ['name'],
+                proxy: {
+                    type: 'ajax',
+                    url: '/foo',
+                    reader: {
+                        rootProperty: 'data'
+                    }
+                }
+            });
+
+            store = new Ext.data.BufferedStore({
+                model: Person,
+                leadingBufferZone: 300,
+                pageSize: 100,
+                autoDestroy: true
+            });
+
+            grid = new Ext.grid.Panel({
+                width: 500,
+                height: 300,
+                store: store,
+                deferRowRender: false,
+                columns: [{
+                    dataIndex: 'id',
+                    locked: true
+                }, {
+                    dataIndex: 'name'
+                }],
+                renderTo: Ext.getBody()
+            });
+            var view = grid.normalGrid.view;
+
+            // Load the pages around scrollTop 0
+            store.load();
+            satisfyRequests();
+
+            // Scroll a long way to a part of the dataset for which we do not have data.
+            view.scrollTo(null, 100000);
+
+            // Allow the scroll event to fire and the requests for the pages
+            // surrounding scrollTop 100000 to be requested.
+            waits(100);
+
+            // Before we return the data for that scroll position,
+            // scroll back to zero
+            runs(function() {
+                view.scrollTo(null, 0);
+            });
+
+            // Allow the scroll handler to fire.
+            // The pages at the top of the dataset will be already there.
+            // The incoming pages for scrollTop 100000 should NOT cause
+            // a render of the rows down at that range; that data
+            // is not required any more.
+            waits(100);
+
+            runs(function() {
+                satisfyRequests();
+                expect(view.all.startIndex).toBe(0);
+            });
+
         });
     });
 });

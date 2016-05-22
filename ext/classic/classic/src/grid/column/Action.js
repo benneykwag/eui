@@ -76,7 +76,7 @@ Ext.define('Ext.grid.column.Action', {
      * @cfg {Event} handler.e The click event.
      * @cfg {Ext.data.Model} handler.record The Record underlying the clicked row.
      * @cfg {HTMLElement} handler.row The table row clicked upon.
-     * @declarativeHandler
+     * @controllable
      */
     /**
      * @cfg {Object} scope
@@ -477,9 +477,11 @@ Ext.define('Ext.grid.column.Action', {
                 else if (type === 'click' || (key === e.ENTER || key === e.SPACE)) {
                     Ext.callback(item.handler || me.handler, item.scope || me.origScope, [view, recordIndex, cellIndex, item, e, record, row], undefined, me);
 
+                    // Handler could possibly destroy the grid, so check we're still available.
+                    //
                     // If the handler moved focus outside of the view, do not allow this event to propagate
                     // to cause any navigation.
-                    if (!view.el.contains(Ext.Element.getActiveElement())) {
+                    if (!view.destroyed && !view.el.contains(Ext.Element.getActiveElement())) {
                         return false;
                     }
                 }

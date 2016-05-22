@@ -276,11 +276,7 @@ Ext.define('Ext.field.Checkbox', {
             component = me.up('formpanel') || me.up('fieldset'),
             name = me.getName(),
             replaceLeft = me.qsaLeftRe,
-            replaceRight = me.qsaRightRe,
-            //handle baseCls with multiple class values
-            baseCls = me.getBaseCls().split(' ').join('.'),
-            components = [],
-            elements, element, i, ln;
+            replaceRight = me.qsaRightRe;
 
         if (!component) {
             // <debug>
@@ -292,17 +288,7 @@ Ext.define('Ext.field.Checkbox', {
         // This is to handle ComponentQuery's lack of handling [name=foo[bar]] properly
         name = name.replace(replaceLeft, '\\[');
         name = name.replace(replaceRight, '\\]');
-
-        elements = Ext.query('[name=' + name + ']', component.element.dom);
-        ln = elements.length;
-        for (i = 0; i < ln; i++) {
-            element = elements[i];
-            element = Ext.fly(element).up('.' + baseCls);
-            if (element && element.id) {
-                components.push(Ext.getCmp(element.id));
-            }
-        }
-        return components;
+        return component.query('checkboxfield[name=' + name + ']');
     },
 
     /**

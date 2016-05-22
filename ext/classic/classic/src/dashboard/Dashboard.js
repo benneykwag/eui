@@ -167,7 +167,9 @@ Ext.define('Ext.dashboard.Dashboard', {
         return collection;
     },
 
-    /** @private */
+    /**
+     * @private
+     */
     getPart: function (type) {
         var parts = this.getParts();
         return parts.getByKey(type);

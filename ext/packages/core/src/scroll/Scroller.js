@@ -208,6 +208,20 @@ Ext.define('Ext.scroll.Scroller', {
          */
         y: true,
 
+        /**
+         * @cfg {Ext.dom.Element} scrollElement
+         * The element to read the scrollTop/scrollLeft from. This is used to
+         * work around cross browser issues where WebKit/Blink require reading/writing
+         * scrollTop/scrollLeft on the document.body, even if the documentElement is
+         * the thing overflowing. In future this can be removed once document.scrollingElement
+         * becomes a standard across all supported browsers.
+         *
+         * Note that scroll(Width/Height) and other dimensions can be read from the
+         * documentElement without issue.
+         * @private
+         */
+        scrollElement: null,
+
         spacerXY: null
     },
 
@@ -219,6 +233,45 @@ Ext.define('Ext.scroll.Scroller', {
          */
         create: function(config) {
             return Ext.Factory.scroller(config, Ext.supports.Touch ? 'touch' : 'dom');
+        },
+
+        /**
+         * Get the scrolling element for the document based on feature detection.
+         * See: https://dev.opera.com/articles/fixing-the-scrolltop-bug/
+         * 
+         * @return {HTMLElement}
+         *
+         * @private
+         */
+        getScrollingElement: function() {
+            var doc = document,
+                standard = this.$standardScrollElement,
+                el = doc.scrollingElement,
+                iframe, frameDoc;
+
+            // Normalize the scrollElement we need to read/write from
+            // First attempt to detect the newer standard for viewport
+            // scrolling
+            if (el) {
+                return el;
+            }
+
+            // The newer standard doesn't exist, let the scroller
+            // decide via feature detection.
+            if (standard === undefined) {
+                iframe = document.createElement('iframe');
+
+                iframe.style.height = '1px';
+                document.body.appendChild(iframe);
+                frameDoc = iframe.contentWindow.document;
+                frameDoc.write('<!DOCTYPE html><div style="height:9999em">x</div>');
+                frameDoc.close();
+                standard = frameDoc.documentElement.scrollHeight > frameDoc.body.scrollHeight;
+                iframe.parentNode.removeChild(iframe);
+
+                this.$standardScrollElement = standard;
+            }
+            return standard ? doc.documentElement : doc.body;
         }
     },
 
@@ -241,6 +294,7 @@ Ext.define('Ext.scroll.Scroller', {
 
         // Remove element listeners
         me.setElement(null);
+        me.setScrollElement(null);
         me.onDomScrollEnd = me._partners = me.component = null;
         
         me.callParent();
@@ -274,8 +328,7 @@ Ext.define('Ext.scroll.Scroller', {
 
     applyElement: function(element, oldElement) {
         var me = this,
-            el,
-            eventSource;
+            el, eventSource, scrollEl;
 
         // When element is set to null in destroy, we must remove listeners.
         if (oldElement) {
@@ -296,22 +349,26 @@ Ext.define('Ext.scroll.Scroller', {
                 //</debug>
             }
 
-            // For document body scrolling, the element which actually scrolls (which has its scrollTop/scrollLeft modified) varies between platforms.
-            // Ensure we get it right so we are able to programatically scroll.
-            if (el.dom === document.body) {
-                el = Ext.get(document.scrollingElement || (Ext.isWebKit ? document.body : document.documentElement));
-
-                // For document body scrolling the element which fires the event varies between platforms.
-                // Ensure we get it right so that we know when scroll happens.
-                eventSource = Ext.get(Ext.isIE9m ? window : document);
+            if (el.dom === document.documentElement) {
+                // When the documentElement is scrolled, its scroll events are fired via
+                // the window object
+                eventSource = Ext.getWin();
+                scrollEl = Ext.scroll.Scroller.getScrollingElement();
             } else {
-                eventSource = el;
+                scrollEl = eventSource = el;
             }
+            me.setScrollElement(Ext.get(scrollEl));
             me.scrollListener = eventSource.on({
                 scroll: me.onDomScroll,
                 scope: me,
                 destroyable: true
             });
+
+            // If we need to screen out drag gestures in the scrollbar, maintain the
+            // client region.
+            if (Ext.supports.touchScroll === 1 && Ext.getScrollbarSize().width) {
+                me.clientRegion = el.getClientRegion();
+            }
             return el;
         }
     },
@@ -451,6 +508,10 @@ Ext.define('Ext.scroll.Scroller', {
      * @chainable
      */
     refresh: function() {
+        // Element size has changed.
+        // Our position property may need refreshing from the DOM
+        this.positionDirty = true;
+
         this.fireEvent('refresh', this);
         return this;
     },
@@ -562,23 +623,7 @@ Ext.define('Ext.scroll.Scroller', {
      * @return {Boolean} return.y `true` if the passed element is within the y visible range.
      */
     isInView: function(el) {
-        var me = this,
-            result = {
-                x: false,
-                y: false
-            },
-            elRegion,
-            myEl = me.getElement(),
-            myElRegion;
-
-        if (el && myEl.contains(el)) {
-            myElRegion = myEl.getRegion();
-            elRegion = Ext.fly(el).getRegion();
-
-            result.x = elRegion.right > myElRegion.left && elRegion.left < myElRegion.right;
-            result.y = elRegion.bottom > myElRegion.top && elRegion.top < myElRegion.bottom;
-        }
-        return result;
+        return this.doIsInView(el);
     },
 
     /**
@@ -693,6 +738,7 @@ Ext.define('Ext.scroll.Scroller', {
             spacer, x, y;
 
         if (element) {
+            me.positionDirty = true;
             spacer = me.getSpacer();
 
             // Typically a dom scroller simply assumes the scroll size dictated by its content.
@@ -789,15 +835,17 @@ Ext.define('Ext.scroll.Scroller', {
             // In some cases (e.g. infinite lists) we need to be able to tell the scroller
             // to have a specific size, regardless of its contents.  This creates a spacer
             // element which can then be absolutely positioned to affect the element's
-            // scroll size.
+            // scroll size. Must be first element, so it is not translated due to being after
+            // the element contrainer el.
             if (!spacer) {
                 element = me.getElement();
                 spacer = me._spacer = element.createChild({
                     cls: me._spacerCls,
                     role: 'presentation'
-                });
+                }, element.dom.firstChild);
 
                 spacer.setVisibilityMode(2); // 'display' visibilityMode
+                spacer.hide();
 
                 // make sure the element is positioned if it is not already.  This ensures
                 // that the spacer's position will affect the element's scroll size
@@ -817,7 +865,121 @@ Ext.define('Ext.scroll.Scroller', {
 
         // rtl hook
         updateSpacerXY: function(pos) {
-            this.getSpacer().setLocalXY(pos.x, pos.y);
+            var spacer = this.getSpacer(),
+                sStyle = spacer.dom.style,
+                scrollHeight = pos.y,
+                shortfall;
+
+            sStyle.marginTop = '';
+            spacer.translate(pos.x, this.constrainScrollRange(scrollHeight));
+
+            // Force a synchronous layout to update the scrollHeight.
+            // This flip-flops between 0px and 1px
+            sStyle.lineHeight = Number(!parseInt(sStyle.lineHeight, 10)) + 'px';
+
+            // See if we can get any more scrollHeight from a margin-top
+            shortfall = scrollHeight - this.getElement().dom.scrollHeight;
+            if (shortfall > 0) {
+                sStyle.marginTop = Math.min(shortfall, this.maxSpacerMargin || 0) + 'px';
+            }
+        },
+
+        doIsInView: function(el, skipCheck) {
+            var me = this,
+                c = me.component,
+                result = {
+                    x: false,
+                    y: false
+                },
+                elRegion,
+                myEl = me.getElement(),
+                myElRegion;
+
+            if (el && (skipCheck || (myEl.contains(el) || (c && c.owns(el))))) {
+                myElRegion = myEl.getRegion();
+                elRegion = Ext.fly(el).getRegion();
+
+                result.x = elRegion.right > myElRegion.left && elRegion.left < myElRegion.right;
+                result.y = elRegion.bottom > myElRegion.top && elRegion.top < myElRegion.bottom;
+            }
+            return result;
+        },
+
+        constrainScrollRange: function(scrollRange) {
+            // Only do the expensive search for the browser limit if they
+            // want more than a million pixels.
+            if (scrollRange < 1000000) {
+                return scrollRange;
+            }
+
+            if (!this.maxSpacerTranslate) {
+                //
+                // Find max scroll height which transform: translateY(npx) will support.
+                // IE11 appears to have 21,474,834
+                // Chrome and Safari have 16,777,216, but additional margin-top of 16777215px allows a scrollHeight of 33,554,431
+                // Firefox has 17,895,698
+                // IE9-10 1,534,000
+                //
+                var maxScrollHeight = Math.pow(2, 32),
+                    tooHigh = maxScrollHeight,
+                    tooLow = 500,
+                    scrollTest = Ext.getBody().createChild({
+                        style: {
+                            position: 'absolute',
+                            left: '-10000px',
+                            top: '0',
+                            width: '500px',
+                            height: '500px'
+                        },
+                        cn: {
+                            cls: Ext.baseCSSPrefix + 'domscroller-spacer'
+                        }
+                    }, null, true),
+                    stretcher = Ext.get(scrollTest.firstChild),
+                    sStyle = stretcher.dom.style;
+
+                stretcher.translate(0, maxScrollHeight - 1);
+                sStyle.lineHeight = Number(!parseInt(sStyle.lineHeight, 10)) + 'px';
+
+                // See what the max translateY is which still stretches the scrollHeight
+                while (tooHigh !== tooLow + 1) {
+                    stretcher.translate(0, (maxScrollHeight = tooLow + Math.floor((tooHigh - tooLow) / 2)));
+
+                    // Force a synchronous layout to update the scrollHeight.
+                    // This flip-flops between 0px and 1px
+                    sStyle.lineHeight = Number(!parseInt(sStyle.lineHeight, 10)) + 'px';
+
+                    if (scrollTest.scrollHeight < maxScrollHeight) {
+                        tooHigh = maxScrollHeight;
+                    } else {
+                        tooLow = maxScrollHeight;
+                    }
+                }
+                stretcher.translate(0, Ext.scroll.Scroller.prototype.maxSpacerTranslate = tooLow);
+
+                // Go through the same steps seeing how far we can push it with margin-top
+                tooHigh = tooLow * 2;
+                while (tooHigh !== tooLow + 1) {
+                    stretcher.dom.style.marginTop = ((maxScrollHeight = tooLow + Math.floor((tooHigh - tooLow) / 2))) + 'px';
+
+                    // Force a synchronous layout to update the scrollHeight.
+                    // This flip-flops between 0px and 1px
+                    sStyle.lineHeight = Number(!parseInt(sStyle.lineHeight, 10)) + 'px';
+
+                    if (scrollTest.scrollHeight < maxScrollHeight) {
+                        tooHigh = maxScrollHeight;
+                    } else {
+                        tooLow = maxScrollHeight;
+                    }
+                }
+                Ext.fly(scrollTest).destroy();
+
+                Ext.scroll.Scroller.prototype.maxSpacerMargin = tooLow - Ext.scroll.Scroller.prototype.maxSpacerTranslate;
+            }
+
+            // The maximum a translateY transform can be pushed to stretch the scrollHeight before
+            // it collapses back to offsetHeight
+            return Math.min(scrollRange, this.maxSpacerTranslate);
         },
 
         // hook for rtl mode to convert an x coordinate to RTL space.
@@ -947,15 +1109,23 @@ Ext.define('Ext.scroll.Scroller', {
             this.suspendSync = (this.suspendSync || 0) + 1;
         },
 
-        resumePartnerSync: function() {
-            if (this.suspendSync) {
-                this.suspendSync--;
+        resumePartnerSync: function(syncNow) {
+            var me = this,
+                position;
+
+            if (me.suspendSync) {
+                me.suspendSync--;
+            }
+            if (!me.suspendSync && syncNow) {
+                position = me.getPosition();
+                me.invokePartners('onPartnerScroll', position.x, position.y);
+                me.invokePartners('onPartnerScrollEnd', position.x, position.y);
             }
         },
 
         updateDomScrollPosition: function() {
             var me = this,
-                element = me.getElement(),
+                element = me.getScrollElement(),
                 elScroll,
                 position = me.position;
 
@@ -974,6 +1144,27 @@ Ext.define('Ext.scroll.Scroller', {
             return element.getScroll();
         },
 
+        /**
+         * @private
+         * May be called when a Component is rendererd AFTER some scrolling partner has begun its lifecycle to sync
+         * this scroller with partners which may be scrolled anywhere by now.
+         */
+        syncWithPartners: function() {
+            var me = this,
+                partners = me._partners,
+                id,
+                partner,
+                position;
+
+            me.isReflecting = true;
+            for (id in partners) {
+                partner = partners[id].scroller;
+                position = partner.getPosition();
+                me.onPartnerScroll(partner, position.x, position.y);
+            }
+            me.isReflecting = false;
+        },
+
         // Listener for dom scroll events.  This is needed for both TouchScroller and
         // DomScroller, because TouchScroller may be used to control the scroll position
         // of a naturally overflowing element.  In such a case the element may be scrolled
@@ -985,19 +1176,13 @@ Ext.define('Ext.scroll.Scroller', {
         // handle dom scrolling in this mode as well to prevent this action.
         onDomScroll: function() {
             var me = this,
-                position, x, y, el;
+                position, x, y;
 
-            // If, in CSS translation scrolling mode (mode 2), we ever encounter a DOM scroll
-            // event, it must be a browser's autoscroll in response to focusing. We MUST
-            // undo this action because in mode 2 scrolling, the DOM must never scroll.
-            // https://sencha.jira.com/browse/EXTJS-18959
-            if (me.isTouchScroller && Ext.supports.touchScroll === 2) {
-                el = me.getElement().dom;
-                el.scrollTop = el.scrollLeft = 0;
+            position = me.updateDomScrollPosition();
+            if (me.restoring) {
                 return;
             }
 
-            position = me.updateDomScrollPosition();
             x = position.x;
             y = position.y;
 
@@ -1043,7 +1228,7 @@ Ext.define('Ext.scroll.Scroller', {
 
         restoreState: function () {
             var me = this,
-                el = me.getElement(),
+                el = me.getScrollElement(),
                 dom;
 
             if (el) {
@@ -1052,8 +1237,20 @@ Ext.define('Ext.scroll.Scroller', {
                 // Only restore state if has been previously captured! For example,
                 // floaters probably have not been hidden before initially shown.
                 if (me.trackingScrollTop !== undefined) {
+                    // If we're restoring the scroll position, we don't want to publish
+                    // scroll events since the scroll position should not have changed
+                    // at all as far as the user is concerned, so just do it silently
+                    // while ensuring we maintain the correct internal state. 50ms is
+                    // enough to capture the async scroll events, anything after that
+                    // we re-enable.
+                    me.restoring = true;
+                    Ext.defer(function() {
+                        me.restoring = false;
+                    }, 50);
                     dom.scrollTop = me.trackingScrollTop;
                     dom.scrollLeft = me.trackingScrollLeft;
+
+                    me.trackingScrollLeft = me.trackingScrollTop = undefined;
                 }
             }
         }

@@ -362,7 +362,7 @@ Ext.define('Ext.form.field.File', {
     },
 
     getButtonMarginProp: function() {
-        return 'margin-left:';
+        return this.getInherited().rtl ? 'margin-right:' : 'margin-left:';
     },
     
     onInputFocus: function(e) {

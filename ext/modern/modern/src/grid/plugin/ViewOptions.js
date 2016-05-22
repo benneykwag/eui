@@ -10,29 +10,46 @@
  *
  *     @example
  *     var store = Ext.create('Ext.data.Store', {
- *        fields: ['name', 'email', 'phone'],
- *        data: [
- *            { 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224"  },
- *            { 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234" },
- *            { 'name': 'Homer', "email":"home@simpsons.com",  "phone":"555-222-1244"  },
- *            { 'name': 'Marge', "email":"marge@simpsons.com", "phone":"555-222-1254"  }
- *        ]
- *     );
- *
+ *         fields: ['name', 'email', 'phone'],
+ *         data: [{
+ *             name: 'Lisa',
+ *             email: 'lisa@simpsons.com',
+ *             phone: '555-111-1224'
+ *         }, {
+ *             name: 'Bart',
+ *             email: 'bart@simpsons.com',
+ *             phone: '555-111-1234'
+ *         }, {
+ *             name: 'Homer',
+ *             email: 'homer@simpsons.com',
+ *             phone: '555-222-1244'
+ *         }, {
+ *             name: 'Marge',
+ *             email: 'marge@simpsons.com',
+ *             phone: '555-222-1254'
+ *         }]
+ *     });
+ *     
  *     Ext.create('Ext.grid.Grid', {
- *        store: store,
- *        plugins: [{
- *            type: 'gridviewoptions'
- *        }],
- *        columns: [
- *            { text: 'Name',  dataIndex: 'name', width: 200},
- *            { text: 'Email', dataIndex: 'email', width: 250},
- *            { text: 'Phone', dataIndex: 'phone', width: 120}
- *        ],
- *        height: 200,
- *        layout: 'fit',
- *        fullscreen: true
- *     );
+ *         store: store,
+ *         plugins: [{
+ *             type: 'gridviewoptions'
+ *         }],
+ *         columns: [{
+ *             text: 'Name',
+ *             dataIndex: 'name',
+ *             width: 200
+ *         }, {
+ *             text: 'Email',
+ *             dataIndex: 'email',
+ *             width: 250
+ *         }, {
+ *             text: 'Phone',
+ *             dataIndex: 'phone',
+ *             width: 120
+ *         }],
+ *         fullscreen: true
+ *     });
  *
  * Developers may modify the menu and its contents by overriding {@link #sheet} and
  * {@link #columnList} respectively.
@@ -175,9 +192,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
     updateGrid: function(grid, oldGrid) {
         if (oldGrid) {
             oldGrid.getHeaderContainer().renderElement.un({
-                dragstart: 'onDragStart',
-                drag: 'onDrag',
-                dragend: 'onDragEnd',
                 longpress: 'onHeaderLongPress',
                 scope: this
             });
@@ -191,9 +205,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
 
         if (grid) {
             grid.getHeaderContainer().renderElement.on({
-                dragstart: 'onDragStart',
-                drag: 'onDrag',
-                dragend: 'onDragEnd',
                 longpress: 'onHeaderLongPress',
                 scope: this
             });
@@ -437,32 +448,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
         }
     },
 
-    onDragStart: function() {
-        var sheetWidth = this.getSheetWidth(),
-            sheet = this.getSheet();
-
-        if (!this.sheetVisible) {
-            sheet.translate(sheetWidth);
-            this.startTranslate = sheetWidth;
-        } else {
-            sheet.translate(0);
-            this.startTranslate = 0;
-        }
-    },
-
-    onDrag: function(e) {
-        this.getSheet().translate(Math.max(this.startTranslate + e.deltaX, 0));
-    },
-
-    onDragEnd: function(e) {
-        var me = this;
-        if (e.flick.velocity.x > 0.1) {
-            me.hideViewOptions();
-        } else {
-            me.showViewOptions();
-        }
-    },
-
     onHeaderLongPress: function(e) {
         if (!this.sheetVisible) {
             this.showViewOptions();
@@ -510,9 +495,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
                 modal = sheet.getModal();
                 modal.element.onBefore({
                     tap: 'hideViewOptions',
-                    dragstart: 'onDragStart',
-                    drag: 'onDrag',
-                    dragend: 'onDragEnd',
                     scope: me
                 });
             }, me, {single: true});

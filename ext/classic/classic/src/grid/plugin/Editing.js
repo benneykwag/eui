@@ -344,7 +344,23 @@ Ext.define('Ext.grid.plugin.Editing', {
             dataIndex;
 
         if (!field && column.editor) {
-            field = column.editor;
+            // Protect the column's editor propwerty from the mutation we are going
+            // to be doing here.
+            field = column.editor = Ext.clone(column.editor);
+
+            // Allow for this kind of setup when CellEditing is being used, and the field
+            // is wrapped in a CellEditor. They might need to configure the CellEditor.
+            //    editor: {
+            //        completeOnEnter: false,
+            //        field: {
+            //            xtype: 'combobox'
+            //        }
+            //    }
+            if (field.field) {
+                field = field.field;
+                field.editorCfg = column.editor;
+                delete field.editorCfg.field;
+            }
             column.editor = null;
         }
 
@@ -455,13 +471,22 @@ Ext.define('Ext.grid.plugin.Editing', {
         // Make sure that the column has an editor.  In the case of CheckboxModel,
         // calling startEdit doesn't make sense when the checkbox is clicked.
         // Also, cancel editing if the element that was clicked was a tree expander.
-        var expanderSelector = view.expanderSelector,
-        // Use getColumnManager() in this context because colIdx includes hidden columns.
+        var ownerGrid = view.ownerGrid,
+            expanderSelector = view.expanderSelector,
+            // Use getColumnManager() in this context because colIdx includes hidden columns.
             columnHeader = view.ownerCt.getColumnManager().getHeaderAtIndex(colIdx),
             editor = columnHeader.getEditor(record);
 
         if (this.shouldStartEdit(editor) && (!expanderSelector || !e.getTarget(expanderSelector))) {
-            view.ownerGrid.setActionableMode(true, e.position);
+            ownerGrid.setActionableMode(true, e.position);
+        }
+        // Clicking on a component in a widget column
+        else if (ownerGrid.actionableMode && view.owns(e.target) && Ext.Component.fromElement(e.target, cell).focusable) {
+            return;
+        }
+        // The cell is not actionable, we we must exit actionable mode
+        else if (ownerGrid.actionableMode) {
+            ownerGrid.setActionableMode(false);
         }
     },
 
@@ -546,7 +571,7 @@ Ext.define('Ext.grid.plugin.Editing', {
         // They've asked to edit by column number.
         // Note that in a locked grid, the columns are enumerated in a unified set for this purpose.
         if (Ext.isNumber(columnHeader)) {
-            columnHeader = colMgr.getHeaderAtIndex(columnHeader);
+            columnHeader = colMgr.getHeaderAtIndex(Math.min(columnHeader, colMgr.getColumns().length));
         }
 
         // No corresponding column. Possible if all columns have been moved to the other side of a lockable grid pair
@@ -562,6 +587,13 @@ Ext.define('Ext.grid.plugin.Editing', {
         // Navigate to the view and grid which the column header relates to.
         view = columnHeader.getView();
         grid = view.ownerCt;
+
+        if (Ext.isNumber(record)) {
+            rowIdx = Math.min(record, view.dataSource.getCount() - 1);
+            record = view.dataSource.getAt(rowIdx);
+        } else {
+            rowIdx = view.dataSource.indexOf(record);
+        }
 
         // Ensure the row we want to edit is in the rendered range if the view is buffer rendered
         grid.ensureVisible(record, {
@@ -579,14 +611,6 @@ Ext.define('Ext.grid.plugin.Editing', {
         // It must be the real owning View, NOT the lockable pseudo view.
         colIdx = view.getVisibleColumnManager().indexOf(columnHeader);
 
-        if (Ext.isNumber(record)) {
-            // look up record if numeric row index was passed
-            rowIdx = record;
-            record = view.getRecord(gridRow);
-        } else {
-            rowIdx = view.indexOf(gridRow);
-        }
-
         // The record may be removed from the store but the view
         // not yet updated, so check it exists
         if (!record) {
@@ -603,7 +627,7 @@ Ext.define('Ext.grid.plugin.Editing', {
         result.value = result.originalValue = record.get(columnHeader.dataIndex);
         result.row = gridRow;
         result.node = view.getNode(record);
-        result.cell = view.getCellByPosition(result, true);
+        result.cell = result.getCell(true);
 
         return result;
     },

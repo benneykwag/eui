@@ -286,7 +286,7 @@ Ext.define('Ext.form.field.Picker', {
 
         // Align to the trigger wrap because the border isn't always on the input element, which
         // can cause the offset to be off
-        me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        me.picker.el.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
         // add the {openCls}-above class if the picker was aligned above
         // the field due to hitting the bottom of the viewport
         isAbove = picker.el.getY() < me.inputEl.getY();
@@ -418,20 +418,9 @@ Ext.define('Ext.form.field.Picker', {
 
     privates: {
         onGlobalScroll: function (scroller) {
-            var scrollPosition,
-               newScrollPosition,
-               targetEl = this.el;
-
-            // Collapse if this field being moved by the scroll the scroll
-            if (scroller.getElement().contains(targetEl)) {
-                scrollPosition = scroller.getPosition();
-                newScrollPosition = targetEl.getScrollIntoViewXY(scroller.getElement(), scrollPosition.x, scrollPosition.y);
-
-                // If this field is part of a fixed position component, or
-                //    this field is out of the scroller element's view in any way, collapse
-                if (this.up('[fixed]') || newScrollPosition.y !== scrollPosition.y || newScrollPosition.x !== scrollPosition.x) {
-                    this.collapse();
-                }
+            // Collapse if the scroll is anywhere but inside the picker
+            if (!this.picker.owns(scroller.getElement())) {
+                this.collapse();
             }
         }
     }

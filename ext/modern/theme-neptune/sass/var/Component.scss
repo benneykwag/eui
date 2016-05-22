@@ -110,7 +110,7 @@ $light-color: dynamic(#fff);
 $base-background-gradient: dynamic(if($include-highlights, matte, null));
 
 /**
- * @var {font-family} $font-family
+ * @var {string} $font-family
  * The font-family to be used throughout the theme.
  *
  * See background-gradient mixin.

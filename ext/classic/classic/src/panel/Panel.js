@@ -204,11 +204,10 @@ Ext.define('Ext.panel.Panel', {
         iconCls: null,
 
         /**
-         * @cfg {String}
+         * @cfg {String/Object}
          * @inheritdoc Ext.panel.Header#title
          * @localdoc When a `title` is specified, the {@link Ext.panel.Header} will 
-         * automatically be created and displayed unless {@link #header} is set to 
-         * `false`.
+         * automatically be created and displayed unless {@link #header} is set to `false`.
          * @accessor
          */
         title: null,
@@ -229,7 +228,7 @@ Ext.define('Ext.panel.Panel', {
     },
 
     /**
-     * @cfg {Boolean} animCollapse
+     * @cfg {Boolean/Number} animCollapse
      * `true` to animate the transition when the panel is collapsed, `false` to skip the animation (defaults to `true`
      * if the {@link Ext.fx.Anim} class is available, otherwise `false`). May also be specified as the animation
      * duration in milliseconds.
@@ -513,7 +512,9 @@ Ext.define('Ext.panel.Panel', {
      *         xtype: 'toolbar',
      *         dock: 'bottom',
      *         ui: 'footer',
-     *         defaults: {minWidth: {@link #minButtonWidth}},
+     *         defaults: {
+     *             minWidth: 200
+     *         },
      *         items: [
      *             { xtype: 'component', flex: 1 },
      *             { xtype: 'button', text: 'Button 1' }
@@ -582,7 +583,9 @@ Ext.define('Ext.panel.Panel', {
      *         xtype: 'toolbar',
      *         dock: 'bottom',
      *         ui: 'footer',
-     *         defaults: {minWidth: {@link #minButtonWidth}},
+     *         defaults: {
+     *             minWidth: 200
+     *         },
      *         items: [
      *             { xtype: 'component', flex: 1 },
      *             { xtype: 'button', text: 'Button 1' }
@@ -1043,7 +1046,7 @@ Ext.define('Ext.panel.Panel', {
     /**
      * Adds a CSS class to the body element. If not rendered, the class will
      * be added when the panel is rendered.
-     * @param {String} cls The class to add
+     * @param {String/String[]} cls The class to add
      * @return {Ext.panel.Panel} this
      */
     addBodyCls: function(cls) {
@@ -1447,15 +1450,21 @@ Ext.define('Ext.panel.Panel', {
             minButtonWidth = me.minButtonWidth,
             fbar, fbarDefaults;
 
-        function initToolbar (toolbar, pos, useButtonAlign) {
+        function initToolbar(toolbar, pos, useButtonAlign) {
             if (Ext.isArray(toolbar)) {
                 toolbar = {
                     xtype: 'toolbar',
                     items: toolbar
                 };
-            } else if (!toolbar.xtype) {
+            } else if (!toolbar.isComponent) {
+                // Incoming toolbar config can be a property on the prototype
+                toolbar = Ext.apply({}, toolbar);
+            }
+            
+            if (!toolbar.xtype) {
                 toolbar.xtype = 'toolbar';
             }
+            
             toolbar.dock = pos;
 
             // Legacy support for buttonAlign (only used by buttons/fbar)
@@ -1567,7 +1576,7 @@ Ext.define('Ext.panel.Panel', {
      *
      * Defaults to {@link #collapseDirection}.
      *
-     * @param {Boolean} [animate] True to animate the transition, else false
+     * @param {Boolean/Number} [animate] True to animate the transition, else false
      * (defaults to the value of the {@link #animCollapse} panel config). May
      * also be specified as the animation duration in milliseconds.
      * @return {Ext.panel.Panel} this
@@ -1659,6 +1668,7 @@ Ext.define('Ext.panel.Panel', {
 
             focusable: false,
             floating: true,
+            alignOnScroll: false,
             shadow: false,
             frame: frame,
             shim: me.shim,
@@ -1702,7 +1712,12 @@ Ext.define('Ext.panel.Panel', {
                 ownerCt: (ownerCt && me.collapseMode === 'placeholder') ? ownerCt : me,
                 ownerLayout: me.componentLayout,
                 forceOrientation: true,
-                margin: me.margin
+                margin: me.margin,
+                // When placeholder is focused, focus the expander tool.
+                // TODO: When https://sencha.jira.com/browse/EXTJS-19718 is
+                // fixed, this should not be needed.
+                // placeholder is a FocusableContainer
+                defaultFocus: 'tool[isDefaultExpandTool]'
             }, defaults);
 
         // If we're in mini mode, set the placeholder size to only 1px since
@@ -2027,13 +2042,15 @@ Ext.define('Ext.panel.Panel', {
 
     getAnimationProps: function() {
         var me = this,
-            animCollapse = me.animCollapse,
             props;
 
         props = me.callParent();
-
-        if (typeof animCollapse === 'number') {
-            props.duration = animCollapse;
+        
+        if (typeof me.animCollapseDuration === 'number') {
+            props.duration = me.animCollapseDuration;
+        }
+        else if (typeof me.animCollapse === 'number') {
+            props.duration = me.animCollapse;
         }
 
         return props;
@@ -2186,16 +2203,28 @@ Ext.define('Ext.panel.Panel', {
     getReExpander: function (direction) {
         var me = this,
             collapseDir = direction || me.collapseDirection,
-            reExpander = me.reExpander || me.findReExpander(collapseDir);
+            reExpander = me.reExpander || me.findReExpander(collapseDir),
+            titleCollapse = me.titleCollapse,
+            listeners = null;
 
         me.expandDirection = me.getOppositeDirection(collapseDir);
 
         if (!reExpander) {
+            if(titleCollapse) {
+                listeners = {
+                    click: {
+                        fn: me.toggleCollapse,
+                        element: 'el',
+                        scope: me
+                    }
+                };
+            }
         // We did not find a Header of the required orientation: create one.
             me.reExpander = reExpander = me.createReExpander(collapseDir, {
                 dock: collapseDir,
                 cls: Ext.baseCSSPrefix + 'docked ' + me.baseCls + '-' + me.ui + '-collapsed',
-                isCollapsedExpander: true
+                isCollapsedExpander: true,
+                listeners: listeners
             });
 
             me.dockedItems.insert(0, reExpander);
@@ -2313,7 +2342,7 @@ Ext.define('Ext.panel.Panel', {
             }
 
             ghostHeader.addCls(Ext.baseCSSPrefix + 'header-ghost');
-            ghostHeader.resumeLayouts();
+            ghostHeader.resumeLayouts(true);
         }
 
         ghostPanel.setPagePosition(box.x, box.y);
@@ -2424,10 +2453,15 @@ Ext.define('Ext.panel.Panel', {
         me.initBorderProps();
         me.callParent();
         me.collapseDirection = me.collapseDirection || me.getHeaderPosition() || Ext.Component.DIRECTION_TOP;
+        
+        // Certain layouts will reset animCollapse to false but we'd like to preserve
+        // the duration to use with animations, if it was configured
+        if (typeof me.animCollapse === 'number') {
+            me.animCollapseDuration = me.animCollapse;
+        }
 
         // Used to track hidden content elements during collapsed state
         me.hiddenOnCollapse = new Ext.dom.CompositeElement();
-
     },
 
     initItems: function() {
@@ -2609,7 +2643,6 @@ Ext.define('Ext.panel.Panel', {
                 
                 left: me.navigateAccordion,
                 right: me.navigateAccordion,
-                left: me.navigateAccordion,
                 up: me.navigateAccordion,
                 down: me.navigateAccordion,
                 home: me.navigateAccordion,
@@ -2668,6 +2701,12 @@ Ext.define('Ext.panel.Panel', {
     },
 
     onMouseLeaveFloated: function(e) {
+        var toElement = e.getRelatedTarget();
+
+        // If the toElement is in the component tree, do not collapse
+        if (toElement && (this.owns(toElement) || this.placeholder.owns(toElement))) {
+            return;
+        }
         this.slideOutTask.delay(500);
     },
     
@@ -2734,6 +2773,10 @@ Ext.define('Ext.panel.Panel', {
         }
 
         if (me.rendered) {
+            // The doPlaceholderCollapse callback must not make assumptions about where
+            // to restore focus to. We decide that here.
+            me.focusPlaceholderExpandTool = me.focusPlaceHolder = false;
+
             // We assume that if collapse was caused by keyboard action
             // on focused collapse tool, the logical focus transition
             // is to placeholder's expand tool. Note that it may not be
@@ -2742,6 +2785,10 @@ Ext.define('Ext.panel.Panel', {
             // to avoid sudden jumps.
             if (collapseTool && Ext.ComponentManager.getActiveComponent() === collapseTool) {
                 me.focusPlaceholderExpandTool = true;
+            }
+            // If the focus was otherwise owned by us, just focus the placeholder
+            else if (me.containsFocus) {
+                me.focusPlaceHolder = true;
             }
             
             // We MUST NOT hide using display because that resets all scroll information.
@@ -2807,10 +2854,10 @@ Ext.define('Ext.panel.Panel', {
         }
     
         // However when focus was *not* on the collapse tool,
-        // we still need to try and focus the placeholder itself
-        // since it may have been configured with something
-        // focusable inside, and delegate focus handling.
-        else {
+        // and we contained focus, we still need to try and
+        // focus the placeholder itself since it may have been
+        // configured with something focusable inside, and delegate focus handling.
+        else  if (me.focusPlaceHolder) {
             placeholder.focus();
         }
         
@@ -3021,7 +3068,7 @@ Ext.define('Ext.panel.Panel', {
 
     /**
      * Removes a CSS class from the body element.
-     * @param {String} cls The class to remove
+     * @param {String/String[]} cls The class to remove
      * @return {Ext.panel.Panel} this
      */
     removeBodyCls: function(cls) {
@@ -3675,10 +3722,12 @@ Ext.define('Ext.panel.Panel', {
         }
         
         //<debug>
-        if (Ext.enableAriaPanels && me.ariaRole === 'region' && !title) {
-            Ext.log.warn("Panel " + me.id + " is a region section of the application, " +
-                         "but it does not have a title. Per WAI-ARIA, all regions " +
-                         "should have a heading element that contains region's title.");
+        if (me.ariaRole === 'region' && !title) {
+            Ext.ariaWarn(me,
+                "Panel " + me.id + " is a region section of the application, " +
+                "but it does not have a title. Per WAI-ARIA, all regions " +
+                "should have a heading element that contains region's title."
+            );
         }
         //</debug>
         
@@ -3792,8 +3841,8 @@ Ext.define('Ext.panel.Panel', {
             }
         },
 
-        initResizable: function() {
-            this.callParent(arguments);
+        initResizable: function(resizable) {
+            this.callParent([resizable]);
             if (this.collapsed) {
                 this.resizer.disable();
             }
@@ -3832,9 +3881,6 @@ Ext.define('Ext.panel.Panel', {
 
                 dd = me.dd = new Ext.util.ComponentDragger(me, ddConfig);
                 me.relayEvents(dd, ['dragstart', 'drag', 'dragend']);
-                if (me.maximized) {
-                    dd.disable();
-                }
             }
         },
 
@@ -3854,6 +3900,7 @@ Ext.define('Ext.panel.Panel', {
             var me = this,
                 compEl = me.el,
                 collapseDirection,
+                focusTarget,
                 afterSlideOut = function() {
                     me.slideOutFloatedPanelEnd();
                     // this would be in slideOutFloatedPanelEnd except that the only other
@@ -3885,6 +3932,14 @@ Ext.define('Ext.panel.Panel', {
                     afteranimate: afterSlideOut
                 }
             });
+
+            // Focus the placeholder which should delegate into itself
+            if (this.containsFocus) {
+                focusTarget = this.findFocusTarget();
+                if (focusTarget) {
+                    focusTarget.focus();
+                }
+            }
         },
 
         /**

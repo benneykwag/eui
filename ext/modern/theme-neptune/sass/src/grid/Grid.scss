@@ -229,3 +229,7 @@
 .#{$prefix}grid-pagingtoolbar-next {
     @include font-icon($fa-var-angle-right FontAwesome);
 }
+
+.#{$prefix}grid-resize-marker {
+    background-color: $grid-column-resize-marker-background-color;
+}

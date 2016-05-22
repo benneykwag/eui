@@ -100,19 +100,19 @@
  *
  *     Option    Default   Description
  *     --------- --------  ---------------------------------------------
- *     {@link Ext.fx.Anim#duration duration}  350       The duration of the animation in milliseconds
- *     {@link Ext.fx.Anim#easing easing}    easeOut   The easing method
- *     {@link Ext.fx.Anim#callback callback}  none      A function to execute when the anim completes
- *     {@link Ext.fx.Anim#scope scope}     this      The scope (this) of the callback function
+ *     duration  350       The duration of the animation in milliseconds
+ *     easing    easeOut   The easing method
+ *     callback  none      A function to execute when the anim completes
+ *     scope     this      The scope (this) of the callback function
  *
  * Usage:
  *
  *     // Element animation options object
  *     var opt = {
- *         {@link Ext.fx.Anim#duration duration}: 1000,
- *         {@link Ext.fx.Anim#easing easing}: 'elasticIn',
- *         {@link Ext.fx.Anim#callback callback}: this.foo,
- *         {@link Ext.fx.Anim#scope scope}: this
+ *         duration: 1000,
+ *         easing: 'elasticIn',
+ *         callback: this.foo,
+ *         scope: this
  *     };
  *     // animation with some options set
  *     el.setWidth(100, opt);
@@ -782,17 +782,12 @@ Ext.define('Ext.dom.Element', function(Element) {
              */
             create: function(attributes, domNode) {
                 var me = this,
-                    hidden = CREATE_ATTRIBUTES.hidden,
-                    element, elementStyle, tag, value, name, i, ln, className;
+                    classes, element, elementStyle, tag, value, name, i, ln, tmp;
 
-                if (!attributes) {
-                    attributes = {};
-                }
-
+                attributes = attributes || {};
                 if (attributes.isElement) {
                     return domNode ? attributes.dom : attributes;
-                }
-                else if ('nodeType' in attributes) {
+                } else if ('nodeType' in attributes) {
                     return domNode ? attributes : Ext.get(attributes);
                 }
 
@@ -805,19 +800,14 @@ Ext.define('Ext.dom.Element', function(Element) {
                 if (!tag) {
                     tag = 'div';
                 }
+
                 if (attributes.namespace) {
                     element = DOC.createElementNS(attributes.namespace, tag);
                 } else {
                     element = DOC.createElement(tag);
                 }
-                elementStyle = element.style;
 
-                if (attributes[hidden]) {
-                    className = attributes.className;
-                    className = (className == null) ? '' : className + ' ';
-                    attributes.className = className + displayCls;
-                    delete attributes[hidden];
-                }
+                elementStyle = element.style;
 
                 for (name in attributes) {
                     if (name !== 'tag') {
@@ -839,11 +829,12 @@ Ext.define('Ext.dom.Element', function(Element) {
 
                             case CREATE_ATTRIBUTES.className:
                             case CREATE_ATTRIBUTES.cls:
-                                element.className = value;
+                                tmp = value.split(spacesRe);
+                                classes = classes ? classes.concat(tmp) : tmp
                                 break;
 
                             case CREATE_ATTRIBUTES.classList:
-                                element.className = value.join(' ');
+                                classes = classes ? classes.concat(value) : value;
                                 break;
 
                             case CREATE_ATTRIBUTES.text:
@@ -852,6 +843,14 @@ Ext.define('Ext.dom.Element', function(Element) {
 
                             case CREATE_ATTRIBUTES.html:
                                 element.innerHTML = value;
+                                break;
+
+                            case CREATE_ATTRIBUTES.hidden:
+                                if (classes) {
+                                    classes.push(displayCls);
+                                } else {
+                                    classes = [displayCls];
+                                }
                                 break;
 
                             case CREATE_ATTRIBUTES.children:
@@ -868,10 +867,13 @@ Ext.define('Ext.dom.Element', function(Element) {
                     }
                 }
 
+                if (classes) {
+                    element.className = classes.join(' ');
+                }
+
                 if (domNode) {
                     return element;
-                }
-                else {
+                } else {
                     return me.get(element);
                 }
             },
@@ -927,7 +929,7 @@ Ext.define('Ext.dom.Element', function(Element) {
              * Uses simple caching to consistently return the same object. Automatically fixes if an object was recreated with
              * the same id via AJAX or DOM.
              *
-             * @param {String/HTMLElement/Ext.dom.Element} element The `id` of the node, a DOM Node or an existing Element.
+             * @param {String/HTMLElement/Ext.dom.Element} el The `id` of the node, a DOM Node or an existing Element.
              * @return {Ext.dom.Element} The Element object (or `null` if no matching element was found).
              * @static
              * @inheritable
@@ -2027,9 +2029,10 @@ Ext.define('Ext.dom.Element', function(Element) {
          *
          * @param {Boolean} [options.animate=false] `true` to animate the shadow while
          * the element is animating.  By default the shadow will be hidden during animation.
+         * @param isVisible (private)
          * @private
          */
-        enableShadow: function(options, /* private */ isVisible) {
+        enableShadow: function(options, isVisible) {
             var me = this,
                 shadow = me.shadow || (me.shadow = new Ext.dom.Shadow(Ext.apply({
                     target: me
@@ -2061,10 +2064,11 @@ Ext.define('Ext.dom.Element', function(Element) {
          * automatically synchronized as the position, size, and visibility of this
          * Element are changed.
          * @param {Object} [options] Configuration options for the shim
+         * @param isVisible (private)
          * @return {Ext.dom.Element} The new shim element
          * @private
          */
-        enableShim: function(options, /* private */ isVisible) {
+        enableShim: function(options, isVisible) {
             var me = this,
                 shim = me.shim || (me.shim = new Ext.dom.Shim(Ext.apply({
                     target: me
@@ -2157,10 +2161,10 @@ Ext.define('Ext.dom.Element', function(Element) {
          * if `defer` argument is specified.
          *
          * @param {Number} [defer] Milliseconds to defer the focus
-         *
+         * @param dom (private)
          * @return {Ext.dom.Element} this
          */
-        focus: function(defer, /* private */ dom) {
+        focus: function(defer, dom) {
             var me = this;
 
             dom = dom || me.dom;
@@ -3337,11 +3341,12 @@ Ext.define('Ext.dom.Element', function(Element) {
          *
          * @param {String} selector The CSS selector.
          * @param {Boolean} [asDom=true] `false` to return an array of Ext.dom.Element
+         * @param single (private)
          * @return {HTMLElement[]/Ext.dom.Element[]} An Array of elements (
          * HTMLElement or Ext.dom.Element if _asDom_ is _false_) that match the selector.  
          * If there are no matches, an empty Array is returned.
          */
-        query: function(selector, asDom, /* private */ single) {
+        query: function(selector, asDom, single) {
             var dom = this.dom,
                 results, len, nlen, node, nodes, i, j;
 
@@ -4925,6 +4930,7 @@ Ext.define('Ext.dom.Element', function(Element) {
         privates: {
             doAddListener: function(eventName, fn, scope, options, order, caller, manager) {
                 var me = this,
+                    originalName = eventName,
                     observableDoAddListener, additiveEventName,
                     translatedEventName;
 
@@ -4965,11 +4971,18 @@ Ext.define('Ext.dom.Element', function(Element) {
                         if (translatedEventName) {
                             // options.type may have already been set above
                             options.type = options.type || eventName;
+                            if (manager) {
+                                options.managedName = originalName;
+                            }
                             eventName = translatedEventName;
                         }
                     }
 
                     observableDoAddListener.call(me, eventName, fn, scope, options, order, caller, manager);
+
+                    if (manager && translatedEventName) {
+                        delete options.managedName;
+                    }
 
                     // after the listener has been added to the ListenerStack, it's original
                     // "type" (for translated events) will be stored on the listener object in
@@ -5316,7 +5329,12 @@ Ext.define('Ext.dom.Element', function(Element) {
         eventMap[mouseover] = 'pointerover';
         eventMap[mouseout] = 'pointerout';
         eventMap[mouseenter] = 'pointerenter';
-        eventMap[mouseleave] = 'pointerleave';
+        // No decent way to feature detect this, pointerleave relatedTarget is
+        // incorrect on IE11, so force it to use mouseleave here.
+        // See: https://connect.microsoft.com/IE/feedback/details/851111/ev-relatedtarget-in-pointerleave-indicates-departure-element-not-destination-element
+        if (!Ext.isIE11) {
+            eventMap[mouseleave] = 'pointerleave';
+        }
     } else if (supports.MSPointerEvents) {
         // IE10
         eventMap[pointerdown] = MSPointerDown;
@@ -5434,14 +5452,12 @@ Ext.define('Ext.dom.Element', function(Element) {
     /**
      * @member Ext
      * @method select
-     * @alias Ext.dom.Element#static-method-select
      */
     Ext.select = Element.select;
 
     /**
      * @member Ext
      * @method query
-     * @alias Ext.dom.Element#static-method-query
      */
     Ext.query = Element.query;
 
@@ -5449,7 +5465,6 @@ Ext.define('Ext.dom.Element', function(Element) {
         /**
          * @member Ext
          * @method get
-         * @alias Ext.dom.Element#get
          */
         get: function(element) {
             return Element.get(element);
@@ -5591,9 +5606,12 @@ Ext.define('Ext.dom.Element', function(Element) {
             // if the element does not have a parent node, it is definitely not in the
             // DOM - we can exit immediately
             (!dom.parentNode ||
-            // If the element has an offset parent we can bail right away, it is
-            // definitely in the DOM.
-            (!dom.offsetParent &&
+            // If the element has an offsetParent we can bail right away, it is
+            // definitely in the DOM. If offsetParent is null, the element is detached.
+            // If offsetParent is undefined, the element doesn't support offsetParent
+            // (e.g. SVGElement) and is not necessarily garbage; parentNode check above
+            // should be sufficient in this case.
+            (dom.offsetParent === null &&
             // if the element does not have an offsetParent it can mean the element is
             // either not in the dom or it is hidden.  The next step is to check to see
             // if it can be found by id using either document.all or getElementById(),

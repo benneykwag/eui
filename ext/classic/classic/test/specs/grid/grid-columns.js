@@ -4,7 +4,16 @@ describe("grid-columns", function() {
             var defaultColNum = 4,
                 totalWidth = 1000,
                 grid, view, colRef, store, column;
-                
+
+            function spyOnEvent(object, eventName, fn) {
+                var obj = {
+                    fn: fn || Ext.emptyFn
+                },
+                spy = spyOn(obj, "fn");
+                object.addListener(eventName, obj.fn);
+                return spy;
+            }
+
             function makeGrid(numCols, gridCfg, hiddenFn, lockedFn){
                 var cols, col, i;
                 
@@ -90,6 +99,25 @@ describe("grid-columns", function() {
                 jasmine.fireMouseEvent(col.titleEl, 'click', 10);
             }
 
+            function resizeColumn(column, by) {
+                var colBox = column.el.getBox(),
+                    fromMx = colBox.x + colBox.width - 2,
+                    fromMy = colBox.y + colBox.height / 2,
+                    dragThresh = by > 0 ? Ext.dd.DragDropManager.clickPixelThresh + 1 : -Ext.dd.DragDropManager.clickPixelThresh - 1;
+
+                // Mousedown on the header to drag
+                jasmine.fireMouseEvent(column.el.dom, 'mouseover', fromMx, fromMy);
+                jasmine.fireMouseEvent(column.el.dom, 'mousemove', fromMx, fromMy);
+                jasmine.fireMouseEvent(column.el.dom, 'mousedown', fromMx, fromMy);
+
+                // The initial move which tiggers the start of the drag
+                jasmine.fireMouseEvent(column.el.dom, 'mousemove', fromMx + dragThresh, fromMy);
+
+                // Move to resize
+                jasmine.fireMouseEvent(column.el.dom, 'mousemove', fromMx + by + 2, fromMy);
+                jasmine.fireMouseEvent(column.el.dom, 'mouseup', fromMx + by + 2, fromMy);
+            }
+
             function setup() {
                 Ext.define('spec.TestModel', {
                     extend: 'Ext.data.Model',
@@ -107,6 +135,59 @@ describe("grid-columns", function() {
             beforeEach(setup);
 
             afterEach(tearDown);
+
+            // https://sencha.jira.com/browse/EXTJS-19950
+            describe('force fit columns, shrinking width to where flexes tend to zero', function() {
+                it('should work', function() {
+                    makeGrid([{
+                        text      : 'Col1',
+                        dataIndex : 'foo',
+                        flex      : 1
+                    },  {
+                        text      : 'Col2',
+                        columns : [{
+                            text      : 'Col21',
+                            dataIndex : 'foo2',
+                             width: 140
+                        }, {
+                            text      : 'Col22',
+                            dataIndex : 'foo4',
+                            width      : 160
+                        }, {
+                            text      : 'Col23',
+                            dataIndex : 'foo4',
+                            width      : 100
+                        }, {
+                            text      : 'Col34',
+                            dataIndex : 'foo4',
+                            width      : 85
+                        }]
+                    }, {
+                        text      : 'Col3',
+                        dataIndex : 'foo3',
+                        width      : 110
+                    }, {
+                        text      : 'Col4',
+                        columns : [ {
+                            text      : 'Col41',
+                            dataIndex : 'foo2',
+                                flex: 1
+                        }, {
+                            text      : 'Col42',
+                            dataIndex : 'foo4',
+                            width      : 120
+                        }]
+                    }], {
+                        autoScroll: true,
+                        forceFit: true,
+                        width: 1800
+                    });
+
+                    expect(function() {
+                        grid.setWidth(700);
+                    }).not.toThrow();
+                });
+            });
 
             describe('as containers', function () {
                 var leafCls = 'x-leaf-column-header',
@@ -1018,6 +1099,55 @@ describe("grid-columns", function() {
                             });
                         });
                     });
+                });
+            });
+
+            describe("menu", function() {
+                it("should not allow menu to be shown when menuDisabled: true", function() {
+                    makeGrid([{
+                        dataIndex: 'field0',
+                        width: 200,
+                        filter: 'string',
+                        menuDisabled: true
+                    }], {
+                        plugins: 'gridfilters'
+                    });
+
+                    // menuDisabled=true, shouldn't have a trigger
+                    expect(colRef[0].triggerEl).toBeNull(); 
+                });
+
+                it("should not allow menu to be shown when grid is configured with enableColumnHide: false and sortableColumns: false", function() {
+                    makeGrid([{
+                        dataIndex: 'field0',
+                        width: 200
+                    }], {
+                        enableColumnHide: false,
+                        sortableColumns: false
+                    });
+
+                    expect(colRef[0].triggerEl).toBeNull();
+                });
+
+                it("should allow menu to be shown when requiresMenu: true (from plugin) and grid is configured with enableColumnHide: false and sortableColumns: false", function() {
+                    makeGrid([{
+                        dataIndex: 'field0',
+                        width: 200,
+                        filter: 'string'
+                    }], {
+                        enableColumnHide: false,
+                        sortableColumns: false,
+                        plugins: 'gridfilters'
+                    });
+
+                    var col = colRef[0],
+                        menu;
+
+                    col.triggerEl.show();
+                    jasmine.fireMouseEvent(col.triggerEl.dom, 'click');
+                    menu = col.activeMenu;
+                    expect(menu.isVisible()).toBe(true);
+                    expect(col.requiresMenu).toBe(true);
                 });
             });
 
@@ -2405,6 +2535,18 @@ describe("grid-columns", function() {
                     expect(colRef[0].el.getBorderWidth('r')).toBe(1);
                     expect(colRef[1].el.getBorderWidth('r')).toBe(1);
                     expect(colRef[2].el.getBorderWidth('r')).toBe(1);
+                });
+            });
+            
+            describe('column resize', function() {
+                it('should not fire drag events on headercontainer during resize', function() {
+                    makeGrid();
+                    var colWidth = colRef[0].getWidth(),
+                        dragSpy = spyOnEvent(grid.headerCt.el, 'drag');
+
+                    resizeColumn(colRef[0], 10);
+                    expect(colRef[0].getWidth()).toBe(colWidth + 10);
+                    expect(dragSpy).not.toHaveBeenCalled();
                 });
             });
         });

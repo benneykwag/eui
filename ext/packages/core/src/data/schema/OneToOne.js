@@ -32,6 +32,15 @@ Ext.define('Ext.data.schema.OneToOne', {
             }
         },
 
+        onIdChanged: function(rightRecord, oldId, newId) {
+            var leftRecord = this.getAssociatedItem(rightRecord),
+                fieldName = this.association.getFieldName();
+
+            if (!rightRecord.session && leftRecord && fieldName) {
+                leftRecord.set(fieldName, newId);
+            }
+        },
+
         createGetter: function() {
             var me = this;
             return function () {

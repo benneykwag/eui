@@ -208,6 +208,11 @@ Ext.define('Ext.form.field.TextArea', {
             me.fireEvent('specialkey', me, e);
         }
         
+        // Enter key must not bubble up where it can trigger defaultButton action
+        if (key === e.ENTER) {
+            e.stopPropagation();
+        }
+        
         if (me.needsMaxCheck && key !== e.BACKSPACE && key !== e.DELETE && !e.isNavKeyPress() && !me.isCutCopyPasteSelectAll(e, key)) {
             value = me.getValue();
             if (value.length >= me.maxLength) {

@@ -1,7 +1,7 @@
 /*
-This file is part of Ext JS 6.0.1.250
+This file is part of Ext JS 6.0.2.437
 
-Copyright (c) 2011-2015 Sencha Inc
+Copyright (c) 2011-2016 Sencha Inc
 
 Contact:  http://www.sencha.com/contact
 
@@ -13,7 +13,7 @@ terms contained in a written agreement between you and Sencha.
 If you are unsure which license is appropriate for your use, please contact the sales department
 at http://www.sencha.com/contact.
 
-Version: 6.0.1.250 Build date: 2015-09-02 16:59:34 (22ef9ff0ebf584ff525541be37e753a703cc044b)
+Version: 6.0.2.437 Build date: 2016-03-25 13:18:05 (4552fe90c6c396d8cdd24a3bc21561b7254db715)
 
 */
 
@@ -112,7 +112,9 @@ var Ext = Ext || {};
       "requires": [
         1
       ],
-      "uses": [],
+      "uses": [
+        23
+      ],
       "idx": 2
     },
     {
@@ -1214,7 +1216,7 @@ var Ext = Ext || {};
         333,
         340,
         342,
-        411,
+        412,
         554,
         568,
         572
@@ -3336,6 +3338,7 @@ var Ext = Ext || {};
       "requires": [],
       "uses": [
         20,
+        109,
         119,
         519
       ],
@@ -3352,7 +3355,6 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/button/Button.js",
       "requires": [
-        118,
         119,
         223,
         324,
@@ -3494,6 +3496,7 @@ var Ext = Ext || {};
         33
       ],
       "uses": [
+        49,
         395,
         467
       ],
@@ -3690,7 +3693,7 @@ var Ext = Ext || {};
         342,
         356,
         358,
-        411,
+        412,
         471
       ],
       "idx": 379
@@ -3987,6 +3990,14 @@ var Ext = Ext || {};
       "idx": 410
     },
     {
+      "path": "../classic/classic/src/form/action/StandardSubmit.js",
+      "requires": [
+        410
+      ],
+      "uses": [],
+      "idx": 411
+    },
+    {
       "path": "../classic/classic/src/util/ComponentDragger.js",
       "requires": [
         390
@@ -3995,7 +4006,7 @@ var Ext = Ext || {};
         33,
         49
       ],
-      "idx": 411
+      "idx": 412
     },
     {
       "path": "../classic/classic/src/util/FocusTrap.js",
@@ -4003,18 +4014,18 @@ var Ext = Ext || {};
         0
       ],
       "uses": [],
-      "idx": 412
+      "idx": 413
     },
     {
       "path": "../classic/classic/src/window/Window.js",
       "requires": [
         33,
         379,
-        411,
-        412
+        412,
+        413
       ],
       "uses": [],
-      "idx": 413
+      "idx": 414
     },
     {
       "path": "../classic/classic/src/form/Labelable.js",
@@ -4026,13 +4037,13 @@ var Ext = Ext || {};
         49,
         466
       ],
-      "idx": 414
+      "idx": 415
     },
     {
       "path": "../classic/classic/src/form/field/Field.js",
       "requires": [],
       "uses": [],
-      "idx": 415
+      "idx": 416
     },
     {
       "path": "../classic/classic/src/form/field/Base.js",
@@ -4040,19 +4051,19 @@ var Ext = Ext || {};
         1,
         88,
         119,
-        414,
-        415
+        415,
+        416
       ],
       "uses": [
         230
       ],
-      "idx": 416
+      "idx": 417
     },
     {
       "path": "../classic/classic/src/form/field/VTypes.js",
       "requires": [],
       "uses": [],
-      "idx": 417
+      "idx": 418
     },
     {
       "path": "../classic/classic/src/form/trigger/Trigger.js",
@@ -4064,35 +4075,35 @@ var Ext = Ext || {};
         49,
         88
       ],
-      "idx": 418
+      "idx": 419
     },
     {
       "path": "../classic/classic/src/form/field/Text.js",
       "requires": [
         324,
-        416,
         417,
-        418
+        418,
+        419
       ],
       "uses": [
         84,
         85,
         92
       ],
-      "idx": 419
+      "idx": 420
     },
     {
       "path": "../classic/classic/src/form/field/TextArea.js",
       "requires": [
         1,
         88,
-        419
+        420
       ],
       "uses": [
         84,
         324
       ],
-      "idx": 420
+      "idx": 421
     },
     {
       "path": "../classic/classic/src/window/MessageBox.js",
@@ -4102,9 +4113,9 @@ var Ext = Ext || {};
         366,
         368,
         386,
-        413,
-        419,
-        420
+        414,
+        420,
+        421
       ],
       "uses": [
         119,
@@ -4114,7 +4125,7 @@ var Ext = Ext || {};
         343,
         471
       ],
-      "idx": 421
+      "idx": 422
     },
     {
       "path": "../classic/classic/src/form/Basic.js",
@@ -4125,12 +4136,13 @@ var Ext = Ext || {};
         139,
         409,
         410,
-        421
+        411,
+        422
       ],
       "uses": [
         382
       ],
-      "idx": 422
+      "idx": 423
     },
     {
       "path": "../classic/classic/src/form/FieldAncestor.js",
@@ -4139,7 +4151,7 @@ var Ext = Ext || {};
         382
       ],
       "uses": [],
-      "idx": 423
+      "idx": 424
     },
     {
       "path": "../classic/classic/src/layout/component/field/FieldContainer.js",
@@ -4147,18 +4159,18 @@ var Ext = Ext || {};
         342
       ],
       "uses": [],
-      "idx": 424
+      "idx": 425
     },
     {
       "path": "../classic/classic/src/form/FieldContainer.js",
       "requires": [
         334,
-        414,
-        423,
-        424
+        415,
+        424,
+        425
       ],
       "uses": [],
-      "idx": 425
+      "idx": 426
     },
     {
       "path": "../classic/classic/src/layout/container/CheckboxGroup.js",
@@ -4168,7 +4180,7 @@ var Ext = Ext || {};
       "uses": [
         230
       ],
-      "idx": 426
+      "idx": 427
     },
     {
       "path": "../classic/classic/src/form/CheckboxManager.js",
@@ -4176,35 +4188,35 @@ var Ext = Ext || {};
         55
       ],
       "uses": [],
-      "idx": 427
+      "idx": 428
     },
     {
       "path": "../classic/classic/src/form/field/Checkbox.js",
       "requires": [
         88,
-        416,
-        427
-      ],
-      "uses": [],
-      "idx": 428
-    },
-    {
-      "path": "../classic/classic/src/form/CheckboxGroup.js",
-      "requires": [
-        415,
-        416,
-        425,
-        426,
+        417,
         428
       ],
       "uses": [],
       "idx": 429
     },
     {
+      "path": "../classic/classic/src/form/CheckboxGroup.js",
+      "requires": [
+        416,
+        417,
+        426,
+        427,
+        429
+      ],
+      "uses": [],
+      "idx": 430
+    },
+    {
       "path": "../classic/classic/src/form/FieldSet.js",
       "requires": [
         334,
-        423
+        424
       ],
       "uses": [
         49,
@@ -4215,10 +4227,10 @@ var Ext = Ext || {};
         342,
         356,
         386,
-        428,
+        429,
         557
       ],
-      "idx": 430
+      "idx": 431
     },
     {
       "path": "../classic/classic/src/form/Label.js",
@@ -4227,18 +4239,18 @@ var Ext = Ext || {};
         119
       ],
       "uses": [],
-      "idx": 431
+      "idx": 432
     },
     {
       "path": "../classic/classic/src/form/Panel.js",
       "requires": [
         56,
         379,
-        422,
-        423
+        423,
+        424
       ],
       "uses": [],
-      "idx": 432
+      "idx": 433
     },
     {
       "path": "../classic/classic/src/form/RadioManager.js",
@@ -4246,28 +4258,28 @@ var Ext = Ext || {};
         55
       ],
       "uses": [],
-      "idx": 433
+      "idx": 434
     },
     {
       "path": "../classic/classic/src/form/field/Radio.js",
       "requires": [
-        428,
-        433
+        429,
+        434
       ],
       "uses": [],
-      "idx": 434
+      "idx": 435
     },
     {
       "path": "../classic/classic/src/form/RadioGroup.js",
       "requires": [
         359,
-        429,
-        434
+        430,
+        435
       ],
       "uses": [
-        433
+        434
       ],
-      "idx": 435
+      "idx": 436
     },
     {
       "path": "../classic/classic/src/form/action/DirectAction.js",
@@ -4277,32 +4289,24 @@ var Ext = Ext || {};
       "uses": [
         210
       ],
-      "idx": 436
+      "idx": 437
     },
     {
       "path": "../classic/classic/src/form/action/DirectLoad.js",
       "requires": [
         210,
         409,
-        436
+        437
       ],
       "uses": [],
-      "idx": 437
+      "idx": 438
     },
     {
       "path": "../classic/classic/src/form/action/DirectSubmit.js",
       "requires": [
         210,
         410,
-        436
-      ],
-      "uses": [],
-      "idx": 438
-    },
-    {
-      "path": "../classic/classic/src/form/action/StandardSubmit.js",
-      "requires": [
-        410
+        437
       ],
       "uses": [],
       "idx": 439
@@ -4311,7 +4315,7 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/form/field/Picker.js",
       "requires": [
         358,
-        419
+        420
       ],
       "uses": [],
       "idx": 440
@@ -4420,7 +4424,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/trigger/Spinner.js",
       "requires": [
-        418
+        419
       ],
       "uses": [],
       "idx": 450
@@ -4429,7 +4433,7 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/form/field/Spinner.js",
       "requires": [
         358,
-        419,
+        420,
         450
       ],
       "uses": [],
@@ -4490,7 +4494,6 @@ var Ext = Ext || {};
         454
       ],
       "uses": [
-        35,
         49,
         50,
         88,
@@ -4557,7 +4560,7 @@ var Ext = Ext || {};
       "requires": [
         84,
         88,
-        416
+        417
       ],
       "uses": [],
       "idx": 459
@@ -4573,7 +4576,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/trigger/Component.js",
       "requires": [
-        418
+        419
       ],
       "uses": [],
       "idx": 461
@@ -4581,7 +4584,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/field/File.js",
       "requires": [
-        419,
+        420,
         460,
         461
       ],
@@ -4594,7 +4597,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/field/Hidden.js",
       "requires": [
-        416
+        417
       ],
       "uses": [],
       "idx": 463
@@ -4647,7 +4650,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/component/field/HtmlEditor.js",
       "requires": [
-        424
+        425
       ],
       "uses": [],
       "idx": 469
@@ -4674,6 +4677,8 @@ var Ext = Ext || {};
         362,
         367,
         376,
+        429,
+        517,
         519,
         602
       ],
@@ -4686,8 +4691,8 @@ var Ext = Ext || {};
         323,
         367,
         368,
-        415,
-        425,
+        416,
+        426,
         448,
         467,
         468,
@@ -4717,7 +4722,10 @@ var Ext = Ext || {};
       ],
       "uses": [
         50,
-        88
+        88,
+        161,
+        166,
+        167
       ],
       "idx": 473
     },
@@ -4754,7 +4762,7 @@ var Ext = Ext || {};
       "requires": [
         230,
         348,
-        419
+        420
       ],
       "uses": [],
       "idx": 476
@@ -4770,7 +4778,10 @@ var Ext = Ext || {};
       "requires": [
         336
       ],
-      "uses": [],
+      "uses": [
+        49,
+        334
+      ],
       "idx": 478
     },
     {
@@ -4912,12 +4923,13 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/grid/RowEditor.js",
       "requires": [
         358,
-        432,
+        433,
         465,
         490
       ],
       "uses": [
         49,
+        66,
         76,
         195,
         332,
@@ -5316,7 +5328,7 @@ var Ext = Ext || {};
       "requires": [
         195,
         342,
-        419,
+        420,
         521
       ],
       "uses": [],
@@ -5361,6 +5373,7 @@ var Ext = Ext || {};
         488
       ],
       "uses": [
+        93,
         340,
         477
       ],
@@ -5404,12 +5417,13 @@ var Ext = Ext || {};
         4,
         315,
         358,
-        416,
+        417,
         488,
         500
       ],
       "uses": [
         20,
+        119,
         195,
         342,
         477
@@ -5425,9 +5439,6 @@ var Ext = Ext || {};
       ],
       "uses": [
         55,
-        195,
-        335,
-        342,
         477
       ],
       "idx": 534
@@ -5499,8 +5510,8 @@ var Ext = Ext || {};
         195,
         335,
         342,
-        416,
-        419,
+        417,
+        420,
         450,
         452,
         455,
@@ -5895,7 +5906,7 @@ var Ext = Ext || {};
       "requires": [
         84,
         85,
-        416,
+        417,
         577,
         578
       ],
@@ -6244,7 +6255,7 @@ var Ext = Ext || {};
         195,
         342,
         376,
-        419,
+        420,
         480,
         489
       ],
@@ -6265,7 +6276,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/window/Toast.js",
       "requires": [
-        413
+        414
       ],
       "uses": [
         1
@@ -7634,57 +7645,57 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.Basic": {
-      "idx": 422,
+      "idx": 423,
       "alias": [],
       "alternates": [
         "Ext.form.BasicForm"
       ]
     },
     "Ext.form.CheckboxGroup": {
-      "idx": 429,
+      "idx": 430,
       "alias": [
         "widget.checkboxgroup"
       ],
       "alternates": []
     },
     "Ext.form.CheckboxManager": {
-      "idx": 427,
+      "idx": 428,
       "alias": [],
       "alternates": []
     },
     "Ext.form.FieldAncestor": {
-      "idx": 423,
+      "idx": 424,
       "alias": [],
       "alternates": []
     },
     "Ext.form.FieldContainer": {
-      "idx": 425,
+      "idx": 426,
       "alias": [
         "widget.fieldcontainer"
       ],
       "alternates": []
     },
     "Ext.form.FieldSet": {
-      "idx": 430,
+      "idx": 431,
       "alias": [
         "widget.fieldset"
       ],
       "alternates": []
     },
     "Ext.form.Label": {
-      "idx": 431,
+      "idx": 432,
       "alias": [
         "widget.label"
       ],
       "alternates": []
     },
     "Ext.form.Labelable": {
-      "idx": 414,
+      "idx": 415,
       "alias": [],
       "alternates": []
     },
     "Ext.form.Panel": {
-      "idx": 432,
+      "idx": 433,
       "alias": [
         "widget.form"
       ],
@@ -7694,14 +7705,14 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.RadioGroup": {
-      "idx": 435,
+      "idx": 436,
       "alias": [
         "widget.radiogroup"
       ],
       "alternates": []
     },
     "Ext.form.RadioManager": {
-      "idx": 433,
+      "idx": 434,
       "alias": [],
       "alternates": []
     },
@@ -7713,12 +7724,12 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.action.DirectAction": {
-      "idx": 436,
+      "idx": 437,
       "alias": [],
       "alternates": []
     },
     "Ext.form.action.DirectLoad": {
-      "idx": 437,
+      "idx": 438,
       "alias": [
         "formaction.directload"
       ],
@@ -7727,7 +7738,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.action.DirectSubmit": {
-      "idx": 438,
+      "idx": 439,
       "alias": [
         "formaction.directsubmit"
       ],
@@ -7745,7 +7756,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.action.StandardSubmit": {
-      "idx": 439,
+      "idx": 411,
       "alias": [
         "formaction.standardsubmit"
       ],
@@ -7761,7 +7772,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.Base": {
-      "idx": 416,
+      "idx": 417,
       "alias": [
         "widget.field"
       ],
@@ -7771,7 +7782,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.Checkbox": {
-      "idx": 428,
+      "idx": 429,
       "alias": [
         "widget.checkbox",
         "widget.checkboxfield"
@@ -7811,7 +7822,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.Field": {
-      "idx": 415,
+      "idx": 416,
       "alias": [],
       "alternates": []
     },
@@ -7873,7 +7884,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.Radio": {
-      "idx": 434,
+      "idx": 435,
       "alias": [
         "widget.radio",
         "widget.radiofield"
@@ -7899,7 +7910,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.form.field.Text": {
-      "idx": 419,
+      "idx": 420,
       "alias": [
         "widget.textfield"
       ],
@@ -7909,7 +7920,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.TextArea": {
-      "idx": 420,
+      "idx": 421,
       "alias": [
         "widget.textarea",
         "widget.textareafield"
@@ -7941,7 +7952,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.form.field.VTypes": {
-      "idx": 417,
+      "idx": 418,
       "alias": [],
       "alternates": [
         "Ext.form.VTypes"
@@ -7962,7 +7973,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.form.trigger.Trigger": {
-      "idx": 418,
+      "idx": 419,
       "alias": [
         "trigger.trigger"
       ],
@@ -8800,7 +8811,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.layout.component.field.FieldContainer": {
-      "idx": 424,
+      "idx": 425,
       "alias": [
         "layout.fieldcontainer"
       ],
@@ -8886,7 +8897,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.layout.container.CheckboxGroup": {
-      "idx": 426,
+      "idx": 427,
       "alias": [
         "layout.checkboxgroup"
       ],
@@ -9820,7 +9831,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.util.ComponentDragger": {
-      "idx": 411,
+      "idx": 412,
       "alias": [],
       "alternates": []
     },
@@ -9860,7 +9871,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.util.FocusTrap": {
-      "idx": 412,
+      "idx": 413,
       "alias": [],
       "alternates": []
     },
@@ -10223,7 +10234,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.window.MessageBox": {
-      "idx": 421,
+      "idx": 422,
       "alias": [
         "widget.messagebox"
       ],
@@ -10237,7 +10248,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.window.Window": {
-      "idx": 413,
+      "idx": 414,
       "alias": [
         "widget.window"
       ],
@@ -10259,10 +10270,10 @@ var Ext = Ext || {};
         "classic"
       ],
       "type": "toolkit",
-      "version": "6.0.1.250"
+      "version": "6.0.2.437"
     },
     "cmd": {
-      "version": "6.0.1.75"
+      "version": "6.0.3.46"
     },
     "core": {
       "alternateName": [
@@ -10273,7 +10284,7 @@ var Ext = Ext || {};
         "ext"
       ],
       "type": "code",
-      "version": "6.0.1.250"
+      "version": "6.0.2.437"
     },
     "ext": {
       "build": {
@@ -10289,7 +10300,7 @@ var Ext = Ext || {};
         ]
       },
       "type": "framework",
-      "version": "6.0.1.250"
+      "version": "6.0.2.437"
     }
   },
   "bootRelative": true
@@ -11888,6 +11899,7 @@ var Ext = Ext || {};
      */
     Ext.enumerables = enumerables;
     /**
+     * @method apply
      * Copies all the properties of `config` to the specified `object`. There are two levels
      * of defaulting supported:
      * 
@@ -12094,22 +12106,35 @@ var Ext = Ext || {};
         /**
          * @property {Boolean} [enableAria=true] This property is provided for backward
          * compatibility with previous versions of Ext JS. Accessibility is always enabled
-         * in Ext JS 6.0+
+         * in Ext JS 6.0+.
+         *
+         * This property is deprecated. To disable WAI-ARIA compatibility warnings,
+         * override `Ext.ariaWarn` function in your application startup code:
+         *
+         *      Ext.application({
+         *          launch: function() {
+         *              Ext.ariaWarn = Ext.emptyFn;
+         *          }
+         *      });
+         *
+         * For stricter compatibility with WAI-ARIA requirements, replace `Ext.ariaWarn`
+         * with a function that will raise an error instead:
+         *
+         *      Ext.application({
+         *          launch: function() {
+         *              Ext.ariaWarn = function(target, msg) {
+         *                  Ext.raise({
+         *                      msg: msg,
+         *                      component: target
+         *                  });
+         *              };
+         *          }
+         *      });
+         *
          * @since 6.0.0
+         * @deprecated 6.0.2
          */
         enableAria: true,
-        /**
-         * @property {Boolean} [enableAriaButtons=true] Set to `false` to disable WAI-ARIA
-         * compatibility checks for buttons.
-         * @since 6.0.0
-         */
-        enableAriaButtons: true,
-        /**
-         * @property {Boolean} [enableAriaPanels=true] Set to `false` to disable WAI-ARIA
-         * compatibility checks for panels.
-         * @since 6.0.0
-         */
-        enableAriaPanels: true,
         startsWithHashRe: /^#/,
         /**
          * @property {RegExp}
@@ -12199,7 +12224,7 @@ var Ext = Ext || {};
         $eventNameMap: {},
         // Vendor-specific events do not work if lower-cased.  This regex specifies event
         // prefixes for names that should NOT be lower-cased by Ext.canonicalEventName()
-        $vendorEventRe: /^(Moz.+|MS.+|webkit.+)/,
+        $vendorEventRe: /^(DOMMouse|Moz.+|MS.+|webkit.+)/,
         // TODO: inlinable function - SDKTOOLS-686
         /**
          * @private
@@ -12683,6 +12708,22 @@ var Ext = Ext || {};
                 throw new Error(message);
             },
             deprecate: emptyFn
+        },
+        ariaWarn: function(target, msg) {
+            // The checks still can be disabled by setting Ext.enableAria to false;
+            // this is for backwards compatibility. Also make sure we're not running
+            // under the slicer, warnings are pointless in that case.
+            if (Ext.enableAria && !Ext.slicer) {
+                if (!Ext.ariaWarn.first) {
+                    Ext.ariaWarn.first = true;
+                    Ext.log.warn("WAI-ARIA compatibility warnings can be suppressed " + "by adding the following to application startup code:");
+                    Ext.log.warn("    Ext.ariaWarn = Ext.emptyFn;");
+                }
+                Ext.log.warn({
+                    msg: msg,
+                    dump: target
+                });
+            }
         },
         /**
          * @private
@@ -13372,10 +13413,11 @@ Ext.Array = (function() {
          * @return {Number} The index of item in the array (or -1 if it is not found).
          */
             indexOf: supportsIndexOf ? function(array, item, from) {
-                return arrayPrototype.indexOf.call(array, item, from);
+                // May be called with no array which causes an error.
+                return array ? arrayPrototype.indexOf.call(array, item, from) : -1;
             } : function(array, item, from) {
                 var i,
-                    length = array.length;
+                    length = array ? array.length : 0;
                 for (i = (from < 0) ? Math.max(0, length + from) : from || 0; i < length; i++) {
                     if (array[i] === item) {
                         return i;
@@ -14293,13 +14335,13 @@ Ext.Array = (function() {
             }
         };
     /**
-     * @method
+     * @method each
      * @member Ext
      * @inheritdoc Ext.Array#each
      */
     Ext.each = ExtArray.each;
     /**
-     * @method
+     * @method union
      * @member Ext.Array
      * @inheritdoc Ext.Array#merge
      */
@@ -14307,7 +14349,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#min}
      * @deprecated 4.0.0 Use {@link Ext.Array#min} instead
-     * @method
+     * @method min
      * @member Ext
      * @inheritdoc Ext.Array#min
      */
@@ -14315,7 +14357,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#max}
      * @deprecated 4.0.0 Use {@link Ext.Array#max} instead
-     * @method
+     * @method max
      * @member Ext
      * @inheritdoc Ext.Array#max
      */
@@ -14323,7 +14365,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#sum}
      * @deprecated 4.0.0 Use {@link Ext.Array#sum} instead
-     * @method
+     * @method sum
      * @member Ext
      * @inheritdoc Ext.Array#sum
      */
@@ -14331,7 +14373,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#mean}
      * @deprecated 4.0.0 Use {@link Ext.Array#mean} instead
-     * @method
+     * @method mean
      * @member Ext
      * @inheritdoc Ext.Array#mean
      */
@@ -14339,7 +14381,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#flatten}
      * @deprecated 4.0.0 Use {@link Ext.Array#flatten} instead
-     * @method
+     * @method flatten
      * @member Ext
      * @inheritdoc Ext.Array#flatten
      */
@@ -14347,7 +14389,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#clean}
      * @deprecated 4.0.0 Use {@link Ext.Array#clean} instead
-     * @method
+     * @method clean
      * @member Ext
      * @inheritdoc Ext.Array#clean
      */
@@ -14355,7 +14397,7 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#unique}
      * @deprecated 4.0.0 Use {@link Ext.Array#unique} instead
-     * @method
+     * @method unique
      * @member Ext
      * @inheritdoc Ext.Array#unique
      */
@@ -14363,13 +14405,13 @@ Ext.Array = (function() {
     /**
      * Old alias to {@link Ext.Array#pluck Ext.Array.pluck}
      * @deprecated 4.0.0 Use {@link Ext.Array#pluck Ext.Array.pluck} instead
-     * @method
+     * @method pluck
      * @member Ext
      * @inheritdoc Ext.Array#pluck
      */
     Ext.pluck = ExtArray.pluck;
     /**
-     * @method
+     * @method toArray
      * @member Ext
      * @inheritdoc Ext.Array#toArray
      */
@@ -14955,7 +14997,7 @@ Ext.String.resetCharacterEntities();
 /**
  * Old alias to {@link Ext.String#htmlEncode}
  * @deprecated Use {@link Ext.String#htmlEncode} instead
- * @method
+ * @method htmlEncode
  * @member Ext
  * @inheritdoc Ext.String#htmlEncode
  */
@@ -14963,7 +15005,7 @@ Ext.htmlEncode = Ext.String.htmlEncode;
 /**
  * Old alias to {@link Ext.String#htmlDecode}
  * @deprecated Use {@link Ext.String#htmlDecode} instead
- * @method
+ * @method htmlDecode
  * @member Ext
  * @inheritdoc Ext.String#htmlDecode
  */
@@ -14971,7 +15013,7 @@ Ext.htmlDecode = Ext.String.htmlDecode;
 /**
  * Old alias to {@link Ext.String#urlAppend}
  * @deprecated Use {@link Ext.String#urlAppend} instead
- * @method
+ * @method urlAppend
  * @member Ext
  * @inheritdoc Ext.String#urlAppend
  */
@@ -15250,7 +15292,9 @@ Ext.Date = (function() {
         };
     }
     /**
+     * @method xf
      * @private
+     * @param format
      * Create private copy of Ext JS's `Ext.util.Format.format()` method
      * + to remove unnecessary dependency
      * + to resolve namespace conflict with MS-Ajax's implementation
@@ -15717,15 +15761,15 @@ Ext.Date = (function() {
      * @param {Number} millisecond (optional) Millisecond.
      * @return {Boolean} `true` if the passed parameters do not cause a Date "rollover", `false` otherwise.
      */
-        isValid: function(y, m, d, h, i, s, ms) {
+        isValid: function(year, month, day, hour, minute, second, millisecond) {
             // setup defaults
-            h = h || 0;
-            i = i || 0;
-            s = s || 0;
-            ms = ms || 0;
+            hour = hour || 0;
+            minute = minute || 0;
+            second = second || 0;
+            millisecond = millisecond || 0;
             // Special handling for year < 100
-            var dt = utilDate.add(new nativeDate(y < 100 ? 100 : y, m - 1, d, h, i, s, ms), utilDate.YEAR, y < 100 ? y - 100 : 0);
-            return y === dt.getFullYear() && m === dt.getMonth() + 1 && d === dt.getDate() && h === dt.getHours() && i === dt.getMinutes() && s === dt.getSeconds() && ms === dt.getMilliseconds();
+            var dt = utilDate.add(new nativeDate(year < 100 ? 100 : year, month - 1, day, hour, minute, second, millisecond), utilDate.YEAR, year < 100 ? year - 100 : 0);
+            return year === dt.getFullYear() && month === dt.getMonth() + 1 && day === dt.getDate() && hour === dt.getHours() && minute === dt.getMinutes() && second === dt.getSeconds() && millisecond === dt.getMilliseconds();
         },
         /**
      * Parses the passed string using the specified date format.
@@ -16750,6 +16794,7 @@ Ext.Date = (function() {
      * Align the date to `unit`.
      * @param {Date} date The date to be aligned.
      * @param {String} unit The unit. This unit is compatible with the date interval constants.
+     * @param {Number} step
      * @return {Date} The aligned date.
      */
         align: function(date, unit, step) {
@@ -17566,25 +17611,25 @@ Ext.Function = (function() {
         clearTimeout(id);
     };
     /**
-     * @method
+     * @method defer
      * @member Ext
      * @inheritdoc Ext.Function#defer
      */
     Ext.defer = ExtFunction.defer;
     /**
-     * @method
+     * @method interval
      * @member Ext
      * @inheritdoc Ext.Function#interval
      */
     Ext.interval = ExtFunction.interval;
     /**
-     * @method
+     * @method pass
      * @member Ext
      * @inheritdoc Ext.Function#pass
      */
     Ext.pass = ExtFunction.pass;
     /**
-     * @method
+     * @method bind
      * @member Ext
      * @inheritdoc Ext.Function#bind
      */
@@ -17826,6 +17871,30 @@ Ext.Number = (new function() {
                 return x;
             }
             return (x > 0) ? 1 : -1;
+        },
+        /**
+         * Returns the base 10 logarithm of a number.
+         * This will use Math.log10, if available (ES6).
+         * @param {Number} x The number.
+         * @return {Number} Base 10 logarithm of the number 'x'.
+         * @method log10
+         */
+        log10: Math.log10 || function(x) {
+            return Math.log(x) * Math.LOG10E;
+        },
+        /**
+         * Determines if two numbers `n1` and `n2` are equal within a given
+         * margin of precision `epsilon`.
+         * @param {Number} n1 First number.
+         * @param {Number} n2 Second number.
+         * @param {Number} epsilon Margin of precision.
+         * @returns {Boolean} `true`, if numbers are equal. `false` otherwise.
+         */
+        isEqual: function(n1, n2, epsilon) {
+            if (!(typeof n1 === 'number' && typeof n2 === 'number' && typeof epsilon === 'number')) {
+                Ext.raise("All parameters should be valid numbers.");
+            }
+            return Math.abs(n1 - n2) < epsilon;
         },
         /**
          * @method
@@ -18731,13 +18800,13 @@ Ext.apply(Ext, {
      * Numbers and numeric strings are coerced to Dates using the value as the millisecond era value.
      *
      * Strings are coerced to Dates by parsing using the {@link Ext.Date#defaultFormat defaultFormat}.
-     * 
+     *
      * For example
      *
      *     Ext.coerce('false', true);
-     *     
+     *
      * returns the boolean value `false` because the second parameter is of type `Boolean`.
-     * 
+     *
      * @param {Mixed} from The value to coerce
      * @param {Mixed} to The value it must be compared against
      * @return The coerced value.
@@ -18753,11 +18822,13 @@ Ext.apply(Ext, {
                 case 'number':
                     return Number(from);
                 case 'boolean':
-                    return isString && (!from || from === 'false') ? false : Boolean(from);
+                    // See http://ecma262-5.com/ELS5_HTML.htm#Section_11.9.3 as to why '0'.
+                    // TL;DR => ('0' == 0), so if given string '0', we must return boolean false.
+                    return isString && (!from || from === 'false' || from === '0') ? false : Boolean(from);
                 case 'null':
-                    return isString && (!from || from === 'null') ? null : from;
+                    return isString && (!from || from === 'null') ? null : false;
                 case 'undefined':
-                    return isString && (!from || from === 'undefined') ? undefined : from;
+                    return isString && (!from || from === 'undefined') ? undefined : false;
                 case 'date':
                     return isString && isNaN(from) ? Ext.Date.parse(from, Ext.Date.defaultFormat) : Date(Number(from));
             }
@@ -18926,7 +18997,8 @@ Ext.apply(Ext, {
         // inline overrides
         var objectConstructor = Object.prototype.constructor,
             inlineOverrides = function(o) {
-                for (var m in o) {
+                var m;
+                for (m in o) {
                     if (!o.hasOwnProperty(m)) {
                         
                         continue;
@@ -19024,7 +19096,7 @@ Ext.apply(Ext, {
      *
      * In the above example, "shared" is the name of a Sencha Cmd resource pool and
      * "package" is the name of a Sencha Cmd package.
-     *
+     * @member Ext
      * @param {String} url The URL that may contain a resource pool token at the front.
      * @return {String}
      * @since 6.0.1
@@ -20292,8 +20364,8 @@ Ext.apply(Ext, {
         }
     }
     if (!packages.ext && !packages.touch) {
-        Ext.setVersion('ext', '6.0.1.250');
-        Ext.setVersion('core', '6.0.1.250');
+        Ext.setVersion('ext', '6.0.2.437');
+        Ext.setVersion('core', '6.0.2.437');
     }
 })(Ext.manifest);
 
@@ -21689,30 +21761,34 @@ Ext.Base = (function(flexSetter) {
          * @param {Object} members
          */
         addInheritableStatics: function(members) {
-            var inheritableStatics, hasInheritableStatics,
-                prototype = this.prototype,
-                name, member;
+            var me = this,
+                prototype = me.prototype,
+                inheritableStatics, hasInheritableStatics, name, member, current;
             inheritableStatics = prototype.$inheritableStatics;
             hasInheritableStatics = prototype.$hasInheritableStatics;
             if (!inheritableStatics) {
                 inheritableStatics = prototype.$inheritableStatics = [];
                 hasInheritableStatics = prototype.$hasInheritableStatics = {};
             }
-            var className = Ext.getClassName(this) + '.';
+            var className = Ext.getClassName(me) + '.';
             for (name in members) {
                 if (members.hasOwnProperty(name)) {
                     member = members[name];
+                    current = me[name];
                     if (typeof member == 'function') {
                         member.name = className + name;
                     }
-                    this[name] = member;
+                    if (typeof current === 'function' && !current.$isClass && !current.$nullFn) {
+                        member.$previous = current;
+                    }
+                    me[name] = member;
                     if (!hasInheritableStatics[name]) {
                         hasInheritableStatics[name] = true;
                         inheritableStatics.push(name);
                     }
                 }
             }
-            return this;
+            return me;
         },
         /**
          * Add methods / properties to the prototype of this class.
@@ -22001,7 +22077,7 @@ Ext.Base = (function(flexSetter) {
          */
         mixin: function(name, mixinClass) {
             var me = this,
-                mixin, prototype, key, statics, i, ln, staticName, mixinValue, mixins;
+                mixin, prototype, key, statics, i, ln, mixinName, staticName, mixinValue, mixins, mixinStatics;
             if (typeof name !== 'string') {
                 mixins = name;
                 if (mixins instanceof Array) {
@@ -22014,7 +22090,7 @@ Ext.Base = (function(flexSetter) {
                     // mixins: {
                     //     foo: ...
                     // }
-                    for (var mixinName in mixins) {
+                    for (mixinName in mixins) {
                         me.mixin(mixinName, mixins[mixinName]);
                     }
                 }
@@ -22046,19 +22122,21 @@ Ext.Base = (function(flexSetter) {
                     // Ext.util.Observable.  In this example, since the first "observable"
                     // mixin's methods win, we also want its reference to be preserved.
                     Ext.applyIf(prototype.mixins, mixinValue);
-                } else if (!(key === 'mixinId' || key === 'config') && (prototype[key] === undefined)) {
+                } else if (!(key === 'mixinId' || key === 'config' || key === '$inheritableStatics') && (prototype[key] === undefined)) {
                     prototype[key] = mixinValue;
                 }
             }
             // Mixin statics inheritance
             statics = mixin.$inheritableStatics;
             if (statics) {
+                mixinStatics = {};
                 for (i = 0 , ln = statics.length; i < ln; i++) {
                     staticName = statics[i];
                     if (!me.hasOwnProperty(staticName)) {
-                        me[staticName] = mixinClass[staticName];
+                        mixinStatics[staticName] = mixinClass[staticName];
                     }
                 }
+                me.addInheritableStatics(mixinStatics);
             }
             if ('config' in mixin) {
                 me.addConfig(mixin.config, mixinClass);
@@ -22172,7 +22250,9 @@ Ext.Base = (function(flexSetter) {
     Base.getConfigurator();
     // lazily create now so as not capture in $staticMembers
     Base.addMembers({
-        /** @private */
+        /**
+         * @private
+         */
         $className: 'Ext.Base',
         /**
          * @property {Boolean} isInstance
@@ -22561,10 +22641,10 @@ Ext.Base = (function(flexSetter) {
          * @method
          * @param {String/Object} name The name of the property to set, or a set of key value pairs to set.
          * @param {Object} [value] The value to set for the name parameter.
+         * @param options (private)
          * @return {Ext.Base} this
          */
-        setConfig: function(name, value, /* private */
-        options) {
+        setConfig: function(name, value, options) {
             // options can have the following properties:
             // - defaults `true` to only set the config(s) that have not been already set on
             // this instance.
@@ -22640,7 +22720,7 @@ Ext.Base = (function(flexSetter) {
         $links: null,
         /**
          * Adds a "destroyable" object to an internal list of objects that will be destroyed
-         * when this instance is destroyed (via `{@link #destroy}`).
+         * when this instance is destroyed (via `{@link #method-destroy}`).
          * @param {String} name
          * @param {Object} value
          * @return {Object} The `value` passed.
@@ -24330,7 +24410,9 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
          * @private
          */
             existCache: {},
-            /** @private */
+            /**
+         * @private
+         */
             instantiators: [],
             /**
          * Checks if a class has already been created.
@@ -24824,7 +24906,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
                         }
                         // The target class and the required classes for this override are
                         // ready, so we can apply the override now:
-                        cls = me.get(overriddenClassName);
+                        cls = overriddenClassName.$isClass ? overriddenClassName : me.get(overriddenClassName);
                         // We don't want to apply these:
                         delete data.override;
                         delete data.compatibility;
@@ -24846,16 +24928,31 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
                         }
                     };
                 // last but not least!
-                Manager.overrideMap[className] = true;
+                if (className) {
+                    Manager.overrideMap[className] = true;
+                }
                 // If specified, parse strings as versions, but otherwise treat as a
                 // boolean (maybe "compatibility: Ext.isIE8" or something).
                 //
-                if ('compatibility' in data && Ext.isString(compat = data.compatibility)) {
-                    compat = Ext.checkVersion(compat);
+                if ('compatibility' in data) {
+                    compat = data.compatibility;
+                    if (!compat) {
+                        // Cast '', null, undefined, 0 to false.
+                        compat = false;
+                    } else if (typeof compat === 'number') {
+                        // By virtue of the condition above we must be a nonzero number.
+                        compat = true;
+                    } else if (typeof compat !== 'boolean') {
+                        compat = Ext.checkVersion(compat);
+                    }
                 }
                 if (compat) {
-                    // Override the target class right after it's created
-                    me.onCreated(classReady, me, overriddenClassName);
+                    // override the target class right after it's created
+                    if (overriddenClassName.$isClass) {
+                        classReady();
+                    } else {
+                        me.onCreated(classReady, me, overriddenClassName);
+                    }
                 }
                 me.triggerCreated(className, 2);
                 return me;
@@ -25970,6 +26067,50 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
      * Browser User Agent string.
      */
     me.userAgent = userAgent;
+    /**
+     * A "hybrid" property, can be either accessed as a method call, for example:
+     *
+     *     if (Ext.browser.is('IE')) {
+     *         // ...
+     *     }
+     *
+     * Or as an object with Boolean properties, for example:
+     *
+     *     if (Ext.browser.is.IE) {
+     *         // ...
+     *     }
+     *
+     * Versions can be conveniently checked as well. For example:
+     *
+     *     if (Ext.browser.is.IE10) {
+     *         // Equivalent to (Ext.browser.is.IE && Ext.browser.version.equals(10))
+     *     }
+     *
+     * __Note:__ Only {@link Ext.Version#getMajor major component}  and {@link Ext.Version#getShortVersion simplified}
+     * value of the version are available via direct property checking.
+     *
+     * Supported values are:
+     *
+     * - IE
+     * - Firefox
+     * - Safari
+     * - Chrome
+     * - Opera
+     * - WebKit
+     * - Gecko
+     * - Presto
+     * - Trident
+     * - WebView
+     * - Other
+     *
+     * @param {String} name The OS name to check.
+     * @return {Boolean}
+     */
+    this.is = function(name) {
+        // Since this function reference also acts as a map, we do not want it to be
+        // shared between instances, so it is defined here, not on the prototype.
+        return !!this.is[name];
+    };
     // Edge has a userAgent with All browsers so we manage it separately
     // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
     if (/Edge\//.test(userAgent)) {
@@ -26125,6 +26266,13 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
     /**
      * @property isIE11p
      * True if the detected browser is Internet Explorer 11.x or higher.
+     * @readonly
+     * @type Boolean
+     * @member Ext
+     */
+    /**
+     * @property isEdge
+     * True if the detected browser is Edge.
      * @readonly
      * @type Boolean
      * @member Ext
@@ -26343,48 +26491,6 @@ Ext.env.Browser.prototype = {
         Other: ''
     },
     // scope: Ext.env.Browser.prototype
-    /**
-     * A "hybrid" property, can be either accessed as a method call, for example:
-     *
-     *     if (Ext.browser.is('IE')) {
-     *         // ...
-     *     }
-     *
-     * Or as an object with Boolean properties, for example:
-     *
-     *     if (Ext.browser.is.IE) {
-     *         // ...
-     *     }
-     *
-     * Versions can be conveniently checked as well. For example:
-     *
-     *     if (Ext.browser.is.IE10) {
-     *         // Equivalent to (Ext.browser.is.IE && Ext.browser.version.equals(10))
-     *     }
-     *
-     * __Note:__ Only {@link Ext.Version#getMajor major component}  and {@link Ext.Version#getShortVersion simplified}
-     * value of the version are available via direct property checking.
-     *
-     * Supported values are:
-     *
-     * - IE
-     * - Firefox
-     * - Safari
-     * - Chrome
-     * - Opera
-     * - WebKit
-     * - Gecko
-     * - Presto
-     * - Trident
-     * - WebView
-     * - Other
-     *
-     * @param {String} name The OS name to check.
-     * @return {Boolean}
-     */
-    is: function(name) {
-        return !!this.is[name];
-    },
     /**
      * The full name of the current browser.
      * Possible values are:
@@ -27911,7 +28017,7 @@ Ext.feature = {
         {
             name: 'SpecialKeyDownRepeat',
             fn: function() {
-                return Ext.isWebKit ? parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 : !((Ext.isGecko && !Ext.isWindows) || (Ext.isOpera && Ext.operaVersion < 12));
+                return Ext.isWebKit ? parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 : !(!(Ext.isGecko || Ext.isIE) || (Ext.isOpera && Ext.operaVersion < 12));
             }
         },
         /**
@@ -28952,7 +29058,9 @@ Ext.Loader = (new function() {
          * @private
          */
         requiresMap: _requiresMap,
-        /** @private */
+        /**
+         * @private
+         */
         hasFileLoadError: false,
         /**
          * The number of scripts loading via loadScript.
@@ -29078,7 +29186,7 @@ Ext.Loader = (new function() {
         /**
          * Sets a batch of path entries
          *
-         * @param {Object } paths a set of className: path mappings
+         * @param {Object} paths a set of className: path mappings
          * @return {Ext.Loader} this
          */
         addClassPathMappings: function(paths) {
@@ -29637,12 +29745,14 @@ Ext.Loader = (new function() {
             }
             detectDeadlock = function(cls) {
                 deadlockPath.push(cls);
-                if (_requiresMap[cls]) {
-                    if (Ext.Array.contains(_requiresMap[cls], className)) {
-                        Ext.raise("Circular requirement detected! '" + className + "' and '" + deadlockPath[1] + "' mutually require each other. Path: " + deadlockPath.join(' -> ') + " -> " + deadlockPath[0]);
+                var requires = _requiresMap[cls],
+                    i, ln;
+                if (requires) {
+                    if (Ext.Array.contains(requires, className)) {
+                        Ext.Error.raise("Circular requirement detected! '" + className + "' and '" + deadlockPath[1] + "' mutually require each other. Path: " + deadlockPath.join(' -> ') + " -> " + deadlockPath[0]);
                     }
-                    for (i = 0 , ln = _requiresMap[cls].length; i < ln; i++) {
-                        detectDeadlock(_requiresMap[cls][i]);
+                    for (i = 0 , ln = requires.length; i < ln; i++) {
+                        detectDeadlock(requires[i]);
                     }
                 }
             };
@@ -29771,7 +29881,7 @@ Ext.define('Ext.overrides.util.Positionable', {
         var me = this,
             scroll = !Ext.isEmpty(monitorScroll),
             action = function() {
-                me.alignTo(anchorToEl, alignment, offsets, animate);
+                me.mixins.positionable.alignTo.call(me, anchorToEl, alignment, offsets, animate);
                 Ext.callback(callback, me);
             },
             anchor = me.getAnchor();
@@ -30394,15 +30504,23 @@ Ext.define('Ext.overrides.event.publisher.Dom', {
                 if (dom.attachEvent) {
                     dom.attachEvent('on' + eventName, boundFn);
                 } else {
-                    me.callParent(arguments);
+                    me.callParent([
+                        eventName,
+                        element,
+                        capture
+                    ]);
                 }
             },
-            removeDirectListener: function(eventName, element) {
+            removeDirectListener: function(eventName, element, capture) {
                 var dom = element.dom;
                 if (dom.detachEvent) {
                     dom.detachEvent('on' + eventName, this.directBoundListeners[eventName][dom.id]);
                 } else {
-                    this.callParent(arguments);
+                    this.callParent([
+                        eventName,
+                        element,
+                        capture
+                    ]);
                 }
             },
             doDelegatedEvent: function(e, invokeAfter) {
@@ -30591,7 +30709,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 OBJECT: true,
                 SELECT: true,
                 TEXTAREA: true,
-                HTML: Ext.isIE ? true : false
+                HTML: Ext.isIE ? true : false,
+                BODY: Ext.isIE ? false : true
             },
             // <object> element is naturally tabbable only in IE8 and below
             naturallyTabbableTags: {
@@ -31926,7 +32045,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     Ext.fly('elId').setHeight(150, {
          *         duration : 500, // animation will have a duration of .5 seconds
          *         // will change the content to "finished"
-         *         callback: function(){ this.{@link #setHtml}("finished"); }
+         *         callback: function(){ this.setHtml("finished"); }
          *     });
          *     
          * @param {Number/String} height The new height. This may be one of:
@@ -32260,7 +32379,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     Ext.fly('elId').setWidth(150, {
          *         duration : 500, // animation will have a duration of .5 seconds
          *         // will change the content to "finished"
-         *         callback: function(){ this.{@link #setHtml}("finished"); }
+         *         callback: function(){ this.setHtml("finished"); }
          *     });
          *     
          * @param {Number/String} width The new width. This may be one of:
@@ -32622,8 +32741,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
          * @return {Ext.dom.Element} The Element
          */
-        slideOut: function(anchor, o) {
-            return this.slideIn(anchor, o, true);
+        slideOut: function(anchor, options) {
+            return this.slideIn(anchor, options, true);
         },
         /**
          * Stops the specified event(s) from bubbling and optionally prevents the default action
@@ -32709,11 +32828,11 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
          * @return {Ext.dom.Element} The Element
          */
-        switchOff: function(obj) {
+        switchOff: function(options) {
             var me = this,
                 dom = me.dom,
                 beforeAnim;
-            obj = Ext.applyIf(obj || {}, {
+            options = Ext.applyIf(options || {}, {
                 easing: 'ease-in',
                 duration: 500,
                 remove: false,
@@ -32730,8 +32849,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 position = el.getPositioning();
                 keyframe = new Ext.fx.Animator({
                     target: dom,
-                    duration: obj.duration,
-                    easing: obj.easing,
+                    duration: options.duration,
+                    easing: options.easing,
                     keyframes: {
                         33: {
                             opacity: 0.3
@@ -32748,7 +32867,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 });
                 keyframe.on('afteranimate', function() {
                     var el = Ext.fly(dom, '_anim');
-                    if (obj.useDisplay) {
+                    if (options.useDisplay) {
                         el.setDisplayed(false);
                     } else {
                         el.hide();
@@ -32762,19 +32881,19 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             };
             me.animate({
                 // See "A Note About Wrapped Animations" at the top of this class:
-                duration: (Math.max(obj.duration, 500) * 2),
+                duration: (Math.max(options.duration, 500) * 2),
                 listeners: {
                     beforeanimate: {
                         fn: beforeAnim
                     }
                 },
-                callback: obj.callback,
-                scope: obj.scope
+                callback: options.callback,
+                scope: options.scope
             });
             return me;
         },
         /**
-         * @private.
+         * @private
          * Currently used for updating grid cells without modifying DOM structure
          *
          * Synchronizes content of this Element with the content of the passed element.
@@ -33102,6 +33221,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.0': {
                 methods: {
                     /**
+                     * @method pause
                      * Creates a pause before any subsequent queued effects begin. If there are no effects queued after the pause it will
                      * have no effect. Usage:
                      *
@@ -33119,6 +33239,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return me;
                     },
                     /**
+                     * @method scale
                      * Animates the transition of an element's dimensions from a starting height/width to an ending height/width. This
                      * method is a convenience implementation of {@link #shift}. Usage:
                      *
@@ -33149,6 +33270,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this;
                     },
                     /**
+                     * @method shift
                      * Animates the transition of any combination of an element's dimensions, xy position and/or opacity. Any of these
                      * properties not specified in the config object will not be changed. This effect requires that at least one new
                      * dimension, position or opacity setting must be passed in on the config object in order for the function to have
@@ -33181,6 +33303,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.2': {
                 methods: {
                     /**
+                     * @method moveTo
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position (coordinates are page-based)
                      * @param {Number} y Y value for new position (coordinates are page-based)
@@ -33196,6 +33319,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         ], animate);
                     },
                     /**
+                     * @method setBounds
                      * Sets the element's position and size in one shot. If animation is true then
                      * width, height, x and y will be animated concurrently.
                      *
@@ -33226,6 +33350,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         }, animate);
                     },
                     /**
+                     * @method setLeftTop
                      * Sets the element's left and top positions directly using CSS style
                      * @param {Number/String} left Number of pixels or CSS string value to
                      * set as the left CSS property value
@@ -33245,6 +33370,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return me;
                     },
                     /**
+                     * @method setLocation
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position
                      * @param {Number} y Y value for new position
@@ -33264,6 +33390,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '5.0': {
                 methods: {
                     /**
+                     * @method getAttributeNS
                      * Returns the value of a namespaced attribute from the element's underlying DOM node.
                      * @param {String} namespace The namespace in which to look for the attribute
                      * @param {String} name The attribute name
@@ -33274,6 +33401,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this.getAttribute(name, namespace);
                     },
                     /**
+                     * @method getCenterXY
                      * Calculates the x, y to center this element on the screen
                      * @return {Number[]} The x, y values [x, y]
                      * @deprecated 5.0.0 Use {@link Ext.dom.Element#getAlignToXY} instead.
@@ -33283,6 +33411,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this.getAlignToXY(DOC, 'c-c');
                     },
                     /**
+                     * @method getComputedHeight
                      * Returns either the offsetHeight or the height of this element based on CSS height adjusted by padding or borders
                      * when needed to simulate offsetHeight when offsets aren't available. This may not work on display:none elements
                      * if a height has not been set using CSS.
@@ -33293,6 +33422,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return Math.max(this.dom.offsetHeight, this.dom.clientHeight) || parseFloat(this.getStyle(HEIGHT)) || 0;
                     },
                     /**
+                     * @method getComputedWidth
                      * Returns either the offsetWidth or the width of this element based on CSS width adjusted by padding or borders
                      * when needed to simulate offsetWidth when offsets aren't available. This may not work on display:none elements
                      * if a width has not been set using CSS.
@@ -33303,6 +33433,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return Math.max(this.dom.offsetWidth, this.dom.clientWidth) || parseFloat(this.getStyle(WIDTH)) || 0;
                     },
                     /**
+                     * @method getStyleSize
                      * Returns the dimensions of the element available to lay content out in.
                      *
                      * getStyleSize utilizes prefers style sizing if present, otherwise it chooses the larger of offsetHeight/clientHeight and
@@ -33347,6 +33478,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         };
                     },
                     /**
+                     * @method isBorderBox
                      * Returns true if this element uses the border-box-sizing model.  This method is
                      * deprecated as of version 5.0 because border-box sizing is forced upon all elements
                      * via a style sheet rule, and the browsers that do not support border-box (IE6/7 strict
@@ -33358,6 +33490,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return true;
                     },
                     /**
+                     * @method isDisplayed
                      * Returns true if display is not "none"
                      * @return {Boolean}
                      * @deprecated 5.0.0 use element.isStyle('display', 'none');
@@ -33366,6 +33499,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return !this.isStyle('display', 'none');
                     },
                     /**
+                     * @method focusable
                      * Checks whether this element can be focused.
                      * @return {Boolean} True if the element is focusable
                      * @deprecated 5.0.0 use {@link #isFocusable} instead
@@ -34820,7 +34954,7 @@ Ext.define(null, {
         // This horrid hack is necessary to work around the issue with input elements
         // in IE10m that can fail to focus under certain conditions. See comment in
         // Ext.dom.Element override.
-        if (el && ((e.type === 'focusout' && e.srcElement === el && e.toElement === body) || (e.type === 'focusin' && e.srcElement === body && e.fromElement === el && e.toElement === null))) {
+        if (el && ((e.type === 'focusout' && (e.srcElement === el || e.srcElement === window) && e.toElement === body) || (e.type === 'focusin' && (e.srcElement === body || e.srcElement === window) && e.fromElement === el && e.toElement === null))) {
             return;
         }
         

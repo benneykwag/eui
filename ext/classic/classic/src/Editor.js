@@ -246,6 +246,7 @@ Ext.define('Ext.Editor', {
      */
     
     preventDefaultAlign: true,
+    useBoundValue: true,
     specialKeyDelay: 1,
 
     initComponent: function() {
@@ -266,7 +267,7 @@ Ext.define('Ext.Editor', {
         };
         me.items = field;
 
-        me.callParent(arguments);
+        me.callParent();
     },
 
     onAdded: function (container) {
@@ -346,10 +347,13 @@ Ext.define('Ext.Editor', {
             field = me.field,
             dom, ownerCt, renderTo;
 
-        me.completeEdit();
+        me.completeEdit(true);
         me.boundEl = Ext.get(el);
         dom = me.boundEl.dom;
-        value = Ext.isDefined(value) ? value : Ext.String.trim(dom.textContent || dom.innerText || dom.innerHTML);
+
+        if (me.useBoundValue && !Ext.isDefined(value)) {
+            value = Ext.String.trim(dom.textContent || dom.innerText || dom.innerHTML);
+        }
 
         if (me.fireEvent('beforestartedit', me, me.boundEl, value) !== false) {
             // If NOT configured with a renderTo, render to the ownerCt's element
@@ -404,6 +408,7 @@ Ext.define('Ext.Editor', {
         var me = this,
             field = me.field,
             startValue = me.startValue,
+            cancel = me.context && me.context.cancel,
             value;
 
         if (!me.editing) {
@@ -434,7 +439,7 @@ Ext.define('Ext.Editor', {
             if (me.updateEl && me.boundEl) {
                 me.boundEl.setHtml(value);
             }
-            me.onEditComplete(remainVisible);
+            me.onEditComplete(remainVisible, cancel);
             me.fireEvent('complete', me, value, startValue);
         }
     },
@@ -465,7 +470,7 @@ Ext.define('Ext.Editor', {
                 me.setValue(startValue);
                 field.resumeEvents();
             }
-            me.onEditComplete(remainVisible);
+            me.onEditComplete(remainVisible, true);
             me.fireEvent('canceledit', me, value, startValue);
             delete me.editedValue;
         }
@@ -474,7 +479,7 @@ Ext.define('Ext.Editor', {
     /**
      * @private
      */
-    onEditComplete: function(remainVisible) {
+    onEditComplete: function(remainVisible, canceling) {
         this.editing = false;
         if (remainVisible !== true) {
             this.hide();

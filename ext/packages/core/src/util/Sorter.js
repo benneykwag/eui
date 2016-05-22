@@ -6,7 +6,7 @@
  *
  *      @example
  *      var store = Ext.create('Ext.data.Store', {
- *           fields: ['firstName', 'lastName'],
+ *           fields: ['firstName', 'level'],
  *           sorters: 'level',
  *        
  *           data: [
@@ -39,7 +39,7 @@
  *
  *        @example
  *        var store = Ext.create('Ext.data.Store', {
- *           fields: ['firstName', 'lastName'],
+ *           fields: ['firstName', 'spiritAnimal'],
  *            sorters: [
  *                {
  *                    // Sort by first letter of second word of spirit animal, in descending order

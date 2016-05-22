@@ -20,7 +20,7 @@ describe('Ext.field.Text', function() {
 
     describe("events", function() {
         describe("change", function() {
-            it("should fire when you change the value", function() {
+            it("should fire when you change the value from null", function() {
                 create();
 
                 var fired = false;

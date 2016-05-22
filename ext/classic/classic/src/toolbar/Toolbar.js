@@ -474,15 +474,22 @@ Ext.define('Ext.toolbar.Toolbar', {
     },
 
     onAdd: function(component) {
+        var me = this;
+        
         // If we encounter a child component that needs to handle arrow keys
         // (input fields, sliders) we opt out of FocusableContainer behavior
-        // because it becomes highly confusing for the users.
-        if (component.needArrowKeys && this.enableFocusableContainer) {
-            this.enableFocusableContainer = false;
+        // because it becomes highly confusing for the users. We also change
+        // the ARIA role because toolbars are expected to behave the way
+        // WAI-ARIA spec defines them, i.e. navigable with arrow keys.
+        // A widget that is announced as a toolbar but is *not* navigable
+        // with arrow keys is highly confusing to disabled users.
+        if (component.needArrowKeys && me.enableFocusableContainer) {
+            me.enableFocusableContainer = false;
+            me.ariaRole = 'group';
         }
         
-        this.callParent(arguments);
-        this.trackMenu(component);
+        me.callParent(arguments);
+        me.trackMenu(component);
     },
 
     onRemove: function (c) {

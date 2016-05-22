@@ -467,6 +467,10 @@ describe("Ext.app.Controller", function() {
                 }, {
                     ref:         'fredComponent',
                     autoCreate:  true
+                }, {
+                    ref: 'destroyed',
+                    xtype: 'component',
+                    autoCreate: true
                 }]
             });
 
@@ -524,6 +528,15 @@ describe("Ext.app.Controller", function() {
             var p = ctrl.getFredComponent();
             
             expect(p.xtype).toBe('component');
+        });
+
+        it("should be able to recreate an autoCreate after it is destroyed", function() {
+            var o1 = ctrl.getDestroyed();
+            expect(o1.isXType('component')).toBe(true);
+            o1.destroy();
+            var o2 = ctrl.getDestroyed();
+            expect(o2.isXType('component')).toBe(true);
+            expect(o2).not.toBe(o1);
         });
 
         it("creates component when ref has forceCreate flag", function() {

@@ -133,8 +133,107 @@ describe("Ext.tree.Panel", function(){
         Ext.data.TreeStore.prototype.load = treeStoreLoad;
 
         Ext.destroy(tree);
-        tree = makeTree = null;
+        tree = view = makeTree = testNodes = store = rootNode = null;
         MockAjaxManager.removeMethods();
+    });
+
+    describe("scrolling", function() {
+        function expectScroll(vertical, horizontal) {
+            var dom = tree.getView().getEl().dom;
+
+            // In Mac OS X, scrollbars can be invisible until user hovers mouse cursor
+            // over the scrolled area. This is hard to test so we just assume that
+            // in Mac browsers scrollbars can have 0 width.
+            if (vertical !== undefined) {
+                if (vertical) {
+                    if (Ext.isMac) {
+                        expect(dom.scrollHeight).toBeGreaterThanOrEqual(dom.clientHeight);
+                    }
+                    else {
+                        expect(dom.scrollHeight).toBeGreaterThan(dom.clientHeight);
+                    }
+                }
+                else {
+                    expect(dom.scrollHeight).toBeLessThanOrEqual(dom.clientHeight);
+                }
+            }
+
+            if (horizontal !== undefined) {
+                if (horizontal) {
+                    if (Ext.isMac) {
+                        expect(dom.scrollWidth).toBeGreaterThanOrEqual(dom.clientWidth);
+                    }
+                    else {
+                        expect(dom.scrollWidth).toBeGreaterThan(dom.clientWidth);
+                    }
+                }
+                else {
+                    expect(dom.scrollWidth).toBeLessThanOrEqual(dom.clientWidth);
+                }
+            }
+        }
+
+        function makeNodes(n) {
+            var nodes = [],
+                i;
+
+            for (i = 1; i <= n; ++i) {
+                nodes.push({
+                    text: 'Node' + i
+                });
+            }
+            return nodes;
+        }
+
+        describe("with no columns definition", function() {
+            it("should not show scrollbars when not required", function() {
+                makeTree([{
+                    text: 'Foo'
+                }], {
+                    width: 400,
+                    height: 400
+                }, null, {
+                    expanded: true
+                });
+                expectScroll(false, false);
+            });
+
+            it("should show a vertical scrollbar when required", function() {
+                makeTree(makeNodes(50), {
+                    width: 400,
+                    height: 200
+                }, null, {
+                    expanded: true
+                });
+                expectScroll(true, false);
+            });
+
+            it("should show a horizontal scrollbar when required", function() {
+                makeTree([{
+                    text: 'A really long node that causes horizontal scroll'
+                }], {
+                    width: 200,
+                    height: 200
+                }, null, {
+                    expanded: true
+                });
+                expectScroll(false, true);
+            });
+
+            it("should show a scrollbar in both directions", function() {
+                var nodes = makeNodes(50);
+                nodes.unshift({
+                    text: 'A really long node that causes horizontal scroll'
+                });
+                makeTree(nodes, {
+                    width: 200,
+                    height: 400
+                }, null, {
+                    expanded: true
+                });
+                expectScroll(true, true);
+            });
+        });
     });
     
     describe('Checkbox tree nodes', function() {
@@ -209,6 +308,53 @@ describe("Ext.tree.Panel", function(){
                     expanded: true
                 });
             }).not.toThrow();
+        });
+        
+        describe("with invisible root", function() {
+            it("should expand the root node by default", function() {
+                makeTree(null, {
+                    rootVisible: false
+                });
+                
+                expect(rootNode.isExpanded()).toBe(true);
+            });
+            
+            it("should skip root.expand() when root is loaded", function() {
+                spyOn(TreeItem.prototype, 'expand').andCallThrough();
+                spyOn(Ext.data.TreeStore.prototype, 'onNodeExpand').andCallThrough();
+                
+                makeTree(null, {
+                    rootVisible: false
+                }, null, {
+                    // Pretend that the root node is loaded
+                    loaded: true
+                });
+                
+                expect(rootNode.expand).not.toHaveBeenCalled();
+                expect(rootNode.data.expanded).toBe(true);
+                expect(store.onNodeExpand).toHaveBeenCalled();
+            });
+            
+            it("should not expand the root node when store.autoLoad === false", function() {
+                makeTree(null, {
+                    rootVisible: false
+                }, {
+                    autoLoad: false
+                });
+                
+                expect(rootNode.isExpanded()).toBe(false);
+            });
+            
+            it("should not expand the root node when store has pending load", function() {
+                makeTree(null, {
+                    rootVisible: false
+                }, {
+                    // Pretend that we're loading the store
+                    loading: true
+                });
+                
+                expect(rootNode.isExpanded()).toBe(false);
+            });
         });
     });
 
@@ -1075,7 +1221,37 @@ describe("Ext.tree.Panel", function(){
                 });
 
                 tree.selectPath('2/3/4');
-                expect(tree.getSelectionModel().isSelected(store.getNodeById(4)));
+                
+                var selection = tree.getSelectionModel().getSelection();
+                
+                expect(selection.length).toBe(1);
+                expect(selection[0]).toBe(store.getNodeById(4));
+            });
+            
+            // https://sencha.jira.com/browse/EXTJS-16667
+            it("should be able to select absolute path with numeric ids", function() {
+                tree = Ext.create('Ext.tree.Panel', {
+                    renderTo: Ext.getBody(),
+                    store: {
+                        type: 'tree',
+                        root: {
+                            id: 0,
+                            text: 'root',
+                            expanded: true,
+                            children: [{
+                                id: 1,
+                                text: 'child1'
+                            }]
+                        }
+                    }
+                });
+                
+                tree.selectPath('/0/1');
+                
+                var selection = tree.getSelectionModel().getSelection();
+                
+                expect(selection.length).toBe(1);
+                expect(selection[0]).toBe(tree.getStore().getNodeById(1));
             });
 
             it("should be able to select a path when subclassing Ext.tree.Panel", function() {
@@ -1485,6 +1661,14 @@ describe("Ext.tree.Panel", function(){
             store.getNodeById('M').collapse();
 
             expect(view.getNodeByRecord(store.getNodeById('M'))).toHaveCls(selectedItemCls);
+        });
+        
+        it('should add the expanderIconOverCls class when mouseover the expander icon', function() {
+            var cell00 = view.getCell(0, 0);
+
+            expect(cell00.hasCls(view.expanderIconOverCls)).toBe(false);
+            jasmine.fireMouseEvent(cell00.down(view.expanderSelector), 'mouseover');
+            expect(cell00.hasCls(view.expanderIconOverCls)).toBe(true);
         });
     });
     
@@ -2024,16 +2208,10 @@ describe("Ext.tree.Panel", function(){
                 }]
             });
 
-            Ext.Ajax.mockComplete({
-                status: 200,
-                responseText: Ext.encode(getData())
-            });
-
             var lockedView = tree.lockedGrid.view,
                 normalView = tree.normalGrid.view;
 
             refreshSpy = spyOnEvent(store, 'refresh');
-            store.load();
 
             Ext.Ajax.mockComplete({
                 status: 200,
@@ -2046,7 +2224,51 @@ describe("Ext.tree.Panel", function(){
         });
     });
 
-    describe('filtering', function() {
+    describe("rendering while a child node is loading and the root is specified on the tree", function() {
+        it("should render the correct number of nodes", function() {
+            var ProxyModel = Ext.define(null, {
+                extend: 'Ext.data.TreeModel',
+                fields: ['id', 'text', 'secondaryId'],
+                proxy: {
+                    type: 'ajax',
+                    url: 'fakeUrl'
+                }
+            });
+
+            makeTree(null, {
+                root: {
+                    expanded: true,
+                    children: [{
+                        id: 'node1',
+                        text: 'Node1',
+                        expandable: true,
+                        expanded: true
+                    }, {
+                        id: 'node2',
+                        text: 'Node2',
+                        expandable: true,
+                        expanded: false
+                    }]
+                }
+            }, {
+                model: ProxyModel,
+                root: null
+            });
+
+            expect(view.getNodes().length).toBe(3);
+
+            // At this point, node1 will be loading because it's expanded
+            Ext.Ajax.mockComplete({
+                status: 200,
+                responseText: Ext.encode([{
+                    id: 'node1.1'
+                }])
+            });
+            expect(view.getNodes().length).toBe(4);
+        });
+    });
+
+    describe('top down filtering', function() {
         var treeData = [{
             text: 'Top 1',
             children: [{
@@ -2125,24 +2347,12 @@ describe("Ext.tree.Panel", function(){
             expect(testRowText(1, 'Top 2')).toBe(true);
             expect(testRowText(2, 'Top 3')).toBe(true);
 
-            // Filter so that only "foo" nodes and their ancestors are visible
+            // Filter so that only "foo" nodes and their ancestors are visible.
+            // filterer = 'bottomup' means that visible leaf nodes cause their ancestors to be visible.
+            store.filterer = 'bottomup';
             store.filter({
                 filterFn: function(node) {
-                    var children = node.childNodes,
-                        len = children && children.length,
-
-                        // Visibility of leaf nodes is whether they pass the test.
-                        // Visibility of branch nodes depends on them having visible children.
-                        visible = node.isLeaf() ? node.get('text') === 'foo' : false,
-                        i;
-
-                    // We're visible if one of our child nodes is visible.
-                    // No loop body here. We are looping only while the visible flag remains false.
-                    // Child nodes are filtered before parents, so we can check them here.
-                    // As soon as we find a visible child, this branch node must be visible.
-                    for (i = 0; i < len && !(visible = children[i].get('visible')); i++);
-
-                    return visible;
+                    return  node.get('text') === 'foo';
                 },
                 id: 'testFilter'
             });
@@ -2181,21 +2391,7 @@ describe("Ext.tree.Panel", function(){
             // View should refresh.
             store.filter({
                 filterFn: function(node) {
-                    var children = node.childNodes,
-                        len = children && children.length,
-
-                        // Visibility of leaf nodes is whether they pass the test.
-                        // Visibility of branch nodes depends on them having visible children.
-                        visible = node.isLeaf() ? node.get('text') === 'bar' : false,
-                        i;
-
-                    // We're visible if one of our child nodes is visible.
-                    // No loop body here. We are looping only while the visible flag remains false.
-                    // Child nodes are filtered before parents, so we can check them here.
-                    // As soon as we find a visible child, this branch node must be visible.
-                    for (i = 0; i < len && !(visible = children[i].get('visible')); i++);
-
-                    return visible;
+                    return node.get('text') === 'bar';
                 },
                 id: 'testFilter'
             });
@@ -2343,6 +2539,12 @@ describe("Ext.tree.Panel", function(){
             });
 
             completeWithNodes();
+
+            // Child nodes of expanded root must be in store.
+            expect(store.getCount()).toBe(51);
+
+            // Child nodes must be in view
+            expect(view.all.getCount()).toBe(Math.min(store.getCount(), view.bufferedRenderer.viewSize));
 
             view.setScrollY(500);
             store.reload();
@@ -2634,6 +2836,67 @@ describe("Ext.tree.Panel", function(){
             expect(tree.store.indexOf(aNode.childNodes[0])).toBe(-1);
             expect(tree.store.indexOf(aNode.childNodes[1])).toBe(-1);
             expect(tree.store.indexOf(aNode.childNodes[2])).toBe(-1);
+        });
+    });
+
+    describe("key events", function() {
+        describe("not locked", function() {
+            it("should expand all nodes with asterisk", function() {
+                makeTree(testNodes);
+                var cell = tree.getView().getCell(rootNode, tree.down('treecolumn'));
+                jasmine.fireMouseEvent(cell, 'click', 5, 5);
+                spyOn(tree, 'expandAll').andCallThrough();
+                jasmine.fireKeyEvent(cell, 'keydown', Ext.event.Event.EIGHT, true);
+                expect(tree.expandAll.callCount).toBe(1);
+
+            });
+        });
+
+        describe("locked", function() {
+            it("should expand all nodes with asterisk", function() {
+                makeTree(testNodes, {
+                    columns: [{
+                        xtype: 'treecolumn',
+                        locked: true,
+                        width: 200,
+                        dataIndex: 'text'
+                    }, {
+                        width: 200,
+                        dataIndex: 'text'
+                    }]
+                });
+                var cell = tree.getView().getCell(rootNode, tree.down('treecolumn'));
+                jasmine.fireMouseEvent(cell, 'click', 5, 5);
+                spyOn(tree, 'expandAll').andCallThrough();
+                jasmine.fireKeyEvent(cell, 'keydown', Ext.event.Event.EIGHT, true);
+                expect(tree.expandAll.callCount).toBe(1);
+            }); 
+        });
+    });
+
+    describe('bottom up filtering', function() {
+        it('should show path to all filtered in leaf nodes', function() {
+            makeTree(testNodes, null, {
+                filterer: 'bottomup'
+            });
+            tree.expandAll();
+
+            // All nodes must be visible
+            expect(view.all.getCount()).toBe(15);
+
+            // This should only pass one leaf node.
+            // But its ancestors obviously have to be visible.
+            store.filter({
+                property: 'text',
+                operator: '=',
+                value: 'H'
+            });
+
+            // The H node must be visible
+            expect(view.getNode(store.getById('H'))).not.toBe(null);
+
+            // Just the path to the H node must be visible
+            expect(view.all.getCount()).toBe(5);
         });
     });
 });

@@ -93,10 +93,6 @@ Ext.define('Ext.event.gesture.Pinch', {
         this.fire('pinchcancel', e);
     },
 
-    fail: function() {
-        return this.callParent(arguments);
-    },
-
     reset: function() {
         this.lastTouches = null;
         this.startDistance = 0;

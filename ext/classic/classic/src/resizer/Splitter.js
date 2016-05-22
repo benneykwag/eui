@@ -158,7 +158,7 @@ Ext.define('Ext.resizer.Splitter', {
 
     onRender: function() {
         var me = this,
-            collapseEl;
+            target, collapseEl;
 
         me.callParent(arguments);
 
@@ -172,14 +172,20 @@ Ext.define('Ext.resizer.Splitter', {
             }
         }
 
-        // Ensure the mini collapse icon is set to the correct direction when the target is collapsed/expanded by any means
-        me.getCollapseTarget().on({
-            collapse: me.onTargetCollapse,
-            expand: me.onTargetExpand,
-            beforeexpand: me.onBeforeTargetExpand,
-            beforecollapse: me.onBeforeTargetCollapse,
-            scope: me
-        });
+        // Ensure the mini collapse icon is set to the correct direction
+        // when the target is collapsed/expanded by any means.
+        // Make sure we're only listening to collapse/expand events on Panels!
+        target = me.getCollapseTarget();
+        
+        if (target && target.isPanel) {
+            target.on({
+                collapse: me.onTargetCollapse,
+                expand: me.onTargetExpand,
+                beforeexpand: me.onBeforeTargetExpand,
+                beforecollapse: me.onBeforeTargetCollapse,
+                scope: me
+            });
+        }
 
         if (me.canResize) {
             me.tracker = Ext.create(me.getTrackerConfig());

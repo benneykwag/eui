@@ -243,7 +243,9 @@ Ext.Loader = (new function() {  // jshint ignore:line
          */
         requiresMap: _requiresMap,
 
-        /** @private */
+        /**
+         * @private
+         */
         hasFileLoadError: false,
 
         /**
@@ -391,7 +393,7 @@ Ext.Loader = (new function() {  // jshint ignore:line
         /**
          * Sets a batch of path entries
          *
-         * @param {Object } paths a set of className: path mappings
+         * @param {Object} paths a set of className: path mappings
          * @return {Ext.Loader} this
          */
         addClassPathMappings: function(paths) {
@@ -1051,15 +1053,18 @@ Ext.Loader = (new function() {  // jshint ignore:line
             detectDeadlock = function(cls) {
                 deadlockPath.push(cls);
 
-                if (_requiresMap[cls]) {
-                    if (Ext.Array.contains(_requiresMap[cls], className)) {
-                        Ext.raise("Circular requirement detected! '" + className +
+                var requires = _requiresMap[cls],
+                    i, ln;
+
+                if (requires) {
+                    if (Ext.Array.contains(requires, className)) {
+                        Ext.Error.raise("Circular requirement detected! '" + className +
                                 "' and '" + deadlockPath[1] + "' mutually require each other. Path: " +
                                 deadlockPath.join(' -> ') + " -> " + deadlockPath[0]);
                     }
 
-                    for (i = 0,ln = _requiresMap[cls].length; i < ln; i++) {
-                        detectDeadlock(_requiresMap[cls][i]);
+                    for (i = 0, ln = requires.length; i < ln; i++) {
+                        detectDeadlock(requires[i]);
                     }
                 }
             };

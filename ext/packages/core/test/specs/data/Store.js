@@ -430,6 +430,111 @@ describe("Ext.data.Store", function() {
             });
         });
     });
+
+    describe("beginUpdate/endUpdate", function() {
+        var beginSpy, endSpy;
+
+        beforeEach(function() {
+            beginSpy = jasmine.createSpy();
+            endSpy = jasmine.createSpy();
+
+            createStore();
+        });
+
+        afterEach(function() {
+            beginSpy = endSpy = null;
+        });
+
+        function setup() {
+            createStore();
+            addStoreData();
+            store.on('beginupdate', beginSpy);
+            store.on('endupdate', endSpy);
+        }
+
+        describe("calls to methods directly", function() {
+            it("should fire beginupdate on the first call to beginUpdate", function() {
+                setup();
+                store.beginUpdate();
+                expect(beginSpy.callCount).toBe(1);
+                store.beginUpdate();
+                store.beginUpdate();
+                expect(beginSpy.callCount).toBe(1);
+            });
+
+            it("should fire the endupdate on the last matching call to endUpdate", function() {
+                setup();
+                store.beginUpdate();
+                store.beginUpdate();
+                store.beginUpdate();
+                store.endUpdate();
+                store.endUpdate();
+                expect(endSpy).not.toHaveBeenCalled();
+                store.endUpdate();
+                expect(endSpy.callCount).toBe(1);
+            });
+        });
+
+        describe("in reaction to store changes", function() {
+            beforeEach(function() {
+                setup();
+            });
+
+            // TODO: this could be fleshed out further to include more functionality
+            describe("add", function() {
+                it("should fire begin/end for adding a single record", function() {
+                    store.add({});
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+
+                it("should fire begin/end for adding multiple records in contiguous range", function() {
+                    store.add([{}, {}, {}, {}]);
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+
+                it("should fire begin/end for adding multiple records over a discontiguous range", function() {
+                    store.sort('age');
+                    store.add([{
+                        age: 1
+                    }, {
+                        age: 1000
+                    }]);
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+            });
+
+            describe("remove", function() {
+                it("should fire begin/end for removing a single record", function() {
+                    store.removeAt(0);
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+
+                it("should fire begin/end for removing multiple records in contiguous range", function() {
+                    store.remove([edRec, abeRec]);
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+
+                it("should fire begin/end for removing multiple records over a discontiguous range", function() {
+                    store.remove([edRec, tommyRec]);
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+            });
+
+            describe("update", function() {
+                it("should fire begin/end for a record update", function() {
+                    edRec.set('name', 'foo');
+                    expect(beginSpy.callCount).toBe(1);
+                    expect(endSpy.callCount).toBe(1);
+                });
+            });
+        });
+    });
     
     describe("getting records", function() {
         beforeEach(function() {
@@ -754,6 +859,22 @@ describe("Ext.data.Store", function() {
             it("should use the passed scope", function() {
                 store.each(spy, fakeScope);
                 expect(spy.mostRecentCall.object).toBe(fakeScope);
+            });
+
+            it("should be safe to remove records", function() {
+                var all = store.getRange(),
+                    recs = [];
+
+                store.each(function(rec, idx) {
+                    recs.push(rec);
+                    if(rec.getId().charAt(0) === 'a') {
+                        store.remove(rec);
+                    }
+                });
+
+                expect(store.getRemovedRecords().length).toBe(2);
+                expect(store.getCount()).toBe(2);
+                expect(recs).toEqual(all);
             });
         });
     });
@@ -4530,8 +4651,7 @@ describe("Ext.data.Store", function() {
 
                             store.removeAt(1, 3);
 
-                            expect(codes.contains(edRec)).toBe(false);
-                            expect(codes.contains(tommyRec)).toBe(false);
+                            expect(codes.destroyed).toBe(true);
                             expect(admins.contains(aaronRec)).toBe(false);
                             // The second group has been removed because all its items were removed.
                             expect(store.getGroups().length).toBe(1);
@@ -4624,6 +4744,21 @@ describe("Ext.data.Store", function() {
                         expect(coders.getCount()).toBe(3);
                         expect(coders.contains(abeRec)).toBe(true);
                         expect(store.indexOf(abeRec)).not.toBe(index);
+                    });
+
+                    it("should not duplicate the item if the id changes", function() {
+                        groupBy();
+
+                        var admins = store.getGroups().get('admin');
+
+                        expect(admins.getCount()).toBe(2);
+                        expect(admins.indexOf(abeRec)).toBe(0);
+
+                        abeRec.setId(1000);
+
+                        expect(admins.getCount()).toBe(2);
+                        expect(admins.indexOf(abeRec)).toBe(0);
+
                     });
                 });
             });
@@ -6619,7 +6754,7 @@ describe("Ext.data.Store", function() {
                 expect(store.indexOf(edRec)).toBe(-1);
             });
 
-            it("should remove the record from the store", function() {
+            it("should remove the record from the store and fire the remove event", function() {
                 store.on('remove', spy);
                 edRec.drop();
                 expect(spy.callCount).toBe(1);
@@ -6836,21 +6971,23 @@ describe("Ext.data.Store", function() {
 
                         count = store.count;
                     });
+                    
+                    describe(sorter ? 'with sorter' : 'without sorter', function() {
+                        afterEach(function () {
+                            count = null;
+                        });
 
-                    afterEach(function () {
-                        count = null;
-                    });
+                        it('should reject dropped records', function () {
+                            store.getAt(0).drop();
+                            store.rejectChanges();
+                            expect(store.count).toBe(count);
+                        });
 
-                    it('should reject dropped records', function () {
-                        store.getAt(0).drop();
-                        store.rejectChanges();
-                        expect(store.count).toBe(count);
-                    });
-
-                    it('should reject erased records', function () {
-                        store.getAt(0).erase();
-                        store.rejectChanges();
-                        expect(store.count).toBe(count);
+                        it('should reject erased records', function () {
+                            store.getAt(0).erase();
+                            store.rejectChanges();
+                            expect(store.count).toBe(count);
+                        });
                     });
                 }
 
@@ -7056,6 +7193,24 @@ describe("Ext.data.Store", function() {
         });
     });
 
+    describe("sync", function() {
+        it("should not throw an exception if trackRemoved is false", function() {
+            createStore({
+                autoSync: false
+            });
+            store.setTrackRemoved(false);
+            store.add({
+                validField: 'x'
+            });
+            expect(function() {
+                store.sync();
+            }).not.toThrow();
+            completeWithData([{
+                id: 1
+            }]);
+        });
+    });
+
     describe("autoSync", function() {
         var doSync;
 
@@ -7163,7 +7318,12 @@ describe("Ext.data.Store", function() {
                 // Before the successful response, the removed queue is still filled
                 expect(store.getRemovedRecords().length).toBe(1);
 
-                completeWithData('"{"success":true,"records":[{"id":"ed@sencha.com"}]}"');
+                completeWithData({
+                    success: true,
+                    records: [{
+                        id:'ed@sencha.com'
+                    }]
+                });
 
                 // Upon success response, the removed queue is drained
                 expect(store.getRemovedRecords().length).toBe(0);
@@ -7177,7 +7337,14 @@ describe("Ext.data.Store", function() {
                 // Before the successful response, the removed queue is still filled
                 expect(store.getRemovedRecords().length).toBe(2);
 
-                completeWithData('"{"success":true,"records":[{"id":"tommy@sencha.com"},{"id":"ed@sencha.com"}]}"');
+                completeWithData({
+                    success: true,
+                    records: [{
+                        id: 'tommy@sencha.com'
+                    }, {
+                        id:'ed@sencha.com'
+                    }]
+                });
 
                 // Upon success response, the removed queue is drained
                 expect(store.getRemovedRecords().length).toBe(0);
@@ -7618,6 +7785,14 @@ describe("Ext.data.Store", function() {
                     expect(getKeys(proxy.hasListeners)).toEqual(hasListeners);
                 });
             });
+        });
+
+        it("should set the model to null with implicit fields", function() {
+            createStore({
+                fields: ['foo', 'bar']
+            });
+            store.destroy();
+            expect(store.getModel()).toBeNull();
         });
     });
 

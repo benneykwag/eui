@@ -70,6 +70,7 @@ Ext.define('Ext.view.DropZone', {
                 cls: me.indicatorCls,
                 ownerCt: me.view,
                 floating: true,
+                alignOnScroll: false,
                 shadow: false
             });
         }

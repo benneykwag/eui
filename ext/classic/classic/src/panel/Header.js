@@ -328,10 +328,11 @@ Ext.define('Ext.panel.Header', {
 
         title = title || '';
 
-        isString = typeof title === 'string';
-        if (isString) {
+        isString = Ext.isString(title);
+
+        if (!Ext.isObject(title)) {
             title = {
-                text: title
+                text: title.toString()
             };
         }
 

@@ -18,9 +18,7 @@ Ext.define('Ext.draw.PathUtil', function () {
 
         requires: [
             'Ext.draw.overrides.Path',
-            'Ext.draw.overrides.sprite.Path',
-            'Ext.draw.overrides.sprite.Instancing',
-            'Ext.draw.overrides.Surface'
+            'Ext.draw.overrides.sprite.Path'
         ],
 
         /**

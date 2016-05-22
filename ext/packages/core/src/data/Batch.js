@@ -200,10 +200,11 @@ Ext.define('Ext.data.Batch', {
      * because you explicitly handled the operation's exception), call {@link #retry} instead.
      * 
      * Note that if the batch is already running any call to start will be ignored.
-     * 
+     *
+     * @param index (private)
      * @return {Ext.data.Batch} this
      */
-    start: function(/* private */ index) {
+    start: function(index) {
         var me = this;
         
         if (!me.operations.length || me.running) {

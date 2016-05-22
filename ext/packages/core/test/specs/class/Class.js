@@ -2591,20 +2591,6 @@ describe("Ext.Class", function() {
             fn = function() {};
         });
         
-        it("should store names of inheritable static properties", function() {
-            cls = Ext.define(null, {
-                inheritableStatics: {
-                    someName: 'someValue',
-                    someMethod: fn
-                }
-            });
-
-            expect((new cls()).inheritableStatics).not.toBeDefined();
-            expect(cls.someName).toBe('someValue');
-            expect(cls.prototype.$inheritableStatics).toEqual(['someName', 'someMethod']);
-            expect(cls.someMethod).toBe(fn);
-        });
-        
         it("should inherit inheritable statics", function() {
             cls = Ext.define(null, {
                 inheritableStatics: {
@@ -2620,7 +2606,7 @@ describe("Ext.Class", function() {
             expect(sub.someMethod).toBe(fn);
         });
         
-        it("should NOT inherit inheritable statics if the class already has it", function() {
+        it("should NOT inherit inheritable statics if the class already has it as a static", function() {
             cls = Ext.define(null, {
                 inheritableStatics: {
                     someName: 'someValue',
@@ -2637,6 +2623,145 @@ describe("Ext.Class", function() {
 
             expect(sub.someName).toBe('someOtherValue');
             expect(sub.someMethod).not.toBe(fn);
+        });
+
+        it("should be able to callParent()", function() {
+            var data = [];
+
+            cls = Ext.define(null, {
+                inheritableStatics: {
+                    doIt: function() {
+                        data.push('super');
+                    }
+                }
+            });
+
+            sub = Ext.define(null, {
+                extend: cls,
+                inheritableStatics: {
+                    doIt: function() {
+                        this.callParent();
+                        data.push('sub');
+                    }
+                }
+            });
+
+            sub.doIt();
+            expect(data).toEqual(['super', 'sub']);
+        });
+
+        describe("with mixins", function() {
+            var mixin;
+
+            beforeEach(function() {
+                mixin = Ext.define(null, {
+                    extend: 'Ext.Mixin',
+
+                    inheritableStatics: {
+                        foo: function() {
+                            return 'mixinfoo';
+                        }
+                    }
+                })
+            });
+
+            afterEach(function() {
+                mixin = null;
+            });
+
+            it("should merge when they exist on both", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    },
+                    inheritableStatics: {
+                        bar: function() {
+                            return 'clsbar';
+                        }
+                    }
+                });
+
+                expect(cls.foo()).toBe('mixinfoo');
+                expect(cls.bar()).toBe('clsbar');
+            });
+
+            it("should favour the class statics", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    },
+                    inheritableStatics: {
+                        foo: function() {
+                            return 'clsfoo';
+                        }
+                    }
+                });
+
+                expect(cls.foo()).toBe('clsfoo');
+            });
+
+            it("should add if the class has no statics", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    }
+                });
+
+                expect(cls.foo()).toBe('mixinfoo');
+            });
+
+            it("should be able to inherit for subclasses of classes with mixins", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    }
+                });
+
+                sub = Ext.define(null, {
+                    extend: cls
+                });
+
+                expect(sub.foo()).toBe('mixinfoo');
+            });
+
+            it("should be able to inherit for subclasses of classes with mixins where the superclass has inheritableStatics", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    },
+                    inheritableStatics: {
+                        bar: function() {
+                            return 'clsbar';
+                        }
+                    }
+                });
+
+                sub = Ext.define(null, {
+                    extend: cls
+                });
+
+                expect(sub.foo()).toBe('mixinfoo');
+                expect(sub.bar()).toBe('clsbar');
+            });
+
+            it("should be able to callParent to a mixed in static", function() {
+                cls = Ext.define(null, {
+                    mixins: {
+                        mix: mixin
+                    }
+                });
+
+                sub = Ext.define(null, {
+                    extend: cls,
+                    inheritableStatics: {
+                        foo: function() {
+                            return this.callParent() + 'sub';
+                        }
+                    }
+                });
+
+                expect(sub.foo()).toBe('mixinfoosub');
+            });
         });
     });
 

@@ -254,6 +254,34 @@ Ext.Number = (new function() { // jshint ignore:line
         },
 
         /**
+         * Returns the base 10 logarithm of a number.
+         * This will use Math.log10, if available (ES6).
+         * @param {Number} x The number.
+         * @return {Number} Base 10 logarithm of the number 'x'.
+         * @method log10
+         */
+        log10: Math.log10 || function (x) {
+            return Math.log(x) * Math.LOG10E;
+        },
+
+        /**
+         * Determines if two numbers `n1` and `n2` are equal within a given
+         * margin of precision `epsilon`.
+         * @param {Number} n1 First number.
+         * @param {Number} n2 Second number.
+         * @param {Number} epsilon Margin of precision.
+         * @returns {Boolean} `true`, if numbers are equal. `false` otherwise.
+         */
+        isEqual: function (n1, n2, epsilon) {
+            //<debug>
+            if (!(typeof n1 === 'number' && typeof n2 === 'number' && typeof epsilon === 'number')) {
+                Ext.raise("All parameters should be valid numbers.");
+            }
+            //</debug>
+            return Math.abs(n1 - n2) < epsilon;
+        },
+
+        /**
          * @method
          * Formats a number using fixed-point notation
          * @param {Number} value The number to format

@@ -3,13 +3,42 @@
  *
  * Sencha Charts allow users to use transitional animation on sprites. Simply set the duration
  * and easing in the animation modifier, then all the changes to the sprites will be animated.
+ * 
+ *     @example
+ *     var drawCt = Ext.create({
+ *         xtype: 'draw',
+ *         renderTo: document.body,
+ *         width: 400,
+ *         height: 400,
+ *         sprites: [{
+ *             type: 'rect',
+ *             x: 50,
+ *             y: 50,
+ *             width: 100,
+ *             height: 100,
+ *             fillStyle: '#1F6D91'
+ *         }]
+ *     });
+ *     
+ *     var rect = drawCt.getSurface().getItems()[0];
+ *     
+ *     rect.setAnimation({
+ *         duration: 1000,
+ *         easing: 'elasticOut'
+ *     });
+ *     
+ *     Ext.defer(function () {
+ *         rect.setAttributes({
+ *             width: 250
+ *         });
+ *     }, 500);
  *
  * Also, you can use different durations and easing functions on different attributes by using
  * {@link #customDurations} and {@link #customEasings}.
  *
  * By default, an animation modifier will be created during the initialization of a sprite.
- * You can get the animation modifier of a sprite via `sprite.fx`.
- *
+ * You can get the animation modifier of a sprite via its 
+ * {@link Ext.draw.sprite.Sprite#method-getAnimation getAnimation} method.
  */
 Ext.define('Ext.draw.modifier.Animation', {
     requires: [

@@ -5,6 +5,14 @@
 .x-picker {
     .x-toolbar {
         padding-top: .5em;
+        .x-button-icon {
+            &.check2 {
+                @include inline-icon('check2');
+            }
+            &.delete {
+                @include inline-icon('delete');
+            }
+        }
     }
 
     background-color: $background-color;

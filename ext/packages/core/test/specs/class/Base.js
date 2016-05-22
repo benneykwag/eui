@@ -154,6 +154,142 @@ describe("Ext.Base", function() {
         });
     });
 
+    describe("compatibility", function() {
+        var Cls, fn, overrideFn;
+
+        beforeEach(function() {
+            fn = function() {};
+            overrideFn = function() {};
+
+            Cls = Ext.define(null, {
+                someFn: fn
+            });
+        });
+
+        afterEach(function() {
+            overrideFn = fn = Cls = null;
+        });
+
+        describe("null/undefined", function() {
+            it("should not apply the override if the compat value is null", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: null,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(fn);
+            });
+
+            it("should not apply the override if the compat value is undefined", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: null,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(fn);
+            });
+        });
+
+        describe("boolean", function() {
+            it("should not apply the override if the compat value is false", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: false,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(fn);
+            });
+
+            it("should apply the override if the compat value is true", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: true,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(overrideFn);
+            });
+        });
+
+        describe("numeric", function() {
+            it("should not apply the override if the compat value is 0", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: 0,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(fn);
+            });
+
+            it("should apply the override if the compat value is non zero", function() {
+                Ext.define(null, {
+                    override: Cls,
+                    compatibility: 9,
+                    someFn: overrideFn
+                });
+                expect(Cls.prototype.someFn).toBe(overrideFn);
+            });
+        });
+
+        // We don't want exhaustive testing of all version combinations here since
+        // that would basically just be testing checkVersion, we just want to see if 
+        // the basics get passed along
+        describe("other values", function() {
+            var oldVersions;
+
+            beforeEach(function () {
+                oldVersions = Ext.versions;
+                Ext.versions = {
+                    ext: new Ext.Version('4.2.2.900')
+                };
+            });
+
+            afterEach(function () {
+                Ext.versions = oldVersions;
+                oldVersions = null;
+            });
+        
+            describe("version string", function() {
+                it("should not apply the override if the version string does not match", function() {
+                    Ext.define(null, {
+                        override: Cls,
+                        compatibility: '4.2.1',
+                        someFn: overrideFn
+                    });
+                    expect(Cls.prototype.someFn).toBe(fn);
+                });
+
+                it("should apply the override if the version string matches", function() {
+                    Ext.define(null, {
+                        override: Cls,
+                        compatibility: '4.2.2.900',
+                        someFn: overrideFn
+                    });
+                    expect(Cls.prototype.someFn).toBe(overrideFn);
+                });
+            });
+
+            describe("array of version strings", function() {
+                it("should not apply the override if the versions don't match", function() {
+                    Ext.define(null, {
+                        override: Cls,
+                        compatibility: ['4.2.1', '5.1.0-5.1.3'],
+                        someFn: overrideFn
+                    });
+                    expect(Cls.prototype.someFn).toBe(fn);
+                });
+
+                it("should apply the override if the versions match", function() {
+                    Ext.define(null, {
+                        override: Cls,
+                        compatibility: ['4.1.0-4.1.3', '4.2.0-4.2.4'],
+                        someFn: overrideFn
+                    });
+                    expect(Cls.prototype.someFn).toBe(overrideFn);
+                });
+            });
+        });
+    });
+
     describe("borrow", function() {
         beforeEach(function() {
             Ext.define("spec.Foo", {

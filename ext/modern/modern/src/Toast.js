@@ -4,17 +4,17 @@
  * but creating by calling 'Ext.toast(message, timeout)'. This will create one reusable toast container and content will be swapped out as
  * toast messages are queued or displayed.
  *
- *  # Simple Toast
+ * # Simple Toast
  *
  *      @example miniphone
  *      Ext.toast('Hello Sencha!'); // Toast will close in 1000 milliseconds (default)
  *
- *  # Toast with Timeout
+ * # Toast with Timeout
  *
  *      @example miniphone
  *      Ext.toast('Hello Sencha!', 5000); // Toast will close in 5000 milliseconds
  *
- *  # Toast with config
+ * # Toast with config
  *
  *      @example miniphone
  *      Ext.toast({message: 'Hello Sencha!', timeout: 2000}); // Toast will close in 2000 milliseconds
@@ -145,7 +145,7 @@ Ext.define('Ext.Toast', {
     },
 
     /**
-     * @internal
+     * @private
      */
     next: Ext.emptyFn,
 

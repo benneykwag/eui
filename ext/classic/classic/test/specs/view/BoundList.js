@@ -247,4 +247,40 @@ describe("Ext.view.BoundList", function() {
             });
         });
     });
+    
+    describe("deselectOnContainerClick", function() {
+        var ieIt = (Ext.isIE10 || Ext.isIE11) ? it : xit;
+        
+        beforeEach(function() {
+            createBoundList({
+                deselectOnContainerClick: true,
+                width: 200,
+                height: 100
+            }, [
+                { name: 'Item 1' },
+                { name: 'Item 2' },
+                { name: 'Item 3' },
+                { name: 'Item 4' },
+                { name: 'Item 5' },
+                { name: 'Item 6' },
+                { name: 'Item 7' },
+                { name: 'Item 8' },
+                { name: 'Item 9' }
+            ]);
+        });
+        
+        // https://sencha.jira.com/browse/EXTJS-18847
+        ieIt("should not deselect when clicking on scrollbar", function() {
+            var el = boundList.el,
+                xy = el.getXY(),
+                width = el.getWidth(),
+                x = xy[0] + width - Math.ceil(Ext.getScrollbarSize().width / 2);
+            
+            boundList.getSelectionModel().select(1);
+            
+            jasmine.fireMouseEvent(el, 'click', x, xy[1] + 1);
+            
+            expect(boundList.getSelectionModel().getSelection().length).toBe(1);
+        });
+    });
 });

@@ -80,7 +80,6 @@
  * each series (Line, Bar, Pie, etc).
  *
  */
-
 Ext.define('Ext.chart.AbstractChart', {
 
     extend: 'Ext.draw.Container',
@@ -1462,7 +1461,7 @@ Ext.define('Ext.chart.AbstractChart', {
         this.fireEvent('redraw', this);
     },
 
-    // Note: the actual layout is performend in a subclass.
+    // Note: the actual layout is performed in a subclass.
     performLayout: function () {
         var me = this,
             size = me.getChartSize(true),

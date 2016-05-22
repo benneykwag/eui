@@ -56,7 +56,11 @@ Ext.define('Ext.chart.series.sprite.Bar', {
             labelOverflowPadding = attr.labelOverflowPadding,
             labelDisplay = labelTpl.attr.display,
             labelOrientation = labelTpl.attr.orientation,
-            labelY, halfWidth, labelBBox,
+            isVerticalText = (labelOrientation === 'horizontal' && attr.flipXY) ||
+                             (labelOrientation === 'vertical' && !attr.flipXY) ||
+                             !labelOrientation,
+            calloutLine = labelTpl.getCalloutLine(),
+            labelY, halfText, labelBBox, calloutLineLength,
             changes, hasPendingChanges, params;
 
         // The coordinates below (data point converted to surface coordinates)
@@ -68,6 +72,12 @@ Ext.define('Ext.chart.series.sprite.Bar', {
         // since text can be modified by the renderer.
         labelCfg.x = surfaceMatrix.x(dataX, dataY);
         labelCfg.y = surfaceMatrix.y(dataX, dataY);
+
+        if (calloutLine) {
+            calloutLineLength = calloutLine.length;
+        } else {
+            calloutLineLength = 0;
+        }
 
         // Set defaults
         if (!attr.flipXY) {
@@ -111,30 +121,50 @@ Ext.define('Ext.chart.series.sprite.Bar', {
             labelBBox = me.getMarkerBBox('labels', labelId, true);
         }
 
-        halfWidth = (labelBBox.width / 2 + labelOverflowPadding);
+        if (calloutLineLength > 0) {
+            halfText = calloutLineLength;
+        } else if (calloutLineLength === 0) {
+            halfText = (isVerticalText ? labelBBox.width : labelBBox.height) / 2;
+        } else {
+            halfText = (isVerticalText ? labelBBox.width : labelBBox.height) / 2 + labelOverflowPadding;
+        }
         if (dataStartY > dataY) {
-            halfWidth = -halfWidth;
+            halfText = -halfText;
         }
 
-        if ((labelOrientation === 'horizontal' && attr.flipXY) || (labelOrientation === 'vertical' && !attr.flipXY) || !labelOrientation) {
-            labelY = (labelDisplay === 'insideStart') ? dataStartY + halfWidth : dataY - halfWidth;
+        if (isVerticalText) {
+            labelY = (labelDisplay === 'insideStart') ?
+                dataStartY + halfText :
+                dataY - halfText;
         } else {
-            labelY = (labelDisplay === 'insideStart') ? dataStartY + labelOverflowPadding * 2 : dataY - labelOverflowPadding * 2;
+            labelY = (labelDisplay === 'insideStart') ?
+                dataStartY + labelOverflowPadding * 2 :
+                dataY - labelOverflowPadding * 2;
         }
         labelCfg.x = surfaceMatrix.x(dataX, labelY);
         labelCfg.y = surfaceMatrix.y(dataX, labelY);
 
-        labelY = (labelDisplay === 'insideStart') ? dataStartY - halfWidth : dataY + halfWidth;
-        labelCfg.calloutPlaceX = surfaceMatrix.x(dataX, labelY);
-        labelCfg.calloutPlaceY = surfaceMatrix.y(dataX, labelY);
-
         labelY = (labelDisplay === 'insideStart') ? dataStartY : dataY;
         labelCfg.calloutStartX = surfaceMatrix.x(dataX, labelY);
         labelCfg.calloutStartY = surfaceMatrix.y(dataX, labelY);
-        if (dataStartY > dataY) {
-            halfWidth = -halfWidth;
+
+        labelY = (labelDisplay === 'insideStart') ? dataStartY - halfText : dataY + halfText;
+        labelCfg.calloutPlaceX = surfaceMatrix.x(dataX, labelY);
+        labelCfg.calloutPlaceY = surfaceMatrix.y(dataX, labelY);
+
+        labelCfg.calloutColor = (calloutLine && calloutLine.color) || me.attr.fillStyle;
+        if (calloutLine) {
+            if (calloutLine.width) {
+                labelCfg.calloutWidth = calloutLine.width;
+            }
+        } else {
+            labelCfg.calloutColor = 'none';
         }
-        if (Math.abs(dataY - dataStartY) <= halfWidth * 2 || labelDisplay === 'outside') {
+
+        if (dataStartY > dataY) {
+            halfText = -halfText;
+        }
+        if (Math.abs(dataY - dataStartY) <= halfText * 2 || labelDisplay === 'outside') {
             labelCfg.callout = 1;
         } else {
             labelCfg.callout = 0;

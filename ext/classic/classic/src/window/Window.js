@@ -36,7 +36,7 @@ Ext.define('Ext.window.Window', {
         'Ext.util.ComponentDragger',
         'Ext.util.Region'
     ],
-    
+
     mixins: [
         'Ext.util.FocusTrap'
     ],
@@ -56,8 +56,36 @@ Ext.define('Ext.window.Window', {
      */
 
     /**
-     * @cfg {String/Ext.dom.Element} [animateTarget=null]
-     * Id or element from which the window should animate while opening.
+     * @cfg {String/Ext.dom.Element/Ext.Component/Boolean} [animateTarget=null]
+     * Id, Component element, or Component from which the window should animate when
+     * shown or hidden.
+     *
+     * You may also pass true to have the Window animate when maximizing and restoring
+     * using the maximize / restore tools created via the {@link #maximizable} config.
+     *
+     *     var btn, win;
+     *
+     *     btn = Ext.create({
+     *         xtype: 'button',
+     *         renderTo: Ext.getBody(),
+     *         text: 'Show Window',
+     *         handler: function() {
+     *             win.show();
+     *         }
+     *     });
+     *
+     *     win = Ext.create({
+     *         xtype: 'window',
+     *         title: 'Animate from the Show Window Button',
+     *         height: 300,
+     *         width: 400,
+     *         modal: true,
+     *         closeAction: 'hide',
+     *         animateTarget: btn
+     *         // or btn.getId()
+     *         // or btn.getEl()
+     *         // or true (when maximizable is true)
+     *     });
      */
 
     /**
@@ -292,11 +320,13 @@ Ext.define('Ext.window.Window', {
      */
     floating: true,
 
+    alignOnScroll: false,
+
     /**
      * @cfg stateEvents
      * @inheritdoc Ext.state.Stateful#cfg-stateEvents
      * @localdoc By default the following stateEvents are added:
-     * 
+     *
      *  - {@link #event-resize} - _(added by Ext.Component)_
      *  - {@link #event-collapse} - _(added by Ext.panel.Panel)_
      *  - {@link #event-expand} - _(added by Ext.panel.Panel)_
@@ -327,7 +357,8 @@ Ext.define('Ext.window.Window', {
     isWindow: true,
 
     ariaRole: 'dialog',
-    
+    focusable: true,
+
     /**
      * @event activate
      * Fires after the window has been visually activated via {@link #setActive}.
@@ -371,7 +402,7 @@ Ext.define('Ext.window.Window', {
      */
     initComponent: function() {
         var me = this;
-        
+
         // Explicitly set frame to false, since alwaysFramed is
         // true, we only want to lookup framing in a specific instance
         me.frame = false;
@@ -456,9 +487,6 @@ Ext.define('Ext.window.Window', {
         }
     },
 
-    /**
-     * @private
-     */
     onRender: function(ct, position) {
         var me = this;
 
@@ -481,9 +509,6 @@ Ext.define('Ext.window.Window', {
         }
     },
 
-    /**
-     * @private
-     */
     afterRender: function() {
         var me = this,
             header = me.header,
@@ -492,7 +517,7 @@ Ext.define('Ext.window.Window', {
         // Initialize
         if (me.maximized) {
             me.maximized = false;
-            me.maximize();
+            me.maximize(null, true);
             if (header) {
                 header.removeCls(header.indicateDragCls);
             }
@@ -506,7 +531,7 @@ Ext.define('Ext.window.Window', {
         } else {
             keyMap = me.keyMap;
         }
-        
+
         if (keyMap && me.hidden) {
             keyMap.disable();
         }
@@ -520,9 +545,6 @@ Ext.define('Ext.window.Window', {
         this.close();
     },
 
-    /**
-     * @private
-     */
     beforeDestroy: function() {
         var me = this;
         if (me.rendered) {
@@ -560,7 +582,7 @@ Ext.define('Ext.window.Window', {
         }
         if (me.maximizable) {
             tools.push({
-                type: me.maximized ? 'restore' : 'maximize',
+                type: 'maximize',
                 handler: 'toggleMaximize',
                 scope: me
             });
@@ -570,7 +592,7 @@ Ext.define('Ext.window.Window', {
             me.addTool(tools);
         }
     },
-    
+
     onShow: function() {
         var me = this;
 
@@ -700,7 +722,7 @@ Ext.define('Ext.window.Window', {
      * @param {Boolean} [animate=false] Pass `true` to animate this Window to full size.
      * @return {Ext.window.Window} this
      */
-    maximize: function(animate) {
+    maximize: function(animate, /* private */ initial) {
         var me = this,
             header = me.header,
             tools = me.tools,
@@ -708,7 +730,8 @@ Ext.define('Ext.window.Window', {
             height = me.height,
             restore, changed;
 
-        if (!me.maximized) {
+        if (!me.maximized && !me.maximizing) {
+            me.maximizing = true;
             me.expand(false);
             if (!me.hasSavedRestore) {
                 restore = me.restoreSize = {
@@ -716,7 +739,12 @@ Ext.define('Ext.window.Window', {
                     height: height ? height : null
                 };
 
-                me.restorePos = me.getPosition();
+                // If we're not positioned yet, default back to 0,0
+                if (initial) {
+                    me.restorePos = [me.x || 0, me.y || 0];
+                } else {
+                    me.restorePos = me.getPosition();
+                }
             }
 
             // Manipulate visibility of header tools if there is a header
@@ -750,13 +778,19 @@ Ext.define('Ext.window.Window', {
             me.syncMonitorWindowResize();
             me.fitContainer(animate = (animate || !!me.animateTarget) ? {
                 callback: function() {
+                    me.maximizing = false;
                     me.maximized = true;
-                    me.fireEvent('maximize', me);
+                    if (!initial) {
+                        me.fireEvent('maximize', me);
+                    }
                 }
             } : null);
             if (!animate) {
+                me.maximizing = false;
                 me.maximized = true;
-                me.fireEvent('maximize', me);
+                if (!initial) {
+                    me.fireEvent('maximize', me);
+                }
             }
         }
         return me;
@@ -914,7 +948,7 @@ Ext.define('Ext.window.Window', {
 
         return result;
     },
-    
+
     privates: {
         // Override. Windows are always simple draggable, they do not use Ext.Panel.DDs
         // The dd property in a Window is always a ComponentDragger
@@ -943,11 +977,23 @@ Ext.define('Ext.window.Window', {
                 }
             }
         },
-        
-        initResizable: function(){
-            this.callParent(arguments);
-            if (this.maximized) {
-                this.resizer.disable();
+
+        initResizable: function(resizable) {
+            var me = this;
+            me.callParent([resizable]);
+            if (me.maximized || me.maximizing) {
+                me.resizer.disable();
+            }
+        },
+
+        initSimpleDraggable: function() {
+            var me = this,
+                dd;
+
+            me.callParent();
+            dd = me.dd;
+            if (dd && me.maximized || me.maximizing) {
+                dd.disable();
             }
         }
     }

@@ -51,7 +51,7 @@ Ext.define('Ext.chart.series.Series', {
 
     requires: [
         'Ext.chart.Markers',
-        'Ext.chart.label.Label',
+        'Ext.chart.sprite.Label',
         'Ext.tip.ToolTip'
     ],
 
@@ -999,14 +999,17 @@ Ext.define('Ext.chart.series.Series', {
     },
 
     processData: function () {
-        if (!this.getStore()) {
+        var me = this;
+
+        if (me.isProcessingData || !me.getStore()) {
             return;
         }
 
-        var me = this,
-            directions = this.directions,
+        var directions = this.directions,
             i, ln = directions.length,
             direction, axis;
+
+        me.isProcessingData = true;
 
         for (i = 0; i < ln; i++) {
             direction = directions[i];
@@ -1020,6 +1023,8 @@ Ext.define('Ext.chart.series.Series', {
             }
         }
         me.updateLabelData();
+
+        me.isProcessingData = false;
     },
 
     applyBackground: function (background) {
@@ -1161,7 +1166,7 @@ Ext.define('Ext.chart.series.Series', {
     applyLabel: function (newLabel, oldLabel) {
         if (!oldLabel) {
             oldLabel = new Ext.chart.Markers({zIndex: 10});
-            oldLabel.setTemplate(new Ext.chart.label.Label(newLabel));
+            oldLabel.setTemplate(new Ext.chart.sprite.Label(newLabel));
         } else {
             oldLabel.getTemplate().setAttributes(newLabel);
         }

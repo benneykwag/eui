@@ -45,108 +45,6 @@ describe("Ext.layout.container.VBox", function(){
         });  
     });
 
-    describe('restoring scroll state', function() {
-        var myWin, form, lastCheckbox, scroller, scrollPos;
-
-        beforeEach(function() {
-            myWin = new Ext.window.Window({
-                title: 'Hello',
-                width: 400,
-                height: 300,
-                x: 10,
-                y: 10,
-                layout: 'fit',
-                items: [{
-                    xtype: 'form',
-                    autoScroll: true,
-                    layout: 'vbox',
-
-                    fieldDefaults: {
-                        labelAlign: 'top',
-                        msgTarget: 'side'
-                    },
-                    items: [{
-                        xtype: 'textfield',
-                        text: 'ddd'
-                    }, {
-                        xtype: 'textfield',
-                        text: 'ddd'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 1'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 2'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 3'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 4'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 5'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 6'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 7'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 8'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 9'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 10'
-                    }, {
-                        xtype: 'checkbox',
-                        boxLabel: 'Checkbox 11'
-                    }, {
-                        xtype: 'button',
-                        text: 'Add'
-                    }]
-                }]
-            });
-            form = myWin.down('form');
-            lastCheckbox = form.child('checkbox:last');
-            myWin.show();
-            scroller = form.getScrollable();
-        });
-
-        afterEach(function() {
-            myWin.destroy();
-        });
-
-        it('should restore scroll state after a layout', function() {
-            var scrollY;
-
-            runs(function() {
-                scroller.scrollIntoView(lastCheckbox.el, false);
-                scrollY = scroller.getPosition().y;
-                lastCheckbox.focus();
-            });
-
-            waitsFor(function() {
-                return lastCheckbox.hasFocus;
-            }, 'last checkbox to gain focus');
-
-            runs(function() {
-                var currentY = scroller.getPosition().y;
-                
-                // IE needs a bit of fuzziness
-                if (Ext.isIE) {
-                    expect(currentY).toBeWithin(1, scrollY);
-                }
-                else {
-                    expect(currentY).toBe(scrollY);
-                }
-            });
-        });
-    });
-
     describe("removing items", function(){
         it("should clear the top on an item when removing and using in another container", function(){
             c = new Ext.Component({
@@ -2947,6 +2845,16 @@ describe("Ext.layout.container.VBox", function(){
         });
 
         describe("preserving scroll state", function() {
+            var endSpy;
+
+            beforeEach(function() {
+                endSpy = jasmine.createSpy();
+            });
+
+            afterEach(function() {
+                endSpy = null;
+            });
+
             it("should restore the horizontal/vertical scroll position with user scrolling", function() {
                 makeCt({
                     height: 400,
@@ -2960,20 +2868,26 @@ describe("Ext.layout.container.VBox", function(){
                         width: 500
                     }]
                 });
-                
                 var scrollable = ct.getScrollable();
-                scrollable.scrollTo(50, 30);
-                
-                // Make sure that we're where we want to be
-                var position = scrollable.getPosition();
-                expect(position).toEqual({ x: 50, y: 30 });
-                
-                ct.setSize(401, 401);
-                
-                var position = scrollable.getPosition();
-
-                // There IS no x overflow, so the x scroll request cannot have had any effect
-                expect(position).toEqual({ x: 0, y: 30 });
+                scrollable.on('scrollend', endSpy);
+                scrollable.scrollTo(30, 50);
+                waitsFor(function() {
+                    return endSpy.callCount > 0;
+                });
+                runs(function() {
+                    ct.setSize(401, 401);
+                });
+                waitsFor(function() {
+                    var pos = scrollable.getPosition();
+                    return pos.x > 0 && pos.y > 0;
+                });
+                runs(function() {
+                    var pos = scrollable.getPosition();
+                    expect(pos).toEqual({
+                        x: 30,
+                        y: 50
+                    });
+                });
             });
 
             it("should restore the horizontal/vertical scroll position with programmatic scrolling", function() {
@@ -2993,20 +2907,26 @@ describe("Ext.layout.container.VBox", function(){
                         width: 500
                     }]
                 });
-                
                 var scrollable = ct.getScrollable();
-                scrollable.scrollTo(50, 30);
-                
-                // Make sure that we're where we want to be
-                var position = scrollable.getPosition();
-                expect(position).toEqual({ x: 50, y: 30 });
-                
-                ct.setSize(401, 401);
-                
-                var position = scrollable.getPosition();
-
-                // There IS no x overflow, so the x scroll request cannot have had any effect
-                expect(position).toEqual({ x: 0, y: 30 });
+                scrollable.on('scrollend', endSpy);
+                scrollable.scrollTo(30, 50);
+                waitsFor(function() {
+                    return endSpy.callCount > 0;
+                });
+                runs(function() {
+                    ct.setSize(401, 401);
+                });
+                waitsFor(function() {
+                    var pos = scrollable.getPosition();
+                    return pos.x > 0 && pos.y > 0;
+                });
+                runs(function() {
+                    var pos = scrollable.getPosition();
+                    expect(pos).toEqual({
+                        x: 30,
+                        y: 50
+                    });
+                });
             });
         });
     });

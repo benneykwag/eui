@@ -44,7 +44,7 @@ Ext.define('Ext.util.StoreHolder', {
             if (store) {
                 me[propertyName] = store = Ext.data.StoreManager.lookup(store);
                 me.bindStoreListeners(store);
-                me.onBindStore(store, oldStore);
+                me.onBindStore(store, oldStore, initial);
             } else {
                 me[propertyName] = null;
             }

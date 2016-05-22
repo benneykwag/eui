@@ -1,3 +1,8 @@
+/**
+ * @private
+ * Adds hit testing and path intersection points methods to the Ext.draw.Path.
+ * Included by the Ext.draw.PathUtil.
+ */
 Ext.define('Ext.draw.overrides.Path', {
     override: 'Ext.draw.Path',
 

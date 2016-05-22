@@ -253,7 +253,7 @@ Ext.define('Ext.mixin.Bindable', {
             }
         },
 
-        // @cmd-auto-dependency { aliasPrefix: 'viewmodel.' }
+        // @cmd-auto-dependency { aliasPrefix: 'viewmodel.', defaultType: 'default' }
         /**
          * @cfg {String/Object/Ext.app.ViewModel} viewModel
          * The `ViewModel` is a data provider for this component and its children. The
@@ -537,6 +537,7 @@ Ext.define('Ext.mixin.Bindable', {
                 getBindTemplateScope = me._getBindTemplateScope,
                 b, property, descriptor;
 
+            me.$hasBinds = true;
             if (!currentBindings || typeof currentBindings === 'string') {
                 currentBindings = {};
             }
@@ -795,7 +796,7 @@ Ext.define('Ext.mixin.Bindable', {
             var me = this,
                 bindings, key, binding;
 
-            if (!me.destroying) {
+            if (me.$hasBinds) {
                 bindings = me.getBind();
                 if (bindings && typeof bindings !== 'string') {
                     for (key in bindings) {

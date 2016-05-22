@@ -116,6 +116,8 @@ Ext.define('Ext.overrides.Widget', {
             parent.remove(me, false);
         }
 
+        me.removeBindings();
+
         me.callParent();
     },
     

@@ -49,8 +49,8 @@ Ext.define('Ext.viewport.Viewport', {
  * @extends Ext.viewport.Default
  * @singleton
  *
- * Ext.Viewport is a instance created when you use {@link Ext#setup}. Because {@link Ext.Viewport} extends from
- * {@link Ext.Container}, it has as {@link #layout} (which defaults to {@link Ext.layout.Card}). This means you
+ * Ext.Viewport is an instance created when you use {@link Ext#setup}. Because {@link Ext.Viewport} extends from
+ * {@link Ext.Container}, it has a {@link #layout} that defaults to {@link Ext.layout.Card}. This means you
  * can add items to it at any time, from anywhere in your code. The {@link Ext.Viewport} {@link #cfg-fullscreen}
  * configuration is `true` by default, so it will take up your whole screen.
  *

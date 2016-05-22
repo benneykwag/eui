@@ -871,7 +871,7 @@ describe("Ext.form.Basic", function() {
         beforeEach(function(){
             Ext.define('BasicFormTestModel', {
                 extend: 'Ext.data.Model',
-                fields: ['one', {type: 'int', name: 'two'}, {type: 'date', name: 'three'}]
+                fields: ['one', {type: 'int', name: 'two'}, {type: 'date', name: 'three'}, {name: 'four'}]
             });
             model = new BasicFormTestModel();
         });
@@ -886,6 +886,9 @@ describe("Ext.form.Basic", function() {
             addField({name: 'one', value: 'valueone'});
             addField(new Ext.form.field.Number({name: 'two', value: 2}));
             addField(new Ext.form.field.Date({name: 'three', value: date}));
+            addField(new Ext.form.field.Checkbox({name: 'four', inputValue: 'red'}));
+            addField(new Ext.form.field.Checkbox({name: 'four', checked: true, inputValue: 'blue', uncheckedValue: 'no-blue'}));
+            addField(new Ext.form.field.Checkbox({name: 'four', inputValue: 'green', uncheckedValue: 'no-green'}));
 
             basicForm.updateRecord(model);
 
@@ -898,6 +901,8 @@ describe("Ext.form.Basic", function() {
             expect(d1.getFullYear()).toBe(d2.getFullYear());
             expect(d1.getMonth()).toBe(d2.getMonth());
             expect(d1.getDate()).toBe(d2.getDate());
+
+            expect(model.get('four')).toEqual(['blue', 'no-green']);
         });
         
         it("should use a record specified by loadRecord if one isn't provided", function() {
@@ -920,6 +925,34 @@ describe("Ext.form.Basic", function() {
         });
     });
     
+    describe("checkboxes & getModelData", function() {
+        it("should return an array of values when there are checkboxes with the same name, one value for each checkbox where the value is not null", function() {
+            var chks = container.add([{
+                xtype: 'checkboxfield',
+                inputValue: 'red',
+                name: 'foo',
+                checked: true
+            }, {
+                xtype: 'checkboxfield',
+                inputValue: 'blue',
+                name: 'foo'
+            }, {
+                xtype: 'checkboxfield',
+                inputValue: 'green',
+                name: 'foo',
+                uncheckedValue: 'off'
+            }]);
+            // is checked, should be the value
+            expect(chks[0].getModelData().foo).toBe('red');
+            // not checked and no uncheckedValue; should be null
+            expect(chks[1].getModelData().foo).toBeNull();
+            // not checked, but has uncheckedValue; should be 'off'
+            expect(chks[2].getModelData().foo).toBe('off');
+            // only the first two should be included
+            expect(basicForm.getValues(undefined, undefined, undefined, true).foo.length).toEqual(2);
+        })
+    });
+
     describe("radios & getModelData", function() {
         it("should take the selected radio value", function() {
             container.add([{

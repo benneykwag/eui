@@ -82,7 +82,8 @@ Ext.define('Ext.grid.ColumnLayout', {
     },
 
     moveItemBefore: function (item, before) {
-        var prevOwner = item.ownerCt;
+        var prevOwner = item.ownerCt,
+            nextSibling = before && before.nextSibling();
 
         // Due to the nature of grid headers, index calculation for
         // moving items is complicated, especially since removals can trigger
@@ -91,6 +92,12 @@ Ext.define('Ext.grid.ColumnLayout', {
         // and inserting it
         if (item !== before && prevOwner) {
             prevOwner.remove(item, false);
+
+            // If the removal caused destruction of the before, this was
+            // the last subheader, so move to beore its next sibling
+            if (before && before.destroyed) {
+                before = nextSibling;
+            }
         }
         return this.callParent([item, before]);
     },

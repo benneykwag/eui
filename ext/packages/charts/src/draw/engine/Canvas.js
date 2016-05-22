@@ -3,6 +3,7 @@
  */
 Ext.define('Ext.draw.engine.Canvas', {
     extend: 'Ext.draw.Surface',
+    isCanvas: true,
 
     requires: [
         //<feature legacyBrowser>
@@ -267,7 +268,10 @@ Ext.define('Ext.draw.engine.Canvas', {
             });
 
         // Emulate Canvas in IE8 with VML.
-        window['G_vmlCanvasManager'] && G_vmlCanvasManager.initElement(canvas.dom);
+        if (window['G_vmlCanvasManager']) {
+            G_vmlCanvasManager.initElement(canvas.dom);
+            this.isVML = true;
+        }
 
         var overrides = Ext.draw.engine.Canvas.contextOverrides,
             ctx = canvas.dom.getContext('2d'),
@@ -837,7 +841,7 @@ Ext.define('Ext.draw.engine.Canvas', {
             h = rect[3],
             i, j, k;
 
-        while (parent && (parent !== me)) {
+        while (parent && parent.isSprite) {
             matrix.prependMatrix(parent.matrix || parent.attr && parent.attr.matrix);
             parent = parent.getParent();
         }

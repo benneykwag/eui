@@ -107,6 +107,7 @@ var Ext = Ext || {}; // jshint ignore:line
     Ext.enumerables = enumerables;
 
     /**
+     * @method apply
      * Copies all the properties of `config` to the specified `object`. There are two levels
      * of defaulting supported:
      * 
@@ -341,24 +342,35 @@ var Ext = Ext || {}; // jshint ignore:line
         /**
          * @property {Boolean} [enableAria=true] This property is provided for backward
          * compatibility with previous versions of Ext JS. Accessibility is always enabled
-         * in Ext JS 6.0+
+         * in Ext JS 6.0+.
+         *
+         * This property is deprecated. To disable WAI-ARIA compatibility warnings,
+         * override `Ext.ariaWarn` function in your application startup code:
+         *
+         *      Ext.application({
+         *          launch: function() {
+         *              Ext.ariaWarn = Ext.emptyFn;
+         *          }
+         *      });
+         *
+         * For stricter compatibility with WAI-ARIA requirements, replace `Ext.ariaWarn`
+         * with a function that will raise an error instead:
+         *
+         *      Ext.application({
+         *          launch: function() {
+         *              Ext.ariaWarn = function(target, msg) {
+         *                  Ext.raise({
+         *                      msg: msg,
+         *                      component: target
+         *                  });
+         *              };
+         *          }
+         *      });
+         *
          * @since 6.0.0
+         * @deprecated 6.0.2
          */
         enableAria: true,
-        
-        /**
-         * @property {Boolean} [enableAriaButtons=true] Set to `false` to disable WAI-ARIA
-         * compatibility checks for buttons.
-         * @since 6.0.0
-         */
-        enableAriaButtons: true,
-        
-        /**
-         * @property {Boolean} [enableAriaPanels=true] Set to `false` to disable WAI-ARIA
-         * compatibility checks for panels.
-         * @since 6.0.0
-         */
-        enableAriaPanels: true,
         
         startsWithHashRe: /^#/,
         
@@ -463,7 +475,7 @@ var Ext = Ext || {}; // jshint ignore:line
 
         // Vendor-specific events do not work if lower-cased.  This regex specifies event
         // prefixes for names that should NOT be lower-cased by Ext.canonicalEventName()
-        $vendorEventRe: /^(Moz.+|MS.+|webkit.+)/,
+        $vendorEventRe: /^(DOMMouse|Moz.+|MS.+|webkit.+)/,
 
         // TODO: inlinable function - SDKTOOLS-686
         /**
@@ -1016,6 +1028,25 @@ var Ext = Ext || {}; // jshint ignore:line
                 throw new Error(message);
             },
             deprecate: emptyFn
+        },
+        
+        ariaWarn: function(target, msg) {
+            // The checks still can be disabled by setting Ext.enableAria to false;
+            // this is for backwards compatibility. Also make sure we're not running
+            // under the slicer, warnings are pointless in that case.
+            if (Ext.enableAria && !Ext.slicer) {
+                if (!Ext.ariaWarn.first) {
+                    Ext.ariaWarn.first = true;
+                    Ext.log.warn("WAI-ARIA compatibility warnings can be suppressed " +
+                                 "by adding the following to application startup code:");
+                    Ext.log.warn("    Ext.ariaWarn = Ext.emptyFn;");
+                }
+                
+                Ext.log.warn({
+                    msg: msg,
+                    dump: target
+                });
+            }
         },
 
         /**

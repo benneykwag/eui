@@ -376,6 +376,44 @@ describe("Ext.tab.Bar", function() {
         });
     });
 
+    describe("overflow menu & active tab", function() {
+        beforeEach(function() {
+            createTabBar({
+                renderTo: document.body,
+                width: 150,
+                layout: {
+                    overflowHandler: 'menu'
+                },
+                items: makeTabs(3)
+            })
+        });
+
+        it("should activate the tab when selected from the overflow menu", function() {
+            var menu = tabBar.layout.overflowHandler.menu,
+                item, tab;
+            
+            menu.show();
+            item = menu.items.first();
+            tab = item.masterComponent;
+            jasmine.fireMouseEvent(item, 'click');
+            
+            expect(tabBar.activeTab).toEqual(tab);
+        });
+
+        it("should focus the menuTrigger when card is selected from the overflow menu", function() {
+            var handler = tabBar.layout.overflowHandler,
+                menu = handler.menu,
+                trigger = handler.menuTrigger,
+                item;
+            
+            menu.show();
+            item = menu.items.first();
+            jasmine.fireMouseEvent(item, 'click');
+            
+            jasmine.expectFocused(trigger);
+        });
+    });
+
     describe("scroll & active tab", function() {
         var items;
 

@@ -1543,6 +1543,7 @@ Ext.define('Ext.layout.component.Dock', {
      * indicates the position of the docked item. We use the itemCls (x-docked) as a prefix.
      * An example of a class added to a dock: right item is x-docked-right
      * @param {Ext.Component} item The item we are configuring
+     * @param pos
      */
     configureItem : function(item, pos) {
         this.callParent(arguments);

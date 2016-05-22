@@ -730,7 +730,7 @@ Ext.define('Ext.form.Panel', {
                                     Ext.applyIf(response, {success:true});
                                 }
 
-                                if(!Ext.isEmpty(responseXML)){
+                                if(response.success && !Ext.isEmpty(responseXML)){
                                     response.success = true;
                                 }
                                 success = !!response.success;
@@ -762,7 +762,7 @@ Ext.define('Ext.form.Panel', {
                         });
                         delete request.params;
                     }
-                    request.data = formData;
+                    request.formData = formData;
                 }
 
                 return Ext.Ajax.request(request);

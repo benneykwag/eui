@@ -169,7 +169,7 @@ describe('Ext.form.Labelable', function() {
                     fieldLabel: 'Label'
                 });
 
-                expect(component.labelEl.dom.firstChild.innerHTML).toBe('Label:');
+                expect(component.labelTextEl.dom).hasHTML('Label:');
             });
 
             it("should render the labelSeparator after the label", function() {
@@ -178,7 +178,7 @@ describe('Ext.form.Labelable', function() {
                     labelSeparator: '-'
                 });
 
-                expect(component.labelEl.dom.firstChild.innerHTML).toBe('Label-');
+                expect(component.labelTextEl.dom).hasHTML('Label-');
             });
 
             it("should not render the separator if labelSeparator is empty", function() {
@@ -187,7 +187,7 @@ describe('Ext.form.Labelable', function() {
                     labelSeparator: ''
                 });
 
-                expect(component.labelEl.dom.firstChild.innerHTML).toBe('Label');
+                expect(component.labelTextEl.dom).hasHTML('Label');
             });
 
             describe("labelStyle", function() {
@@ -215,7 +215,7 @@ describe('Ext.form.Labelable', function() {
             it("should set the label element's innerHTML", function() {
                 create();
                 component.setFieldLabel('foo');
-                expect(component.labelEl.dom.firstChild.innerHTML).toBe('foo' + separator);
+                expect(component.labelTextEl.dom).hasHTML('foo' + separator);
             });
 
             it("should show the label element", function() {

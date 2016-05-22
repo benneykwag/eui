@@ -407,20 +407,22 @@ Ext.define('Ext.layout.Context', {
             layout = comp.componentLayout;
             me.cancelLayout(layout);
 
-            if (layout.getLayoutItems) {
-                items = layout.getLayoutItems();
-                if (items.length) {
-                    me.cancelComponent(items, true);
+            if (!comp.destroying) {
+                if (layout.getLayoutItems) {
+                    items = layout.getLayoutItems();
+                    if (items.length) {
+                        me.cancelComponent(items, true);
+                    }
                 }
-            }
 
-            if (comp.isContainer && !comp.collapsed) {
-                layout = comp.layout;
-                me.cancelLayout(layout);
+                if (comp.isContainer && !comp.collapsed) {
+                    layout = comp.layout;
+                    me.cancelLayout(layout);
 
-                items = layout.getVisibleItems();
-                if (items.length) {
-                    me.cancelComponent(items, true);
+                    items = layout.getVisibleItems();
+                    if (items.length) {
+                        me.cancelComponent(items, true);
+                    }
                 }
             }
         }

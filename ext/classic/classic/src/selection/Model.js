@@ -172,6 +172,12 @@ Ext.define('Ext.selection.Model', {
         };
     },
 
+    onBindStore: function(store, oldStore, initial) {
+        if (!initial) {
+            this.updateSelectedInstances(this.selected);
+        }
+    },
+
     suspendChanges: function(){
         ++this.suspendChange;
     },
@@ -331,7 +337,8 @@ Ext.define('Ext.selection.Model', {
             fromIdx = e.previousRecordIndex,
             key = keyEvent.getCharCode(),
             isSpace = key === keyEvent.SPACE,
-            direction = key === keyEvent.UP || key === keyEvent.PAGE_UP || key === keyEvent.HOME ? 'up' : (key === keyEvent.DOWN || key === keyEvent.PAGE_DOWN || key === keyEvent.END ? 'down' : null);
+            changedRec = e.record !== e.previousRecord,
+            direction = key === keyEvent.UP || key === keyEvent.PAGE_UP || key === keyEvent.HOME || (key === keyEvent.LEFT && changedRec) ? 'up' : (key === keyEvent.DOWN || key === keyEvent.PAGE_DOWN || key === keyEvent.END || (key === keyEvent.RIGHT && changedRec) ? 'down' : null);
 
         switch (me.selectionMode) {
             case 'MULTI':
@@ -598,6 +605,7 @@ Ext.define('Ext.selection.Model', {
 
         records = !Ext.isArray(records) ? [records] : records;
         len = records.length;
+        
         if (!keepExisting && selected.getCount() > 0) {
             result = me.deselectDuringSelect(records, suppressEvent);
             if (me.destroyed) {
@@ -618,7 +626,9 @@ Ext.define('Ext.selection.Model', {
             if (!selected.getCount()) {
                 me.selectionStart = record;
             }
-            selected.add(record);
+            if (!suppressEvent) {
+                selected.add(record);
+            }
             change = true;
         };
 
@@ -633,7 +643,12 @@ Ext.define('Ext.selection.Model', {
                 return;
             }
         }
+        
         me.lastSelected = record;
+
+        if (suppressEvent) {
+            selected.add(records);
+        }
 
         // fire selchange if there was a change and there is no suppressEvent flag
         me.maybeFireSelectionChange(change && !suppressEvent);
@@ -686,8 +701,8 @@ Ext.define('Ext.selection.Model', {
         }
 
         if (typeof records === "number") {
-            // No matching record, jump out
             record = me.store.getAt(records);
+            // No matching record, jump out
             if (!record) {
                 return false;
             }
@@ -698,7 +713,9 @@ Ext.define('Ext.selection.Model', {
 
         commit = function() {
             ++accepted;
-            selected.remove(record);
+            if (!suppressEvent) {
+                selected.remove(record);
+            }
             if (record === me.selectionStart) {
                 me.selectionStart = null;
             }
@@ -721,6 +738,12 @@ Ext.define('Ext.selection.Model', {
             }
         }
         me.resumeChanges();
+
+        // If we have been suppressing events, we've not been removing individual records
+        // Remove them all in one shot.
+        if (suppressEvent) {
+            selected.remove(records);
+        }
 
         // fire selchange if there was a change and there is no suppressEvent flag
         me.maybeFireSelectionChange(accepted > 0 && !suppressEvent);
@@ -779,14 +802,6 @@ Ext.define('Ext.selection.Model', {
         if (fireEvent && !me.suspendChange) {
             me.fireEvent('selectionchange', me, me.getSelection());
         }
-    },
-
-    /**
-     * @private
-     * @return {Ext.data.Model} Returns the last selected record.
-     */
-    getLastSelected: function() {
-        return this.lastSelected;
     },
 
     /**
@@ -863,7 +878,7 @@ Ext.define('Ext.selection.Model', {
      */
     isSelected: function (record) {
         record = Ext.isNumber(record) ? this.store.getAt(record) : record;
-        return this.selected.contains(record);
+        return this.selected ? this.selected.contains(record) : false;
     },
 
     /**
@@ -992,7 +1007,9 @@ Ext.define('Ext.selection.Model', {
     // when a store is cleared remove all selections
     // (if there were any)
     onStoreClear: function() {
-        if (!this.store.isLoading() && this.hasSelection()) {
+        // When the store is clearing for reload and there is outstanding selection,
+        // make sure to clear it! Otherwise we might end up with incosistent state.
+        if ((!this.store.isLoading() || this.store.clearing) && this.hasSelection()) {
             this.clearSelections();
             this.maybeFireSelectionChange(true);
         }
@@ -1101,7 +1118,7 @@ Ext.define('Ext.selection.Model', {
             items, length, i, selectedRec, rec,
             lastSelectedChanged;
             
-        if (store.isBufferedStore) {
+        if (store && store.isBufferedStore) {
             return;
         }
 
@@ -1115,30 +1132,35 @@ Ext.define('Ext.selection.Model', {
 
         // Flag so that reactors to collectionEndUpdate know that the collection is not really changing
         me.refreshing = true;
-        for (i = 0; i < length; ++i) {
-            selectedRec = items[i];
+        if (store) {
+            for (i = 0; i < length; ++i) {
+                selectedRec = items[i];
 
-            // Is the selected record ID still present in the store?
-            rec = store.getById(selectedRec.id);
+                // Is the selected record ID still present in the store?
+                rec = store.getById(selectedRec.id);
 
-            // Yes, ensure the instance is correct
-            if (rec) {
-                if (rec !== selectedRec) {
-                    // Silently replace the stale record instance with the new record by the same ID
-                    selected.replace(rec);
+                // Yes, ensure the instance is correct
+                if (rec) {
+                    if (rec !== selectedRec) {
+                        // Silently replace the stale record instance with the new record by the same ID
+                        selected.replace(rec);
+                    }
                 }
-            }
-            // No, remove it from the selection if we are configured to prune removed records
-            else if (prune) {
-                selected.remove(selectedRec);
-                ++removeCount;
-            }
-        }   
+                // No, remove it from the selection if we are configured to prune removed records
+                else if (prune) {
+                    selected.remove(selectedRec);
+                    ++removeCount;
+                }
+            }   
+        } else {
+            removeCount = selected.getCount();
+            selected.removeAll();
+        }
         me.refreshing = false;
         me.maybeFireSelectionChange(removeCount > 0);
         if (lastSelectedChanged) {
             // Private event for now
-            me.fireEvent('lastselectedchanged', me, me.getSelection(), me.lastSelected);
+            me.fireEvent('lastselectedchanged', me, me.getSelection(), lastSelected);
         }
     },
 
@@ -1218,6 +1240,17 @@ Ext.define('Ext.selection.Model', {
 
     privates: {
         onBeforeNavigate: Ext.privateFn,
+
+        /**
+         * @private
+         * Called by {@link Ext.panel.Table#updateBindSelection} when publishing the `selection` property.
+         * It should yield the last record selected.
+         * @return {Ext.data.Model} The last record selected. This is only available if the current selection type is cells or rows.
+         * In the case of multiple selection, the *last* record added to the selection is returned.
+         */
+        getLastSelected: function() {
+            return this.lastSelected;
+        },
 
         selectWithEventMulti: function(record, e, isSelected) {
             var me = this,

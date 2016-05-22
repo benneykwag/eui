@@ -60,7 +60,8 @@ Ext.define("Ext.form.Labelable", {
             'errorEl',
 
             'errorWrapEl',
-            'ariaErrorEl'
+            'ariaErrorEl',
+            'labelTextEl'
         ]
     },
 
@@ -78,9 +79,11 @@ Ext.define("Ext.form.Labelable", {
                 ' for="{inputId}"</tpl> {labelAttrTpl}>',
             '<span class="{labelInnerCls} {labelInnerCls}-{ui}" style="{labelInnerStyle}">',
             '{beforeLabelTextTpl}',
-            '<tpl if="fieldLabel">{fieldLabel}',
-                '<tpl if="labelSeparator">{labelSeparator}</tpl>',
-            '</tpl>',
+            '<span id="{id}-labelTextEl" data-ref="labelTextEl" class="{labelTextCls}">',
+                '<tpl if="fieldLabel">{fieldLabel}',
+                    '<tpl if="labelSeparator">{labelSeparator}</tpl>',
+                '</tpl>',
+            '</span>',
             '{afterLabelTextTpl}',
             '</span>',
         '</label>',
@@ -161,6 +164,7 @@ Ext.define("Ext.form.Labelable", {
     topLabelCls: Ext.baseCSSPrefix + 'form-item-label-top',
     rightLabelCls: Ext.baseCSSPrefix + 'form-item-label-right',
     labelInnerCls: Ext.baseCSSPrefix + 'form-item-label-inner',
+    labelTextCls: Ext.baseCSSPrefix + 'form-item-label-text',
     topLabelSideErrorCls: Ext.baseCSSPrefix + 'form-item-label-top-side-error',
 
     /**
@@ -553,7 +557,8 @@ Ext.define("Ext.form.Labelable", {
                 if (separator) {
                     label = me.trimLabelSeparator() + separator;
                 }
-                labelEl.dom.firstChild.innerHTML = label;
+                
+                me.labelTextEl.dom.innerHTML = label;
                 me.removeCls(noLabelCls);
                 if (sideLabel && errorWrapEl) {
                     errorWrapEl.addCls(errorWrapUnderSideLabelCls);
@@ -681,6 +686,7 @@ Ext.define("Ext.form.Labelable", {
             labelStyle: labelStyle + (me.labelStyle || ''),
             labelInnerStyle: labelInnerStyle,
             labelInnerCls: me.labelInnerCls,
+            labelTextCls: me.labelTextCls,
             unselectableCls: Ext.Element.unselectableCls,
             bodyStyle: bodyStyle,
             baseBodyCls: me.baseBodyCls,

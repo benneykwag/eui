@@ -49,6 +49,50 @@ describe('Ext.resizer.Splitter', function () {
                 expect(splitter.tracker.foo).toBe('baz');
             });
         });
+        
+        describe("collapsing", function() {
+            function makeContainer(splitterCfg) {
+                c = new Ext.container.Container({
+                    renderTo: document.body,
+                    layout: 'hbox',
+                    width: 500,
+                    height: 500,
+                    items: [{
+                        xtype: 'container',
+                        itemId: 'foo',
+                        html: 'foo',
+                        flex: 1
+                    }, Ext.apply({
+                        xtype: 'splitter'
+                    }, splitterCfg), {
+                        xtype: 'panel',
+                        itemId: 'bar',
+                        collapsible: true,
+                        html: 'bar'
+                    }]
+                });
+                
+                splitter = c.down('splitter');
+            }
+            
+            describe("listeners", function() {
+                it("should not attach collapse listeners when target is not a panel", function() {
+                    makeContainer({ collapseTarget: 'prev' });
+                    
+                    var item = c.down('#foo');
+                    
+                    expect(item.hasListeners.collapse).not.toBeDefined();
+                });
+                
+                it("should attach listeners when target is a panel", function() {
+                    makeContainer();
+                    
+                    var item = c.down('#bar');
+                    
+                    expect(item.hasListeners.collapse).toBe(1);
+                });
+            });
+        });
     });
     
     describe("ARIA", function() {

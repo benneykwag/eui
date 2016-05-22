@@ -95,7 +95,7 @@ Ext.define('Ext.ElementLoader', {
      * - response - The response object.
      * - options - Ajax options.
      * 
-     * @declarativeHandler
+     * @controllable
      */
 
     /**
@@ -106,7 +106,7 @@ Ext.define('Ext.ElementLoader', {
      * - response - The response object.
      * - options - Ajax options.
      * 
-     * @declarativeHandler
+     * @controllable
      */
 
     /**
@@ -118,7 +118,7 @@ Ext.define('Ext.ElementLoader', {
      * - response - The response object.
      * - options - Ajax options.
      * 
-     * @declarativeHandler
+     * @controllable
      */
 
     /**

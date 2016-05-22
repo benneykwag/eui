@@ -142,9 +142,10 @@ Ext.testHelper = {
             end: 'mouseup'
         },
 
-    fireEvent: function(type, target, cfg) {
+    fireEvent: function(type, target, cfg, pointerType) {
         var eventType = this.events[type],
             activeTouches = {},
+            scroll = Ext.getDoc().getScroll(),
             touch, id, touches;
 
         if (Ext.supports.PointerEvents || Ext.supports.MSPointerEvents) {
@@ -152,9 +153,13 @@ Ext.testHelper = {
                 target,
                 eventType,
                 cfg.id,
-                cfg.x,
-                cfg.y,
-                cfg.button || 0
+                (cfg.x || 0) - scroll.left,
+                (cfg.y || 0) - scroll.top,
+                cfg.button || 0,
+                false,
+                false,
+                false,
+                pointerType
             );
         } else if (Ext.supports.TouchEvents) {
             touch = activeTouches[cfg.id] = {
@@ -183,11 +188,27 @@ Ext.testHelper = {
             jasmine.fireMouseEvent(
                 target,
                 eventType,
-                cfg.x,
-                cfg.y,
+                (cfg.x || 0) - scroll.left,
+                (cfg.y || 0) - scroll.top,
                 cfg.button ? cfg.button : 0
             );
         }
+    },
+
+    pointerDown: function(target, cfg) {
+        this.fireEvent('start', target, cfg, 'pointer');
+    },
+
+    pointerMove: function(target, cfg) {
+        this.fireEvent('move', target, cfg, 'pointer');
+    },
+
+    pointerUp: function(target, cfg) {
+        this.fireEvent('end', target, cfg, 'pointer');
+    },
+
+    pointerCancel: function(target, cfg) {
+        this.fireEvent('cancel', target, cfg, 'pointer');
     },
 
     touchStart: function(target, cfg) {

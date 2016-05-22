@@ -688,4 +688,90 @@ describe("Ext.data.proxy.Direct", function() {
             });
         });
     });
+    
+    describe("aborting", function() {
+        var operation, callback, directFn;
+        
+        beforeEach(function() {
+            makeApi({
+                actions: {
+                    DirectSpecs: [{
+                        len: 0,
+                        name: 'directFn'
+                    }]
+                }
+            });
+            
+            directFn = makeSpy('directFn').andCallFake(function(cb, proxy) {
+                callback = cb;
+            });
+            
+            makeProxy({
+                directFn: directFn
+            });
+            
+            spyOn(proxy, 'processResponse').andCallThrough();
+            spyOn(proxy, 'doRequest').andCallThrough();
+        });
+        
+        afterEach(function() {
+            operation = callback = directFn = null;
+        });
+        
+        it("should abort read operations", function() {
+            readSome();
+            
+            operation = proxy.doRequest.mostRecentCall.args[0];
+            
+            proxy.abort(operation);
+            expect(proxy.canceledOperations[operation.id]).toBe(true);
+            
+            callback({}, { success: true });
+            
+            expect(proxy.processResponse).not.toHaveBeenCalled();
+            expect(proxy.canceledOperations[operation.id]).not.toBeDefined();
+        });
+        
+        it("should abort create operations", function() {
+            createSome();
+            
+            operation = proxy.doRequest.mostRecentCall.args[0];
+            
+            proxy.abort(operation);
+            expect(proxy.canceledOperations[operation.id]).toBe(true);
+            
+            callback({}, { success: true });
+            
+            expect(proxy.processResponse).not.toHaveBeenCalled();
+            expect(proxy.canceledOperations[operation.id]).not.toBeDefined();
+        });
+        
+        it("should abort update operations", function() {
+            updateSome();
+            
+            operation = proxy.doRequest.mostRecentCall.args[0];
+            
+            proxy.abort(operation);
+            expect(proxy.canceledOperations[operation.id]).toBe(true);
+            
+            callback({}, { success: true });
+            
+            expect(proxy.processResponse).not.toHaveBeenCalled();
+            expect(proxy.canceledOperations[operation.id]).not.toBeDefined();
+        });
+        
+        it("should abort delete operations", function() {
+            destroySome();
+            
+            operation = proxy.doRequest.mostRecentCall.args[0];
+            
+            proxy.abort(operation);
+            expect(proxy.canceledOperations[operation.id]).toBe(true);
+            
+            callback({}, { success: true });
+            
+            expect(proxy.processResponse).not.toHaveBeenCalled();
+            expect(proxy.canceledOperations[operation.id]).not.toBeDefined();
+        });
+    });
 });

@@ -32,7 +32,7 @@ Ext.define('Ext.overrides.util.Positionable', {
         var me = this,
             scroll = !Ext.isEmpty(monitorScroll),
             action = function() {
-                me.alignTo(anchorToEl, alignment, offsets, animate);
+                me.mixins.positionable.alignTo.call(me, anchorToEl, alignment, offsets, animate);
                 Ext.callback(callback, me);
             },
             anchor = me.getAnchor();

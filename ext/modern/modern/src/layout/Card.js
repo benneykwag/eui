@@ -29,14 +29,12 @@
  *         ]
  *     });
  *
- *     panel.{@link Ext.Container#setActiveItem setActiveItem}(1);
+ *     panel.setActiveItem(1);
  *
  * Here we create a Panel with a Card Layout and later set the second item active (the active item index is zero-based,
  * so 1 corresponds to the second item). Normally you're better off using a {@link Ext.tab.Panel tab panel} or a
  * {@link Ext.carousel.Carousel carousel}.
  */
-
-
 Ext.define('Ext.layout.Card', {
     extend: 'Ext.layout.Default',
 

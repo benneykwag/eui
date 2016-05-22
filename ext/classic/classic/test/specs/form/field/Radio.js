@@ -136,4 +136,25 @@ describe("Ext.form.field.Radio", function() {
         });
     });
     
+    describe('getModelData', function() {
+        it("should return the inputValue", function() {
+            var component = new Ext.form.field.Radio({
+                checked: true,
+                name: 'test',
+                inputValue: 'the-input-value',
+                renderTo: Ext.getBody()
+            });
+            radios = [component];
+            expect(component.getModelData().test).toBe('the-input-value');
+        });
+        it("should return null when unchecked", function() {
+            var component = new Ext.form.field.Radio({
+                name: 'test',
+                inputValue: 'the-input-value',
+                renderTo: Ext.getBody()
+            });
+            radios = [component];
+            expect(component.getModelData().test).toBeNull();
+        });
+    });
 });

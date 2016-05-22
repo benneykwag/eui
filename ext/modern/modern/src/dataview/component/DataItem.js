@@ -98,13 +98,13 @@
  *
  *     dataMap: {
  *         // When the record is updated, get the text configuration, and
- *         // call {@link #setHtml} with the 'text' field of the record.
+ *         // call setHtml with the 'text' field of the record.
  *         getText: {
  *             setHtml: 'text'
  *         },
  *
  *         // When the record is updated, get the userName configuration, and
- *         // call {@link #setHtml} with the 'from_user' field of the record.
+ *         // call setHtml with the 'from_user' field of the record.
  *         getUserName: {
  *             setHtml: 'from_user'
  *         },
@@ -116,7 +116,6 @@
  *         }
  *     }
  */
-
 Ext.define('Ext.dataview.component.DataItem', {
     extend: 'Ext.Container',
     xtype : 'dataitem',
@@ -159,7 +158,8 @@ Ext.define('Ext.dataview.component.DataItem', {
         dataMap: {},
 
         /**
-         * @private dataview
+         * @private
+         * @cfg dataview
          */
         dataview: null,
 

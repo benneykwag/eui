@@ -178,6 +178,22 @@ Ext.define('Ext.grid.plugin.RowEditing', {
     },
 
     /**
+     * Called by TableView#suspendActionableMode to suspend actionable processing while
+     * the view is being changed.
+     * @protected
+     */
+    suspend: Ext.emptyFn,
+
+    /**
+     * Called by TableView#resumeActionableMode to resume actionable processing after
+     * the view has been changed.
+     * @param {Ext.grid.CellContext} position The position at which to resume actionable processing.
+     * @return {Boolean} `true` if this Actionable has successfully resumed.
+     * @protected
+     */
+    resume: Ext.emptyFn,
+
+    /**
      * @private
      * The {@link Ext.grid.RowEditor RowEditor} hooks up a KeyNav to call this method to complete the edit.
      */

@@ -824,6 +824,22 @@ Ext.define('Ext.tab.Panel', {
             me.tabBar.remove(item.tab);
         }
     },
+    
+    enable: function() {
+        var me = this,
+            activeTab = me.activeTab !== null ? (me.activeTab || 0) : null,
+            wasDisabled = me.disabled;
+        
+        me.callParent(arguments);
+        
+        if (wasDisabled) {
+            activeTab = activeTab.isComponent ? activeTab : me.getComponent(activeTab);
+            
+            if (activeTab) {
+                me.getTabBar().setActiveTab(activeTab.tab);
+            }
+        }
+    },
 
     privates: {
         /**

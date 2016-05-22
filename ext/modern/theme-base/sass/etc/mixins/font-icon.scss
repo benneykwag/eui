@@ -168,10 +168,6 @@ require('font-icon');
         display: inline-block;
         -webkit-transform: $rotation;
         -webkit-transform-origin: $rotation-origin;
-        -moz-transform: $rotation;
-        -moz-transform-origin: $rotation-origin;
-        -ms-transform: $rotation;
-        -ms-transform-origin: $rotation-origin;
         transform: $rotation;
         transform-origin: $rotation-origin;
     }

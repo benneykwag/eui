@@ -372,6 +372,13 @@ describe("Ext.list.Tree", function() {
                         this.callParent([config]);
                     },
 
+                    getToolElement: function() {
+                        if (!this.toolElement) {
+                            this.toolElement = this.element.createChild();
+                        }   
+                        return this.toolElement;
+                    },
+
                     insertItem: function(item, refItem) {
                         this.logs.insertItem.push([item, refItem]);
                     },  
@@ -3750,6 +3757,182 @@ describe("Ext.list.Tree", function() {
                 });
             });
         });          
+
+        describe("micro mode", function() {
+            describe("at construction", function() {
+                it("should have root level items in the toolElement", function() {
+                    makeCustomList({
+                        micro: true
+                    });
+                    var toolNodes = list.toolsElement.dom.childNodes;
+                    expect(toolNodes[0]).toBe(getItem('i1').getToolElement().dom);
+                    expect(toolNodes[1]).toBe(getItem('i2').getToolElement().dom);
+                    expect(toolNodes[2]).toBe(getItem('i3').getToolElement().dom);
+                    expect(toolNodes[3]).toBe(getItem('i4').getToolElement().dom);
+                });
+
+                it("should be empty if there is no data", function() {
+                    store = new Ext.data.TreeStore({
+                        model: Model,
+                        root: {
+                            expanded: true,
+                            children: []
+                        }
+                    });
+                    makeCustomList({
+                        micro: true
+                    });
+                    expect(list.toolsElement.dom.childNodes.length).toBe(0);
+                });
+            });
+
+            describe("dynamic", function() {
+                describe("starting empty", function() {
+                    it("should add nodes", function() {
+                        store = new Ext.data.TreeStore({
+                            model: Model,
+                            root: {
+                                expanded: true,
+                                children: []
+                            }
+                        });
+                        makeCustomList({
+                            micro: true
+                        });
+                        store.getRoot().appendChild({
+                            id: 'foo'
+                        });
+                        var toolNodes = list.toolsElement.dom.childNodes;
+                        expect(toolNodes.length).toBe(1);
+                        expect(toolNodes[0]).toBe(getItem('foo').getToolElement().dom);
+                    });
+                });
+
+                describe("starting with nodes", function() {
+                    beforeEach(function() {
+                        makeCustomList({
+                            micro: true
+                        });
+                    });
+
+                    it("should handle appending", function() {
+                        store.getRoot().appendChild({
+                            id: 'foo'
+                        });
+                        var toolNodes = list.toolsElement.dom.childNodes;
+                        expect(toolNodes.length).toBe(5);
+                        expect(toolNodes[4]).toBe(getItem('foo').getToolElement().dom);
+                    });
+
+                    it("should handle insertion", function() {
+                        store.getRoot().insertChild(0, {
+                            id: 'foo'
+                        });
+
+                        var toolNodes = list.toolsElement.dom.childNodes;
+
+                        expect(toolNodes.length).toBe(5);
+                        expect(toolNodes[0]).toBe(getItem('foo').getToolElement().dom);
+
+                        store.getRoot().insertChild(2, {
+                            id: 'foo'
+                        });
+
+                        expect(toolNodes.length).toBe(6);
+                        expect(toolNodes[2]).toBe(getItem('foo').getToolElement().dom);
+                    });
+
+                    it("should handle removal", function() {
+                        var root = store.getRoot();
+                        root.removeChild(root.getChildAt(1));
+
+                        var toolNodes = list.toolsElement.dom.childNodes;
+                        expect(toolNodes.length).toBe(3);
+
+                        expect(toolNodes[0]).toBe(getItem('i1').getToolElement().dom);
+                        expect(toolNodes[1]).toBe(getItem('i3').getToolElement().dom);
+                        expect(toolNodes[2]).toBe(getItem('i4').getToolElement().dom);
+                    });
+                });
+            });
+        });
+    });
+
+    describe("micro mode", function() {
+        it("should default to micro: false", function() {
+            makeList();
+            expect(list.getMicro()).toBe(false);
+        });
+
+        describe("at construction", function() {
+            describe("starting as micro: true", function() {
+                beforeEach(function() {
+                    makeList({
+                        micro: true
+                    });
+                });
+
+                it("should have the microCls", function() {
+                    expect(list.element).toHaveCls(list.microCls);
+                });
+
+                it("should have the toolsElement be visible", function() {
+                    expect(list.toolsElement.isVisible()).toBe(true);
+                });
+            });
+
+            describe("starting micro: false", function() {
+                beforeEach(function() {
+                    makeList({
+                        micro: false
+                    });
+                });
+
+                it("should not have the microCls", function() {
+                    expect(list.element).not.toHaveCls(list.microCls);
+                });
+
+                it("should have the toolsElement be not visible", function() {
+                    expect(list.toolsElement.isVisible()).toBe(false);
+                });
+            });
+        });
+
+        describe("dynamic", function() {
+            describe("starting as micro: true", function() {
+                beforeEach(function() {
+                    makeList({
+                        micro: true
+                    });
+                    list.setMicro(false);
+                });
+
+                it("should remove the microCls", function() {
+                    expect(list.element).not.toHaveCls(list.microCls);
+                });
+
+                it("should have the toolsElement be not visible", function() {
+                    expect(list.toolsElement.isVisible()).toBe(false);
+                });
+            });
+
+            describe("starting micro: false", function() {
+                beforeEach(function() {
+                    makeList({
+                        micro: false
+                    });
+                    list.setMicro(true);
+                });
+
+                it("should add the microCls", function() {
+                    expect(list.element).toHaveCls(list.microCls);
+                });
+
+                it("should have the toolsElement be visible", function() {
+                    expect(list.toolsElement.isVisible()).toBe(true);
+                });
+            });
+        });
     });
 
     describe("list methods", function() {

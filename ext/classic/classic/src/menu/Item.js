@@ -223,7 +223,7 @@ Ext.define('Ext.menu.Item', {
      * A function called when the menu item is clicked (can be used instead of {@link #click} event).
      * @cfg {Ext.menu.Item} handler.item The item that was clicked
      * @cfg {Ext.event.Event} handler.e The underlying {@link Ext.event.Event}.
-     * @declarativeHandler
+     * @controllable
      */
 
     /**

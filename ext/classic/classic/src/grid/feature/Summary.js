@@ -124,8 +124,8 @@ Ext.define('Ext.grid.feature.Summary', {
             syncContent: function(destRow, sourceRow, columnsToUpdate) {
                 destRow = Ext.fly(destRow, 'syncDest');
                 sourceRow = Ext.fly(sourceRow, 'sycSrc');
-                var owner = this.owner,
-                    selector = owner.summaryRowSelector,
+                var summaryFeature = this.summaryFeature,
+                    selector = summaryFeature.summaryRowSelector,
                     destSummaryRow = destRow.down(selector, true),
                     sourceSummaryRow = sourceRow.down(selector, true);
 
@@ -185,7 +185,7 @@ Ext.define('Ext.grid.feature.Summary', {
                     })[0];
                 },
                 afterrender: function() {
-                    grid.getView().getScrollable().addPartner(me.summaryBar.getScrollable());
+                    grid.getView().getScrollable().addPartner(me.summaryBar.getScrollable(), 'x');
                     me.onStoreUpdate();
                 },
                 single: true
@@ -261,7 +261,7 @@ Ext.define('Ext.grid.feature.Summary', {
         }
     },
 
-    toggleSummaryRow: function(visible /* private */, fromLockingPartner) {
+    toggleSummaryRow: function(visible, fromLockingPartner) {
         var me = this,
             bar = me.summaryBar;
 

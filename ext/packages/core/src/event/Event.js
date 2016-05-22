@@ -286,6 +286,10 @@ Ext.define('Ext.event.Event', {
             me.pointerType = pointerType;
         }
 
+        // Is this is not the primary touch for PointerEvents (first touch)
+        // or there are multiples touches for Touch Events
+        me.isMultitouch = event.isPrimary === false || (event.touches && event.touches.length > 1);
+
         me.timeStamp = me.time = +(event.timeStamp || new Date());
     },
 
@@ -367,7 +371,10 @@ Ext.define('Ext.event.Event', {
         var relatedTarget = this.relatedTarget,
             target = null;
 
-        if (relatedTarget) {
+        // In some cases in IE10/11, when the mouse is leaving the document over a scrollbar
+        // the relatedTarget will be an empty object literal. So just check we have an element
+        // looking object here before we proceed.
+        if (relatedTarget && relatedTarget.nodeType) {
             if (selector) {
                 target = Ext.fly(relatedTarget).findParent(selector, maxDepth, returnEl);
             } else {
@@ -660,6 +667,23 @@ Ext.define('Ext.event.Event', {
         // DOM element) we need to call the browserEvent's stopPropagation() method.
         browserEvent.stopPropagation();
 
+        return me;
+    },
+
+    /**
+     * Prevents interpretation of this event as part of a gesture lifecycle.
+     *
+     * For example a `touchstart` listener might call `cancelGesture` to prevent
+     * any drag gestures being started by the `touchstart`.
+     */
+    cancelGesture: function() {
+        var me = this,
+            parentEvent = me.parentEvent;
+
+        me.gestureCancelled = true;
+        if (parentEvent) {
+            parentEvent.gestureCancelled = true;
+        }
         return me;
     },
 

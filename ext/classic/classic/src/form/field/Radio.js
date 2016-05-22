@@ -249,14 +249,6 @@ Ext.define('Ext.form.field.Radio', {
         return this.checked ? this.inputValue : null;
     },
 
-    getModelData: function() {
-        var o = this.callParent(arguments);
-        if (o) {
-            o[this.getName()] = this.getSubmitValue();
-        }
-        return o;
-    },
-
     onChange: function(newVal, oldVal) {
         var me = this,
             r, rLen, radio, radios;

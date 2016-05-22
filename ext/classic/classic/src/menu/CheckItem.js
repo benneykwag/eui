@@ -33,7 +33,7 @@ Ext.define('Ext.menu.CheckItem', {
     /**
      * @cfg {Function/String} checkHandler
      * Alternative for the {@link #checkchange} event.  Gets called with the same parameters.
-     * @declarativeHandler
+     * @controllable
      */
 
     /**

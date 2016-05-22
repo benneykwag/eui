@@ -1,6 +1,6 @@
 /**
  * @private
-*/
+ */
 Ext.define('Ext.dataview.element.List', {
     extend: 'Ext.dataview.element.Container',
 

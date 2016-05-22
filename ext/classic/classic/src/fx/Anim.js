@@ -64,7 +64,7 @@ Ext.define('Ext.fx.Anim', {
     /**
      * @cfg {Function/String} callback
      * A function to be run after the animation has completed.
-     * @declarativeHandler
+     * @controllable
      */
 
     /**

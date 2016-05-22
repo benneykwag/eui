@@ -30,7 +30,9 @@ describe("Ext.event.gesture.Drag", function() {
     }
 
     beforeEach(function() {
-        targetEl = Ext.getBody().createChild({});
+        targetEl = Ext.getBody().createChild({
+            style: 'width: 200px; height: 200px; border: 1px solid red;'
+        });
         dragstartHandler = jasmine.createSpy();
         dragHandler = jasmine.createSpy();
         dragendHandler = jasmine.createSpy();
@@ -160,7 +162,6 @@ describe("Ext.event.gesture.Drag", function() {
         });
     });
 
-
     it("should not fire dragstart, drag, and dragend when the distance is less than minDistance", function() {
         runs(function() {
             start({ id: 1, x: 100, y: 101 });
@@ -175,6 +176,52 @@ describe("Ext.event.gesture.Drag", function() {
             expect(dragHandler).not.toHaveBeenCalled();
             expect(dragendHandler).not.toHaveBeenCalled();
         });
+    });
+
+    it("should not fire dragstart, drag, and dragend when the gesture is canceled at TouchStart by setting the cancelGesture property", function() {
+        runs(function() {
+            targetEl.on('touchstart', function(e) {
+                e.cancelGesture();
+            });
+            start({ id: 1, x: 100, y: 101 });
+            move({ id: 1, x: 99, y: 101 - minDistance });
+            end({ id: 1, x: 99, y: 101 - minDistance });
+        });
+
+        // We can't wait for anything. We are expecting nothing to happen
+        // So wait for any potential erroneous animations to end and fire events.
+        waits(100);
+
+        runs(function() {
+            expect(dragstartHandler).not.toHaveBeenCalled();
+            expect(dragHandler).not.toHaveBeenCalled();
+            expect(dragendHandler).not.toHaveBeenCalled();
+        });
+    });
+
+    it("should not fire dragstart when touchstart is stopped and the sequence tap in, tap out, tap in is followed", function() {
+        var touchStart = jasmine.createSpy();
+        targetEl.on('touchstart', touchStart.andCallFake(function(e) {
+            e.stopPropagation();
+        }));
+
+        start({id: 1, x: 100, y: 101});
+        end({id: 1, x: 100, y: 100});
+
+        expect(touchStart.callCount).toBe(1);
+        expect(dragstartHandler).not.toHaveBeenCalled();
+
+        start({id: 2, x: 400, y: 400}, Ext.getBody());
+        end({id: 2, x: 400, y: 400}, Ext.getBody());
+
+        expect(touchStart.callCount).toBe(1);
+        expect(dragstartHandler).not.toHaveBeenCalled();
+
+        start({id: 3, x: 100, y: 101});
+        end({id: 3, x: 100, y: 100});
+
+        expect(touchStart.callCount).toBe(2);
+        expect(dragstartHandler).not.toHaveBeenCalled();
     });
 
     if (Ext.supports.Touch) {

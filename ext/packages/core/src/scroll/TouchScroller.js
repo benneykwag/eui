@@ -306,16 +306,22 @@ Ext.define('Ext.scroll.TouchScroller', {
                 indicators = oldIndicators;
             } else {
                 indicators = { x: null, y: null };
+
+                // Indicators begin fade out 100ms after we request a hide.
+                // This is so that if the user stabs and swipes repeatedly
+                // the indicators remain until they quit.
                 if (xIndicator) {
                     indicators.x = new Ext.scroll.Indicator(Ext.applyIf({
                         axis: 'x',
-                        scroller: me
+                        scroller: me,
+                        hideDelay: 100
                     }, xIndicator));
                 }
                 if (yIndicator) {
                     indicators.y = new Ext.scroll.Indicator(Ext.applyIf({
                         axis: 'y',
-                        scroller: me
+                        scroller: me,
+                        hideDelay: 100
                     }, yIndicator));
                 }
             }
@@ -342,8 +348,10 @@ Ext.define('Ext.scroll.TouchScroller', {
     },
 
     applyInnerElement: function(innerElement) {
-        if (innerElement && !innerElement.isElement) {
-            innerElement = Ext.get(innerElement);
+        if (innerElement) {
+            if (!innerElement.isElement) {
+                innerElement = Ext.get(innerElement);
+            }
         }
 
         //<debug>
@@ -389,7 +397,7 @@ Ext.define('Ext.scroll.TouchScroller', {
         return maxUserPosition;
     },
 
-    applySize: function(size) {
+    applySize: function(size, oldSize) {
         var el = this.getElement(),
             dom, scrollerDom, x, y;
 
@@ -416,10 +424,16 @@ Ext.define('Ext.scroll.TouchScroller', {
             }
         }
 
-        return {
-            x: x,
-            y: y
-        };
+        if (oldSize && (!el || oldSize.x === x && oldSize.y === y)) {
+            size = undefined;
+        } else {
+            size = {
+                x: x,
+                y: y
+            };
+        }
+
+        return size;
     },
 
     applySlotSnapOffset: function(snapOffset) {
@@ -493,7 +507,7 @@ Ext.define('Ext.scroll.TouchScroller', {
         me.callParent();
     },
 
-    refresh: function(immediate, /* private */ options) {
+    refresh: function(immediate, options) {
         var me = this;
 
         ++me.refreshCounter;
@@ -505,6 +519,18 @@ Ext.define('Ext.scroll.TouchScroller', {
             me.scheduleRefresh.args = [options];
             me.refreshScheduled = Ext.on(me.scheduleRefresh);
         }
+        // Element size has changed.
+        // Our position property may need refreshing from the DOM
+        me.positionDirty = true;
+    },
+
+    setSize: function(size) {
+        // We need to capture the passed value here. In applySize, we still need
+        // to calculate the value so the scroller can function, however if we're
+        // in touchScroll mode we don't want to spacer to show unless we've given
+        // an explicit size. This allows us to make that determination.
+        this.passedSize = size;
+        this.callParent([size]);
     },
 
     updateAutoRefresh: function(autoRefresh) {
@@ -619,16 +645,23 @@ Ext.define('Ext.scroll.TouchScroller', {
         this.getTranslatable().setElement(innerElement);
     },
 
-    updateSize: function(size) {
-        if (!this.isConfiguring) {
+    updateSize: function(size, oldSize) {
+        var me = this,
+            passedSize = me.passedSize;
+
+        if (!me.isConfiguring) {
 
             // Base class keeps the spacer el sized to "stretch" a DOM scroll range.
             if (Ext.supports.touchScroll === 1) {
-                this.callParent([size]);
+                // See the setSize override.
+                if (passedSize == null) {
+                    size = passedSize;
+                }
+                me.callParent([size, oldSize]);
             }
             // to avoid multiple calls to refreshAxes() during initialization we will
             // call it once after initConfig has finished.
-            this.refreshAxes();
+            me.refreshAxes();
         }
     },
 
@@ -716,10 +749,16 @@ Ext.define('Ext.scroll.TouchScroller', {
 
                 me.fireEvent('refresh', me);
                 me.refreshCounter = 0;
+
+                // If we need to maintain a clientRegion, keep it correct
+                // so that we can screen out drag gestures which are in the scrollbar track.
+                if (me.clientRegion) {
+                    me.clientRegion = me.getElement().getClientRegion();
+                }
             }
         },
 
-        doScrollTo: function(x, y, animation, /* private */ allowOverscroll) {
+        doScrollTo: function(x, y, animation, allowOverscroll) {
             var me = this,
                 isDragging = me.isDragging,
                 // We only call onScroll if we are programatically CSS translating the scrollable.
@@ -1023,12 +1062,23 @@ Ext.define('Ext.scroll.TouchScroller', {
                 dom, position;
 
             if (me.getTranslatable().isScrollParent) {
-                dom = me.getElement().dom;
+                dom = me.getScrollElement().dom;
                 position = me.position;
 
                 position.x = dom.scrollLeft;
                 position.y = dom.scrollTop;
             }
+
+            // If, in CSS translation scrolling mode (mode 2), we ever encounter a DOM scroll
+            // event, it must be a browser's autoscroll in response to focusing. We MUST
+            // undo this action because in mode 2 scrolling, the DOM must never scroll.
+            // https://sencha.jira.com/browse/EXTJS-18959
+            if (Ext.supports.touchScroll === 2) {
+                dom = dom || me.getScrollElement().dom;
+                dom.scrollTop = dom.scrollLeft = 0;
+                return;
+            }
+
             me.callParent();
         },
 
@@ -1066,6 +1116,7 @@ Ext.define('Ext.scroll.TouchScroller', {
             easingY = me.getAnimationEasing('y', e);
 
             if (easingX || easingY) {
+                me.onScrollStart();
                 me.getTranslatable().animate(easingX, easingY);
             } else {
                 me.onScrollEnd();
@@ -1074,10 +1125,8 @@ Ext.define('Ext.scroll.TouchScroller', {
 
         onDragStart: function(e) {
             var me = this,
-                direction = me.getDirection(),
                 absDeltaX = e.absDeltaX,
                 absDeltaY = e.absDeltaY,
-                directionLock = me.getDirectionLock(),
                 startPosition = me.startPosition,
                 flickStartPosition = me.flickStartPosition,
                 flickStartTime = me.flickStartTime,
@@ -1086,14 +1135,14 @@ Ext.define('Ext.scroll.TouchScroller', {
                 dragDirection = me.dragDirection,
                 x = currentPosition.x,
                 y = currentPosition.y,
-                now = Ext.Date.now();
+                now = Ext.Date.now(),
+                horizontal = me.getX(),
+                vertical = me.getY();
 
-            if (directionLock && direction !== 'both') {
-                if ((direction === 'horizontal' && absDeltaX > absDeltaY) ||
-                    (direction === 'vertical' && absDeltaY > absDeltaX)) {
+            if (me.getDirectionLock() && !(horizontal && vertical)) {
+                if ((horizontal && absDeltaX > absDeltaY) || (vertical && absDeltaY > absDeltaX)) {
                     e.stopPropagation();
-                }
-                else {
+                } else {
                     return;
                 }
             }
@@ -1155,7 +1204,7 @@ Ext.define('Ext.scroll.TouchScroller', {
                     ((!me.getTranslatable().isScrollParent) || (!me.isMouseEvent[browserEvent.type] &&
                         browserEvent.pointerType !== 'mouse')) &&
                         (me.getY() || me.getX())) {
-                me[me.listenerMap[e.type]](e);
+                return me[me.listenerMap[e.type]](e);
             }
         },
 
@@ -1261,8 +1310,8 @@ Ext.define('Ext.scroll.TouchScroller', {
             var me = this,
                 position = me.position;
 
+            me.hideIndicators();
             if (me.isScrolling && !me.isTouching && !me.snapToSlot()) {
-                me.hideIndicators();
                 me.isScrolling = Ext.isScrolling = false;
                 me.fireScrollEnd(position.x, position.y);
             }
@@ -1272,8 +1321,8 @@ Ext.define('Ext.scroll.TouchScroller', {
             var me = this,
                 position = me.position;
 
+            me.showIndicators();
             if (!me.isScrolling) {
-                me.showIndicators();
                 me.isScrolling = Ext.isScrolling = true;
                 me.fireScrollStart(position.x, position.y);
             }
@@ -1296,10 +1345,18 @@ Ext.define('Ext.scroll.TouchScroller', {
             e.preventDefault();
         },
 
-        onTouchStart: function() {
+        onTouchStart: function(e) {
             var me = this;
 
-            me.isTouching = me.self.isTouching = true;
+            // If the touch is outside the client region - therefore in a scrollbar
+            // ignore it - system will take care of it.
+            if (me.clientRegion && !me.clientRegion.contains(e.getPoint())) {
+                // Call the cancelGesture method to to prevent the drag gesture
+                e.cancelGesture();
+
+                // Returning false prevents the event bubble.
+                return false;
+            }
 
             Ext.getDoc().on({
                 touchend: 'onTouchEnd',
@@ -1308,6 +1365,8 @@ Ext.define('Ext.scroll.TouchScroller', {
             });
 
             me.stopAnimation();
+
+            me.isTouching = me.self.isTouching = true;
         },
 
         refreshAxes: function() {

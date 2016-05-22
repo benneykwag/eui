@@ -462,6 +462,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         * in which the handler function is executed.
         * @param {Object} options (optional) If the `ename` parameter was an event name, this is the
         * {@link Ext.util.Observable#addListener addListener} options.
+        * @param noDestroy (private)
         * @return {Object} **Only when the `destroyable` option is specified. **
         *
         *  A `Destroyable` object. An object which implements the `destroy` method which removes all listeners added in this call. For example:
@@ -481,7 +482,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         *
         *     this.btnListeners.destroy();
         */
-        addManagedListener: function(item, ename, fn, scope, options, /* private */ noDestroy) {
+        addManagedListener: function(item, ename, fn, scope, options, noDestroy) {
             var me = this,
                 managedListeners = me.managedListeners = me.managedListeners || [],
                 config, passedOptions;
@@ -963,6 +964,8 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
          *   A shortcut for the `order` event option.  Provided for backward compatibility.
          *   Please use the `priority` event option instead.
          *
+         * @param caller (private)
+         *
          * **Combining Options**
          *
          * Using the options argument, it is possible to combine different types of listeners:
@@ -1038,7 +1041,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
          *
          *     this.btnListeners.destroy();
          */  
-        addListener: function(ename, fn, scope, options, order, /* private */ caller) {
+        addListener: function(ename, fn, scope, options, order, caller) {
             var me = this,
                 namedScopes = Ext._namedScopes,
                 config, namedScope, isClassListener, innerScope, eventOptions;
@@ -1106,6 +1109,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
          * @param {Object} scope (optional) The scope originally specified for the handler. It 
          * must be the same as the scope argument specified in the original call to 
          * {@link Ext.util.Observable#addListener} or the listener will not be removed.
+         * @param eventOptions (private)
          * 
          * **Convenience Syntax**
          *
@@ -1142,7 +1146,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
          *         click: 'onBodyCLick'
          *     });
          */
-        removeListener: function(ename, fn, scope, /* private */ eventOptions) {
+        removeListener: function(ename, fn, scope, eventOptions) {
             var me = this,
                 config, options;
 
@@ -1411,11 +1415,13 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         resumeEvent: function() {
             var events = this.events || 0,
                 len = events && arguments.length,
-                i, event;
+                i, event, ename;
 
             for (i = 0; i < len; i++) {
+                ename = Ext.canonicalEventName(arguments[i]);
+                event = events[ename];
+                
                 // If it exists, and is an Event object (not still a boolean placeholder), resume it
-                event = events[arguments[i]];
                 if (event && event.resume) {
                     event.resume();
                 }
@@ -1601,6 +1607,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         privates: {
             doAddListener: function(ename, fn, scope, options, order, caller, manager) {
                 var me = this,
+                    managedName = options && options.managedName,
                     event, managedListeners, priority;
 
                 order = order || (options && options.order);
@@ -1635,7 +1642,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
 
                     managedListeners.push({
                         item: me,
-                        ename: ename,
+                        ename: managedName || ename,
                         fn: fn,
                         scope: scope,
                         options: options

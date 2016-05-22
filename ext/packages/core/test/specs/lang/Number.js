@@ -686,6 +686,40 @@ describe("Ext.Number", function(){
         });
     });  // clipIndices
 
+    describe('log10', function () {
+        it('should return -Infinity for 0', function () {
+            expect(Ext.Number.log10(0)).toBe(-Infinity);
+        });
+
+        it('should return NaN for negative numbers', function () {
+            expect(Ext.Number.log10(-1)).toBeNaN();
+        });
+
+        it('should return 1 for 10', function () {
+            expect(Ext.Number.log10(10)).toBe(1);
+        });
+
+        it('should return 2 for 100', function () {
+            expect(Ext.Number.log10(100)).toBe(2);
+        });
+
+        it('should return Math.log(50) * Math.LOG10E for 50', function () {
+            expect(Ext.Number.log10(50)).toBe(Math.log(50) * Math.LOG10E);
+        });
+
+        it('should return 1 for 10 as a string', function () {
+            expect(Ext.Number.log10('10')).toBe(1);
+        });
+
+        it('should return -Infinity for 0 as a string', function () {
+            expect(Ext.Number.log10('0')).toBe(-Infinity);
+        });
+
+        it('should return NaN for negative numbers as strings', function () {
+            expect(Ext.Number.log10('-1')).toBeNaN();
+        });
+    });
+
     describe('sign', function () {
         it('should return 0 for 0', function () {
             expect(Ext.Number.sign(0)).toBe(0);

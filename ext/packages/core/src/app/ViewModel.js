@@ -325,18 +325,18 @@
  * are automatically determined so that the formula will not be processed until the required
  * data is present.
  *
- *    var viewModel = new Ext.app.ViewModel({
- *        formulas: {
- *            fullName: function(get) {
- *                return get('firstName') + ' ' + get('lastName');
- *            }
- *        },
- *        data: {firstName: 'John', lastName: 'Smith'}
- *    });
+ *     var viewModel = new Ext.app.ViewModel({
+ *         formulas: {
+ *             fullName: function(get) {
+ *                 return get('firstName') + ' ' + get('lastName');
+ *             }
+ *         },
+ *         data: {firstName: 'John', lastName: 'Smith'}
+ *     });
  *
- *    viewModel.bind('{fullName}', function(v) {
- *        console.log(v);
- *    });
+ *     viewModel.bind('{fullName}', function(v) {
+ *         console.log(v);
+ *     });
  *
  * See {@link #formulas} for more detail.
  */
@@ -558,7 +558,6 @@ Ext.define('Ext.app.ViewModel', {
     },
 
     constructor: function (config) {
-        this.hadValue = {};
         // Used to track non-stub bindings
         this.bindings = {};
         /*
@@ -640,7 +639,7 @@ Ext.define('Ext.app.ViewModel', {
             scheduler.destroy();
         }
 
-        me.hadValue = me.children = me.storeInfo = me._session = me._view = me._scheduler =
+        me.children = me.storeInfo = me._session = me._view = me._scheduler =
                       me.bindings = me._root = me._parent = me.formulaFn = me.$formulaData = null;
 
         me.destroying = false;

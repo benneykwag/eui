@@ -39,8 +39,9 @@ Ext.define('Ext.form.field.Display', {
     alternateClassName: ['Ext.form.DisplayField', 'Ext.form.Display'],
     
     fieldSubTpl: [
-        '<div id="{id}" data-ref="inputEl" tabindex="-1" role="textbox" aria-readonly="true"',
+        '<div id="{id}" data-ref="inputEl" role="textbox" aria-readonly="true"',
         ' aria-labelledby="{cmpId}-labelEl" {inputAttrTpl}',
+        ' tabindex="<tpl if="tabIdx != null">{tabIdx}<tpl else>-1</tpl>"',
         '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>', 
         ' class="{fieldCls} {fieldCls}-{ui}">{value}</div>',
         {
@@ -175,6 +176,16 @@ Ext.define('Ext.form.field.Display', {
         ret.value = this.getDisplayValue();
 
         return ret;
+    },
+    
+    getLabelableRenderData: function() {
+        var data = this.callParent();
+        
+        // Display fields are divs not real input fields, so rendering
+        // "for" attribute in the label does not do any good.
+        delete data.inputId;
+        
+        return data;
     }
 
     /**

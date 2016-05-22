@@ -455,7 +455,9 @@ Ext.define('Ext.form.field.Text', {
     // Observable rejects Ext.emptyFn as a no-op and the listener does not get added so the default does not get prevented.
     // We do not want touchend events translated into mouseup, we only want to prevent default on real mouseup events.
     squashMouseUp: {
-        mouseup: function(){},
+        mouseup: function(e) {
+            this.inputEl.dom.select();
+        },
         translate: false,
         single: true,
         preventDefault: true
@@ -698,6 +700,7 @@ Ext.define('Ext.form.field.Text', {
             // 99% of the time, it will be the mouseup of the click into the field, and 
             // We will be preventing deselection of selected text: https://code.google.com/p/chromium/issues/detail?id=4505
             // Listener is on the doc in case the pointer moves out before user lets go.
+            this.squashMouseUp.scope = this;
             Ext.getDoc().on(this.squashMouseUp);
         }
     },
@@ -875,7 +878,7 @@ Ext.define('Ext.form.field.Text', {
     processRawValue: function(value) {
         var me = this,
             stripRe = me.stripCharsRe,
-            mod, newValue;
+            mod, newValue, lastValue;
 
         if (stripRe) {
             // This will force all instances that match stripRe to be removed
@@ -890,6 +893,11 @@ Ext.define('Ext.form.field.Text', {
             newValue = value.replace(stripRe, '');
             if (newValue !== value) {
                 me.setRawValue(newValue);
+                // Some components change lastValue as you type, so we need to verify
+                // if this is the case here and replace the value of lastValue
+                if (me.lastValue === value) {
+                    me.lastValue = newValue;
+                }
                 value = newValue;
             }
         }
@@ -1258,9 +1266,9 @@ Ext.define('Ext.form.field.Text', {
      */
     selectText: function (start, end) {
         var me = this,
-            v = me.getRawValue(),
-            len = v.length,
             el = me.inputEl.dom,
+            v = el.value,
+            len = v.length,
             range;
 
         if (len > 0) {

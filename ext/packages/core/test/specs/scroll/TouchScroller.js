@@ -931,6 +931,38 @@
                 expect(scrollEndFired).toBe(1);
             });
         });
+
+        it('should fire scrollstart and scrollend when animated and scroll is terminated using a tap gesture', function() {
+            var scrollStartFired = 0,
+                scrollEndFired = 0;
+
+            makeOverflow();
+            scroller.on({
+                scrollstart: function() {
+                    scrollStartFired++;
+                },
+                scrollend: function() {
+                    scrollEndFired++;
+                }
+            });
+            scroller.scrollTo(20, 20, true);
+
+            // Wait for scroll animation to begin.
+            // We want to interrupt a running animation.
+            waits(10);
+            runs(function() {
+                // Scroll should have started but not ended
+                expect(scrollStartFired).toBe(1);
+                expect(scrollEndFired).toBe(0);
+
+                // tap to stop the scroll
+                jasmine.fireMouseEvent(scroller.getElement(), 'mousedown');
+                jasmine.fireMouseEvent(scroller.getElement(), 'mouseup');
+
+                // Scroll should have stopped
+                expect(scrollEndFired).toBe(1);
+            });
+        });
     });
 
     describe("scrollBy", function() {
@@ -2299,5 +2331,172 @@
                 expect(scrollEnded).toBe(true);
             });
         });
+
+        describe("directionLock", function() {
+            describe("x only", function() {
+                beforeEach(function() {
+                    makeScroller({
+                        x: true,
+                        y: false,
+                        directionLock: true
+                    });
+                });
+
+                it("should not stop the scroll if the amount of scroll is x > y", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 80, y: 60});
+                        end({ x: 80, y: 60 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBeLessThan(0);
+                        expect(pos.y).toBe(0);
+                    });
+                });
+
+                it("should stop the scroll if the amount of scroll is x < y", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 60, y: 80});
+                        end({ x: 60, y: 80 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBe(0);
+                        expect(pos.y).toBe(0);
+                    });
+                });
+            });
+
+            describe("y only", function() {
+                beforeEach(function() {
+                    makeScroller({
+                        x: false,
+                        y: true,
+                        directionLock: true
+                    });
+                });
+
+                it("should not stop the scroll if the amount of scroll is y > x", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 60, y: 80});
+                        end({ x: 60, y: 80 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBe(0);
+                        expect(pos.y).toBeLessThan(0);
+                    });
+                });
+
+                it("should stop the scroll if the amount of scroll is y < x", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 80, y: 60});
+                        end({ x: 80, y: 60 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBe(0);
+                        expect(pos.y).toBe(0);
+                    });
+                });
+            });
+
+            describe("both", function() {
+                beforeEach(function() {
+                    makeScroller({
+                        x: true,
+                        y: true,
+                        directionLock: true
+                    });
+                });
+
+                it("should not limit the scroll if x > y", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 80, y: 60});
+                        end({ x: 80, y: 60 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBeLessThan(0);
+                        expect(pos.y).toBeLessThan(0);
+                    });
+                });
+
+                it("should not limit the scroll if y > x", function() {
+                    runs(function() {
+                        start({x: 50, y: 50});
+                        move({x: 60, y: 80});
+                        end({ x: 60, y: 80 });
+                    });
+                    waitsForAnimation();
+                    runs(function() {
+                        var pos = scroller.getPosition();
+                        expect(pos.x).toBeLessThan(0);
+                        expect(pos.y).toBeLessThan(0);
+                    });
+                });
+            });
+        });
     });
+
+    if (Ext.supports.touchScroll === 1) {
+        describe("spacer", function() {
+            function expectVisible(visible) {
+                expect(scroller.getSpacer().isVisible()).toBe(visible);
+            }
+
+            it("should not show the spacer by default", function() {
+                el.createChild({
+                    style: 'height: 400px'
+                });
+                makeScroller();
+                expectVisible(false);
+            });
+
+            it("should not show the spacer if null is passed as the size", function() {
+                el.createChild({
+                    style: 'height: 400px'
+                });
+                makeScroller();
+                scroller.setSize(null);
+                expectVisible(false);
+            });
+
+            it("should show the spacer if passed an explicit size", function() {
+                makeScroller();
+                scroller.setSize({
+                    x: 200,
+                    y: 3000
+                });
+                expectVisible(true);
+            });
+
+            it("should toggle the spacer as needed", function() {
+                makeScroller();
+                expectVisible(false);
+                scroller.setSize({
+                    x: 200,
+                    y: 3000
+                });
+                expectVisible(true);
+                scroller.setSize(null);
+                expectVisible(false);
+                scroller.setSize({
+                    x: 400,
+                    y: 40000
+                });
+                expectVisible(true);
+            });
+        });
+    }
 });

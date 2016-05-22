@@ -364,7 +364,7 @@ $panel-light-ui: dynamic($include-default-uis);
  * The space between the Panel Header icon and text when the icon is vertically aligned
  * in the {@link Global_CSS#$enable-big big} sizing scheme
  *
- * @var {number} $header-icon-opacity
+ * @param {number} $header-icon-opacity
  * Panel Header icon opacity
  *
  * @param {color} $tool-color
@@ -385,10 +385,10 @@ $panel-light-ui: dynamic($include-default-uis);
  * @param {number} $tool-font-size-big
  * Tool icon font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  *
- * @var {number} $tool-spacing
+ * @param {number} $tool-spacing
  * The space between Panel Tools
  *
- * @var {number} $tool-spacing-big
+ * @param {number} $tool-spacing-big
  * The space between Panel Tools in the {@link Global_CSS#$enable-big big} sizing scheme
  *
  * @param {string} $tool-cursor

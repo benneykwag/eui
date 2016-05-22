@@ -157,6 +157,18 @@ Ext.define('Ext.data.schema.Schema', {
          */
         instances: {},
 
+        //<debug>
+        // Method used for testing to clear cache for custom instances.
+        clearInstance: function(id) {
+            var schema = this.instances[id]; 
+            delete this.instances[id];
+            if (schema) {
+                schema.clear(true);
+                schema.destroy();
+            }
+        },
+        //</debug>
+
         /**
          * Returns the `Schema` instance given its `id` or config object. If only the `id`
          * is specified, that `Schema` instance is looked up and returned. If there is no
@@ -1045,8 +1057,7 @@ Ext.define('Ext.data.schema.Schema', {
                 pending = me.pending,
                 associationKey = assoc.associationKey,
                 cls, name,
-                referenceField, target, foreignKey,
-                assocName;
+                referenceField, target, foreignKey;
 
             assoc = this.constructLegacyAssociation(entityType, assoc);
 
@@ -1057,15 +1068,10 @@ Ext.define('Ext.data.schema.Schema', {
                 foreignKey = assoc.foreignKey || (assoc.type.toLowerCase() + '_id');
                 cls = target.cls;
                 referenceField = cls.getField(foreignKey);
-                assoc.inverse = assoc || {};
-                assocName = assoc.name;
-                if (assocName || associationKey) {
-                    if (assocName) {
-                        assoc.inverse.role = assocName;
-                    }
-                    if (associationKey) {
-                        assoc.inverse.associationKey = associationKey;
-                    }
+                assoc.inverse = Ext.apply({}, assoc);
+                delete assoc.role;
+                if (associationKey) {
+                    assoc.inverse.associationKey = associationKey;
                 }
 
                 if (referenceField) {

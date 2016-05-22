@@ -108,6 +108,9 @@
  * is the only dependency. This means that "firstName" will only need to be recalculated
  * when "name" is modified.
  *
+ * **Note:** Fields used by the calculate method must be explicitly defined in the
+ * {@link Ext.data.Model#cfg-fields #fields} of the model.
+ *
  * ### Using `convert`
  *
  * Following is the equivalent technique using `{@link #cfg-convert convert}`
@@ -343,6 +346,9 @@ Ext.define('Ext.data.field.Field', {
      * **Note:** The use of calculate and {@link #method-convert} are exclusive.  The 
      * calculate method will override the convert method if both are configured.
      * 
+     * **Note:** Fields used by the calculate method must be explicitly defined in the
+     * {@link Ext.data.Model#cfg-fields #fields} of the model.
+     *
      * @param {Object} data An object with all values for each field in the parent 
      * model.  See {@link Ext.data.Model#getData getData}.
      * @return {Mixed} value The value of the calculated field

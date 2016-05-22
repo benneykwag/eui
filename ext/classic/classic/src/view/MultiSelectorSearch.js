@@ -66,6 +66,7 @@ Ext.define('Ext.view.MultiSelectorSearch', {
     layout: 'fit',
 
     floating: true,
+    alignOnScroll: false,
     resizable: true,
     minWidth: 200,
     minHeight: 200,
@@ -142,19 +143,8 @@ Ext.define('Ext.view.MultiSelectorSearch', {
             // The newly loaded records will NOT match any in the ownerStore.
             // So we must match them by ID in order to select the same dataset.
             store.on('load', function() {
-                var len = records.length,
-                    i,
-                    record,
-                    toSelect = [];
-
                 if (!me.destroyed) {
-                    for (i = 0; i < len; i++) {
-                        record = store.getById(records[i].getId());
-                        if (record) {
-                            toSelect.push(record);
-                        }
-                    }
-                    me.selectRecords(toSelect);
+                    me.selectRecords(records);
                 }
             }, null, {single: true});
         } else {
@@ -203,10 +193,20 @@ Ext.define('Ext.view.MultiSelectorSearch', {
                 }
             },
             listeners: {
-                change: 'onSearchChange',
-                buffer: 300
+                specialKey: 'onSpecialKey',
+                change: {
+                    fn: 'onSearchChange',
+                    buffer: 300
+                }
             }
         }];
+    },
+
+    onSpecialKey: function(field, event) {
+        if (event.getKey() === event.TAB && event.shiftKey) {
+            event.preventDefault();
+            this.hide();
+        };
     },
 
     makeItems: function () {
@@ -222,13 +222,38 @@ Ext.define('Ext.view.MultiSelectorSearch', {
         }];
     },
 
+    getMatchingRecords: function (records) {
+        var searchGrid = this.lookupReference('searchGrid'),
+            store = searchGrid.getStore(),
+            selections = [],
+            i, record, len;
+
+        records = Ext.isArray(records) ? records : [records];
+
+        for (i = 0, len = records.length; i < len; i++) {
+            record = store.getById(records[i].getId());
+
+            if (record) {
+                selections.push(record);
+            }
+        }
+
+        return selections;
+    },
+
     selectRecords: function (records) {
         var searchGrid = this.lookupReference('searchGrid');
+        // match up passed records to the records in the search store so that the right internal ids are used
+        records = this.getMatchingRecords(records);
+
         return searchGrid.getSelectionModel().select(records);
     },
 
     deselectRecords: function(records) {
         var searchGrid = this.lookupReference('searchGrid');
+        // match up passed records to the records in the search store so that the right internal ids are used
+        records = this.getMatchingRecords(records);
+
         return searchGrid.getSelectionModel().deselect(records);
     },
 

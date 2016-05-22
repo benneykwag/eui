@@ -36,7 +36,7 @@ Ext.define('Ext.form.trigger.Trigger', {
     /**
      * @cfg {Function/String} [handler=undefined]
      * Function to run when trigger is clicked or tapped.
-     * @declarativeHandler
+     * @controllable
      */
 
     /**

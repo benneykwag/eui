@@ -401,13 +401,12 @@ Ext.define('Ext.dataview.List', {
     initialize: function() {
         var me = this,
             container = me.container,
-            scrollViewElement = me.scrollViewElement,
             indexBar = me.getIndexBar(),
             triggerEvent = me.getTriggerEvent(),
             triggerCtEvent = me.getTriggerCtEvent();
 
         if (indexBar) {
-            scrollViewElement.appendChild(indexBar.renderElement);
+            me.container.element.appendChild(indexBar.renderElement);
         }
 
         if (triggerEvent) {
@@ -511,6 +510,8 @@ Ext.define('Ext.dataview.List', {
         if (grouped && me.groups && me.groups.length && me.getPinHeaders()) {
             me.handlePinnedHeader(y);
         }
+
+        me.handleIndexBarSize();
 
         // This is a template method that can be intercepted by plugins to do things when scrolling
         me.onScrollBinder(x, y);
@@ -1332,36 +1333,26 @@ Ext.define('Ext.dataview.List', {
 
     updateIndexBar: function(indexBar, oldIndexBar) {
         var me = this,
-            scrollViewElement = me.scrollViewElement;
+            el = me.element,
+            cls = me.getBaseCls() + '-indexed';
 
         if (oldIndexBar) {
-            oldIndexBar.un({
-                index: 'onIndex',
-                scope: me
-            });
-
-            if (!indexBar) {
-                me.element.removeCls(me.getBaseCls() + '-indexed');
-            }
-
-            if (scrollViewElement) {
-                scrollViewElement.removeChild(oldIndexBar.renderElement);
-            }
+            oldIndexBar.destroy();
+            el.removeCls(cls);
         }
 
         if (indexBar) {
             indexBar.on({
-                index: 'onIndex',
-                scope: me
+                scope: me,
+                index: me.onIndex,
+                directionchange: me.handleIndexBarSize
             });
 
-            if (!oldIndexBar) {
-                me.element.addCls(me.getBaseCls() + '-indexed');
-            }
+            el.addCls(cls);
 
-            if (scrollViewElement) {
-                scrollViewElement.appendChild(indexBar.renderElement);
-            }
+            me.container.element.appendChild(indexBar.renderElement);
+
+            me.handleIndexBarSize();
         }
     },
 
@@ -1596,68 +1587,38 @@ Ext.define('Ext.dataview.List', {
         return headerIndices;
     },
 
-    onIndex: function(indexBar, index) {
-        var me = this,
-            key = index.toLowerCase(),
-            store = me.getStore(),
-            groups = store.getGroups(),
-            ln = groups.length,
-            group, groupKey, i, closest;
-
-        for (i = 0; i < ln; i++) {
-            group = groups.getAt(i);
-            groupKey = group.getGroupKey().toLowerCase();
-            if (groupKey >= key) {
-                closest = group;
-                break;
-            }
-            else {
-                closest = group;
-            }
-        }
-
-        if (closest) {
-            this.scrollToRecord(closest.getAt(0));
-        }
-    },
-
     /**
      *
      * Scrolls the list so that the specified record is at the top.
      *
-     * @param record {Ext.data.Model} Record in the lists store to scroll to
-     * @param animate {Boolean} Determines if scrolling is animated to a cut
-     * @param overscroll {Boolean} Determines if list can be overscrolled
+     * @param {Ext.data.Model} record Record in the store to scroll to.
+     * @param {Boolean} [animate=false] Determines if scrolling is animated.
+     * @param {Boolean} [overscroll=true] Determines if list can be overscrolled.
      */
     scrollToRecord: function(record, animate, overscroll) {
         var me = this,
             scroller = me.container.getScrollable(),
             store = me.getStore(),
             index = store.indexOf(record),
-            header;
+            header, offset, item,
+            elementHeight, scrollHeight, maxOffset, el;
 
         //stop the scroller from scrolling
         scroller.stopAnimation();
 
         //make sure the new offsetTop is not out of bounds for the scroller
-        var elementHeight = scroller.getElement().getHeight(),
-            scrollHeight = scroller.getSize().y,
-            maxOffset = scrollHeight - elementHeight,
-            offset, item;
+        elementHeight = scroller.getElement().getHeight();
+        scrollHeight = scroller.getSize().y;
+        maxOffset = scrollHeight - elementHeight;
 
         if (me.getInfinite()) {
             offset = me.getItemMap().map[index];
-        }
-        else {
+        } else {
             item = me.listItems[index];
             header = item.getHeader && item.getHeader();
 
-            if (header && header.isPainted()) {
-                offset = header.renderElement.dom.offsetTop;
-            }
-            else {
-                offset = item.renderElement.dom.offsetTop;
-            }
+            el = header && header.isPainted() ? header : item;
+            offset = el.renderElement.dom.offsetTop;
         }
 
         if (!overscroll) {
@@ -1667,7 +1628,7 @@ Ext.define('Ext.dataview.List', {
         scroller.scrollTo(0, offset, !!animate);
     },
 
-    onItemAdd: function(item) {
+    onItemAdd: function(item, index) {
         var me = this,
             config = item.config;
 
@@ -1694,13 +1655,13 @@ Ext.define('Ext.dataview.List', {
 
             me.container.doAdd(item);
         } else {
-            me.callParent(arguments);
+            me.callParent([item, index]);
         }
     },
 
     /**
      * Returns all the items that are docked in the scroller in this list.
-     * @return {Array} An array of the scrollDock items
+     * @return {Ext.Component[]} An array of the scrollDock items
      */
     getScrollDockedItems: function() {
         return this.scrollDockItems.bottom.slice().concat(this.scrollDockItems.top.slice());
@@ -1813,28 +1774,42 @@ Ext.define('Ext.dataview.List', {
 
     destroy: function() {
         var me = this,
-            items = me.listItems,
-            ln = items.length,
-            i;
-        
-        if (me.pinnedHeader) {
-            me.pinnedHeader.destroy();
-            me.pinnedHeader = null;
+            indexBarTask = me.indexBarTask;
+
+        if (indexBarTask) {
+            indexBarTask.cancel();
+            me.indexBarTask = null;
         }
+
+        me.pinnedHeader = Ext.destroy(me.pinnedHeader);
+        me.setIndexBar(null);
 
         me.callParent();
 
         if (me.onIdleBound) {
             Ext.AnimationQueue.unIdle(me.onAnimationIdle, me);
         }
-
-        for (i = 0; i < ln; i++) {
-            items[i].destroy();
-        }
         me.recordMap = me.listItems = null;
     },
 
     privates: {
+        doHandleIndexBarSize: function() {
+            var me = this,
+                scroller = me.getScrollable(),
+                indexBar = me.getIndexBar(),
+                scrollerSize;
+
+            if (indexBar) {
+                if (indexBar.isVertical()) {
+                    scrollerSize = scroller.getScrollbarSize().width;
+                    if (scrollerSize !== me.lastScrollerSize) {
+                        indexBar.renderElement.setStyle('padding-right', scrollerSize + 'px');
+                        me.lastScrollerSize = scrollerSize;
+                    }
+                }
+            }
+        },
+
         handleGroupChange: function() {
             var me = this,
                 grouped = me.isGrouping(),
@@ -1866,8 +1841,43 @@ Ext.define('Ext.dataview.List', {
             }
         },
 
+        handleIndexBarSize: function() {
+            var me = this,
+                task = me.indexBarTask;
+
+            if (!task) {
+                me.indexBarTask = task = new Ext.util.DelayedTask(me.doHandleIndexBarSize, me);
+            }
+            task.delay(1);
+        },
+
         isGrouping: function() {
             return Boolean(this.getGrouped() && this.getStore().getGrouper());
+        },
+
+        onIndex: function(indexBar, index) {
+            var me = this,
+                key = index.toLowerCase(),
+                store = me.getStore(),
+                groups = store.getGroups(),
+                ln = groups.length,
+                group, groupKey, i, closest;
+
+            for (i = 0; i < ln; i++) {
+                group = groups.getAt(i);
+                groupKey = group.getGroupKey().toLowerCase();
+                if (groupKey >= key) {
+                    closest = group;
+                    break;
+                }
+                else {
+                    closest = group;
+                }
+            }
+
+            if (closest) {
+                this.scrollToRecord(closest.getAt(0));
+            }
         }
     }
 });

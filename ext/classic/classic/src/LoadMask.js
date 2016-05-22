@@ -362,7 +362,8 @@ Ext.define('Ext.LoadMask', {
             // Need to use the closest floating component (if it exists) as the basis
             // for our z-index positioning
             target = me.activeOwner || me.target,
-            boxTarget = me.external ? me.getOwner().el : me.getMaskTarget();
+            boxTarget = me.external ? me.getOwner().el : me.getMaskTarget(),
+            zIndex;
 
         if (me.rendered && me.isVisible()) {
             // Only need to move and size the message wrap if we are outside of
@@ -370,7 +371,10 @@ Ext.define('Ext.LoadMask', {
             // If we are inside, it will be left:0;top:0;width:100%;height:100% by default
             if (me.external) {
                 if (!me.isElement && target.floating) {
-                    me.onOwnerToFront(target, target.el.getZIndex());
+                    zIndex = target.el.getZIndex();
+                    if (!isNaN(zIndex)) {
+                        me.onOwnerToFront(target, zIndex);   
+                    }
                 }
                 me.el.setSize(boxTarget.getSize()).alignTo(boxTarget, 'tl-tl');
             }
@@ -483,9 +487,13 @@ Ext.define('Ext.LoadMask', {
 
     maybeShow: function() {
         var me = this,
-            owner = me.getOwner();
-
-        if (!owner.isVisible(true)) {
+            owner = me.getOwner(),
+            ownerVisible;
+        
+        // Owner could be detached
+        ownerVisible = owner.isVisible(true) && (!me.isComponent || owner.el.isVisible(true));
+        
+        if (!ownerVisible) {
             me.showNext = true;
         }
         else if (me.loading && owner.rendered) {
@@ -569,7 +577,7 @@ Ext.define('Ext.LoadMask', {
                 me.msgTextEl.setHtml(me.msg);
             } else {
                 // Only the mask is visible if useMsg is false
-                me.msgEl.hide();
+                me.msgWrapEl.hide();
             }
 
             if (me.shim || Ext.useShims) {

@@ -86,7 +86,7 @@ Ext.define('Ext.grid.CellContext', {
                 row = row[1];
             }
             else if (row.isCellContext) {
-                return me.setAll(row.view, row.rowIdx, row.colIdx, row.record, row.columnHeader);
+                return me.setAll(row.view, row.rowIdx, row.colIdx, row.record, row.column);
             }
             // An object containing {row: r, column: c}
             else {

@@ -1235,7 +1235,7 @@ Ext.feature = {
         fn: function() {
             return Ext.isWebKit ?
                 parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 :
-                !((Ext.isGecko && !Ext.isWindows) || (Ext.isOpera && Ext.operaVersion < 12));
+                !(!(Ext.isGecko || Ext.isIE) || (Ext.isOpera && Ext.operaVersion < 12));
         }
     },
     /**

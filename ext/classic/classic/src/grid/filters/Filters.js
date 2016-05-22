@@ -93,7 +93,7 @@
  * Since this plugin now uses actual store filters, the `onBeforeLoad` listener and all
  * helper methods that were used to clean and build the params have been removed. The store
  * will send the filters managed by this plugin along in its normal request.
-*/
+ */
 Ext.define('Ext.grid.filters.Filters', {
     extend: 'Ext.plugin.Abstract',
 
@@ -249,6 +249,9 @@ Ext.define('Ext.grid.filters.Filters', {
         }
 
         column.filter = Ext.Factory.gridFilter(filter);
+        if (!column.menuDisabled) {
+            column.requiresMenu = true;
+        }
     },
 
     onAdd: function (headerCt, column, index) {
@@ -306,7 +309,10 @@ Ext.define('Ext.grid.filters.Filters', {
             }
 
             menuItem.setVisible(!!filter);
-            me.sep.setVisible(!!filter);
+            
+            if (me.sep) {
+                me.sep.setVisible(!!filter);
+            }
         }
     },
 
@@ -314,7 +320,10 @@ Ext.define('Ext.grid.filters.Filters', {
         var me = this,
             item;
 
-        me.sep = menu.add('-');
+        // only add separator if there are other menu items
+        if (menu.items.length) {
+            me.sep = menu.add('-');
+        }
 
         item = menu.add({
             checked: false,
@@ -404,7 +413,10 @@ Ext.define('Ext.grid.filters.Filters', {
         return headerCt.getMenu().activeHeader.filter;
     },
 
-    /** @private */
+    /**
+     * @private
+     *
+     */
     onCheckChange: function (item, value) {
         // Locking grids must lookup the correct grid.
         var parentTable = this.isLocked ? item.up('tablepanel') : this.grid,
@@ -520,17 +532,82 @@ Ext.define('Ext.grid.filters.Filters', {
     },
 
     onReconfigure: function(grid, store, columns, oldStore) {
-        var filterMenuItem = this.filterMenuItem,
+        var me = this,
+            filterMenuItem = this.filterMenuItem,
+            changed = oldStore !== store,
             key;
 
         // The Filters item's menu should have already been destroyed by the time we get here but
         // we still need to null out the menu reference.
-        for (key in filterMenuItem) {
-            filterMenuItem[key].setMenu(null);
+        if (columns) {
+            for (key in filterMenuItem) {
+                filterMenuItem[key].setMenu(null);
+            }
         }
 
-        if (store && oldStore !== store) {
-            this.bindStore(store);
+        if (store) {
+            if (oldStore && !oldStore.destroyed && changed) {
+                me.resetFilters(oldStore);
+            }
+
+            if (changed) {
+                me.bindStore(store);
+                me.applyFilters(store);
+            }
+        }
+
+        me.initColumns();
+    },
+
+    privates: {
+        applyFilters: function(store) {
+            var columns = this.grid.columnManager.getColumns(),
+                len = columns.length,
+                i, column,
+                filter, filterCollection;
+
+            // We start with filters defined on any columns.
+            for (i = 0; i < len; i++) {
+                column = columns[i];
+                filter = column.filter;
+
+                if (filter && filter.isGridFilter) {
+                    if (!filterCollection) {
+                        filterCollection = store.getFilters();
+                        filterCollection.beginUpdate();
+                    }
+
+                    if (filter.active) {
+                        filter.activate();
+                    }
+                }
+            }
+
+            if (filterCollection) {
+                filterCollection.endUpdate();
+            }
+        },
+
+        resetFilters: function(store) {
+            var filters = store.getFilters(),
+                i, updating, filter;
+
+            if (filters) {
+                for (i = filters.getCount() - 1; i >= 0; --i) {
+                    filter = filters.getAt(i);
+                    if (filter.isGridFilter) {
+                        if (!updating) {
+                            filters.beginUpdate();
+                        }
+                        filters.remove(filter);
+                        updating = true;
+                    }
+                }
+
+                if (updating) {
+                    filters.endUpdate();
+                }
+            }
         }
     }
 });

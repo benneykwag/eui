@@ -162,7 +162,7 @@ describe("Ext.form.FieldSet", function() {
                     xtype: 'fieldset',
                     title: '<div style="width: 180px;">a</div>',
                     collapsed: true
-                }],
+                }]
             });
             var fs = ct.items.first(),
                 legend = fs.legend;
@@ -584,6 +584,36 @@ describe("Ext.form.FieldSet", function() {
             makeComponent({title: 'Old and busted'});
             component.setTitle('New hotness');
             expect(component.titleCmp.el.dom).hasHTML('New hotness');
+        });
+    });
+
+    describe("session", function() {
+        it("should get the schema from the parent session when it has a title and is being created and added", function() {
+            Ext.define('spec.TestSchema', {
+                extend: 'Ext.data.schema.Schema',
+                alias: 'schema.test',
+
+                namespace: 'spec'
+            });
+
+            makeComponent({
+                session: true,
+                title: 'Title'
+            }, true);        
+
+            var ct = new Ext.container.Container({
+                session: {
+                    schema: 'test'
+                },
+                renderTo: Ext.getBody()
+            });  
+
+            ct.add(component);
+            expect(component.getSession().getSchema()).toBe(ct.getSession().getSchema());
+            ct.destroy();  
+
+            Ext.undefine('spec.TestSchema');
+            Ext.data.schema.Schema.clearInstance('test');
         });
     });
 

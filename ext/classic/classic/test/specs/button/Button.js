@@ -1,14 +1,8 @@
+/* global expect, Ext, spyOn, jasmine */
+
 describe("Ext.button.Button", function() {
     var proto = Ext.button.Button.prototype,
         button;
-    
-    function expectAria(attr, value) {
-        jasmine.expectAriaAttr(button, attr, value);
-    }
-    
-    function expectNoAria(attr) {
-        jasmine.expectNoAriaAttr(button, attr);
-    }
     
     function clickIt (event) {
         jasmine.fireMouseEvent(button.el.dom, event || 'click');
@@ -96,7 +90,6 @@ describe("Ext.button.Button", function() {
     });
 
     describe("initComponent", function() {
-
         describe("toggleGroup", function() {
             it("if defined, it should enableToggle", function() {
                 makeButton({
@@ -126,7 +119,6 @@ describe("Ext.button.Button", function() {
     });
 
     describe("border", function() {
-
         it("should respect an explicit border cfg", function() {
             makeButton({
                 border: false
@@ -848,6 +840,34 @@ describe("Ext.button.Button", function() {
     });
 
     describe("menu", function() {
+        it('should not include menu descendant items in its CQ children if the ">" operator is used', function() {
+            var queryResult;
+
+            makeButton({
+                menu: [{
+                    text: 'Foo',
+                    menu: [{
+                        text: 'Bar',
+                        menu: [{
+                            text: 'Bletch'
+                        }]
+                    }]
+                }]
+            });
+
+            // Child only query should just return the menu
+            queryResult = button.query('>*');
+            expect(queryResult.length).toBe(1);
+            expect(queryResult[0] === button.menu).toBe(true);
+
+            // Deep query should return the menu and its descendants.
+            queryResult = button.query('*');
+
+            // Yes. Six:
+            // Top menu, its Foo item, Foo's Menu, the Bar item, Bars menu, and the Bletch item.
+            expect(queryResult.length).toBe(6);
+        });
+
         it("should accept a menu configuration", function() {
             makeButton({
                 menu: {}
@@ -970,7 +990,7 @@ describe("Ext.button.Button", function() {
             expect(owner).toBe(button);
         });
 
-        describe('scrolling along with its button', function () {
+        describe('Hiding on scroll', function () {
             // See EXTJS-14754.
             var ctn, menu;
 
@@ -994,7 +1014,7 @@ describe("Ext.button.Button", function() {
                     autoScroll: true,
                     height: 400,
                     renderTo: document.body,
-                    items: [button , {
+                    items: [button, {
                         xtype: 'label',
                         text: 'The End.',
                         y: 2000
@@ -1003,8 +1023,13 @@ describe("Ext.button.Button", function() {
 
                 clickIt();
             });
+            
+            afterEach(function() {
+                Ext.destroy(ctn);
+                ctn = null;
+            });
 
-            it('should work scrolling downwards', function () {
+            it('should hide on scroll', function () {
                 // Let's make sure before we start that the menu is positioned correctly.
                 expect(menu.getY() - button.getHeight()).toBe(button.getY());
 
@@ -1012,38 +1037,8 @@ describe("Ext.button.Button", function() {
                 ctn.scrollable.scrollTo(0, 200);
 
                 waitsFor(function () {
-                    // Note that I found that waiting for its scrollTop value was unreliable and would fail.
-                    //return ctn.el.getScrollTop() === 200;
-                    return (menu.getY() - button.getHeight()) === button.getY();
-                });
-
-                runs(function () {
-                    expect(menu.getY() - button.getHeight()).toBe(button.getY());
-
-                    ctn = ctn.destroy();
-                });
-            });
-
-            it('should work scrolling downwards', function () {
-                // Let's make sure before we start that the menu is positioned correctly.
-                expect(menu.getY() - button.getHeight()).toBe(button.getY());
-
-                // Now, let's scroll up.
-                ctn.scrollable.scrollTo(0, 25);
-
-                waitsFor(function () {
-                    //return ctn.el.getScrollTop() === 25;
-                    // Note that the above equality check did not work. It would pass the waitsFor (i.e., return
-                    // `true`), but the expect in the runs below failed, returning:
-                    //          Expected 100 to be 275.
-                    //
-                    return (menu.getY() - button.getHeight()) === button.getY();
-                });
-
-                runs(function () {
-                    expect(menu.getY() - button.getHeight()).toBe(button.getY());
-
-                    ctn = ctn.destroy();
+                    // Scrolling should cause menu hide;
+                    return menu.isVisible() === false;
                 });
             });
         });
@@ -1209,20 +1204,20 @@ describe("Ext.button.Button", function() {
             
             describe("aria-haspopup", function() {
                 it("should render attribute", function() {
-                    expectAria('aria-haspopup', 'true');
+                    expect(button).toHaveAttr('aria-haspopup', 'true');
                 });
                 
                 it("should remove attribute when menu is removed", function() {
                     button.setMenu(null);
                     
-                    expectNoAria('aria-haspopup');
+                    expect(button).not.toHaveAttr('aria-haspopup');
                 });
                 
                 it("should set attribute when menu is added", function() {
                     button.setMenu(null);
                     button.setMenu(menu);
                     
-                    expectAria('aria-haspopup', 'true');
+                    expect(button).toHaveAttr('aria-haspopup', 'true');
                 });
             });
             
@@ -1230,7 +1225,7 @@ describe("Ext.button.Button", function() {
                 it("should be set to menu id", function() {
                     button.showMenu();
                     
-                    expectAria('aria-owns', menu.id);
+                    expect(button).toHaveAttr('aria-owns', menu.id);
                 });
                 
                 it("should be removed when menu is removed", function() {
@@ -1240,14 +1235,14 @@ describe("Ext.button.Button", function() {
                     
                     button.setMenu(null);
                     
-                    expectNoAria('aria-owns');
+                    expect(button).not.toHaveAttr('aria-owns');
                 });
                 
                 it("should be set when menu is added", function() {
                     button.setMenu(null);
                     button.setMenu(menu);
                     
-                    expectAria('aria-owns', menu.id);
+                    expect(button).toHaveAttr('aria-owns', menu.id);
                 });
             });
         });
@@ -1633,27 +1628,6 @@ describe("Ext.button.Button", function() {
         });
     });
     
-    describe("layout", function(){
-        it("should be able to have a height of 0", function(){
-            expect(function() {
-                makeButton({
-                    renderTo: Ext.getBody(),
-                    height: 0
-                });
-            }).not.toThrow();                
-        }); 
-        
-        it("should be able to size larger after hitting a minWidth constraint", function() {
-            makeButton({
-                renderTo: Ext.getBody(),
-                minWidth: 75,
-                text: 'Foo'
-            });
-            button.setText('Text that will stretch longer than 75px');
-            expect(button.getWidth()).toBeGreaterThan(75);
-        });
-    });
-    
     describe('menuAlign config', function () {
         var pos = 'br-tl';
 
@@ -1972,7 +1946,28 @@ describe("Ext.button.Button", function() {
                 2: 'height',
                 3: 'width and height'
             };
-
+        
+        describe("simple tests", function() {
+            it("should be able to have a height of 0", function() {
+                expect(function() {
+                    makeButton({
+                        renderTo: Ext.getBody(),
+                        height: 0
+                    });
+                }).not.toThrow();                
+            }); 
+            
+            it("should be able to size larger after hitting a minWidth constraint", function() {
+                makeButton({
+                    renderTo: Ext.getBody(),
+                    minWidth: 75,
+                    text: 'Foo'
+                });
+                button.setText('Text that will stretch longer than 75px');
+                expect(button.getWidth()).toBeGreaterThan(75);
+            });
+        });
+        
         function makeLayoutSuite(shrinkWrap, stretch) {
             var shrinkWidth = (shrinkWrap & 1),
                 shrinkHeight = (shrinkWrap & 2);
@@ -1980,9 +1975,6 @@ describe("Ext.button.Button", function() {
             function makeButton(config) {
                 // Turn the icon green (specs don't need this, but helps when debugging)
                 Ext.util.CSS.createStyleSheet('.spec-icon{background-color:green;}', 'btnSpecStyleSheet');
-                
-                // ARIA warnings are expected
-                spyOn(Ext.log, 'warn');
 
                 button = Ext.create(Ext.apply({
                     renderTo: document.body,
@@ -2054,7 +2046,7 @@ describe("Ext.button.Button", function() {
             afterEach(function() {
                 Ext.util.CSS.removeStyleSheet('btnSpecStyleSheet');
             });
-
+            
             describe((shrinkWrap ? ("shrink wrap " + dimensions[shrinkWrap] + (stretch ? ' - stretched height content' : '')) : "fixed width and height"), function() {
                 describe("no icon or arrow", function() {
                     function make(config) {
@@ -5655,11 +5647,11 @@ describe("Ext.button.Button", function() {
         });
         
         it("should not render aria-haspopup", function() {
-            expectNoAria('aria-haspopup');
+            expect(button).not.toHaveAttr('aria-haspopup');
         });
         
         it("should not render aria-pressed", function() {
-            expectNoAria('aria-pressed');
+            expect(button).not.toHaveAttr('aria-pressed');
         });
     });
     
@@ -5668,13 +5660,13 @@ describe("Ext.button.Button", function() {
             it("should render tabIndex when not disabled", function() {
                 createButton();
                 
-                expectAria('tabIndex', '0');
+                expect(button).toHaveAttr('tabIndex', '0');
             });
             
             it("should not render tabIndex when disabled", function() {
                 createButton({ disabled: true });
                 
-                expectNoAria('tabIndex');
+                expect(button).not.toHaveAttr('tabIndex');
             });
         });
         
@@ -5685,13 +5677,27 @@ describe("Ext.button.Button", function() {
             });
             
             it("should remove tabIndex when disabled", function() {
-                expectNoAria('tabIndex');
+                expect(button).not.toHaveAttr('tabIndex');
             });
             
             it("should add tabIndex back when re-enabled", function() {
                 button.enable();
-                expectAria('tabIndex', '0');
+                expect(button).toHaveAttr('tabIndex', '0');
             });
+        });
+    });
+    
+    describe("click", function() {
+        beforeEach(function() {
+            makeButton({
+                renderTo: Ext.getBody()
+            });
+        });
+        
+        it("should allow event argument to be optional", function() {
+            expect(function() {
+                button.click();
+            }).not.toThrow();
         });
     });
     
@@ -5710,7 +5716,7 @@ describe("Ext.button.Button", function() {
                 });
             
                 it("should equal pressed state", function() {
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
             
@@ -5718,14 +5724,14 @@ describe("Ext.button.Button", function() {
                 it("should be set to true when toggled", function() {
                     button.toggle();
                     
-                    expectAria('aria-pressed', 'true');
+                    expect(button).toHaveAttr('aria-pressed', 'true');
                 });
             
                 it("should be set to false when toggled back", function() {
                     button.toggle();
                     button.toggle();
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
             
@@ -5733,14 +5739,14 @@ describe("Ext.button.Button", function() {
                 it("should be set to true when clicked", function() {
                     clickIt();
                     
-                    expectAria('aria-pressed', 'true');
+                    expect(button).toHaveAttr('aria-pressed', 'true');
                 });
                 
                 it("should be set to false when clicked twice", function() {
                     clickIt();
                     clickIt();
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
             
@@ -5755,7 +5761,7 @@ describe("Ext.button.Button", function() {
                 it("should not be set to true when clicked", function() {
                     clickIt();
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
 
@@ -5763,27 +5769,27 @@ describe("Ext.button.Button", function() {
                 it("should be set to true when Space key is pressed", function() {
                     jasmine.simulateKey(button, 'space');
                     
-                    expectAria('aria-pressed', 'true');
+                    expect(button).toHaveAttr('aria-pressed', 'true');
                 });
                 
                 it("should be set to false when Space key is pressed twice", function() {
                     jasmine.simulateKey(button, 'space');
                     jasmine.simulateKey(button, 'space');
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
                 
                 it("should be set to true when Enter key is pressed", function() {
                     jasmine.simulateKey(button, 'enter');
                     
-                    expectAria('aria-pressed', 'true');
+                    expect(button).toHaveAttr('aria-pressed', 'true');
                 });
                 
                 it("should be set to false when Enter key is pressed twice", function() {
                     jasmine.simulateKey(button, 'enter');
                     jasmine.simulateKey(button, 'enter');
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
 
@@ -5798,13 +5804,13 @@ describe("Ext.button.Button", function() {
                 it("should not be set to true when Space key is pressed", function() {
                     jasmine.simulateKey(button, 'space');
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
                 
                 it("should not be set to true when Enter key is pressed", function() {
                     jasmine.simulateKey(button, 'enter');
                     
-                    expectAria('aria-pressed', 'false');
+                    expect(button).toHaveAttr('aria-pressed', 'false');
                 });
             });
         });

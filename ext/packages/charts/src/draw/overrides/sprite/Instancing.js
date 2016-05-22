@@ -1,7 +1,7 @@
 /**
  * @private
  * Adds hit testing methods to the Ext.draw.sprite.Instancing.
- * Included by the Ext.draw.PathUtil.
+ * Included by the Ext.draw.plugin.SpriteEvents.
  */
 Ext.define('Ext.draw.overrides.sprite.Instancing', {
     override: 'Ext.draw.sprite.Instancing',

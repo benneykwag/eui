@@ -560,66 +560,108 @@ describe("Ext.util.Focusable", function() {
             });
         });
         
-        describe("events", function(){
-            it("should fire the focus event", function(){
-                var fired;
-                
-                runs(function() {
-                    c.on('focus', function(){
-                        fired = true;
-                    });
-                    c.focus();
-                });
-                
-                waitsFor(function() {
-                    return fired;
-                }, 'Event to fire', 100);
-                
-                runs(function() {
-                    expect(fired).toBe(true);
-                });
-            });  
+        describe("events", function() {
+            var focusSpy, blurSpy;
             
-            it("should not fire the focus event if the component has focus", function(){
-                var fired = 0;  
+            beforeEach(function() {
+                focusSpy = jasmine.createSpy('focus');
+                blurSpy = jasmine.createSpy('blur');
                 
-                runs(function() {
-                    c.on('focus', function(){
-                        ++fired;
-                    });
-                    c.focus();
-                    c.focus();
-                });
-                
-                waitsFor(function() {
-                    return fired > 0;
-                }, 'Event to fire', 100);
-                
-                // Enough time for the second event to fire, if any
-                waits(50);
-                
-                runs(function() {
-                    expect(fired).toBe(1);
-                });
-            });  
+                c.on('focus', focusSpy);
+                c.on('blur', blurSpy);
+            });
             
-            it("should fire the blur event", function(){
-                var fired;  
+            afterEach(function() {
+                c.un('focus', focusSpy);
+                c.un('blur', blurSpy);
                 
-                runs(function() {
-                    c.on('blur', function(){
-                        fired = true;
-                    });
+                focusSpy = blurSpy = null;
+            });
+            
+            describe("focus", function() {
+                beforeEach(function() {
                     c.focus();
-                    c.blur();
                 });
                 
-                waitsFor(function() {
-                    return fired;
-                }, 'Event to fire', 100);
+                it("should fire the focus event", function() {
+                    waitForSpy(focusSpy);
+                    
+                    runs(function() {
+                        expect(focusSpy).toHaveBeenCalled();
+                    });
+                });  
                 
-                runs(function() {
-                    expect(fired).toBe(true);
+                it("should not fire the focus event if the component has focus", function() {
+                    runs(function() {
+                        c.focus();
+                    });
+                    
+                    waitForSpy(focusSpy);
+                    
+                    // Enough time for the second event to fire, if any
+                    waits(50);
+                    
+                    runs(function() {
+                        expect(focusSpy.callCount).toBe(1);
+                    });
+                });
+            });
+            
+            describe("blur", function() {
+                var beforeSpy;
+                
+                beforeEach(function() {
+                    beforeSpy = spyOn(c, 'beforeBlur');
+                    c.focus();
+                });
+                
+                it("should fire the blur event", function() {
+                    runs(function() {
+                        c.blur();
+                    });
+                    
+                    waitForSpy(blurSpy);
+                    
+                    runs(function() {
+                        expect(blurSpy).toHaveBeenCalled();
+                    });
+                });
+                
+                it("should not fire the blur event when component is blurred", function() {
+                    runs(function() {
+                        c.blur();
+                    });
+                    
+                    waitForSpy(blurSpy);
+                    
+                    runs(function() {
+                        blurSpy.reset();
+                        c.blur();
+                    });
+                    
+                    waitForSpy(beforeSpy);
+                    
+                    runs(function() {
+                        expect(blurSpy).not.toHaveBeenCalled();
+                    });
+                });
+                
+                it("should set hasFocus to false before running beforeBlur", function() {
+                    var hasFocus;
+                    
+                    runs(function() {
+                        beforeSpy.andCallFake(function() {
+                            hasFocus = this.hasFocus;
+                        });
+                        
+                        c.blur();
+                    });
+                    
+                    waitForSpy(blurSpy);
+                    
+                    runs(function() {
+                        expect(hasFocus).toBe(false);
+                    });
                 });
             });
         });

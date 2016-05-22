@@ -24,6 +24,14 @@ describe("Ext.form.field.Checkbox", function() {
 
     });
 
+    function expectChecked() {
+        expect(component.checked).toBe(true);
+    }
+
+    function expectNotChecked() {
+        expect(component.checked).toBe(false);
+    }
+
     it("should be registered with the 'checkboxfield' xtype", function() {
         component = Ext.create("Ext.form.field.Checkbox", {name: 'test'});
         expect(component instanceof Ext.form.field.Checkbox).toBe(true);
@@ -401,23 +409,36 @@ describe("Ext.form.field.Checkbox", function() {
     });
 
     describe('getModelData', function() {
-        it("should return true when checked", function() {
+        it("should return 'on' when checked and no inputValue is defined", function() {
+            makeComponent({
+                name: 'cb-name',
+                checked: true
+            });
+            expect(component.getModelData()['cb-name']).toBe('on');
+        });
+        it("should return the inputValue when checked and inputValue is defined", function() {
             makeComponent({
                 name: 'cb-name',
                 inputValue: 'the-input-value',
                 checked: true
             });
-            expect(component.getModelData()).toEqual({'cb-name': true});
+            expect(component.getModelData()['cb-name']).toBe('the-input-value');
         });
-
-        it("should return false when unchecked", function() {
+        it("should return null when unchecked and no uncheckedValue is defined", function() {
+            makeComponent({
+                name: 'cb-name',
+                checked: false
+            });
+            expect(component.getModelData()['cb-name']).toBeNull();
+        });
+        it("should return uncheckedValue when unchecked and uncheckedValue is defined", function() {
             makeComponent({
                 name: 'cb-name',
                 inputValue: 'the-input-value',
                 uncheckedValue: 'the-unchecked-value',
                 checked: false
             });
-            expect(component.getModelData()).toEqual({'cb-name': false});
+            expect(component.getModelData()['cb-name']).toBe('the-unchecked-value');
         });
     });
     
@@ -437,6 +458,117 @@ describe("Ext.form.field.Checkbox", function() {
             makeComponent();
             component.setRawValue(true);
             expect(component.isDirty()).toBe(true);
+        });
+
+        describe("values", function() {
+            describe("with an inputValue", function() {
+                beforeEach(function() {
+                    makeComponent({
+                        inputValue: '2'
+                    });
+                });
+
+                it("should check when the value is true", function() {
+                    component.setRawValue(true);
+                    expectChecked();
+                });
+
+                it("should check when the value is 'true'", function() {
+                    component.setRawValue('true');
+                    expectChecked();
+                });
+
+                it("should check when the value matches the inputValue", function() {
+                    component.setRawValue('2');
+                    expectChecked();
+                });
+
+                it("should check when the value == the inputValue", function() {
+                    component.setRawValue(2);
+                    expectChecked();
+                });
+
+                it("should not check when the value is 1", function() {
+                    component.setRawValue(1);
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is '1'", function() {
+                    component.setRawValue('1');
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is 'on'", function() {
+                    component.setRawValue('on');
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is false", function() {
+                    component.setRawValue(false);
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is 'false'", function() {
+                    component.setRawValue('false');
+                    expectNotChecked();
+                });
+
+                it("should not check when the value doesn't match the inputValue", function() {
+                    component.setRawValue('5');
+                    expectNotChecked();
+                });
+            });
+
+            describe("without an inputValue", function() {
+                beforeEach(function() {
+                    makeComponent();
+                });
+
+                it("should check when the value is true", function() {
+                    component.setRawValue(true);
+                    expectChecked();
+                });
+
+                it("should check when the value is 'true'", function() {
+                    component.setRawValue('true');
+                    expectChecked();
+                });
+
+                it("should check when the value is 1", function() {
+                    component.setRawValue(1);
+                    expectChecked();
+                });
+
+                it("should check when the value is '1'", function() {
+                    component.setRawValue('1');
+                    expectChecked();
+                });
+
+                it("should check when the value is 'on'", function() {
+                    component.setRawValue('on');
+                    expectChecked();
+                });
+
+                it("should not check when the value is false", function() {
+                    component.setRawValue(false);
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is 'false'", function() {
+                    component.setRawValue('false');
+                    expectNotChecked();
+                });
+
+                it("should not check when the value is a number", function() {
+                    component.setRawValue(5);
+                    expectNotChecked();
+                });
+
+                it("should not check when the value contains 'on'", function() {
+                    component.setRawValue('tone');
+                    expectNotChecked();
+                });
+            });
         });
     });
 

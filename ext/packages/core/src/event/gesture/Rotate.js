@@ -60,7 +60,7 @@ Ext.define('Ext.event.gesture.Rotate', {
     lastAngle: null,
 
     onTouchMove: function(e) {
-        if (!this.isTracking) {
+        if (!this.isTracking || e.touches.length < 2) {
             return;
         }
 

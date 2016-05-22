@@ -159,7 +159,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should return values for radio fields fields", function() {
+        it("should return values for radio fields fields, test 1", function() {
             create({
                 items: [
                     {
@@ -186,7 +186,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should return values for radio fields fields", function() {
+        it("should return values for radio fields fields, test 2", function() {
             create({
                 items: [
                     {
@@ -208,7 +208,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should return values for radio fields fields", function() {
+        it("should return values for radio fields fields, test 3", function() {
             create({
                 items: [
                     {
@@ -231,7 +231,7 @@ describe('Ext.form.Panel', function() {
         });
 
         describe("enabled argument", function() {
-            it("it should not return disabled fields", function() {
+            it("it should not return disabled fields, test 1", function() {
                 create({
                     items: [
                         {
@@ -253,7 +253,7 @@ describe('Ext.form.Panel', function() {
                 });
             });
 
-            it("it should not return disabled fields", function() {
+            it("it should not return disabled fields, test 2", function() {
                 create({
                     items: [
                         {
@@ -374,7 +374,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should set values for one checkbox field", function() {
+        it("should set values for one checkbox field, test 1", function() {
             create({
                 items: [
                     {
@@ -398,7 +398,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should set values for one checkbox field", function() {
+        it("should set values for one checkbox field, test 2", function() {
             create({
                 items: [
                     {
@@ -417,7 +417,7 @@ describe('Ext.form.Panel', function() {
             });
         });
 
-        it("should set values for one checkbox field", function() {
+        it("should set values for one checkbox field, test 3", function() {
             create({
                 items: [
                     {

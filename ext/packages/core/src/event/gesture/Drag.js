@@ -100,6 +100,10 @@ Ext.define('Ext.event.gesture.Drag', {
     },
 
     onTouchMove: function(e) {
+        if (!this.startPoint) {
+            return;
+        }
+
         if (!this.isStarted) {
             this.tryDragStart(e);
         }
@@ -199,42 +203,48 @@ Ext.define('Ext.event.gesture.Drag', {
     },
 
     onTouchEnd: function(e) {
-        this.doEnd(e);
+        if (this.startPoint) {
+            this.doEnd(e);
+        }
     },
 
     onTouchCancel: function(e) {
-        this.doEnd(e, true);
+        if (this.startPoint) {
+            this.doEnd(e, true);
+        }
         return false;
     },
 
     doEnd: function(e, isCancel) {
-        if (!this.isStarted) {
-            this.tryDragStart(e);
+        var me = this,
+            touch, point, info;
+
+        if (!me.isStarted) {
+            me.tryDragStart(e);
         }
 
-        if (this.isStarted) {
-            var touch = e.changedTouches[0],
-                point = touch.point,
-                info = this.info;
+        if (me.isStarted) {
+            touch = e.changedTouches[0];
+            point = touch.point;
+            info = me.info;
 
-            this.isStarted = false;
-            this.lastPoint = point;
+            me.isStarted = false;
+            me.lastPoint = point;
 
-            this.updateInfo('x', e, touch);
-            this.updateInfo('y', e, touch);
+            me.updateInfo('x', e, touch);
+            me.updateInfo('y', e, touch);
 
             info.time = e.time;
 
-            this.onAxisDragEnd('x', info);
-            this.onAxisDragEnd('y', info);
+            me.onAxisDragEnd('x', info);
+            me.onAxisDragEnd('y', info);
 
-            this.fire(isCancel ? 'dragcancel' : 'dragend', e, info);
+            me.fire(isCancel ? 'dragcancel' : 'dragend', e, info);
 
-            this.startPoint = null;
-            this.previousPoint = null;
-            this.lastPoint = null;
-            this.lastMoveEvent = null;
+            me.previousPoint = me.lastPoint = me.lastMoveEvent = null;
         }
+
+        me.startPoint = null;
     },
 
     reset: function() {
@@ -244,6 +254,7 @@ Ext.define('Ext.event.gesture.Drag', {
             me.lastMoveEvent = null;
 
         me.initInfo();
+        me.callParent();
     }
 }, function(Drag) {
     var gestures = Ext.manifest.gestures;

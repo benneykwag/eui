@@ -183,12 +183,13 @@ Ext.define('Ext.mixin.Inheritable', {
      * Gets the Controller or Component that is used as the event root for this view.
      *
      * @param {Object} [defaultScope=this] The default scope to return if none is found.
+     * @param skipThis (private)
      * @return {Ext.app.ViewController/Ext.container.Container} The default listener scope.
      *
      * @protected
      * @since 5.0.0
      */
-    resolveListenerScope: function (defaultScope, /* private */ skipThis) {
+    resolveListenerScope: function (defaultScope, skipThis) {
         var me = this,
             hasSkipThis = (typeof skipThis === 'boolean'),
             namedScope = Ext._namedScopes[defaultScope],

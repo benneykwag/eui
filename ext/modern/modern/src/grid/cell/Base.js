@@ -12,7 +12,7 @@ Ext.define('Ext.grid.cell.Base', {
          * @cfg {"left"/"center"/"right"} align
          * The value for the `text-align` of the cell content.
          */
-        align: 'left',
+        align: null,
 
         /**
          * @cfg {String} cls

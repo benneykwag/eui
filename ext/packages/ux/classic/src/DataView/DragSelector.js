@@ -41,11 +41,10 @@ Ext.define('Ext.ux.DataView.DragSelector', {
         this.tracker = Ext.create('Ext.dd.DragTracker', {
             dataview: this.dataview,
             el: this.dataview.el,
-            dragSelector: this,
             onBeforeStart: this.onBeforeStart,
-            onStart: this.onStart,
-            onDrag : this.onDrag,
-            onEnd  : this.onEnd
+            onStart: this.onStart.bind(this),
+            onDrag : this.onDrag.bind(this),
+            onEnd  : Ext.Function.createDelayed(this.onEnd, 100, this)
         });
 
         /**
@@ -73,8 +72,7 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * @param {Ext.event.Event} e The click event
      */
     onStart: function(e) {
-        var dragSelector = this.dragSelector,
-            dataview     = this.dataview;
+        var dataview = this.dataview;
 
         // Flag which controls whether the cancelClick method vetoes the processing of the DataView's containerclick event.
         // On IE (where else), this needs to remain set for a millisecond after mouseup because even though the mouse has
@@ -82,8 +80,8 @@ Ext.define('Ext.ux.DataView.DragSelector', {
         this.dragging = true;
 
         //here we reset and show the selection proxy element and cache the regions each item in the dataview take up
-        dragSelector.fillRegions();
-        dragSelector.getProxy().show();
+        this.fillRegions();
+        this.getProxy().show();
         dataview.getSelectionModel().deselectAll();
     },
 
@@ -93,7 +91,7 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * details
      */
     cancelClick: function() {
-        return !this.tracker.dragging;
+        return !this.dragging;
     },
 
     /**
@@ -104,16 +102,15 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * @param {Ext.event.Event} e The drag event
      */
     onDrag: function(e) {
-        var dragSelector = this.dragSelector,
-            selModel     = dragSelector.dataview.getSelectionModel(),
-            dragRegion   = dragSelector.dragRegion,
-            bodyRegion   = dragSelector.bodyRegion,
-            proxy        = dragSelector.getProxy(),
-            regions      = dragSelector.regions,
+        var selModel     = this.dataview.getSelectionModel(),
+            dragRegion   = this.dragRegion,
+            bodyRegion   = this.bodyRegion,
+            proxy        = this.getProxy(),
+            regions      = this.regions,
             length       = regions.length,
 
-            startXY   = this.startXY,
-            currentXY = this.getXY(),
+            startXY   = this.tracker.startXY,
+            currentXY = this.tracker.getXY(),
             minX      = Math.min(startXY[0], currentXY[0]),
             minY      = Math.min(startXY[1], currentXY[1]),
             width     = Math.abs(startXY[0] - currentXY[0]),
@@ -150,14 +147,13 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * the containerclick event which the mouseup event will trigger.
      * @param {Ext.event.Event} e The event object
      */
-    onEnd: Ext.Function.createDelayed(function(e) {
+    onEnd: function(e) {
         var dataview = this.dataview,
-            selModel = dataview.getSelectionModel(),
-            dragSelector = this.dragSelector;
+            selModel = dataview.getSelectionModel();
 
         this.dragging = false;
-        dragSelector.getProxy().hide();
-    }, 1),
+        this.getProxy().hide();
+    },
 
     /**
      * @private

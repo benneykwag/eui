@@ -365,8 +365,8 @@ Ext.define('Ext.form.Panel', {
      *
      * @inheritdoc Ext.form.Basic#reset
      */
-    reset: function() {
-        this.form.reset();
+    reset: function(resetRecord) {
+        return this.form.reset(resetRecord);
     },
     
     /**

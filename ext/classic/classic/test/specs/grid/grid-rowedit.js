@@ -1,3 +1,5 @@
+/* global expect, jasmine, Ext */
+
 describe("grid-rowedit", function() {
     function createSuite(buffered) {
         describe(buffered ? "with buffered rendering" : "without buffered rendering", function() {
@@ -336,6 +338,152 @@ describe("grid-rowedit", function() {
                 });
             });
 
+            describe("field styling", function() {
+                it("should apply field styles", function() {
+                    makeGrid([{
+                        dataIndex: 'field1',
+                        field: {
+                            xtype: 'textfield',
+                            fieldStyle: 'text-transform: uppercase;'
+                        }
+                    }]);
+                    startEdit(store.first());
+                    var field = plugin.getEditor().items.getAt(0);
+                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                });
+
+                describe("with align: right", function() {
+                    describe("with no field style", function() {
+                        it("should align the field right", function() {
+                            makeGrid([{
+                                dataIndex: 'field1',
+                                align: 'right',
+                                field: 'textfield'
+                            }]);
+                            startEdit(store.first());
+                            var field = plugin.getEditor().items.getAt(0);
+                            expect(field.inputEl.getStyle('text-align')).toBe('right');
+                        });
+                    });
+
+                    describe("with a field style", function() {
+                        describe("as a string", function() {
+                            describe("with an existing value for text-align", function() {
+                                it("should respect a configured value and keep other styles", function() {
+                                    makeGrid([{
+                                        dataIndex: 'field1',
+                                        align: 'right',
+                                        field: {
+                                            xtype: 'textfield',
+                                            fieldStyle: 'text-transform: uppercase; text-align: left;'
+                                        }
+                                    }]);
+                                    startEdit(store.first());
+                                    var field = plugin.getEditor().items.getAt(0);
+                                    expect(field.inputEl.getStyle('text-align')).toBe('left');
+                                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                                });
+                            });
+
+                            describe("with no value for text-align", function() {
+                                it("should align the field right and keep other styles", function() {
+                                    makeGrid([{
+                                        dataIndex: 'field1',
+                                        align: 'right',
+                                        field: {
+                                            xtype: 'textfield',
+                                            fieldStyle: 'text-transform: uppercase'
+                                        }
+                                    }]);
+                                    startEdit(store.first());
+                                    var field = plugin.getEditor().items.getAt(0);
+                                    expect(field.inputEl.getStyle('text-align')).toBe('right');
+                                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                                });
+                            });
+                        });
+
+                        describe("as an object", function() {
+                            describe("with an existing value for text-align", function() {
+                                it("should respect a configured hyphenated value and keep other styles", function() {
+                                    makeGrid([{
+                                        dataIndex: 'field1',
+                                        align: 'right',
+                                        field: {
+                                            xtype: 'textfield',
+                                            fieldStyle: {
+                                                textTransform: 'uppercase',
+                                                'text-align': 'left'
+                                            }
+                                        }
+                                    }]);
+                                    startEdit(store.first());
+                                    var field = plugin.getEditor().items.getAt(0);
+                                    expect(field.inputEl.getStyle('text-align')).toBe('left');
+                                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                                });
+
+                                it("should respect a configured camel cased value and keep other styles", function() {
+                                    makeGrid([{
+                                        dataIndex: 'field1',
+                                        align: 'right',
+                                        field: {
+                                            xtype: 'textfield',
+                                            fieldStyle: {
+                                                textTransform: 'uppercase',
+                                                textAlign: 'left'
+                                            }
+                                        }
+                                    }]);
+                                    startEdit(store.first());
+                                    var field = plugin.getEditor().items.getAt(0);
+                                    expect(field.inputEl.getStyle('text-align')).toBe('left');
+                                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                                });
+                            });
+
+                            describe("with no value for text-align", function() {
+                                it("should align the field right and keep other styles", function() {
+                                    makeGrid([{
+                                        dataIndex: 'field1',
+                                        align: 'right',
+                                        field: {
+                                            xtype: 'textfield',
+                                            fieldStyle: {
+                                                textTransform: 'uppercase'
+                                            }
+                                        }
+                                    }]);
+                                    startEdit(store.first());
+                                    var field = plugin.getEditor().items.getAt(0);
+                                    expect(field.inputEl.getStyle('text-align')).toBe('right');
+                                    expect(field.inputEl.getStyle('text-transform')).toBe('uppercase');
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+
+           describe("positioning", function() {
+                // For ticket 19330-5
+                it("should position buttons correctly for the first row when content does not overflow", function() {
+                    makeGrid();
+                    var records = store.getRange();
+                    records.shift();
+                    store.remove(records);
+                    // Only 1 record, not scrolling
+                    startEdit();
+                    expect(plugin.getEditor()._buttonsOnTop).toBe(false);
+                });
+
+                it("should position buttons correctly for the first row when content does overflow", function() {
+                    makeGrid();
+                    startEdit();
+                    expect(plugin.getEditor()._buttonsOnTop).toBe(false);
+                });
+            });
+
             describe("scrolling while editing", function() {
                 beforeEach(function() {
                     var data = [],
@@ -352,7 +500,8 @@ describe("grid-rowedit", function() {
                         field: 'displayfield'
                     }, {
                         dataIndex: 'field4',
-                        field: 'textfield'
+                        field: 'textfield',
+                        sortable: true
                     }],{
                         clicksToMoveEditor: 1,
                         autoCancel: false 
@@ -383,18 +532,12 @@ describe("grid-rowedit", function() {
 
                 it('it should keep the editor active if scrolling out of view', function() {
                     startEdit();
-                    
-                    runs(function(){
-                        setTimeout(function(){
-                            // this will scroll the grid view down
-                            // to a point where rows get de-rendered
-                            // if the grid has a bufferedRenderer plugin
-                            view.scrollBy(0,700);
-                        },50);
-                        
-                    })
 
+                    // this will scroll the grid view down
+                    // to a point where rows get de-rendered
+                    // if the grid has a bufferedRenderer plugin
                     waitsFor(function () {
+                        view.scrollBy(0, 100);
                         // Wait until a record begin edit is cached
                         // or verified if it is not a grid with bufferedRenderer
                          return plugin.editor._cachedNode || !grid.bufferedRenderer;
@@ -406,15 +549,12 @@ describe("grid-rowedit", function() {
                         if (grid.bufferedRenderer) {
                             expect(plugin.editor.getLocalY()).not.toBe(0);
                         }
-                        setTimeout(function(){
-                            // scrolls the grid back to the top
-                            view.scrollBy(0,-700);
-                        },1000);
                     });
 
-                    waitsFor(function(){
-                        return view.getScrollY() === 0;
-                    },10000);
+                    waitsFor(function() {
+                        view.scrollBy(0, -100);
+                        return view.getScrollY() === 0 && plugin.editor.getLocalY() === 0;
+                    }, 'view to scroll to top and RowEditor to reappear', 10000);
 
                     runs(function(){
                         // the cached record should have been erased
@@ -425,7 +565,16 @@ describe("grid-rowedit", function() {
                         expect(plugin.editor.getLocalY()).toBe(0);
                         expect(plugin.editing).toBe(true);
                     });
+                });
+                
+                it('should scroll to edited item if it is out of view and the column is sorted', function() {
+                    var columns = grid.getColumns();
+                    columns[3].sort();
 
+                    startEdit();
+                    plugin.getEditor().items.items[3].setValue(99999999);
+                    plugin.completeEdit();
+                    expect(grid.getSelectionModel().getSelection()[0]).toEqual(plugin.context.record);
                 });
             });
 
@@ -1433,6 +1582,95 @@ describe("grid-rowedit", function() {
                 }
                 createLockingSuite(true);
                 createLockingSuite(false);
+            });
+
+            describe('using a textarea as an editor', function() {
+                it('should align to the bottom of the editor when at the end', function() {
+                    store = Ext.create('Ext.data.Store', {
+                        storeId: 'simpsonsStore',
+                        fields:[ 'name', 'email', 'phone'],
+                        data: [
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                            { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                            { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                            { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                            { name: 'Marge', email: 'marge@simpsons.com', phone: '555-222-1254' }
+                        ]
+                    });
+
+                    grid = Ext.create({
+                        xtype: 'grid',
+                        title: 'Simpsons',
+                        store: Ext.data.StoreManager.lookup('simpsonsStore'),
+                        columns: [
+                            {header: 'Name', dataIndex: 'name', editor: 'textfield'},
+                            {header: 'Email', dataIndex: 'email', flex:1,
+                             editor: {
+                                 xtype: 'textarea',
+                                 allowBlank: false
+                             }
+                            },
+                            {header: 'Phone', dataIndex: 'phone', width: 140}
+                        ],
+                        selModel: 'rowmodel',
+                        plugins: {
+                            ptype: 'rowediting',                
+                            clicksToEdit: 1
+                        },
+                        height: 400,
+                        width: 600,
+                        renderTo: document.body
+                    });
+                    view = grid.view;
+                    plugin = grid.findPlugin('rowediting');
+
+                    plugin.startEdit(store.last(), 1);
+
+                    waitsFor(function() {
+                        return plugin.editor.activeField && plugin.editor.activeField.hasFocus;
+                    });
+
+                    runs(function() {
+                        var viewYScroll = view.getScrollY(),
+
+                            // Return the scrollTo posirtion required to being the activeField fully into view
+                            scrollPos = plugin.editor.activeField.el.getScrollIntoViewXY(view.el, view.getScrollX(), viewYScroll);
+
+                        // The field being edited must already be fully scrolled into view by the editor positioning.
+                        expect(scrollPos.y).toBe(viewYScroll);
+                    });
+                });
+            });
+
+            describe('showing after the normal side has already been scrolled horizontally', function() {
+                it('should align itself to the existing horizontal scroll position on show', function() {
+                    makeGrid(null, null, true, {
+                        width: 400, height: 200
+                    });
+
+                    // Scroll normal grid rightwards
+                    grid.normalGrid.getView().scrollBy(1000, 0);
+
+                    // Start editing in the locked grid.
+                    plugin.startEdit(0, 0);
+
+                    // The normal grid has been scrolled.
+                    // Thr RowEditor should sync with it on show.
+                    expect(plugin.editor.normalColumnContainer.getScrollX()).toBe(grid.normalGrid.getView().getScrollable().getPosition().x);
+                });
             });
         });
     }

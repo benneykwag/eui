@@ -11,8 +11,8 @@ Ext.define(null, {
         // in IE10m that can fail to focus under certain conditions. See comment in
         // Ext.dom.Element override.
         if (el &&
-            ((e.type === 'focusout' && e.srcElement === el && e.toElement === body) ||
-             (e.type === 'focusin' && e.srcElement === body && e.fromElement === el &&
+            ((e.type === 'focusout' && (e.srcElement === el || e.srcElement === window) && e.toElement === body) ||
+             (e.type === 'focusin' && (e.srcElement === body || e.srcElement === window) && e.fromElement === el &&
               e.toElement === null)))
         {
             return;

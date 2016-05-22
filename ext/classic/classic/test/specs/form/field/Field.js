@@ -108,17 +108,27 @@ describe('Ext.form.field.Field', function () {
         });
 
         describe("with records", function() {
-            var rec;
+            var rec, validator;
             beforeEach(function() {
+                Ext.define('Ext.data.validator.Custom', {
+                    extend: 'Ext.data.validator.Validator',
+                    alias: 'data.validator.custom'
+                });
+
+                validator = Ext.data.validator.Validator.create({
+                    type: 'custom'
+                });
+                
                 Ext.define('spec.Person', {
                     extend: 'Ext.data.Model',
-                    fields: [{
-                        name: 'name',
-                        validators: {
-                            type: 'length',
-                            min: 3
-                        }
-                    }, 'age']
+                    fields: ['name', 'age', 'address'],
+                    validators : {
+                        name : {
+                            type : 'length',
+                            min : 3
+                        },
+                        address : validator
+                    }
                 });
 
                 rec = new spec.Person({
@@ -130,6 +140,8 @@ describe('Ext.form.field.Field', function () {
 
             afterEach(function() {
                 Ext.undefine('spec.Person');
+                Ext.undefine('Ext.data.validator.Custom');
+                Ext.Factory.dataValidator.instance.clearCache();
                 Ext.data.Model.schema.clear(true);
             });
 
@@ -171,6 +183,20 @@ describe('Ext.form.field.Field', function () {
                 viewModel.notify();
                 field.setValue('');
                 expect(field.getErrors()).toEqual(['Must be present']);
+            });
+
+            it("should pass value and record to the model validator", function() {
+                spyOn(validator,'validate').andCallThrough();
+
+                makeField({
+                    renderTo: Ext.getBody(),
+                    modelValidation: true,
+                    bind: '{thePerson.address}'
+                });
+                viewModel.notify();
+                field.setValue('Foo');
+
+                expect(validator.validate.mostRecentCall.args).toEqual(['Foo', viewModel.get('thePerson')]);
             });
 
             it("should combine with field validations", function() {

@@ -1,336 +1,31 @@
-describe("Ext.panel.Panel", function () {
+describe("Ext.panel.Panel", function() {
     var panel, ct;
 
-    function makePanel (cfg) {
+    function makePanel(cfg) {
         panel = new Ext.panel.Panel(Ext.apply({
             renderTo: Ext.getBody()
         }, cfg));
     }
 
-    afterEach(function () {
+    afterEach(function() {
         panel = ct = Ext.destroy(panel, ct);
     });
 
-    function keep () {
+    function keep() {
         panel.el.dom.setAttribute('data-sticky', 'true');
         panel = null;
     }
 
-    describe("toolbars", function() {
-        describe("vertical toolbars", function() {
-            describe("lbar", function() {
-                it("should default to vertical: true", function() {
-                    makePanel({
-                        lbar: [{
-                            text: 'Foo'
-                        }]
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        lbar: {
-                            vertical: false,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        lbar: {
-                            vertical: true,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
+    describe("destroy", function() {
+        it("should not cause an exception when collapsed & hidden", function() {
+            makePanel({
+                collapsed: true,
+                hidden: true
             });
 
-            describe("rbar", function() {
-                it("should default to vertical: true", function() {
-                    makePanel({
-                        rbar: [{
-                            text: 'Foo'
-                        }]
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        rbar: {
-                            vertical: false,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        rbar: {
-                            vertical: true,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-
-            describe("dock: left", function() {
-                it("should default to vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            dock: 'left',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: false,
-                            dock: 'left',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: true,
-                            dock: 'left',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-
-            describe("dock: right", function() {
-                it("should default to vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            dock: 'right',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: false,
-                            dock: 'right',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: true,
-                            dock: 'right',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-        });
-
-        describe("horizontal toolbars", function() {
-            describe("tbar", function() {
-                it("should default to vertical: false", function() {
-                    makePanel({
-                        tbar: [{
-                            text: 'Foo'
-                        }]
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        tbar: {
-                            vertical: false,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        tbar: {
-                            vertical: true,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-
-            describe("bbar", function() {
-                it("should default to vertical: false", function() {
-                    makePanel({
-                        bbar: [{
-                            text: 'Foo'
-                        }]
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        bbar: {
-                            vertical: false,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        bbar: {
-                            vertical: true,
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-
-            describe("dock: top", function() {
-                it("should default to vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: false,
-                            dock: 'top',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: true,
-                            dock: 'top',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
-
-            describe("dock: bottom", function() {
-                it("should default to vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            dock: 'bottom',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: false", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: false,
-                            dock: 'bottom',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(false);
-                });
-
-                it("should respect a configured vertical: true", function() {
-                    makePanel({
-                        dockedItems: {
-                            xtype: 'toolbar',
-                            vertical: true,
-                            dock: 'bottom',
-                            items: [{
-                                text: 'Foo'
-                            }]
-                        }
-                    });
-                    expect(panel.down('toolbar').vertical).toBe(true);
-                });
-            });
+            expect(function() {
+                panel.destroy();
+            }).not.toThrow();
         });
     });
 
@@ -369,6 +64,48 @@ describe("Ext.panel.Panel", function () {
                     });
                     expect(panel.down('toolbar').vertical).toBe(true);
                 });
+
+                it("should take a component instance", function() {
+                    var bar = new Ext.toolbar.Toolbar();
+                    makePanel({
+                        lbar: bar
+                    });
+                    expect(panel.down('toolbar')).toBe(bar);
+                });
+
+                it("should respect a specified xtype", function() {
+                    makePanel({
+                        lbar: {
+                            xtype: 'container',
+                            itemId: 'ct'
+                        }
+                    });
+                    expect(panel.down('#ct').getXType()).toBe('container');
+                });
+
+                it("should not mutate the config on an instance", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    makePanel({
+                        lbar: o
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
+
+                it("should not mutate the config on a class declaration", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    var Cls = Ext.define(null, {
+                        extend: 'Ext.panel.Panel',
+                        lbar: o
+                    });
+                    panel = new Cls({
+                        renderTo: document.body
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
             });
 
             describe("rbar", function() {
@@ -403,6 +140,48 @@ describe("Ext.panel.Panel", function () {
                         }
                     });
                     expect(panel.down('toolbar').vertical).toBe(true);
+                });
+
+                it("should take a component instance", function() {
+                    var bar = new Ext.toolbar.Toolbar();
+                    makePanel({
+                        rbar: bar
+                    });
+                    expect(panel.down('toolbar')).toBe(bar);
+                });
+
+                it("should respect a specified xtype", function() {
+                    makePanel({
+                        rbar: {
+                            xtype: 'container',
+                            itemId: 'ct'
+                        }
+                    });
+                    expect(panel.down('#ct').getXType()).toBe('container');
+                });
+
+                it("should not mutate the config on an instance", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    makePanel({
+                        rbar: o
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
+
+                it("should not mutate the config on a class declaration", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    var Cls = Ext.define(null, {
+                        extend: 'Ext.panel.Panel',
+                        rbar: o
+                    });
+                    panel = new Cls({
+                        renderTo: document.body
+                    });
+                    expect(o.xtype).toBeUndefined();
                 });
             });
 
@@ -527,6 +306,48 @@ describe("Ext.panel.Panel", function () {
                     });
                     expect(panel.down('toolbar').vertical).toBe(true);
                 });
+
+                it("should take a component instance", function() {
+                    var bar = new Ext.toolbar.Toolbar();
+                    makePanel({
+                        tbar: bar
+                    });
+                    expect(panel.down('toolbar')).toBe(bar);
+                });
+
+                it("should respect a specified xtype", function() {
+                    makePanel({
+                        tbar: {
+                            xtype: 'container',
+                            itemId: 'ct'
+                        }
+                    });
+                    expect(panel.down('#ct').getXType()).toBe('container');
+                });
+
+                it("should not mutate the config on an instance", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    makePanel({
+                        tbar: o
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
+
+                it("should not mutate the config on a class declaration", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    var Cls = Ext.define(null, {
+                        extend: 'Ext.panel.Panel',
+                        tbar: o
+                    });
+                    panel = new Cls({
+                        renderTo: document.body
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
             });
 
             describe("bbar", function() {
@@ -561,6 +382,48 @@ describe("Ext.panel.Panel", function () {
                         }
                     });
                     expect(panel.down('toolbar').vertical).toBe(true);
+                });
+
+                it("should take a component instance", function() {
+                    var bar = new Ext.toolbar.Toolbar();
+                    makePanel({
+                        bbar: bar
+                    });
+                    expect(panel.down('toolbar')).toBe(bar);
+                });
+
+                it("should respect a specified xtype", function() {
+                    makePanel({
+                        bbar: {
+                            xtype: 'container',
+                            itemId: 'ct'
+                        }
+                    });
+                    expect(panel.down('#ct').getXType()).toBe('container');
+                });
+
+                it("should not mutate the config on an instance", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    makePanel({
+                        bbar: o
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
+
+                it("should not mutate the config on a class declaration", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    var Cls = Ext.define(null, {
+                        extend: 'Ext.panel.Panel',
+                        bbar: o
+                    });
+                    panel = new Cls({
+                        renderTo: document.body
+                    });
+                    expect(o.xtype).toBeUndefined();
                 });
             });
 
@@ -647,6 +510,58 @@ describe("Ext.panel.Panel", function () {
                         }
                     });
                     expect(panel.down('toolbar').vertical).toBe(true);
+                });
+            });
+            
+            describe("fbar", function() {
+                it("should use footer ui", function() {
+                    makePanel({
+                        fbar: [{ text: 'foo' }]
+                    });
+                    
+                    expect(panel.down('toolbar').ui).toBe('footer');
+                });
+
+                it("should take a component instance", function() {
+                    var bar = new Ext.toolbar.Toolbar();
+                    makePanel({
+                        fbar: bar
+                    });
+                    expect(panel.down('toolbar')).toBe(bar);
+                });
+                
+                it("should respect a specified xtype", function() {
+                    makePanel({
+                        fbar: {
+                            xtype: 'container',
+                            itemId: 'ct'
+                        }
+                    });
+                    expect(panel.down('#ct').getXType()).toBe('container');
+                });
+
+                it("should not mutate the config on an instance", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    makePanel({
+                        fbar: o
+                    });
+                    expect(o.xtype).toBeUndefined();
+                });
+
+                it("should not mutate the config on a class declaration", function() {
+                    var o = {
+                        itemId: 'foo'
+                    };
+                    var Cls = Ext.define(null, {
+                        extend: 'Ext.panel.Panel',
+                        fbar: o
+                    });
+                    panel = new Cls({
+                        renderTo: document.body
+                    });
+                    expect(o.xtype).toBeUndefined();
                 });
             });
         });
@@ -998,6 +913,68 @@ describe("Ext.panel.Panel", function () {
                     expect(panel.collapsed).toBe('top');
                 });
             });
+            
+            // https://sencha.jira.com/browse/EXTJS-19791
+            it("should save numeric animCollapse duration to use with Accordion layouts", function() {
+                makePanel({
+                    title: 'Hello',
+                    animCollapse: 50,
+                    collapsible: true,
+                    width: 200,
+                    x: 100,
+                    y: 100,
+                    html: '<p>World!</p>'
+                });
+                
+                panel.animCollapse = false;
+                
+                var props = panel.getAnimationProps();
+                
+                expect(props.duration).toBe(50);
+            });
+            
+            // https://sencha.jira.com/browse/EXTJS-6924
+            it("should expand if created collapsed", function() {
+                var inner, spy;
+                
+                spy = jasmine.createSpy('expand');
+                
+                // Key here is that we collapse inner panel that participates
+                // in the parent container layout.
+                makePanel({
+                    title: 'Outer',
+                    width: 300,
+                    height: 200,
+                    layout: 'fit',
+                    bodyStyle: {
+                        'background-color': 'green'
+                    },
+                    
+                    items: [{
+                        xtype: 'panel',
+                        itemId: 'inner',
+                        title: 'Inner',
+                        collapsible: true,
+                        collapsed: true,
+                        html: 'Lorem ipsum dolor sit amet',
+                        bodyStyle: {
+                            'background-color': 'red'
+                        },
+                        listeners: {
+                            expand: spy
+                        }
+                    }]
+                });
+                
+                inner = panel.down('#inner');
+                inner.expand();
+                
+                waitForSpy(spy);
+                
+                runs(function() {
+                    expect(inner.collapsed).toBe(false);
+                });
+            });
         });
     });
     
@@ -1223,6 +1200,15 @@ describe("Ext.panel.Panel", function () {
                     panel.render(Ext.getBody());
                     expect(panel.header.getTitle().textEl.dom).hasHTML('Bar');
                 });
+
+                it("should be able to set a numeric title", function(){
+                    makePanel({
+                        renderTo: null
+                    });    
+                    panel.setTitle(123);
+                    panel.render(Ext.getBody());
+                    expect(panel.header.getTitle().textEl.dom).hasHTML('123');
+                });
                 
                 it("should not modify the tools when setting the title", function(){
                     makePanel({
@@ -1272,6 +1258,16 @@ describe("Ext.panel.Panel", function () {
                     panel.setTitle('Bar');
                     panel.render(Ext.getBody());
                     expect(panel.header.getTitle().textEl.dom).hasHTML('Bar');
+                });
+
+                it("should update with a numeric title when rendered", function(){
+                    makePanel({
+                        renderTo: null,
+                        title: 'Foo'
+                    });    
+                    panel.setTitle(123);
+                    panel.render(Ext.getBody());
+                    expect(panel.header.getTitle().textEl.dom).hasHTML('123');
                 });
                 
                 it("should not modify the tools when setting the title", function(){
@@ -1324,6 +1320,12 @@ describe("Ext.panel.Panel", function () {
                     panel.setTitle('Bar');
                     expect(panel.header.getTitle().textEl.dom).hasHTML('Bar');
                 });
+
+                it("should create a numeric title when rendered", function(){
+                    makePanel();
+                    panel.setTitle(123);
+                    expect(panel.header.getTitle().textEl.dom).hasHTML('123');
+                });
             });
 
             describe("with a title", function() {
@@ -1333,6 +1335,14 @@ describe("Ext.panel.Panel", function () {
                     });
                     panel.setTitle('Bar');
                     expect(panel.header.getTitle().textEl.dom).hasHTML('Bar');
+                });
+
+                it("should update a numeric title when rendered", function(){
+                    makePanel({
+                        title: 'Foo'
+                    });
+                    panel.setTitle(123);
+                    expect(panel.header.getTitle().textEl.dom).hasHTML('123');
                 });
             });
 
@@ -1652,7 +1662,7 @@ describe("Ext.panel.Panel", function () {
                 spy = spyOn(panel, 'initDraggable');
                 panel.render(Ext.getBody());
 
-                expect(spy).wasCalled();
+                expect(spy).toHaveBeenCalled();
             });
 
             it('should have a DragSource instance if draggable', function () {
@@ -1673,7 +1683,7 @@ describe("Ext.panel.Panel", function () {
                 spy = spyOn(panel.dd, 'endDrag');
                 panel.hide();
 
-                expect(spy).wasCalled();
+                expect(spy).toHaveBeenCalled();
             });
 
             it('should not create a Component Dragger instance  with header: false', function() {
@@ -1694,7 +1704,7 @@ describe("Ext.panel.Panel", function () {
                 spy = spyOn(panel, 'initDraggable');
                 panel.render(Ext.getBody());
 
-                expect(spy).wasNotCalled();
+                expect(spy).not.toHaveBeenCalled();
             });
 
             it('should not have a DragSource instance if not draggable', function () {
@@ -1787,6 +1797,103 @@ describe("Ext.panel.Panel", function () {
             expect(header.items.getAt(0).type).toBe('close');
             expect(header.items.getAt(1).type).toBe('pin');
             expect(header.items.getAt(2)).toBe(header.getTitle());
+        });
+    });
+
+    describe('titleCollapse', function () {
+        var viewport, westRegion, placeholder, panel, reExpander;
+
+        function createViewport(cfg, titleCollapse) {
+            viewport = new Ext.container.Viewport(Ext.apply({
+                layout: 'border',
+                items: [{
+                    region: 'west',
+                    collapsed: false,
+                    collapsible: true,
+                    animCollapse: false,
+                    width: 150,
+                    split: true,
+                    title: 'West Region',
+                    titleCollapse: titleCollapse
+                }, {
+                    region: 'center',
+                    items: []
+                }],
+                renderTo: Ext.getBody()
+            }, cfg || {}));
+
+            westRegion = viewport.down('panel[region="west"]');
+        }
+
+        function makePanel(cfg) {
+            panel = Ext.widget(Ext.apply({
+                xtype: 'panel',
+                renderTo: document.body,
+                height: 100,
+                collapsible: true,
+                animCollapse: false,
+                width: 300,
+                title: 'My Panel', 
+                collapseDirection: 'right'
+            }, cfg));
+        }
+
+        afterEach(function () {
+            Ext.destroy(viewport, westRegion, placeholder, panel, reExpander);
+        });
+
+        describe('placeholder', function () {
+            it('should expand the region if titleCollapse=true and hide the placeholder', function () {
+                createViewport({}, true);
+                westRegion.collapse();
+                placeholder = westRegion.placeholder;
+
+                jasmine.fireMouseEvent(placeholder.getEl(), 'click');
+                
+                expect(placeholder.hidden).toBe(true);
+                expect(westRegion.collapsed).toBe(false);             
+            });
+
+            it('should expand the region if titleCollapse=false but keep the placeholder visible', function () {
+                createViewport({}, false);
+                westRegion.collapse();
+                placeholder = westRegion.placeholder;
+                // even though titleCollapse is false, a click will still expand the region temporarily
+                jasmine.fireMouseEvent(placeholder.getEl(), 'click');
+
+                expect(placeholder.hidden).toBe(false);
+                expect(westRegion.collapsed).toBe(false);
+            });
+        });
+
+        describe('rexpander', function() {
+            it('should expand the panel if titleCollapse=true', function () {
+                makePanel({
+                    titleCollapse:true
+                });
+
+                panel.collapse();
+                reExpander = panel.reExpander;
+
+                jasmine.fireMouseEvent(reExpander.getEl(), 'click');
+
+                expect(reExpander.hidden).toBe(true);
+                expect(panel.collapsed).toBe(false);
+            });
+
+            it('should not expand the panel if titleCollapse=false', function () {
+                makePanel({
+                    titleCollapse:false
+                });
+
+                panel.collapse();
+                reExpander = panel.reExpander;
+                
+                jasmine.fireMouseEvent(reExpander.getEl(), 'click');
+
+                expect(reExpander.hidden).toBe(false);
+                expect(panel.collapsed).toBe('right');
+            });
         });
     });
 
@@ -3820,6 +3927,14 @@ describe("Ext.panel.Panel", function () {
         }); // attributes
         
         describe("regions", function() {
+            beforeEach(function() {
+                Ext.ariaWarn = Ext._ariaWarn;
+            });
+            
+            afterEach(function() {
+                Ext.ariaWarn = Ext.emptyFn;
+            });
+            
             describe("automagic ariaRole", function() {
                 it("should work when isViewportBorderChild", function() {
                     makePanel({ isViewportBorderChild: true, title: 'bonzo' });
@@ -3844,7 +3959,7 @@ describe("Ext.panel.Panel", function () {
                     
                     var warn = Ext.log.warn.mostRecentCall.args[0];
                     
-                    expect(warn).toMatch(/does not have a title/);
+                    expect(warn.msg).toMatch(/does not have a title/);
                 });
                 
                 it("should warn when ariaRole == region && !title", function() {
@@ -3854,7 +3969,7 @@ describe("Ext.panel.Panel", function () {
                     
                     var warn = Ext.log.warn.mostRecentCall.args[0];
                     
-                    expect(warn).toMatch(/does not have a title/);
+                    expect(warn.msg).toMatch(/does not have a title/);
                 });
             });
             

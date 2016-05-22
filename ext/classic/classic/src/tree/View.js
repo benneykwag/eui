@@ -159,6 +159,19 @@ Ext.define('Ext.tree.View', {
         }
     },
 
+    afterRender: function() {		
+        var me = this;		
+		
+        me.callParent();		
+		
+        me.el.on({		
+            scope: me,		
+            delegate: me.expanderSelector,
+            mouseover: me.onExpanderMouseOver,
+            mouseout: me.onExpanderMouseOut
+        });		
+    },
+
     afterComponentLayout: function(width, height, prevWidth, prevHeight) {
         var scroller = this.getScrollable();
 
@@ -693,16 +706,12 @@ Ext.define('Ext.tree.View', {
         this.fireEvent('checkchange', record, checked, e);
     },
 
-    onItemMouseOver: function(record, item, index, e) {
-        if (e.getTarget(this.expanderSelector, item)) {
-            e.getTarget(this.cellSelector, null, true).addCls(this.expanderIconOverCls);
-        }
+    onExpanderMouseOver: function(e) {
+        e.getTarget(this.cellSelector, 10, true).addCls(this.expanderIconOverCls);
     },
 
-    onItemMouseOut: function(record, item, index, e) {
-        if (e.getTarget(this.expanderSelector, item)) {
-            e.getTarget(this.cellSelector, null, true).removeCls(this.expanderIconOverCls);
-        }
+    onExpanderMouseOut: function(e) {
+        e.getTarget(this.cellSelector, 10, true).removeCls(this.expanderIconOverCls);
     },
 
     getStoreListeners: function() {
@@ -757,6 +766,24 @@ Ext.define('Ext.tree.View', {
                     child.collapse();
                 }
             });
+        }
+    },
+
+    privates: {
+        deferRefreshForLoad: function(store) {
+            var ret = this.callParent([store]),
+                options, node;
+
+            if (ret) {
+                options = store.lastOptions;
+                node = options && options.node;
+                // If the root isn't loading, then proceed with the refresh, we'll
+                // add the other nodes as they come in
+                if (node && node !== store.getRoot()) {
+                    ret = false;
+                }
+            }
+            return ret;
         }
     }
 });

@@ -211,3 +211,9 @@ $grid-summary-row-cell-padding: dynamic($grid-cell-padding);
  * Grid summary row cell padding in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $grid-summary-row-cell-padding-big: dynamic($grid-cell-padding-big);
+
+/**
+ * @var {color}
+ * Grid column resize marker background-color
+ */
+$grid-column-resize-marker-background-color: dynamic(#ccc);

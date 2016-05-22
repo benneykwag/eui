@@ -217,10 +217,14 @@ Ext.define('Ext.tip.ToolTip', {
     ariaRole: 'tooltip',
 
     initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
+        var me = this,
+            target;
+
+        me.callParent();
         me.lastActive = new Date();
-        me.setTarget(me.target);
+        target = me.target;
+        delete me.target;
+        me.setTarget(target);
         me.origAnchor = me.anchor;
     },
 
@@ -247,41 +251,39 @@ Ext.define('Ext.tip.ToolTip', {
      */
     setTarget: function(target) {
         var me = this,
-            t = Ext.get(target),
-            tg;
+            current = me.target,
+            listeners;
 
-        if (me.target) {
-            tg = Ext.get(me.target);
+        if (current) {
+            listeners = {
+                mouseover: 'onTargetOver',
+                mouseout: 'onTargetOut',
+                mousemove: 'onMouseMove',
+                scope: me
+            };
+
             if (Ext.supports.Touch) {
-                me.mun(tg, 'tap', me.onTargetOver, me);
-            } else {
-                me.mun(tg, {
-                    mouseover: me.onTargetOver,
-                    mouseout: me.onTargetOut,
-                    mousemove: me.onMouseMove,
-                    scope: me
-                });
+                listeners.tap = 'onTargetTap';
             }
+            me.mun(current, listeners);
         }
 
-        me.target = t;
-        if (t) {
+        me.target = target = Ext.get(target);
+        if (target) {
+            listeners = {
+                mouseover: 'onTargetOver',
+                mouseout: 'onTargetOut',
+                mousemove: 'onMouseMove',
+                scope: me
+            };
+
             if (Ext.supports.Touch) {
-                me.mon(t, {
-                    tap: me.onTargetOver,
-                    scope: me
-                });
-            } else {
-                me.mon(t, {
-                    mouseover: me.onTargetOver,
-                    mouseout: me.onTargetOut,
-                    mousemove: me.onMouseMove,
-                    scope: me
-                });
+                listeners.tap = 'onTargetTap';
             }
+            me.mon(target, listeners);
         }
         if (me.anchor) {
-            me.anchorTarget = me.target;
+            me.anchorTarget = target;
         }
     },
 
@@ -539,6 +541,15 @@ Ext.define('Ext.tip.ToolTip', {
         return offsets;
     },
 
+    onTargetTap: function(e) {
+        // On hybrid mouse/touch systems, we want to show the tip on touch, but
+        // we don't want to show it if this is coming from a click event, because
+        // the mouse is already hovered.
+        if (e.pointerType !== 'mouse') {
+            this.onTargetOver(e);
+        }
+    },
+
     /**
      * @private
      */
@@ -736,17 +747,17 @@ Ext.define('Ext.tip.ToolTip', {
             break;
         }
         me.anchorEl.alignTo(me.el, anchorPos + '-' + targetPos, offset);
-        me.anchorEl.setStyle('z-index', parseInt(me.el.getZIndex(), 10) || 0 + 1).setVisibilityMode(Ext.Element.DISPLAY);
+        me.anchorEl.setStyle('z-index', parseInt(me.el.getZIndex(), 10) || 0 + 1).setVisibilityMode(Ext.Element.VISIBILITY);
     },
 
     afterSetPosition: function(x, y) {
         var me = this;
         me.callParent(arguments);
         if (me.anchor) {
-            me.syncAnchor();
             if (!me.anchorEl.isVisible()) {
                 me.anchorEl.show();
             }
+            me.syncAnchor();
         } else {
             me.anchorEl.hide();
         }

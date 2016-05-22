@@ -1,3 +1,5 @@
+/* global Ext, expect, jasmine */
+
 describe("Ext.form.field.Tag", function() {
     var tagField, store, changeSpy,
         describeNotIE9_10 = Ext.isIE9 || Ext.isIE10 ? xdescribe : describe;
@@ -86,6 +88,11 @@ describe("Ext.form.field.Tag", function() {
         setupChangeSpy();
     }
 
+    function getRecordByTag(tag) {
+        var internalId = parseInt(tag.getAttribute('data-recordId'), 10);
+        return tagField.store.getByInternalId(internalId);
+    }
+
     function expectValue(values) {
         var tags = tagField.getEl().query(tagField.tagItemSelector);
         expect(tagField.getValue()).toEqual(values);
@@ -93,11 +100,6 @@ describe("Ext.form.field.Tag", function() {
         Ext.Array.forEach(values, function(value, i) {
             expect(getRecordByTag(tags[i]).get(tagField.valueField)).toBe(value);
         });
-    }
-
-    function getRecordByTag(tag) {
-        var internalId = parseInt(tag.getAttribute('data-recordId'), 10);
-        return tagField.store.getByInternalId(internalId);
     }
 
     function getTag(id) {
@@ -170,6 +172,20 @@ describe("Ext.form.field.Tag", function() {
     });
 
     describe("setting values", function() {
+        it("should default to null with multiSelect: false", function() {
+            makeField({
+                multiSelect: false
+            });
+            expect(tagField.getValue()).toBeNull();
+        });
+
+        it("should default to [] with multiSelect: true", function() {
+            makeField({
+                multiSelect: true
+            });
+            expect(tagField.getValue()).toEqual([]);
+        });
+
         describe("configuring with a value", function() {
             it("should return an empty array if no value is configured", function() {
                 makeField();
@@ -474,6 +490,42 @@ describe("Ext.form.field.Tag", function() {
                     expectChange([2, 4], [2, 4, 5], 3);
                 });
             });
+            
+            describeNotIE9_10("typing values", function() {
+                it("should erase the inputEl when selecting a typed value", function() {
+                    doTyping('Item1');
+                    tagField.inputEl.focus();
+                    waitsFor(function(){
+                        return tagField.isExpanded;
+                    });
+
+                    runs(function(){
+                        jasmine.fireKeyEvent(tagField.inputEl, 'keydown', 13);
+                        expect(tagField.inputEl.dom.value).toBe('');
+                    });
+                });
+
+                it("should not erase the inputEl when selecting a typed value that doesn't match", function() {
+                    doTyping('Foo');
+                    tagField.inputEl.focus();
+                    waitsFor(function(){
+                        return !tagField.isExpanded;
+                    });
+
+                    runs(function(){
+                        jasmine.fireKeyEvent(tagField.inputEl, 'keydown', 13);
+                        expect(tagField.inputEl.dom.value).toBe('Foo');
+                    });
+                });
+
+                it("should not erase the inputEl while using setValue", function() {
+                    doTyping('Foo');
+                    tagField.setValue(1);
+
+                    expect(tagField.getValue()).toEqual([1]);
+                    expect(tagField.inputEl.dom.value).toBe('Foo');
+                });
+            });
         });
     });
 
@@ -716,7 +768,7 @@ describe("Ext.form.field.Tag", function() {
                     expectNotSelected(6);
                 });
 
-                it("should keep selections when using the shift key", function() {
+                it("should keep selections when using the shift key, more tests", function() {
                     fireInputKey(E.LEFT);
                     fireInputKey(E.LEFT);
                     fireInputKey(E.LEFT);
@@ -891,7 +943,7 @@ describe("Ext.form.field.Tag", function() {
                     });
 
                     grid.editingPlugin.startEdit(store.getAt(4), grid.columns[1]);
-                    tag = tagField.getEl().query(tagField.tagItemSelector)[0]
+                    tag = tagField.getEl().query(tagField.tagItemSelector)[0];
                     tag = Ext.fly(tag).down(tagField.tagItemCloseSelector, true);
                     jasmine.fireMouseEvent(tag, 'click');
 
@@ -1202,6 +1254,34 @@ describe("Ext.form.field.Tag", function() {
         });
     });
 
+    describe('Narrowing the list on typing', function() {
+        it('should narrow the list as you type and maintain the autoSelected item', function() {
+
+            // Already values in the field.
+            makeField({
+                value: 1
+            });
+            var item2 = store.getAt(store.find('display', 'Item2'));
+
+            tagField.expand();
+
+            // First item is the positioned item
+            expect(tagField.getPicker().getNavigationModel().getRecord()).toBe(store.getAt(0));
+
+            doTyping('Item2');
+
+            // Wait for the query task to have filtered the store down to "Item2" and "Item20"
+            waitsFor(function() {
+                return store.getCount() === 2;
+            });
+
+            // Item2 must be the positioned item
+            runs(function() {
+                expect(tagField.getPicker().getNavigationModel().getRecord()).toBe(item2);
+            });
+        });
+    });
+
     describe('Erasing back to zero length input', function() {
         it('should not clear the value on erase back to zero length with no query', function() {
             var value;
@@ -1323,6 +1403,34 @@ describe("Ext.form.field.Tag", function() {
             expect(function() {
                 tagField.destroy();
             }).not.toThrow();
+        });
+
+        it("should not throw an exception when destroying with an active ownerCt", function() {
+            makeField({
+                filterPickList: true,
+                renderTo: null
+            });
+
+            var panel = new Ext.Panel({
+                renderTo: document.body,
+                width: 200,
+                height: 200,
+                items: [{
+                    xtype: 'container',
+                    remove: Ext.emptyFn,
+                    items: [tagField],
+                    listeners: {
+                        beforedestroy: function(container) {
+                            tagField.destroy();
+                        }
+                    }
+                }]
+            });
+
+            clickListItem(tagField.getStore().getAt(0));
+            panel.removeAll();
+            expect(panel.items.items.length).toBe(0);
+            panel.destroy();
         });
     });
 
@@ -1465,6 +1573,20 @@ describe("Ext.form.field.Tag", function() {
 
                 expect(tagField.getHeight()).toBeApprox(90, 5);
             });
+        });
+    });
+
+    describe("destroying", function() {
+        it("should not destroy the store proxy if it's been specified as a config on the store with inline fields", function() {
+            makeField(null, {
+                fields: ['display', 'value'],
+                proxy: {
+                    type: 'ajax'
+                }
+            });
+            var proxy = tagField.getStore().getProxy();
+            tagField.destroy();
+            expect(proxy.destroyed).toBe(false);
         });
     });
 });

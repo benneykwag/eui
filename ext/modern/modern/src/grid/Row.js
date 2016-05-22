@@ -175,6 +175,7 @@ Ext.define('Ext.grid.Row', {
             return Ext.apply({
                 parent: this,
                 column: column,
+                align: column.getAlign(),
                 record: this.getRecord(),
                 hidden: column.getHidden(),
                 width: column.getComputedWidth()

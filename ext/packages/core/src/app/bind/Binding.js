@@ -34,8 +34,9 @@ Ext.define('Ext.app.bind.Binding', {
      * Destroys this binding. No further calls will be made to the callback method. No
      * methods should be called on this binding after calling this method.
      * @since 5.0.0
+     * @param fromParent (private)
      */
-    destroy: function (/* private */ fromParent) {
+    destroy: function (fromParent) {
         var me = this,
             stub = me.stub;
 
@@ -137,20 +138,21 @@ Ext.define('Ext.app.bind.Binding', {
      * This method returns `true` if this binding can only be read. If this method returns
      * `false` then the binding can be set using `setValue` (meaning this binding can be
      * a two-way binding).
-     * @return {boolean}
+     * @return {Boolean}
      * @since 5.0.0
      */
     isReadOnly: function () {
         var stub = this.stub,
-            options = this.options;
+            options = this.options,
+            ret = true;
 
         if (!(options && options.twoWay === false)) {
             if (stub) {
-                return stub.isReadOnly();
+                ret = stub.isReadOnly();
             }
         }
 
-        return true; // readOnly so just one-way
+        return ret;
     },
 
     /**

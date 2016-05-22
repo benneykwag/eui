@@ -24,12 +24,12 @@
  *     // Define the shared Action.  Each Component below will have the same
  *     // display text and icon, and will display the same message on click.
  *     var action = new Ext.Action({
- *         {@link #text}: 'Do something',
- *         {@link #handler}: function(){
+ *         text: 'Do something',
+ *         handler: function(){
  *             Ext.Msg.alert('Click', 'You did something.');
  *         },
- *         {@link #iconCls}: 'do-something',
- *         {@link #itemId}: 'myAction'
+ *         iconCls: 'do-something',
+ *         itemId: 'myAction'
  *     });
  *
  *     var panel = new Ext.panel.Panel({
@@ -154,9 +154,9 @@ Ext.define('Ext.Action', {
      * for {@link #enable} and {@link #disable}.
      * @param {Boolean} disabled True to disable the component, false to enable it
      */
-    setDisabled : function(v){
-        this.initialConfig.disabled = v;
-        this.callEach('setDisabled', [v]);
+    setDisabled : function(disabled){
+        this.initialConfig.disabled = disabled;
+        this.callEach('setDisabled', [disabled]);
     },
 
     /**
@@ -185,9 +185,9 @@ Ext.define('Ext.Action', {
      * for `{@link #hide}` and `{@link #show}`.
      * @param {Boolean} hidden True to hide the component, false to show it.
      */
-    setHidden : function(v){
-        this.initialConfig.hidden = v;
-        this.callEach('setVisible', [!v]);
+    setHidden : function(hidden){
+        this.initialConfig.hidden = hidden;
+        this.callEach('setVisible', [!hidden]);
     },
 
     /**
