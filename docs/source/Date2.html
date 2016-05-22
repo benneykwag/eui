@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Date&#39;, {
+    extend: &#39;Ext.form.field.Date&#39;,
+    alias: &#39;widget.euidate&#39;,
+    submitFormat: &#39;Ymd&#39;,
+    format: &#39;Y.m.d&#39;,
+    altFormats: &#39;Ymd&#39;,
+    value: new Date(),
+    dateNum : null,
+    width: &#39;100%&#39;,
+    cellCls: &#39;fo-table-row-td&#39;,
+    initComponent: function() {
+        var me = this;
+        var dateNum = me.dateNum;
+        me.callParent(arguments);
+
+        if(!Ext.isEmpty(dateNum)){
+        	me.setValue(me.dayCal(new Date(),dateNum));
+        }
+    },
+    
+    dayCal : function(val,num){
+    	val.setDate(val.getDate()+num);
+    	return val;
+    }
+
+    
+});</pre>
+</body>
+</html>

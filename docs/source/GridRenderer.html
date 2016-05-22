@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.mvvm.GridRenderer&#39;, {
+    extend: &#39;Ext.Mixin&#39;,
+    mixinId: &#39;gridrenderer&#39;,
+    dateRenderer: function (v) {
+        var date;
+        if (Ext.isDate(v)) {
+            return Ext.Date.format(v, &#39;Y/m/d&#39;);
+        } else if (Ext.Date.parse(v, &#39;Ymd&#39;)) {
+            date = Ext.Date.parse(v, &#39;Ymd&#39;);
+            return Ext.Date.format(date, &#39;Y/m/d&#39;);
+        } else {
+            return v;
+        }
+    },
+
+    currencyRenderer: function (v) {
+        if (Ext.isNumber(v)) {
+            return Ext.util.Format.number(v, &#39;#,###.##&#39;);
+        } else {
+            return v;
+        }
+    }
+});</pre>
+</body>
+</html>
