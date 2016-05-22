@@ -97,10 +97,10 @@
 
 
 
-        <!--<echo message="Applying custom JSDuck theme..." />-->
-        <!--<copy todir="docs" overwrite="true">-->
-            <!--<fileset file=".jsduck/theme/favicon.ico"></fileset>-->
-        <!--</copy>-->
+        <echo message="Applying custom JSDuck theme..." />
+        <copy todir="docs" overwrite="true">
+            <fileset file=".jsduck/eg-iframe.html"></fileset>
+        </copy>
         <!--<copy todir="docs/theme/resources">-->
             <!--<fileset dir=".jsduck/theme/resources"></fileset>-->
         <!--</copy>-->
