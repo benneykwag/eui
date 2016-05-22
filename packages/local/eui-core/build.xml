@@ -101,10 +101,19 @@
         <copy todir="docs" overwrite="true">
             <fileset file=".jsduck/eg-iframe.html"></fileset>
         </copy>
-        <!--<copy todir="docs/theme/resources">-->
-            <!--<fileset dir=".jsduck/theme/resources"></fileset>-->
-        <!--</copy>-->
+        <copy todir="docs/eui-core" overwrite="true">
+            <fileset dir="build"></fileset>
+        </copy>
+        <copy todir="docs/extjs" overwrite="true">
+            <fileset file="${workspace.dir}/ext/build/ext-all-debug.js"></fileset>
+        </copy>
+        <copy todir="docs/theme-triton"  overwrite="true">
+            <fileset dir="${workspace.dir}/ext/build/classic/theme-triton"></fileset>
+        </copy>
 
+        <copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">
+            <fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>
+        </copy>
     </target>
 
     <!--<target name="copy.test">-->
