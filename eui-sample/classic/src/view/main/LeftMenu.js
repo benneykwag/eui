@@ -9,7 +9,9 @@ Ext.define('Eui.sample.view.main.LeftMenu', {
                 text: "Grid",
                 expanded: true,
                 children: [
-                    { text: 'Basic Grid', leaf: true, pgmClass: 'Eui.sample.view.grid.Basic', pgmAlias: 'sample-basic-grid'}
+                    { text: 'Basic Grid', leaf: true, pgmClass: 'Eui.sample.view.grid.Basic', pgmAlias: 'sample-basic-grid'},
+                    { text: 'Rowspan, Colspan Grid', leaf: true, pgmClass: 'Eui.sample.view.grid.MergeGrid', pgmAlias: 'sample-mergegrid'}
+
                 ]
             },
             {

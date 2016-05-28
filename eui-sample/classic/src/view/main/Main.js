@@ -9,6 +9,7 @@ Ext.define('Eui.sample.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
     requires: [
+        'Eui.sample.view.grid.MergeGrid',
         'Ext.plugin.Viewport',
         'Ext.window.MessageBox',
         'Eui.sample.view.main.MainController',
@@ -41,7 +42,7 @@ Ext.define('Eui.sample.view.main.Main', {
             margin: '5 5 0 0',
             items: [
                 {
-                    xtype: 'sample-form'
+                    xtype: 'sample-mergegrid'
                 }
             ]
         }
