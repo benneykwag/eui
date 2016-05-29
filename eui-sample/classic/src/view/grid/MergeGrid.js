@@ -45,13 +45,13 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
                     value: true
                 }
             ]
-        }/*,
+        },
         {
             field: 'col2',
             mergeConfig: []
-        }*/
+        }
     ],
-    lastMergeColumn: ['col2'],
+    lastMergeColumn: ['col3'],
     sumFields: ['col4', 'col5'],
 
     columns: [
@@ -59,7 +59,7 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
             text: '구분',
             columns: [
                 {
-                    width: 200,
+//                    width: 100,
                     text: "수입/지출",
                     dataIndex: 'col1',
                     renderer: function (v) {
@@ -70,7 +70,7 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
                     }
                 },
                 {
-                    width: 200,
+//                    width: 200,
                     text: "대항목",
                     dataIndex: 'col2',
                     renderer: function (v) {
@@ -82,7 +82,6 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
                     }
                 },
                 {
-                    width: 250,
                     text: "소항목",
                     dataIndex: 'col3',
                     renderer: function (v) {
