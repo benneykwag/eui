@@ -7,7 +7,7 @@
 
     <title>Eui.sample</title>
 
-    
+    <!--
     <script type="text/javascript">
         var Ext = Ext || {}; // Ext namespace won't be defined yet...
 
@@ -44,10 +44,10 @@
             //};
         };
     </script>
-    
+    -->
     
     <!-- The line below must be kept intact for Sencha Cmd to build your application -->
-    <script id="microloader" data-app="4fc0621a-503a-4e00-8712-e75fec7dce33" type="text/javascript">var Ext=Ext||{};Ext.manifest=Ext.manifest||"classic.json";Ext=Ext||{};
+    <script id="microloader" data-app="f4542940-2d46-4729-b604-916f0706c37b" type="text/javascript">var Ext=Ext||{};Ext.manifest=Ext.manifest||"app.json";Ext=Ext||{};
 Ext.Boot=Ext.Boot||function(e){function g(a){if(a.$isRequest)return a;a=a.url?a:{url:a};var m=a.url,m=m.charAt?[m]:m,d=a.charset||b.config.charset;v(this,a);delete this.url;this.urls=m;this.charset=d}function p(a){if(a.$isEntry)return a;var m=a.charset||b.config.charset,d=Ext.manifest,d=d&&d.loader,f=void 0!==a.cache?a.cache:d&&d.cache,j;b.config.disableCaching&&(void 0===f&&(f=!b.config.disableCaching),!1===f?j=+new Date:!0!==f&&(j=f),j&&(d=d&&d.cacheParam||b.config.disableCachingParam,j=d+"\x3d"+
 j));v(this,a);this.charset=m;this.buster=j;this.requests=[]}var n=document,r=[],s={disableCaching:/[?&](?:cache|disableCacheBuster)\b/i.test(location.search)||!/http[s]?\:/i.test(location.href)||/(^|[ ;])ext-cache=1/.test(n.cookie)?!1:!0,disableCachingParam:"_dc",loadDelay:!1,preserveScripts:!0,charset:"UTF-8"},y=/\.css(?:\?|$)/i,q=n.createElement("a"),t="undefined"!==typeof window,w={browser:t,node:!t&&"function"===typeof require,phantom:window&&(window._phantom||window.callPhantom)||/PhantomJS/.test(window.navigator.userAgent)},
 l=Ext.platformTags={},v=function(a,b,d){d&&v(a,d);if(a&&b&&"object"===typeof b)for(var f in b)a[f]=b[f];return a},x=function(){var a=!1,b=Array.prototype.shift.call(arguments),d,f,j,c;"boolean"===typeof arguments[arguments.length-1]&&(a=Array.prototype.pop.call(arguments));j=arguments.length;for(d=0;d<j;d++)if(c=arguments[d],"object"===typeof c)for(f in c)b[a?f.toLowerCase():f]=c[f];return b},c="function"==typeof Object.keys?function(a){return!a?[]:Object.keys(a)}:function(a){var b=[],d;for(d in a)a.hasOwnProperty(d)&&
