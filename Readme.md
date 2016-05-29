@@ -14,6 +14,5 @@ Doc : http://benneykwag.github.io/eui/docs/index.html#!/api
 - sdk version : 6.1
 - Sencha Cmd Version : v6.1.1.76
 
-- 샘플 빌드 : sencha app build classic
-- sencha -sdk ./ext generate app classic eui-sample ./eui-sample3
-- sencha -sdk ./ext generate app modern eui-sample ./eui-sample
+- 샘플 빌드 : sencha app build 
+- sencha -sdk ./ext generate app classic eui-sample ./eui-sample
