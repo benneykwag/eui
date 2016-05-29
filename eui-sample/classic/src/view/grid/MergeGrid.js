@@ -106,6 +106,66 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
             xtype: 'euinumbercolumn',
             text: "2월",
             dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "3월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "4월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "5월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "6월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "7월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "8월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "9월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "10월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "11월",
+            dataIndex: 'col5'
+        },
+        {
+            width: 100,
+            xtype: 'euinumbercolumn',
+            text: "12월",
+            dataIndex: 'col5'
         }
     ]
 });
