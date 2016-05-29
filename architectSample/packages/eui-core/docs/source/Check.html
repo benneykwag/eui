@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.grid.column.Check&#39;, {
+    extend: &#39;Ext.grid.column.Check&#39;,
+    alias: &#39;widget.spcheckcolumn&#39;,
+
+    isRecordChecked: function (record) {
+        var prop = this.property;
+        if (prop) {
+            return record[prop] == &#39;Y&#39;;
+        }
+        return record.get(this.dataIndex) == &#39;Y&#39;;
+    },
+
+    setRecordCheck: function (record, checked, cell, row, e) {
+        var me = this,
+            prop = me.property, val = checked? &#39;Y&#39; : &#39;N&#39;;
+
+        if (prop) {
+            record[prop] = val;
+        } else {
+            record.set(me.dataIndex, val);
+        }
+        me.updater(cell, checked);
+    },
+
+    initComponent: function() {
+        var me = this;
+        me.callParent(arguments);
+    }
+});</pre>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.x-grid-column {
+   .x-innerhtml {
+      overflow: hidden;
+      text-overflow: ellipsis;
+   }
+}
+
+.x-grid-column-trigger {
+   position: absolute;
+   right: 0;
+   cursor: pointer;
+}

@@ -1,0 +1,14 @@
+{
+    "--": ["classic", "src"],
+  "--title": "EUI JS - v${euijs.version} API Documentation",
+  "--ignore-global": true,
+  "--head-html": [
+//    "<link rel=\"stylesheet\" href=\"../build/resources/eui-core-all.css\" type=\"text/css\" />",
+//    "<script type=\"text/javascript\" src=\"../build/eui-core-debug.js\"></script>"
+  ],
+    "--builtin-classes": true,
+  "--output": "docs",
+    "--external": [
+        "Ext.*"
+    ]
+}

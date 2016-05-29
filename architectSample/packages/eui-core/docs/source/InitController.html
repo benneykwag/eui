@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.controller.InitController&#39;, {
+    extend: &#39;Ext.app.Controller&#39;,
+    alias: &#39;controller.spinit&#39;,
+    constructor: function (cfg) {
+        cfg = cfg || {};
+
+        if(this.globalUrlPrefix){
+            Util.HurlPrefix = this.globalUrlPrefix;
+        }
+
+        Util.localeStoreDisplayField = this.localeStoreDisplayField;
+        Util.localeStoreValueField = this.localeStoreValueField;
+
+
+//        var fileref=document.createElement(&quot;link&quot;);
+//        fileref.setAttribute(&quot;rel&quot;, &quot;stylesheet&quot;);
+//        fileref.setAttribute(&quot;type&quot;, &quot;text/css&quot;);
+//        fileref.setAttribute(&quot;href&quot;, &#39;resources/css/sprr-theme.css&#39;);
+//        document.getElementsByTagName(&quot;head&quot;)[0].appendChild(fileref);
+
+
+        var store = Ext.create(&#39;Ext.data.Store&#39;, {
+            fields: [],
+            storeId: &#39;i18n&#39;
+        });
+        Ext.apply(cfg, {
+            url: Util.HurlPrefix + this.localeStoreUrl,
+            pSync: false,
+            outDs: {
+                data: Ext.getStore(&#39;i18n&#39;)
+            }
+        });
+        if(this.localeStoreUrl){
+            Util.CommonAjax(cfg);
+        }
+
+        Util.globalCheckLogin();
+
+        this.callParent(this.processInitialController(cfg));
+    },
+
+    processInitialController: function (config) {
+        return config;
+    },
+
+    init: function (application) {
+        console.log(&#39;init&#39;, this.localeUrl)
+
+    }
+});
+</pre>
+</body>
+</html>

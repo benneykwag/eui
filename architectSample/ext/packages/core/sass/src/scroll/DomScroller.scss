@@ -1,0 +1,9 @@
+.#{$prefix}domscroller-spacer {
+    position: absolute;
+    top: 0;             // Positioned using translate3d
+    overflow: hidden;   // Needed for a translated element to stretch scroll range in IE
+    height: 1px;
+    width: 1px;
+    font-size: 0;
+    line-height: 0;
+}
