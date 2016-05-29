@@ -25,32 +25,35 @@ Ext.define('Eui.sample.model.Base', {
             ]
         },
         {
-            name: "col1key",
-            type: "string",
-            convert: function (v, record) {
-                return record.get('col1');
-            }
+            name: "col1",
+            type: "string"
         },
         {
-            name: "col2key",
+            name: "col2",
             type: "string",
             convert: function (v, record) {
                 return record.get('col1')+'@'+record.get('col2');
             }
         },
         {
-            name: "col3key",
+            name: "col3",
             type: "string",
             convert: function (v, record) {
-                return record.get('col1')+'@'+record.get('col2')+'@'+record.get('col3');
+                return record.get('col2')+'@'+record.get('col3');
             }
         },
         {
-            name: "col6key",
+            name: "col6",
             type: "string",
             convert: function (v, record) {
                 return record.get('col1')+'@'+record.get('col2')+'@'+record.get('col3')+'@'+record.get('col6');
             }
         }
-    ]
+    ],
+    set: function(fieldName, value) {
+        this.callParent(arguments);
+        if (fieldName==='firstName' || fieldName==='lastName') {
+            this.set('fullName');
+        }
+    }
 });
