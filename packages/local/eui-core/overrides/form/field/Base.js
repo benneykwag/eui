@@ -1,6 +1,5 @@
 Ext.define('Override.form.field.Base',{
     override : 'Ext.form.field.Base',
-    requires: ['eui.mixin.FormField'],
     mixins: [
         'eui.mixin.FormField'
     ],
