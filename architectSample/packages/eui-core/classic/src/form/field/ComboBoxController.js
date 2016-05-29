@@ -154,7 +154,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                 if (field.isFormField && field.getBind()) {
                     if (field.getBind().hasOwnProperty('value') && fieldArr[0] == field.getBind().value.stub.path) {
                         // 연계 콤보
-                        if (viewClass.prototype.xtypesMap['spcombo']) {
+                        if (viewClass.prototype.xtypesMap['euicombo']) {
                             field.setValue(null);
                             if (record) {   // select이벤트에 의해 연계처리.
                                 field.ownerNextBindVar = fieldArr[0];

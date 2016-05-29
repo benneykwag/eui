@@ -1,6 +1,6 @@
 Ext.define('eui.grid.column.Number', {
     extend: 'Ext.grid.column.Number',
-    alias: 'widget.spnumbercolumn',
+    alias: 'widget.euinumbercolumn',
 	align : 'right',
     mixins: [
         'eui.mvvm.GridRenderer'
