@@ -28,24 +28,28 @@ Ext.define('Eui.sample.model.Base', {
             name: "col1key",
             type: "string",
             convert: function (v, record) {
-                return record.get('col1')+'@합계';
+                return record.get('col1');
             }
         },
         {
             name: "col2key",
             type: "string",
             convert: function (v, record) {
-                return record.get('col1')+'@'+record.get('col2')+'@소계';
+                return record.get('col1')+'@'+record.get('col2');
             }
         },
         {
             name: "col3key",
             type: "string",
             convert: function (v, record) {
-                if(record.get('col3') == '소계'){
-                    return record.get('col1')+'@'+record.get('col2')+'@하'+record.get('col3');
-                }
                 return record.get('col1')+'@'+record.get('col2')+'@'+record.get('col3');
+            }
+        },
+        {
+            name: "col6key",
+            type: "string",
+            convert: function (v, record) {
+                return record.get('col1')+'@'+record.get('col2')+'@'+record.get('col3')+'@'+record.get('col6');
             }
         }
     ]
