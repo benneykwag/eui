@@ -171,7 +171,7 @@
                 if (field.isFormField &amp;&amp; field.getBind()) {
                     if (field.getBind().hasOwnProperty(&#39;value&#39;) &amp;&amp; fieldArr[0] == field.getBind().value.stub.path) {
                         // 연계 콤보
-                        if (viewClass.prototype.xtypesMap[&#39;spcombo&#39;]) {
+                        if (viewClass.prototype.xtypesMap[&#39;euicombo&#39;]) {
                             field.setValue(null);
                             if (record) {   // select이벤트에 의해 연계처리.
                                 field.ownerNextBindVar = fieldArr[0];
