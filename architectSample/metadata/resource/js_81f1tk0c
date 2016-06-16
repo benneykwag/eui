@@ -1,0 +1,16 @@
+{
+    "type": "jsresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "defer": false,
+        "designer|userClassName": "js_81f1tk0c",
+        "url": "https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=weather",
+        "x-compile": true
+    },
+    "name": "js",
+    "designerId": "407fa3e1-80b3-4e2e-bd35-3d49c77ef1ea"
+}

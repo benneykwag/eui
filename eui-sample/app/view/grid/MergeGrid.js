@@ -9,25 +9,33 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
     ],
     title: 'Rowspan, Colspan Grid',
     frame: true,
-    store: {
-        autoLoad: true,
-        proxy: {
-            type: 'ajax',
-            url: 'resources/data/statdata1.json',
-            reader: {
-                type: 'json',
-                rootProperty: 'data'
-            },
-            writer: {
-                type: 'json',
-                allowSingle: false,  // #2
-                writeAllFields: true    // #3
+    viewModel: {
+        stores: {
+            store: {
+                autoLoad: true,
+                proxy: {
+                    type: 'ajax',
+                    url: 'resources/data/statdata1.json',
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                    },
+                    writer: {
+                        type: 'json',
+                        allowSingle: false,  // #2
+                        writeAllFields: true    // #3
+                    }
+                },
+                model: 'Eui.sample.model.Base',
+                sorters: [
+                    'col3'
+                ]
             }
-        },
-        model: 'Eui.sample.model.Base',
-        sorters: [
-            'col3'
-        ]
+        }
+    },
+
+    bind: {
+        store: '{store}'
     },
 
     groupFields: [

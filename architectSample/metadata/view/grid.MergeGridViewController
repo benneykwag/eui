@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "grid.mergegrid",
+        "designer|userClassName": "grid.MergeGridViewController"
+    },
+    "designerId": "db00abd3-2e25-4bc3-a64f-b5fd8044b9ec"
+}

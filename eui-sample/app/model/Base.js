@@ -49,11 +49,5 @@ Ext.define('Eui.sample.model.Base', {
                 return record.get('col1')+'@'+record.get('col2')+'@'+record.get('col3')+'@'+record.get('col6');
             }
         }
-    ],
-    set: function(fieldName, value) {
-        this.callParent(arguments);
-        if (fieldName==='firstName' || fieldName==='lastName') {
-            this.set('fullName');
-        }
-    }
+    ]
 });

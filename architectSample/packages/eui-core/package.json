@@ -118,10 +118,20 @@
                 "js": [
                     "../build/eui-core-debug.js"
                 ]
+            },
+            {
+                "definition": "grid/Merge.js",
+                "className": "eui.grid.Merge",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ]
             }
         ]
     },
     "css": [
+        {
+            "path": "resources/css/eui-core-all.css"
+        },
         {
             "path": "resources/css/eui-core-all.css"
         },

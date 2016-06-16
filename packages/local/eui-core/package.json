@@ -151,6 +151,16 @@
                 "css": [
                     "eui-core-all.css"
                 ]
+            },
+            {
+                "definition": "grid/Merge.js",
+                "className": "eui.grid.Merge",
+                "js": [
+                    "../build/eui-core-debug.js"
+                ],
+                "css": [
+                    "eui-core-all.css"
+                ]
             }
         ]
     }

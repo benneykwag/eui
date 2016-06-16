@@ -19,18 +19,10 @@ Ext.Loader.setConfig({
 });
 
 
-Ext.Loader.setPath('eui.button.Button','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.field.Text','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.field.Date','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.Panel','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.RadioGroup','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.CheckboxGroup','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.form.field.ComboBox','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.field.File','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.field.Number','packages/eui-core/src/../build/eui-core-debug.js');
-Ext.Loader.setPath('eui.form.field.Display','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.grid.Panel','packages/eui-core/src/../build/eui-core-debug.js');
 Ext.Loader.setPath('eui.toolbar.Command','packages/eui-core/src/../build/eui-core-debug.js');
+Ext.Loader.setPath('eui.grid.Merge','packages/eui-core/src/../build/eui-core-debug.js');
 
 Ext.application({
     models: [
@@ -43,7 +35,10 @@ Ext.application({
         'form.Panel',
         'form.CompanyCombo',
         'grid.Basic',
-        'Grid1'
+        'grid.MergeGrid',
+        'MyPanel',
+        'GoogleMap',
+        'main.LeftMenu2'
     ],
     name: 'euisa',
 
@@ -52,7 +47,7 @@ Ext.application({
     },
 
     launch: function() {
-        Ext.create('euisa.view.main.Main');
+        Ext.create('euisa.view.MyPanel', {renderTo: Ext.getBody()});
     }
 
 });

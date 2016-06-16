@@ -1,0 +1,221 @@
+{
+    "type": "eui.grid.Merge",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "samplemergegrid",
+        "designer|userClassName": "grid.MergeGrid",
+        "groupFields": [
+            " [",
+            "        {",
+            "            field: 'col1',",
+            "            mergeConfig: [",
+            "                {",
+            "                    field: 'col2',",
+            "                    cond: 'colspan',",
+            "                    value: 2",
+            "                },",
+            "                {",
+            "                    field: 'col3',",
+            "                    cond: 'hidden',",
+            "                    value: true",
+            "                }",
+            "            ]",
+            "        },",
+            "        {",
+            "            field: 'col2',",
+            "            mergeConfig: []",
+            "        }",
+            "    ]"
+        ],
+        "height": 250,
+        "lastMergeColumn": [
+            "['col3']"
+        ],
+        "store": [
+            "{megerStore}"
+        ],
+        "sumFields": [
+            "['col4', 'col5']"
+        ],
+        "title": "Rowspan, Colspan Grid",
+        "width": 400
+    },
+    "name": "MergeGrid",
+    "configAlternates": {
+        "store": "binding"
+    },
+    "designerId": "34c96608-04ac-456f-8281-273472ecade5",
+    "viewControllerInstanceId": "db00abd3-2e25-4bc3-a64f-b5fd8044b9ec",
+    "viewModelInstanceId": "a5826289-f1fc-482e-aa90-e47dc6951c5c",
+    "cn": [
+        {
+            "type": "Ext.grid.column.Column",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dataIndex": "col1",
+                "text": "수입/지출",
+                "width": 150
+            },
+            "name": "MyColumn1",
+            "designerId": "2da6f660-79f6-4c9b-b60b-5020205d447d",
+            "cn": [
+                {
+                    "type": "fixedfunction",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|params": [
+                            "value",
+                            "metaData",
+                            "record",
+                            "rowIndex",
+                            "colIndex",
+                            "store",
+                            "view"
+                        ],
+                        "fn": "renderer",
+                        "implHandler": [
+                            "if(value === '합'){",
+                            "    return '총계';",
+                            "}",
+                            "return value;"
+                        ]
+                    },
+                    "name": "renderer",
+                    "designerId": "0aa32f74-79d3-4556-83d6-08f877271de1"
+                }
+            ]
+        },
+        {
+            "type": "Ext.grid.column.Column",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dataIndex": "col2",
+                "text": "대분류",
+                "width": 150
+            },
+            "name": "MyColumn2",
+            "designerId": "3061accf-044f-40c2-a93b-78436c39745e",
+            "cn": [
+                {
+                    "type": "fixedfunction",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|params": [
+                            "value",
+                            "metaData",
+                            "record",
+                            "rowIndex",
+                            "colIndex",
+                            "store",
+                            "view"
+                        ],
+                        "fn": "renderer",
+                        "implHandler": [
+                            "var v = value.split('@')[1];",
+                            "if(v === '합'){",
+                            "    return '합계';",
+                            "}",
+                            "return v;"
+                        ]
+                    },
+                    "name": "renderer",
+                    "designerId": "41364a8d-ba0f-4a54-b1b6-5e38d4e1fe9b"
+                }
+            ]
+        },
+        {
+            "type": "Ext.grid.column.Column",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dataIndex": "col3",
+                "text": "소분류",
+                "width": 150
+            },
+            "name": "MyColumn4",
+            "designerId": "3ecab811-4789-4c5d-9a04-473709e3f2e4",
+            "cn": [
+                {
+                    "type": "fixedfunction",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|params": [
+                            "value",
+                            "metaData",
+                            "record",
+                            "rowIndex",
+                            "colIndex",
+                            "store",
+                            "view"
+                        ],
+                        "fn": "renderer",
+                        "implHandler": [
+                            "var v = value.split('@')[2];",
+                            "if(v === '합'){",
+                            "    return '소계';",
+                            "}",
+                            "return v;"
+                        ]
+                    },
+                    "name": "renderer",
+                    "designerId": "82edd8c7-fb8d-47f0-8638-40ee14f4c662"
+                }
+            ]
+        },
+        {
+            "type": "Ext.grid.column.Number",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dataIndex": "col4",
+                "text": "1월"
+            },
+            "name": "MyNumberColumn",
+            "designerId": "587d9308-75bb-4ffc-8abb-04c3e7005673"
+        },
+        {
+            "type": "Ext.grid.column.Number",
+            "reference": {
+                "name": "columns",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dataIndex": "col5",
+                "text": "2월"
+            },
+            "name": "MyNumberColumn1",
+            "designerId": "fdfa270c-b373-44dd-9b9b-fe146bd90778"
+        }
+    ]
+}

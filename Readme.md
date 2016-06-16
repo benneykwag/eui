@@ -18,3 +18,5 @@ Doc : http://benneykwag.github.io/eui/docs/index.html#!/api
 
 - 샘플 빌드 : sencha app build 
 - sencha -sdk ./ext generate app classic eui-sample ./eui-sample
+
+sencha -sdk ./ext generate app classic ptl ./portal

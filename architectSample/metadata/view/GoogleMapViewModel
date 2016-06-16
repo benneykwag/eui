@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewModel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "googlemap",
+        "designer|userClassName": "GoogleMapViewModel"
+    },
+    "designerId": "1c402c06-8583-42f4-83c8-f847186b6dbe"
+}

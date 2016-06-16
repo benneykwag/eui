@@ -6,7 +6,6 @@
     },
     "codeClass": null,
     "userConfig": {
-        "designer|initialView": true,
         "designer|userAlias": "mainmain",
         "designer|userClassName": "main.Main",
         "layout": "border"
@@ -37,9 +36,9 @@
                         "type": "array"
                     },
                     "codeClass": null,
-                    "name": "form.panel",
-                    "designerId": "4773902f-7594-4632-8ba8-d3a8f60b1250",
-                    "masterInstanceId": "1d8c49bb-8766-4e04-8729-3fda2545e456",
+                    "name": "mypanel",
+                    "designerId": "b743c844-8ab8-4483-aadc-07b11367a14a",
+                    "masterInstanceId": "06f97876-bc18-4d91-b48b-f511eafd71ae",
                     "cn": [
                         {
                             "type": "Ext.tab.Tab",
@@ -49,7 +48,7 @@
                             },
                             "codeClass": null,
                             "name": "TabConfig",
-                            "designerId": "11833f45-2886-41b7-ba27-879fe53f5c04"
+                            "designerId": "ea83e3f1-ef1c-4929-8014-cd8bba33a50e"
                         }
                     ]
                 }

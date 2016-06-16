@@ -38,6 +38,10 @@
          "path": "${framework.dir}/build/ext-all-rtl-debug.js"
       },
       {
+         "path": "https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=weather",
+         "x-compile": true
+      },
+      {
          "path": "app.js",
          "bundle": true
       }
@@ -49,6 +53,9 @@
          "exclude": [
             "fashion"
          ]
+      },
+      {
+         "path": "resources/css/as.css"
       }
    ],
    "loader": {
@@ -104,7 +111,8 @@
       {
          "path": "resources",
          "output": "shared"
-      }
+      },
+      "resources/css/as.css"
    ],
    "ignore": [
       "(^|/)CVS(/?$|/.*?$)"

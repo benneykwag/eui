@@ -1,0 +1,490 @@
+{
+    "type": "Ext.panel.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userAlias": "mypanel",
+        "designer|userClassName": "MyPanel",
+        "height": 800,
+        "layout": "border",
+        "minHeight": null,
+        "title": "EcoSystem",
+        "width": null
+    },
+    "name": "MyPanel",
+    "designerId": "06f97876-bc18-4d91-b48b-f511eafd71ae",
+    "viewControllerInstanceId": "8397534b-a405-48f8-bde3-2abb6a32cc0f",
+    "viewModelInstanceId": "e9259a5c-53e4-4509-bc22-3abc5d1a4e8f",
+    "cn": [
+        {
+            "type": "linkedinstance",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "collapsed": false,
+                "collapsible": true,
+                "layout|region": "west",
+                "layout|split": true
+            },
+            "name": "main.leftmenu2",
+            "designerId": "bac33326-bdbc-4935-96bd-8b9ae807a054",
+            "masterInstanceId": "6cb24015-cce5-47e2-81d5-2dbcef87bb0c"
+        },
+        {
+            "type": "Ext.tab.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "layout|region": "center"
+            },
+            "name": "MyTabPanel1",
+            "designerId": "d0f067c8-c5ff-46af-96c5-6b160a9d0883",
+            "cn": [
+                {
+                    "type": "Ext.panel.Panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "height": 600,
+                        "layout": "fit",
+                        "liquidLayout": true,
+                        "title": "전력구내 작업자위치정보",
+                        "width": 200
+                    },
+                    "name": "MyPanel4",
+                    "designerId": "2a12c741-874f-4979-9482-c8dfe1305354",
+                    "cn": [
+                        {
+                            "type": "Ext.tab.Tab",
+                            "reference": {
+                                "name": "tabConfig",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "name": "TabConfig4",
+                            "designerId": "36031fb4-d6b6-4b6d-8cfd-25f7d96657af"
+                        },
+                        {
+                            "type": "Ext.container.Container",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|snapToGrid": 10,
+                                "height": 500,
+                                "layout": "absolute",
+                                "width": null
+                            },
+                            "name": "MyContainer",
+                            "designerId": "955207cd-2c6b-4061-92f0-baa03bab9f4f",
+                            "cn": [
+                                {
+                                    "type": "linkedinstance",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "height": 1024,
+                                        "id": null,
+                                        "width": 1024
+                                    },
+                                    "name": "googlemap",
+                                    "designerId": "ab3dc066-26f9-4273-99a8-3b0d09b1d4cf",
+                                    "masterInstanceId": "84be0284-64c5-4ec6-924e-f2fe1acbe121"
+                                },
+                                {
+                                    "type": "Ext.Img",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "cls": [
+                                            "gmap"
+                                        ],
+                                        "constrain": true,
+                                        "draggable": true,
+                                        "layout|x": -1,
+                                        "layout|y": 350,
+                                        "liveDrag": true,
+                                        "shim": false,
+                                        "src": "https://static.bluejeans.com/website/sites/default/files/uploaded_images/feature_cloud-based.png",
+                                        "style": [
+                                            "z-index : 100"
+                                        ],
+                                        "width": 100
+                                    },
+                                    "name": "MyImg",
+                                    "designerId": "3fd09669-ed6a-4510-9dda-69cde84feb70"
+                                },
+                                {
+                                    "type": "Ext.Img",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "cls": [
+                                            "gmap"
+                                        ],
+                                        "constrain": true,
+                                        "draggable": true,
+                                        "layout|x": 410,
+                                        "layout|y": 80,
+                                        "liveDrag": true,
+                                        "shim": false,
+                                        "src": "resources/imgs/man1.PNG",
+                                        "style": [
+                                            "z-index : 100"
+                                        ],
+                                        "width": 50
+                                    },
+                                    "name": "MyImg1",
+                                    "designerId": "777856fa-83ec-44e3-bd9a-abf0bc475ed1"
+                                },
+                                {
+                                    "type": "Ext.Img",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "cls": [
+                                            "gmap"
+                                        ],
+                                        "constrain": true,
+                                        "draggable": true,
+                                        "layout|x": 280,
+                                        "layout|y": 320,
+                                        "liveDrag": true,
+                                        "shim": false,
+                                        "src": "resources/imgs/car.PNG",
+                                        "style": [
+                                            "z-index : 100"
+                                        ],
+                                        "width": 50
+                                    },
+                                    "name": "MyImg2",
+                                    "designerId": "85f194b6-132d-4765-ad01-ad21cc059b9f"
+                                },
+                                {
+                                    "type": "Ext.Img",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "cls": [
+                                            "gmap"
+                                        ],
+                                        "constrain": true,
+                                        "draggable": true,
+                                        "layout|x": 360,
+                                        "layout|y": 290,
+                                        "liveDrag": true,
+                                        "shim": false,
+                                        "src": "resources/imgs/chart2.PNG",
+                                        "style": [
+                                            "z-index : 100"
+                                        ],
+                                        "width": 100
+                                    },
+                                    "name": "MyImg3",
+                                    "designerId": "d9f53217-8763-4710-ad27-2980ea060f8e"
+                                },
+                                {
+                                    "type": "Ext.Img",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "cls": [
+                                            "gmap"
+                                        ],
+                                        "constrain": true,
+                                        "draggable": true,
+                                        "layout|x": 180,
+                                        "layout|y": 460,
+                                        "liveDrag": true,
+                                        "shim": false,
+                                        "src": "resources/imgs/chart1.PNG",
+                                        "style": [
+                                            "z-index : 100"
+                                        ],
+                                        "width": 100
+                                    },
+                                    "name": "MyImg4",
+                                    "designerId": "f15730d6-50f3-43c0-af62-13a974d6d45a"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "eui.toolbar.Command",
+                            "reference": {
+                                "name": "dockedItems",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "dock": "top",
+                                "showCloseBtn": true,
+                                "showModBtn": true,
+                                "showRegBtn": true,
+                                "showReloadBtn": true,
+                                "showRowAddBtn": true,
+                                "showRowDelBtn": true,
+                                "showSaveBtn": true
+                            },
+                            "name": "Commandtoolbar1",
+                            "designerId": "c39f84de-d07a-454f-b05b-a4a4462963da"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Ext.panel.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "collapsed": false,
+                "collapsible": true,
+                "container|align": "stretch",
+                "layout": "vbox",
+                "layout|region": "east",
+                "title": "Map History",
+                "width": 250
+            },
+            "name": "MyPanel1",
+            "designerId": "301c965b-8227-4966-a331-6a0ce4de37be",
+            "cn": [
+                {
+                    "type": "Ext.tab.Panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "activeTab": 0,
+                        "layout|flex": 1
+                    },
+                    "name": "MyTabPanel2",
+                    "designerId": "2fc30494-4396-4356-9a36-36ae326f58a3",
+                    "cn": [
+                        {
+                            "type": "Ext.tree.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "root": [
+                                    "{",
+                                    "        expanded: true,",
+                                    "        children: [",
+                                    "            {",
+                                    "                text: '전력구내 작업자위치정보',",
+                                    "                expanded: false,",
+                                    "                children: [",
+                                    "                    {",
+                                    "                        text: '작업자1',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.grid.Basic',",
+                                    "                        pgmAlias: 'samplebasicgrid'",
+                                    "                    },",
+                                    "                    {",
+                                    "                        text: '송전탑A01',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.grid.MergeGrid',",
+                                    "                        pgmAlias: 'samplemergegrid'",
+                                    "                    }",
+                                    "                ]",
+                                    "            },",
+                                    "            {",
+                                    "                text: '전력컨설팅 서비스',",
+                                    "                expanded: false,",
+                                    "                children: [",
+                                    "                    {",
+                                    "                        text: '작업요원',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.form.Panel',",
+                                    "                        pgmAlias: 'sampleform'",
+                                    "                    },",
+                                    "                    {",
+                                    "                        text: '현장관리자',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.form.Panel',",
+                                    "                        pgmAlias: 'sampleform'",
+                                    "                    }",
+                                    "                ]",
+                                    "            }",
+                                    "        ]",
+                                    "    }"
+                                ],
+                                "rootVisible": false,
+                                "title": "My History"
+                            },
+                            "name": "MyTreePanel",
+                            "designerId": "69f7438b-3325-4d69-a1be-17a5399796a8",
+                            "cn": [
+                                {
+                                    "type": "Ext.tree.View",
+                                    "reference": {
+                                        "name": "viewConfig",
+                                        "type": "object"
+                                    },
+                                    "codeClass": null,
+                                    "name": "MyTreeView1",
+                                    "designerId": "37afe4df-b2f9-4635-b11a-c6a6b104a556"
+                                },
+                                {
+                                    "type": "Ext.tab.Tab",
+                                    "reference": {
+                                        "name": "tabConfig",
+                                        "type": "object"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "dock": "left",
+                                        "width": 100
+                                    },
+                                    "name": "TabConfig5",
+                                    "designerId": "9b20c6ca-8edf-4bed-aa9c-a74be197a661"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Ext.tree.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "root": [
+                                    "{",
+                                    "        expanded: true,",
+                                    "        children: [",
+                                    "            {",
+                                    "                text: '전력구내 작업자위치정보',",
+                                    "                expanded: false,",
+                                    "                children: [",
+                                    "                    {",
+                                    "                        text: '작업자1',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.grid.Basic',",
+                                    "                        pgmAlias: 'samplebasicgrid'",
+                                    "                    },",
+                                    "                    {",
+                                    "                        text: '송전탑A01',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.grid.MergeGrid',",
+                                    "                        pgmAlias: 'samplemergegrid'",
+                                    "                    }",
+                                    "                ]",
+                                    "            },",
+                                    "            {",
+                                    "                text: '전력컨설팅 서비스',",
+                                    "                expanded: false,",
+                                    "                children: [",
+                                    "                    {",
+                                    "                        text: '작업요원',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.form.Panel',",
+                                    "                        pgmAlias: 'sampleform'",
+                                    "                    },",
+                                    "                    {",
+                                    "                        text: '현장관리자',",
+                                    "                        leaf: true,",
+                                    "                        pgmClass: 'euisa.view.form.Panel',",
+                                    "                        pgmAlias: 'sampleform'",
+                                    "                    }",
+                                    "                ]",
+                                    "            }",
+                                    "        ]",
+                                    "    }"
+                                ],
+                                "rootVisible": false,
+                                "title": "Team History"
+                            },
+                            "name": "MyTreePanel1",
+                            "designerId": "076b8c6a-8421-45bf-9a96-e3c213872231",
+                            "cn": [
+                                {
+                                    "type": "Ext.tree.View",
+                                    "reference": {
+                                        "name": "viewConfig",
+                                        "type": "object"
+                                    },
+                                    "codeClass": null,
+                                    "name": "MyTreeView1",
+                                    "designerId": "994a8ee6-d78b-4dd6-b712-5b7d9f2c4019"
+                                },
+                                {
+                                    "type": "Ext.tab.Tab",
+                                    "reference": {
+                                        "name": "tabConfig",
+                                        "type": "object"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "dock": "left",
+                                        "width": 100
+                                    },
+                                    "name": "TabConfig5",
+                                    "designerId": "b589357c-cfcb-44e5-92cd-75abd8b7b583"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.grid.property.Grid",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "height": 200,
+                        "layout|flex": 1,
+                        "source": [
+                            "{\"크기\":\"String\",\"애자수\":true,\"최초설치일\":\"2016-06-01T10:56:12\",\"담당자\":'홍길동'}"
+                        ],
+                        "title": "전력선 > 전신주"
+                    },
+                    "name": "MyPropertyGrid",
+                    "designerId": "c6fad152-f0cd-48ec-b80f-d21abcaf5546"
+                }
+            ]
+        }
+    ]
+}

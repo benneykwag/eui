@@ -1,0 +1,51 @@
+{
+    "type": "Ext.Component",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "cls": [
+            "gmap"
+        ],
+        "designer|userAlias": "gmap",
+        "designer|userClassName": "GoogleMap",
+        "height": 250,
+        "id": "gmap",
+        "width": 400
+    },
+    "name": "MyComponent",
+    "designerId": "84be0284-64c5-4ec6-924e-f2fe1acbe121",
+    "viewControllerInstanceId": "ecbd58a1-f71f-43d5-b00b-db083a30ddd2",
+    "viewModelInstanceId": "1c402c06-8583-42f4-83c8-f847186b6dbe",
+    "cn": [
+        {
+            "type": "viewcontrollereventbinding",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "onComponentRender",
+                "implHandler": [
+                    "var mapOptions = {",
+                    "    zoom: 15,",
+                    "    center: new google.maps.LatLng(36.5,127.5)\t// #2",
+                    "};",
+                    "var map = new google.maps.Map(component.el.dom,\t// #3",
+                    "                              mapOptions);",
+                    "var weatherLayer = new google.maps.weather.WeatherLayer(); // #4",
+                    "weatherLayer.setMap(map);\t// #5",
+                    "var cloudLayer = new google.maps.weather.CloudLayer();",
+                    "cloudLayer.setMap(map);"
+                ],
+                "name": "render",
+                "scope": "me"
+            },
+            "name": "onComponentRender",
+            "designerId": "d9fafc4b-df5f-4be8-bea4-858d28593cba"
+        }
+    ]
+}

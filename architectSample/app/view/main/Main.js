@@ -19,7 +19,7 @@ Ext.define('euisa.view.main.Main', {
 
     requires: [
         'euisa.view.main.MainViewModel',
-        'euisa.view.form.Panel',
+        'euisa.view.MyPanel',
         'euisa.view.main.LeftMenu',
         'Ext.tab.Panel',
         'Ext.tab.Tab',
@@ -39,7 +39,7 @@ Ext.define('euisa.view.main.Main', {
             margin: '5 5 0 0',
             items: [
                 {
-                    xtype: 'sampleform'
+                    xtype: 'mypanel'
                 }
             ]
         },

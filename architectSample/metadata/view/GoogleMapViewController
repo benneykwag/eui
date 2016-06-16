@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "googlemap",
+        "designer|userClassName": "GoogleMapViewController"
+    },
+    "designerId": "ecbd58a1-f71f-43d5-b00b-db083a30ddd2"
+}

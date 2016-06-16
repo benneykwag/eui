@@ -30,6 +30,21 @@ Ext.define('euisa.model.Base', {
                     min: 10
                 }
             ]
+        },
+        {
+            name: 'col1'
+        },
+        {
+            convert: function(v, rec) {
+                return rec.get('col1')+'@'+rec.get('col2');
+            },
+            name: 'col2'
+        },
+        {
+            convert: function(v, rec) {
+                return rec.get('col2')+'@'+rec.get('col3');
+            },
+            name: 'col3'
         }
     ]
 });

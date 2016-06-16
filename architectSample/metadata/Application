@@ -17,7 +17,10 @@
             "form.Panel",
             "form.CompanyCombo",
             "grid.Basic",
-            "Grid1"
+            "grid.MergeGrid",
+            "MyPanel",
+            "GoogleMap",
+            "main.LeftMenu2"
         ]
     },
     "name": "Application",

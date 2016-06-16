@@ -1,0 +1,14 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "main.leftmenu2",
+        "designer|userClassName": "main.LeftMenuViewController1"
+    },
+    "name": "main.LeftMenuViewController1",
+    "designerId": "4d4ccebc-3528-4bad-9e15-64d418027716"
+}

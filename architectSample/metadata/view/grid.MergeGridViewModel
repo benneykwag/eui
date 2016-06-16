@@ -1,0 +1,73 @@
+{
+    "type": "Ext.app.ViewModel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "grid.mergegrid",
+        "designer|userClassName": "grid.MergeGridViewModel"
+    },
+    "designerId": "a5826289-f1fc-482e-aa90-e47dc6951c5c",
+    "cn": [
+        {
+            "type": "Ext.data.Store",
+            "reference": {
+                "name": "stores",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "autoLoad": true,
+                "model": "Base",
+                "name": "megerStore"
+            },
+            "name": "MyStore",
+            "designerId": "f4b6d091-6052-4169-b727-61da96d13e78",
+            "cn": [
+                {
+                    "type": "Ext.data.proxy.Ajax",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "url": "resources/data/statdata1.json"
+                    },
+                    "name": "MyAjaxProxy",
+                    "designerId": "b5063dcd-ae8e-4d5a-a2ea-ceebf35cab75",
+                    "cn": [
+                        {
+                            "type": "Ext.data.reader.Json",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "rootProperty": "data"
+                            },
+                            "name": "MyJsonReader",
+                            "designerId": "66670ce5-760a-4193-80d0-478a3e4f7bc1"
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.util.Sorter",
+                    "reference": {
+                        "name": "sorters",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "property": "col3"
+                    },
+                    "name": "MySorter",
+                    "designerId": "ce5ec0f7-9ad0-4461-9eee-b8b554f92c62"
+                }
+            ]
+        }
+    ]
+}

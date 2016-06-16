@@ -40,6 +40,12 @@ Ext.define('euisa.view.main.LeftMenu', {
                         leaf: true,
                         pgmClass: 'euisa.view.grid.Basic',
                         pgmAlias: 'samplebasicgrid'
+                    },
+                    {
+                        text: 'Rowspan, Colspan Grid',
+                        leaf: true,
+                        pgmClass: 'euisa.view.grid.MergeGrid',
+                        pgmAlias: 'samplemergegrid'
                     }
                 ]
             },

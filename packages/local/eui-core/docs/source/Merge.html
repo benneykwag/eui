@@ -23,7 +23,7 @@ Ext.define(&#39;eui.grid.Merge&#39;, {
     requires: [
         &#39;eui.view.Merge&#39;
     ],
-    alias: [&#39;widget.mergegrid&#39;],
+    alias: [&#39;widget.euimergegrid&#39;],
 <span id='eui-grid-Merge-property-viewType'>    viewType: &#39;mergetableview&#39;,
 </span>
 <span id='eui-grid-Merge-property-lockable'>    lockable: false,
@@ -67,10 +67,7 @@ Ext.define(&#39;eui.grid.Merge&#39;, {
             rStore = this.store;
         if (!me.tempStore) {
             me.tempStore = Ext.create(&#39;Ext.data.Store&#39;, {
-                model: &#39;Eui.sample.model.Base&#39;,
-                sorters: [
-                        me.lastMergeColumn + &#39;key&#39;
-                ]
+                fields: []
             });
             rStore.each(function (model) {
                 me.tempStore.add(model.copy());
@@ -126,55 +123,53 @@ Ext.define(&#39;eui.grid.Merge&#39;, {
         }
     },
 
-<span id='eui-grid-Merge-property-listeners'>    listeners: {
-</span>        render: function () {
-            var rStore = this.store;
-            var me = this;
-            rStore.on(&#39;load&#39;, function () {
-                rStore.suspendEvents();
+<span id='eui-grid-Merge-method-setStore'>    setStore: function () {
+</span>        this.callParent(arguments);
+        var rStore = this.store;
+        var me = this;
+        rStore.on(&#39;load&#39;, function () {
+            rStore.suspendEvents();
 
-                var store = me.getTempStore();
-                me.addTotoalRow();
+            var store = me.getTempStore();
+            me.addTotoalRow();
 
-                Ext.each(me.groupFields, function (groupColumn, idx) {
-                    store.group(groupColumn.field);
+            Ext.each(me.groupFields, function (groupColumn, idx) {
+                store.group(groupColumn.field);
 
-                    var values = store.sum(me.sumFields[0], true);
+                var values = store.sum(me.sumFields[0], true);
 
-                    for (var test in values) {  // 그룹핑한 갯수.
-                        var retObj = {};
-                        var colArray = Ext.Array.merge(Ext.pluck(me.groupFields, &#39;field&#39;), me.lastMergeColumn);
-                        var i = 0;
-                        Ext.each(colArray, function (v, z) {
-                            var recValue  = test.split(&#39;@&#39;)[z+i];
-                            if(!recValue){
-                                recValue = &#39;합&#39;;
-                            }
-                            retObj[v] = recValue;
+                for (var test in values) {  // 그룹핑한 갯수.
+                    var retObj = {};
+                    var colArray = Ext.Array.merge(Ext.pluck(me.groupFields, &#39;field&#39;), me.lastMergeColumn);
+                    var i = 0;
+                    Ext.each(colArray, function (v, z) {
+                        var recValue  = test.split(&#39;@&#39;)[z+i];
+                        if(!recValue){
+                            recValue = &#39;합&#39;;
+                        }
+                        retObj[v] = recValue;
 
-                            var colConfig = groupColumn.mergeConfig[z];
-                            if (groupColumn.mergeConfig[z]) {
-                                retObj[colConfig.field+colConfig.cond] = colConfig.value;
-                            }
-                            i++;
-                        });
-                        rStore.add(retObj)
-                    }
-
-                    // 합계를 계산할 필드로
-                    Ext.each(me.sumFields, function (scol, sIdx) {
-                        var testObj = {};
-                        var values2 = store.sum(scol, true);
-                        me.generaRow(rStore, groupColumn, scol, values2);
+                        var colConfig = groupColumn.mergeConfig[z];
+                        if (groupColumn.mergeConfig[z]) {
+                            retObj[colConfig.field+colConfig.cond] = colConfig.value;
+                        }
+                        i++;
                     });
+                    rStore.add(retObj)
+                }
+
+                // 합계를 계산할 필드로
+                Ext.each(me.sumFields, function (scol, sIdx) {
+                    var testObj = {};
+                    var values2 = store.sum(scol, true);
+                    me.generaRow(rStore, groupColumn, scol, values2);
                 });
-
-                rStore.resumeEvents();
-                me.callMerge(rStore);
             });
-        }
-    },
 
+            rStore.resumeEvents();
+            me.callMerge(rStore);
+        });
+    },
 
 <span id='eui-grid-Merge-method-callMerge'>    /***
 </span>     * 중복된 셀값을 좌우로 합친다.

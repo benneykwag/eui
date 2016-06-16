@@ -23,7 +23,11 @@
         "cacheBust": false,
         "buildShouldOverwriteIndex": true,
         "generateArchitectVersion": true,
-        "projectHasEnabledWebServer": true
+        "projectHasEnabledWebServer": true,
+        "lastBuildSelection": {
+            "value": "webBuild",
+            "display": "Build web app"
+        }
     },
     "xdsVersion": "3.5.1",
     "xdsBuild": 348,
@@ -33,11 +37,8 @@
     "viewOrderMap": {
         "view": [
             "e8cbb443-131a-4775-a9ec-293efe5dc2fa",
-            "d22a699b-f0c7-40c4-b463-8c2e63589091",
-            "9ca7e7ec-c801-4843-a557-fbcfa67c4f7c",
             "7467c48e-d1aa-4b22-b69b-56f746f70940",
             "000d32de-4896-4259-900a-0dca036d5142",
-            "90403a81-fab9-4a75-a6b4-99d1f3f70b28",
             "d61fdc46-49d5-4fc6-82d2-886f1847ae48",
             "d10a2499-fdf5-40db-9b26-62f543a85754",
             "c09a8539-51ea-4275-8521-362fbd2824b6",
@@ -45,11 +46,23 @@
             "3f085e8a-1f98-4f88-9ae2-ff200cfbf466",
             "d22d4da9-9fd7-4335-82ab-ec05ed81cb7b",
             "6c788bb7-876a-4e65-83f1-86bc9ad99413",
+            "6cb24015-cce5-47e2-81d5-2dbcef87bb0c",
             "8a16f3db-6194-4aa1-a898-2ef8e6086bf7",
+            "253b202f-ddd1-4fb6-9d36-84762e4ba918",
             "a3f2789f-6d49-4e45-b4a5-b96f128f1a80",
+            "4d4ccebc-3528-4bad-9e15-64d418027716",
             "1d8c49bb-8766-4e04-8729-3fda2545e456",
             "006f0c73-35f2-428c-955e-6d70c41016ec",
-            "22f93700-0483-4f97-b40f-24cc52ba46ec"
+            "22f93700-0483-4f97-b40f-24cc52ba46ec",
+            "34c96608-04ac-456f-8281-273472ecade5",
+            "a5826289-f1fc-482e-aa90-e47dc6951c5c",
+            "db00abd3-2e25-4bc3-a64f-b5fd8044b9ec",
+            "06f97876-bc18-4d91-b48b-f511eafd71ae",
+            "e9259a5c-53e4-4509-bc22-3abc5d1a4e8f",
+            "8397534b-a405-48f8-bde3-2abb6a32cc0f",
+            "84be0284-64c5-4ec6-924e-f2fe1acbe121",
+            "1c402c06-8583-42f4-83c8-f847186b6dbe",
+            "ecbd58a1-f71f-43d5-b00b-db083a30ddd2"
         ],
         "store": [],
         "controller": [],
@@ -61,7 +74,10 @@
             "4bfac4e2-b982-4788-86e9-bbb4601ec626",
             "fb9e9a29-943a-4e05-ad31-8d948577049e",
             "a57cfa48-6391-4bb4-9bdc-229ac7cdffdb",
-            "4ad4a6e0-2a9a-42e7-959b-a3c1d1ebf5b2"
+            "4ad4a6e0-2a9a-42e7-959b-a3c1d1ebf5b2",
+            "23ef466a-6572-4b87-bd59-2594efaec462",
+            "407fa3e1-80b3-4e2e-bd35-3d49c77ef1ea",
+            "9c1d8296-fb36-4ff1-89fd-9eb4c2bd2972"
         ],
         "app": [
             "application"

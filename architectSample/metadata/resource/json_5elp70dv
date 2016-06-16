@@ -1,0 +1,14 @@
+{
+    "type": "jsonresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "json_5elp70dv",
+        "url": "resources/data/statdata1.json"
+    },
+    "name": "json2",
+    "designerId": "23ef466a-6572-4b87-bd59-2594efaec462"
+}

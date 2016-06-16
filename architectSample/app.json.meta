@@ -1,1 +1,1 @@
-{"_comment":"Please don't edit. This is Architect data.","name":"euisa","resources":[],"requires":["eui-core"],"theme":"theme-triton-fb9e9a29-943a-4e05-ad31-8d948577049e","classpath":null,"css":[],"js":[]}
+{"_comment":"Please don't edit. This is Architect data.","name":"euisa","resources":["resources/css/as.css"],"requires":["eui-core"],"theme":"theme-triton-fb9e9a29-943a-4e05-ad31-8d948577049e","classpath":null,"css":[{"path":"resources/css/as.css"}],"js":[{"path":"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=weather","x-compile":true}]}

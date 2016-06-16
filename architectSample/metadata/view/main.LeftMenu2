@@ -1,0 +1,151 @@
+{
+    "type": "Ext.tree.Panel",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "defaultListenerScope": true,
+        "designer|userAlias": "main.leftmenu2",
+        "designer|userClassName": "main.LeftMenu2",
+        "root": [
+            " {",
+            "        expanded: false,",
+            "        children: [",
+            "        {",
+            "                text: \"Map\",",
+            "                expanded: false,",
+            "                children: [",
+            "                    { text: '시도별전국지도', leaf: true, pgmClass: 'euisa.view.grid.Basic', pgmAlias: 'samplebasicgrid'},",
+            "                    { text: '전력선로', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'},",
+            "                     { text: '경기도', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'},",
+            "                      { text: '서울시', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'}",
+            "                ]",
+            "            },",
+            "            {",
+            "                text: \"전력시설\",",
+            "                expanded: false,",
+            "                children: [",
+            "                    { text: '발전소', leaf: true, pgmClass: 'euisa.view.grid.Basic', pgmAlias: 'samplebasicgrid'},",
+            "                    { text: '송전탑', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'},",
+            "                     { text: '전신주', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'},",
+            "                      { text: '송전탑', leaf: true, pgmClass: 'euisa.view.grid.MergeGrid', pgmAlias: 'samplemergegrid'}",
+            "                ]",
+            "            },",
+            "            {",
+            "                text: \"사람\",",
+            "                expanded: false,",
+            "                children: [",
+            "                    { text: '작업요원', leaf: true, pgmClass: 'euisa.view.form.Panel', pgmAlias: 'sampleform'},",
+            "                                        { text: '현장관리자', leaf: true, pgmClass: 'euisa.view.form.Panel', pgmAlias: 'sampleform'}",
+            "                ]",
+            "            }",
+            "        ]",
+            "    }"
+        ],
+        "rootVisible": false,
+        "title": "ToolBox",
+        "width": 150
+    },
+    "name": "main.LeftMenu1",
+    "designerId": "6cb24015-cce5-47e2-81d5-2dbcef87bb0c",
+    "viewControllerInstanceId": "4d4ccebc-3528-4bad-9e15-64d418027716",
+    "viewModelInstanceId": "253b202f-ddd1-4fb6-9d36-84762e4ba918",
+    "cn": [
+        {
+            "type": "Ext.tree.View",
+            "reference": {
+                "name": "viewConfig",
+                "type": "object"
+            },
+            "codeClass": null,
+            "name": "MyTreeView",
+            "designerId": "39c31c0f-f244-4c50-9fd9-7764b7bb7aff"
+        },
+        {
+            "type": "basiceventbinding",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "onTreepanelItemClick",
+                "implHandler": [
+                    "if (record.get('leaf') === true) {",
+                    "    var mainTabObj = Ext.ComponentQuery.query('#maintab');",
+                    "",
+                    "",
+                    "    // var centerpanel = this.AccountMain().down('maintab');",
+                    "    var pgm = {",
+                    "        pgmClass: 'Ext.panel.Panel',",
+                    "        pgmAlias: 'panel'",
+                    "    };",
+                    "    if (record.get('pgmClass')) {",
+                    "        pgm = {",
+                    "            pgmClass: record.get('pgmClass'),",
+                    "            pgmAlias: record.get('pgmAlias')",
+                    "        };",
+                    "    }",
+                    "",
+                    "    var tab = mainTabObj[0].down('[itemId=' + pgm.pgmClass + ']');",
+                    "    if(!tab){",
+                    "        Ext.require(pgm.pgmClass, function () {",
+                    "            var className = Ext.ClassManager.getNameByAlias('widget.' + pgm.pgmAlias);",
+                    "            var ViewClass = Ext.ClassManager.get(pgm.pgmClass);",
+                    "            tab = new ViewClass();",
+                    "            if (Ext.isEmpty(record.get('pgmClass'))) {",
+                    "                tab.add({",
+                    "                    xtype: 'TemplateA'",
+                    "                });",
+                    "            }",
+                    "",
+                    "            tab.title = record.get('text');",
+                    "            tab.itemId = pgm.pgmClass;",
+                    "            tab.closable = true;",
+                    "            mainTabObj[0].add(tab);",
+                    "        });",
+                    "    }",
+                    "    mainTabObj[0].setActiveItem(tab);",
+                    "",
+                    "}"
+                ],
+                "name": "itemclick",
+                "scope": "me"
+            },
+            "name": "onTreepanelItemClick",
+            "designerId": "8df198a4-9a70-4327-be5c-fd0b2a6d5cf1"
+        },
+        {
+            "type": "Ext.toolbar.Toolbar",
+            "reference": {
+                "name": "dockedItems",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "dock": "top"
+            },
+            "name": "MyToolbar1",
+            "designerId": "6ee79a31-a44f-415c-adf0-e9d9cf618048",
+            "cn": [
+                {
+                    "type": "Ext.form.field.Text",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fieldLabel": "Label",
+                        "hideLabel": true,
+                        "layout|flex": null
+                    },
+                    "name": "MyTextField2",
+                    "designerId": "82437446-7fa3-4a75-8d56-1e1fcb234f16"
+                }
+            ]
+        }
+    ]
+}
