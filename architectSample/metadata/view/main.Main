@@ -6,6 +6,7 @@
     },
     "codeClass": null,
     "userConfig": {
+        "designer|initialView": true,
         "designer|userAlias": "mainmain",
         "designer|userClassName": "main.Main",
         "layout": "border"
@@ -27,32 +28,7 @@
                 "margin": "5 5 0 0"
             },
             "name": "MyTabPanel",
-            "designerId": "f7c57d9a-7a52-4e59-ad37-f2b70bd81744",
-            "cn": [
-                {
-                    "type": "linkedinstance",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "name": "mypanel",
-                    "designerId": "b743c844-8ab8-4483-aadc-07b11367a14a",
-                    "masterInstanceId": "06f97876-bc18-4d91-b48b-f511eafd71ae",
-                    "cn": [
-                        {
-                            "type": "Ext.tab.Tab",
-                            "reference": {
-                                "name": "tabConfig",
-                                "type": "object"
-                            },
-                            "codeClass": null,
-                            "name": "TabConfig",
-                            "designerId": "ea83e3f1-ef1c-4929-8014-cd8bba33a50e"
-                        }
-                    ]
-                }
-            ]
+            "designerId": "f7c57d9a-7a52-4e59-ad37-f2b70bd81744"
         },
         {
             "type": "linkedinstance",

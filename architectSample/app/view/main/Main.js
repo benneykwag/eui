@@ -19,10 +19,8 @@ Ext.define('euisa.view.main.Main', {
 
     requires: [
         'euisa.view.main.MainViewModel',
-        'euisa.view.MyPanel',
         'euisa.view.main.LeftMenu',
         'Ext.tab.Panel',
-        'Ext.tab.Tab',
         'Ext.tree.Panel'
     ],
 
@@ -36,12 +34,7 @@ Ext.define('euisa.view.main.Main', {
             xtype: 'tabpanel',
             region: 'center',
             itemId: 'maintab',
-            margin: '5 5 0 0',
-            items: [
-                {
-                    xtype: 'mypanel'
-                }
-            ]
+            margin: '5 5 0 0'
         },
         {
             xtype: 'leftmenu',

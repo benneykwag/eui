@@ -55,7 +55,7 @@ Ext.define('euisa.view.MyPanel', {
                     liquidLayout: true,
                     width: 200,
                     layout: 'fit',
-                    title: '전력구내 작업자위치정보',
+                    title: '작업자위치정보',
                     items: [
                         {
                             xtype: 'container',
@@ -66,45 +66,6 @@ Ext.define('euisa.view.MyPanel', {
                                     xtype: 'gmap',
                                     height: 1024,
                                     width: 1024
-                                },
-                                {
-                                    xtype: 'image',
-                                    x: -1,
-                                    y: 350,
-                                    constrain: true,
-                                    shim: false,
-                                    cls: 'gmap',
-                                    draggable: true,
-                                    liveDrag: true,
-                                    style: 'z-index : 100',
-                                    width: 100,
-                                    src: 'https://static.bluejeans.com/website/sites/default/files/uploaded_images/feature_cloud-based.png'
-                                },
-                                {
-                                    xtype: 'image',
-                                    x: 410,
-                                    y: 80,
-                                    constrain: true,
-                                    shim: false,
-                                    cls: 'gmap',
-                                    draggable: true,
-                                    liveDrag: true,
-                                    style: 'z-index : 100',
-                                    width: 50,
-                                    src: 'resources/imgs/man1.PNG'
-                                },
-                                {
-                                    xtype: 'image',
-                                    x: 280,
-                                    y: 320,
-                                    constrain: true,
-                                    shim: false,
-                                    cls: 'gmap',
-                                    draggable: true,
-                                    liveDrag: true,
-                                    style: 'z-index : 100',
-                                    width: 50,
-                                    src: 'resources/imgs/car.PNG'
                                 },
                                 {
                                     xtype: 'image',

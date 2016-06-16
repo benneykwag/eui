@@ -6,7 +6,6 @@
     },
     "codeClass": null,
     "userConfig": {
-        "designer|initialView": true,
         "designer|userAlias": "mypanel",
         "designer|userClassName": "MyPanel",
         "height": 800,
@@ -61,7 +60,7 @@
                         "height": 600,
                         "layout": "fit",
                         "liquidLayout": true,
-                        "title": "전력구내 작업자위치정보",
+                        "title": "작업자위치정보",
                         "width": 200
                     },
                     "name": "MyPanel4",
@@ -108,84 +107,6 @@
                                     "name": "googlemap",
                                     "designerId": "ab3dc066-26f9-4273-99a8-3b0d09b1d4cf",
                                     "masterInstanceId": "84be0284-64c5-4ec6-924e-f2fe1acbe121"
-                                },
-                                {
-                                    "type": "Ext.Img",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "cls": [
-                                            "gmap"
-                                        ],
-                                        "constrain": true,
-                                        "draggable": true,
-                                        "layout|x": -1,
-                                        "layout|y": 350,
-                                        "liveDrag": true,
-                                        "shim": false,
-                                        "src": "https://static.bluejeans.com/website/sites/default/files/uploaded_images/feature_cloud-based.png",
-                                        "style": [
-                                            "z-index : 100"
-                                        ],
-                                        "width": 100
-                                    },
-                                    "name": "MyImg",
-                                    "designerId": "3fd09669-ed6a-4510-9dda-69cde84feb70"
-                                },
-                                {
-                                    "type": "Ext.Img",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "cls": [
-                                            "gmap"
-                                        ],
-                                        "constrain": true,
-                                        "draggable": true,
-                                        "layout|x": 410,
-                                        "layout|y": 80,
-                                        "liveDrag": true,
-                                        "shim": false,
-                                        "src": "resources/imgs/man1.PNG",
-                                        "style": [
-                                            "z-index : 100"
-                                        ],
-                                        "width": 50
-                                    },
-                                    "name": "MyImg1",
-                                    "designerId": "777856fa-83ec-44e3-bd9a-abf0bc475ed1"
-                                },
-                                {
-                                    "type": "Ext.Img",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "cls": [
-                                            "gmap"
-                                        ],
-                                        "constrain": true,
-                                        "draggable": true,
-                                        "layout|x": 280,
-                                        "layout|y": 320,
-                                        "liveDrag": true,
-                                        "shim": false,
-                                        "src": "resources/imgs/car.PNG",
-                                        "style": [
-                                            "z-index : 100"
-                                        ],
-                                        "width": 50
-                                    },
-                                    "name": "MyImg2",
-                                    "designerId": "85f194b6-132d-4765-ad01-ad21cc059b9f"
                                 },
                                 {
                                     "type": "Ext.Img",
