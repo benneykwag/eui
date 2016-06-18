@@ -14,6 +14,7 @@ Ext.define('Eui.sample.Application', {
 
 
     launch: function () {
+
     },
 
     onAppUpdate: function () {

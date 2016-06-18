@@ -1,14 +1,19 @@
 /***
- * 농장경영성과 분석- 월별
+ *
  */
 Ext.define('Eui.sample.view.grid.MergeGrid', {
     extend: 'eui.grid.Merge',
+//    extend: 'Ext.grid.Panel',
     xtype: 'sample-mergegrid',
     requires: [
         'eui.grid.column.Number'
     ],
     title: 'Rowspan, Colspan Grid',
     frame: true,
+
+//    addSumRows: true,
+//    addTotalRow: true,
+
     viewModel: {
         stores: {
             store: {
@@ -19,11 +24,6 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
                     reader: {
                         type: 'json',
                         rootProperty: 'data'
-                    },
-                    writer: {
-                        type: 'json',
-                        allowSingle: false,  // #2
-                        writeAllFields: true    // #3
                     }
                 },
                 model: 'Eui.sample.model.Base',
