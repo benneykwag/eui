@@ -3,7 +3,6 @@
  */
 Ext.define('Eui.sample.view.grid.MergeGrid', {
     extend: 'eui.grid.Merge',
-//    extend: 'Ext.grid.Panel',
     xtype: 'sample-mergegrid',
     requires: [
         'eui.grid.column.Number'
