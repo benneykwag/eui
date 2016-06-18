@@ -11,8 +11,8 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
     title: 'Rowspan, Colspan Grid',
     frame: true,
 
-//    addSumRows: true,
-//    addTotalRow: true,
+    addSumRows: true,
+    addTotalRow: true,
 
     viewModel: {
         stores: {
@@ -67,7 +67,6 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
             text: '구분',
             columns: [
                 {
-//                    width: 100,
                     text: "수입/지출",
                     dataIndex: 'col1',
                     renderer: function (v) {
@@ -78,7 +77,6 @@ Ext.define('Eui.sample.view.grid.MergeGrid', {
                     }
                 },
                 {
-//                    width: 200,
                     text: "대항목",
                     dataIndex: 'col2',
                     renderer: function (v) {
