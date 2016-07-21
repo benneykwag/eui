@@ -132,8 +132,8 @@
  *                   dataIndex: 'col5'
  *               }
  *         ],
- *         height: 200,
- *         width: 400,
+ *         height: 500,
+ *         width: 800,
  *         renderTo: Ext.getBody()
  *     });
  *

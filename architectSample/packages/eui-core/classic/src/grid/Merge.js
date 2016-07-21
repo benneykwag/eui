@@ -132,8 +132,8 @@
  *                   dataIndex: 'col5'
  *               }
  *         ],
- *         height: 200,
- *         width: 400,
+ *         height: 500,
+ *         width: 800,
  *         renderTo: Ext.getBody()
  *     });
  *
@@ -227,6 +227,45 @@
  *
  * ## 합계,총계,소계를 표시
  * addSumRows, addTotalRow
+ *
+ *
+ * ## column renderer설정
+ * 머지될 컬럼에 설정될 필드는 모델 정의 시 covert메소드를 이용 필드값을 @로 합져진 상태이므로 이를 원하는 값으로 보여지게하기 위해 사용한다.
+ *
+ *      columns: [
+ *          {
+ *               text: "수입/지출",
+ *               dataIndex: 'col1',
+ *               renderer: function (v) {
+ *                   if(v == '합'){  // 머지만 적용할 경우 필요없음.
+ *                       return '총계'
+ *                   }
+ *                   return v;
+ *               }
+ *           },
+ *           {
+ *               text: "대항목",
+ *               dataIndex: 'col2',
+ *               renderer: function (v) {
+ *                   var value = v.split('@')[1];
+ *                   if(value == '합'){  // 머지만 적용할 경우 필요없음.
+ *                      return '합계'
+ *                   }
+ *                   return value;
+ *               }
+ *           },
+ *           {
+ *               text: "소항목",
+ *               dataIndex: 'col3',
+ *               renderer: function (v) {
+ *                   var value = v.split('@')[2];
+ *                   if(value == '합'){  // 머지만 적용할 경우 필요없음.
+ *                      return '소계'
+ *                   }
+ *                   return value;
+ *               }
+ *           }
+ *     ]
  */
 Ext.define('eui.grid.Merge', {
     extend: 'Ext.panel.Table',
