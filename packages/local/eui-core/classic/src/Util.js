@@ -754,6 +754,107 @@ Ext.define('eui.Util', {
     			}
     		}
     	};
-    }
+    },
   //=================== add end ========================================//
+    pluck: function(array, propertyName) {
+        var ret = [],
+            i, ln, item;
+
+        for (i = 0, ln = array.length; i < ln; i++) {
+
+            if(array[i].isModel){
+                item = array[i].getData();
+                delete item['id'];
+            }else{
+                item = array[i];
+            }
+            if(propertyName){
+                ret.push(item[propertyName]);
+            }else{
+                ret.push(item);
+            }
+
+        }
+
+        return ret;
+    },
+
+    loadNodeData: function (records) {
+        var me = this;
+        me.keyNameOfChildNode = 'CODE';
+        me.keyNameOfNodeLevel = 'LEVEL';
+        me.keyNameOfParentNode = 'PCODE';
+        var crWindow = function (src) {
+
+            var desktop = me.app.getDesktop();
+            desktop.createCustomWindow(src.config.data);
+        };
+
+        var nodelist = Ext.Array.map(records.getRange(), function (record) {
+            var obj = {
+                data: {}
+            };
+            Ext.each(records.config.fields, function (field) {
+                if (record.get('DSKT_SQ') < 4) {
+                    if (Ext.isObject(field)) {
+                        obj[field.name] = record.get(field.name);
+                    } else {
+                        if (field === 'PCODE' && (record.get(field) === '*')) {
+                            obj.data[field] = record.get('CODE');
+                        } else if (field === 'TEXT') {
+                            obj.data[field] = record.get(field);
+                            obj[Ext.util.Format.lowercase(field)] = record.get(field);
+                        } else {
+                            obj.data[field] = record.get(field);
+                        }
+                    }
+                }
+            });
+            return obj;
+        }, me);
+
+        var temp = {}, results = [];
+        for (var i = 0; i < nodelist.length; i++) {
+            var e = nodelist[i];
+
+            var id = e.data[me.keyNameOfChildNode];
+            var pid = e.data[me.keyNameOfNodeLevel] === 1 ? 'root' : e.data[me.keyNameOfParentNode];
+            temp[id] = e;
+            if (!Ext.isEmpty(temp[pid])) {
+                if (!temp[pid].menu) {
+                    temp[pid].menu = {
+                        items: []
+                    }
+                }
+                temp[pid].menu.items.push(e);
+            } else {
+                results.push(e);
+            }
+        }
+
+        function setLeafExtend(node) {
+            if (node.menu && node.menu.items.length > 0) {
+                node['expanded'] = true;
+                for (var i = 0; i < node.menu.items.length; i++) {
+                    arguments.callee(node.menu.items[i]);
+                }
+            } else {
+
+//                var hideTask = new Ext.util.DelayedTask(btn.hideMenu, btn);
+                node['cls'] = 'arrow-none';
+                node['leaf'] = true;
+                node['handler'] = crWindow;
+//                node.menu = me.buildShortcutCtxMenu(node.data, true);
+
+
+                delete node.children;
+            }
+        }
+
+        for (var i = 0; i < results.length; i++) {
+            setLeafExtend(results[i]);
+        }
+
+        return results;
+    }
 });
