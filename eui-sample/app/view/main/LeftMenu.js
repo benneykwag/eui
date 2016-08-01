@@ -20,6 +20,13 @@ Ext.define('Eui.sample.view.main.LeftMenu', {
                 children: [
                     { text: 'FormPanel', leaf: true, pgmClass: 'Eui.sample.view.form.Panel', pgmAlias: 'sample-form'}
                 ]
+            },
+            {
+                text: "ux",
+                expanded: true,
+                children: [
+                    { text: 'TableCellMerge', leaf: true, pgmClass: 'Eui.sample.view.ux.TableCellMerge', pgmAlias: 'sample-tablemerge'}
+                ]
             }
         ]
     },

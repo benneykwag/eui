@@ -29,6 +29,12 @@
     "classpath": "${package.dir}/src,${package.dir}/${toolkit.name}/src",
     "overrides": "${package.dir}/overrides,${package.dir}/${toolkit.name}/overrides",
     "requires": [],
+    "js":[
+        {
+            "path": "resources/js/REDIPS_table_merge/redips-table.js",
+            "bundle": false
+        }
+    ],
     "architect":{
         "compatFrameworks": [
             "ext51",

@@ -1122,9 +1122,96 @@ Ext.define('eui.Util', {
                 }
             }
         };
+    },
+    //=================== add end ========================================//
+    pluck: function(array, propertyName) {
+        var ret = [],
+            i, ln, item;
+        for (i = 0 , ln = array.length; i < ln; i++) {
+            if (array[i].isModel) {
+                item = array[i].getData();
+                delete item['id'];
+            } else {
+                item = array[i];
+            }
+            if (propertyName) {
+                ret.push(item[propertyName]);
+            } else {
+                ret.push(item);
+            }
+        }
+        return ret;
+    },
+    loadNodeData: function(records) {
+        var me = this;
+        me.keyNameOfChildNode = 'CODE';
+        me.keyNameOfNodeLevel = 'LEVEL';
+        me.keyNameOfParentNode = 'PCODE';
+        var crWindow = function(src) {
+                var desktop = me.app.getDesktop();
+                desktop.createCustomWindow(src.config.data);
+            };
+        var nodelist = Ext.Array.map(records.getRange(), function(record) {
+                var obj = {
+                        data: {}
+                    };
+                Ext.each(records.config.fields, function(field) {
+                    if (record.get('DSKT_SQ') < 4) {
+                        if (Ext.isObject(field)) {
+                            obj[field.name] = record.get(field.name);
+                        } else {
+                            if (field === 'PCODE' && (record.get(field) === '*')) {
+                                obj.data[field] = record.get('CODE');
+                            } else if (field === 'TEXT') {
+                                obj.data[field] = record.get(field);
+                                obj[Ext.util.Format.lowercase(field)] = record.get(field);
+                            } else {
+                                obj.data[field] = record.get(field);
+                            }
+                        }
+                    }
+                });
+                return obj;
+            }, me);
+        var temp = {},
+            results = [];
+        for (var i = 0; i < nodelist.length; i++) {
+            var e = nodelist[i];
+            var id = e.data[me.keyNameOfChildNode];
+            var pid = e.data[me.keyNameOfNodeLevel] === 1 ? 'root' : e.data[me.keyNameOfParentNode];
+            temp[id] = e;
+            if (!Ext.isEmpty(temp[pid])) {
+                if (!temp[pid].menu) {
+                    temp[pid].menu = {
+                        items: []
+                    };
+                }
+                temp[pid].menu.items.push(e);
+            } else {
+                results.push(e);
+            }
+        }
+        function setLeafExtend(node) {
+            if (node.menu && node.menu.items.length > 0) {
+                node['expanded'] = true;
+                for (var i = 0; i < node.menu.items.length; i++) {
+                    arguments.callee(node.menu.items[i]);
+                }
+            } else {
+                //                var hideTask = new Ext.util.DelayedTask(btn.hideMenu, btn);
+                node['cls'] = 'arrow-none';
+                node['leaf'] = true;
+                node['handler'] = crWindow;
+                //                node.menu = me.buildShortcutCtxMenu(node.data, true);
+                delete node.children;
+            }
+        }
+        for (var i = 0; i < results.length; i++) {
+            setLeafExtend(results[i]);
+        }
+        return results;
     }
 });
-//=================== add end ========================================//
 
 Ext.define('eui.button.Button', {
     extend: 'Ext.button.Button',
@@ -6097,6 +6184,87 @@ Ext.define('eui.ux.popup.DefaultPopup', {
         this.on('afterrender', function() {
             var me = this;
         });
+    }
+});
+
+/***
+ * eui.grid.Merge에서 사용할 테이블 클래스
+ * colspan, rowspan정보가 있다면 실행한다.
+ * 이 정보는 eui.grid.Merge클래스에서 모델정보로 전달한다.
+ */
+Ext.define('eui.ux.table.TableCellMerge', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'tablecellmerge',
+    listeners: {
+        afterrender: function() {
+            var id = this.table_merge_id;
+            var rt = REDIPS.table;
+            rt.onmousedown(id, true);
+            rt.color.cell = '#9BB3DA';
+        }
+    },
+    layout: 'fit',
+    initComponent: function() {
+        var id = this.id + '-merge-table';
+        this.table_merge_id = id;
+        Ext.apply(this, {
+            tbar: [
+                {
+                    xtype: 'button',
+                    text: '합치기',
+                    iconCls: 'x-fa fa-plus-square',
+                    handler: function() {
+                        REDIPS.table.merge('h', false);
+                        // and then merge cells vertically and clear cells (second parameter is true by default)
+                        REDIPS.table.merge('v');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '가로분할',
+                    handler: function() {
+                        REDIPS.table.split('h');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '세로분할',
+                    handler: function() {
+                        REDIPS.table.split('v');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '로우추가',
+                    handler: function() {
+                        REDIPS.table.row(id, 'insert');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '로우삭제',
+                    handler: function() {
+                        REDIPS.table.row(id, 'delete');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '컬럼추가',
+                    handler: function() {
+                        REDIPS.table.column(id, 'insert');
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '컬럼삭제',
+                    handler: function() {
+                        REDIPS.table.column(id, 'delete');
+                    }
+                }
+            ],
+            html: '<table width="100%" class="table-cell-merge-table" id=' + id + '><tbody>' + '<tr height="47"><td></td><td></td><td></td></tr>' + '<tr height="47"><td></td><td></td><td></td></tr>' + '<tr height="47"><td></td><td></td><td></td></tr>' + '</tbody></table>'
+        });
+        this.callParent(arguments);
     }
 });
 

@@ -195,6 +195,18 @@ Ext.define('euisa.view.form.Panel', {
                 {
                     xtype: 'euidate',
                     fieldLabel: '입사희망일'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: 'Label'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: '곽승주'
+                },
+                {
+                    xtype: 'euitext',
+                    fieldLabel: 'Label'
                 }
             ],
             dockedItems: [
