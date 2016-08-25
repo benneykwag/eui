@@ -4,7 +4,7 @@
 * */
 Ext.define('eui.form.field.Checkbox', {
     extend: 'Ext.form.field.Checkbox',
-    alias: 'widget.spcheckbox',
+    alias: 'widget.euicheckbox',
     inputValue: 'Y',
     uncheckedValue: 'N',
     cellCls: 'fo-table-row-td',

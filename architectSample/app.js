@@ -47,7 +47,8 @@ Ext.application({
         'grid.MergeGrid',
         'MyPanel',
         'GoogleMap',
-        'main.LeftMenu2'
+        'main.LeftMenu2',
+        'MyContainer1'
     ],
     name: 'euisa',
 

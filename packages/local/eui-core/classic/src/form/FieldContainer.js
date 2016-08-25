@@ -1,6 +1,6 @@
 Ext.define('eui.form.FieldContainer', {
     extend: 'Ext.form.FieldContainer',
-    alias: 'widget.spfieldcontainer',
+    alias: 'widget.euifieldcontainer',
 
     cellCls: 'fo-table-row-td',
     width: '100%',

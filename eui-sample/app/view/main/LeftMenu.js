@@ -18,7 +18,8 @@ Ext.define('Eui.sample.view.main.LeftMenu', {
                 text: "Form",
                 expanded: true,
                 children: [
-                    { text: 'FormPanel', leaf: true, pgmClass: 'Eui.sample.view.form.Panel', pgmAlias: 'sample-form'}
+                    { text: 'FormPanel', leaf: true, pgmClass: 'Eui.sample.view.form.Panel', pgmAlias: 'sample-form'},
+                    { text: '반응형폼', leaf: true, pgmClass: 'Eui.sample.view.form.ResponsiveForm', pgmAlias: 'sample-resform'}
                 ]
             },
             {

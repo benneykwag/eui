@@ -43,7 +43,7 @@ Ext.define('Eui.sample.view.main.Main', {
             margin: '5 5 0 0',
             items: [
                 {
-                    xtype: 'sample-tablemerge'
+                    xtype: 'sample-resform'
                 }
             ]
         }

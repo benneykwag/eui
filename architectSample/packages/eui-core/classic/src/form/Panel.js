@@ -41,7 +41,13 @@ Ext.define('eui.form.Panel', {
         // table layout을 사용치 않는다면 false로 설정할 것.
         useTableLayout: true,
         tableColumns: 4,
-        hbuttons: null
+        hbuttons: null,
+
+        /***
+         * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
+         * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
+         */
+        useRespColumn: true
     },
 
     initComponent: function () {
@@ -55,6 +61,32 @@ Ext.define('eui.form.Panel', {
         }, me, {
             delay: 500
         });
+        if(me.useRespColumn){
+            me.on('resize', me.responsiveColumn);
+        }
+    },
+
+    /***
+     * 브라우저 사이즈에 따라 table layout의 column값을 조정한다.
+     * 사이즈를 줄일 경우 1로 변경하고 사이즈를 다시 늘릴 경우 최초 값으로
+     * 복원한다.
+     * @param ct
+     * @param width
+     * @param height
+     */
+    responsiveColumn : function (ct, width, height) {
+        if(window.innerWidth < 992) {
+            if(ct.getLayout().columns !== 1){
+                ct.beforeColumn =  ct.getLayout().columns;
+                ct.getLayout().columns = 1;
+                ct.updateLayout();
+            }
+        }else{
+            if(ct.getLayout().columns == 1){
+                ct.getLayout().columns = ct.beforeColumn;
+                ct.updateLayout();
+            }
+        }
     },
 
     setBottomToolbar: function () {
