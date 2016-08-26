@@ -8,7 +8,7 @@ Ext.define('eui.form.field.Checkbox', {
     inputValue: 'Y',
     uncheckedValue: 'N',
     cellCls: 'fo-table-row-td',
-
+    width: '100%',
     initComponent: function() {
         var me = this;
         me.callParent(arguments);

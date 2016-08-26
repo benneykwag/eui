@@ -20,6 +20,20 @@ $font-icon-font-family: dynamic(FontAwesome);
   background-color: #f1f6ff;
 }
 
+// checkbox background
+.fo-table-row-td .x-form-cb-wrap {
+  background-color: white;
+  vertical-align: top;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d0d0d0;
+}
+
+.fo-table-row-td .x-form-cb-default {
+  margin-left: 5px;
+}
+
+
 .fo-table-row-td-noneborder{
   padding: 2px 5px 2px 12px;
 }
