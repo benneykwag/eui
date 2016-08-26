@@ -1,0 +1,248 @@
+{
+    "type": "Ext.container.Container",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "mycontainer1",
+        "designer|userClassName": "MyContainer1",
+        "height": 250,
+        "width": 400
+    },
+    "name": "MyContainer1",
+    "designerId": "171e1097-0d0f-4e48-9fe5-bc149fc462d4",
+    "viewControllerInstanceId": "047b0aaf-93e1-4725-8040-5d25e7efb236",
+    "viewModelInstanceId": "5db0e1fc-c620-44f8-bab7-5fa63c1208e0",
+    "cn": [
+        {
+            "type": "Ext.chart.CartesianChart",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "height": 250,
+                "insetPadding": [
+                    "20"
+                ],
+                "width": 400
+            },
+            "name": "ColumnChart",
+            "designerId": "387f7700-3e7f-4647-93cc-992c25c5bc6d",
+            "isBuiltIn": true,
+            "iconCls": "icon-column-chart",
+            "autoName": "ColumnChart",
+            "cn": [
+                {
+                    "type": "Ext.chart.axis.Category",
+                    "reference": {
+                        "name": "axes",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fields": [
+                            "x"
+                        ],
+                        "title": [
+                            "Category Axis"
+                        ]
+                    },
+                    "name": "MyCategoryAxis",
+                    "designerId": "393e2c41-c65f-482d-8c69-1ac81b54e9f8"
+                },
+                {
+                    "type": "Ext.chart.axis.Numeric",
+                    "reference": {
+                        "name": "axes",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fields": [
+                            "y"
+                        ],
+                        "position": "left",
+                        "title": [
+                            "Numeric Axis"
+                        ]
+                    },
+                    "name": "MyNumericAxis",
+                    "designerId": "9da607eb-2e7c-4aaa-9aea-fae03646cfa0"
+                },
+                {
+                    "type": "Ext.chart.series.Bar",
+                    "reference": {
+                        "name": "series",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "xField": "x",
+                        "yField": [
+                            "y"
+                        ]
+                    },
+                    "name": "MyBarSeries",
+                    "designerId": "47f0f0f9-b25c-4e74-8360-1fd89fbcd434"
+                },
+                {
+                    "type": "Ext.chart.series.Bar",
+                    "reference": {
+                        "name": "series",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "label": [
+                            "{'display':'insideEnd','field':'y','color':'#333','text-anchor':'middle'}"
+                        ],
+                        "xField": "x",
+                        "yField": [
+                            "y"
+                        ]
+                    },
+                    "name": "MyBarSeries1",
+                    "designerId": "6575ec92-2a2c-4cf5-b7df-ff3487cf5738"
+                },
+                {
+                    "type": "Ext.chart.Legend",
+                    "reference": {
+                        "name": "legend",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dock": "top",
+                        "itemSelector": "div"
+                    },
+                    "name": "MyLegend",
+                    "designerId": "83c3ac2a-ebb5-47b9-9f2b-8db5e21c9a25",
+                    "cn": [
+                        {
+                            "type": "Ext.XTemplate",
+                            "reference": {
+                                "name": "itemTpl",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|displayName": "itemTpl",
+                                "implHandler": [
+                                    "Data View Item {string}"
+                                ]
+                            },
+                            "name": "itemTpl",
+                            "designerId": "57b91c38-c86f-4333-be0c-ad2ce42a37c7"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Ext.chart.CartesianChart",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "colors": [
+                    "[\"#115fa6\", \"#94ae0a\", \"#a61120\", \"#ff8809\", \"#ffd13e\", \"#a61187\", \"#24ad9a\", \"#7c7474\", \"#a66111\"]"
+                ],
+                "height": 250,
+                "width": 400
+            },
+            "name": "MyLineChart",
+            "designerId": "94b121dd-6b06-4d58-b0a9-6ab2f4004058",
+            "isBuiltIn": true,
+            "iconCls": "icon-line-chart",
+            "autoName": "MyLineChart",
+            "cn": [
+                {
+                    "type": "Ext.chart.axis.Category",
+                    "reference": {
+                        "name": "axes",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fields": [
+                            "x"
+                        ],
+                        "title": null
+                    },
+                    "name": "MyCategoryAxis1",
+                    "designerId": "7dc87088-ed46-4d52-a6f1-b5ec13bdeee7"
+                },
+                {
+                    "type": "Ext.chart.axis.Numeric",
+                    "reference": {
+                        "name": "axes",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "fields": [
+                            "y1",
+                            "y2"
+                        ],
+                        "grid": [
+                            "{",
+                            "    odd: {",
+                            "        fill: '#e8e8e8'",
+                            "    }",
+                            "}"
+                        ],
+                        "position": "left",
+                        "title": null
+                    },
+                    "name": "MyNumericAxis1",
+                    "designerId": "de542717-5ed4-46e9-86cb-4097d242ee6a"
+                },
+                {
+                    "type": "Ext.chart.series.Line",
+                    "reference": {
+                        "name": "series",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "xField": "x"
+                    },
+                    "name": "MyLineSeries",
+                    "designerId": "d75835c0-0aef-461b-b491-1a89a9ed5e27"
+                },
+                {
+                    "type": "Ext.chart.series.Line",
+                    "reference": {
+                        "name": "series",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "colors": [
+                            "[\"#115fa6\", \"#94ae0a\", \"#a61120\", \"#ff8809\", \"#ffd13e\", \"#a61187\", \"#24ad9a\", \"#7c7474\", \"#a66111\"]"
+                        ],
+                        "xField": "x"
+                    },
+                    "name": "MyLineSeries1",
+                    "designerId": "d661f486-21d8-4f58-ad27-9025e2ab685d"
+                },
+                {
+                    "type": "Ext.chart.interactions.PanZoom",
+                    "reference": {
+                        "name": "interactions",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "name": "MyPanZoomInteraction",
+                    "designerId": "7ffa62a3-dea9-44cb-a8b7-7da12869403f"
+                }
+            ]
+        }
+    ]
+}
