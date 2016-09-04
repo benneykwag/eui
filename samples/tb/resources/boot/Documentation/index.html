@@ -1,0 +1,942 @@
+<!doctype html>  
+<!--[if IE 6 ]><html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	
+	<title>Taurus - Responsive Bootstrap3 Admin Template</title>
+	
+	<meta name="description" content="">
+	<meta name="author" content="Dmitry Ivaniuk">
+	<meta name="copyright" content="Dmitry Ivaniuk">
+	<meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+	<meta name="date" content="2012-12-21T00:00:00+01:00">
+
+        
+        
+        <link rel="stylesheet" href="css/shCoreDefault.css"  media="all"/>     
+        <link rel="stylesheet" href="css/shThemeDefault.css"  media="all"/>                
+        
+	<link rel="stylesheet" href="css/documenter_style.css" media="all">
+	
+	
+	<script src="js/jquery.1.6.4.js"></script>
+	        
+	<script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+	<script src="js/jquery.easing.js"></script>	        
+        
+        <script src="js/shCore.js"></script>
+	
+	<script src="js/shBrushCss.js"></script>
+	<script src="js/shBrushXml.js"></script>
+	<script src="js/shBrushJScript.js"></script>
+        
+
+        
+	<script>SyntaxHighlighter.defaults['toolbar'] = false;SyntaxHighlighter.all();</script>
+	
+	<script>document.createElement('section');var duration=500,easing='swing';</script>
+	<script src="js/script.js"></script>
+	
+	<style>		
+		::-moz-selection{background:#BBBBBB;color:#222222;}
+		::selection{background:#BBBBBB;color:#222222;}
+		#documenter_sidebar #documenter_logo{background-image:url("css/img/logo.png");}
+		a{color:#335A85;}
+		hr{border-top: 1px solid #666; border-bottom:1px solid #FFF;}
+		#documenter_sidebar, #documenter_sidebar ol a{background: url("css/img/bt_cubs.png") left top repeat #133959;color:#FFF;}
+		#documenter_sidebar ol a{}
+		#documenter_sidebar ol{}
+		#documenter_sidebar ol a{border-top:1px solid #2B5A74;border-bottom:1px solid #0e2c44;color:#FFF;}
+		#documenter_sidebar ol a:hover{background: url("css/img/bt_cubs_a.png") left top repeat #133959;color:#FFF;border-top:1px solid #2B5A74;}
+		#documenter_sidebar ol a.current{background: url("css/img/bt_cubs_a.png") left top repeat #133959;color:#FFF;border-top:1px solid #2B5A74;}                
+		#documenter_copyright{display:block !important;visibility:visible !important;}
+                #documenter_copyright a{color: #fff;}
+                .abtn{display: block; float: left; padding: 10px; color: #333; border: 1px solid #CCC; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;}
+                    .abtn:hover{text-decoration: none; background: #F1F1F1;}
+	</style>
+	
+</head>
+<body>
+	<div id="documenter_sidebar">
+		<a href="#documenter_cover" id="documenter_logo"></a>
+		<ol id="documenter_nav">
+			<li><a class="current" href="#documenter_cover">Start</a></li>						
+			<li><a href="#html_structure">HTML structure</a></li>
+			<li><a href="#css_structure">CSS structure</a></li>
+			<li><a href="#javascript_structure">Javascript structure</a></li>                        
+			<li><a href="#how_to">How-to...?</a></li>                        
+                        <li><a href="#credits">Credits</a></li>
+                        <li><a href="#changelog">Changelog</a></li>
+		</ol>
+		<div id="documenter_copyright">Copyright Dmitry Ivaniuk 2013<br>
+		made with the <a href="http://rxa.li/documenter">Documenter v1.6</a> 
+		</div>
+	</div>
+	<div id="documenter_content">
+	<section id="documenter_cover">
+            <h1>Taurus - Responsive Bootstrap3 Admin Template</h1><h2>Clean and responsive flat design</h2><hr><ul><li>Created: 06/11/2013</li><li>latest Update: 04/11/2014</li><li>By: Dmitry Ivaniuk</li><li>Email: <a href="mailto:&#97;&#113;&#118;&#97;&#116;&#97;&#114;&#105;&#117;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#97;&#113;&#118;&#97;&#116;&#97;&#114;&#105;&#117;&#115;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li></ul>
+            <a href="#hts" class="abtn">How to start use template?</a>
+        </section>
+
+        
+<section id="html_structure">
+	<h3>HTML structure</h3><hr class="notop">
+        <h4>Structure of default document</h4>
+<pre class="brush: xml">
+    &lt;body><!-- Add classes to change background -->
+        <div class="container"><!-- Add classes to theme options -->
+            <!-- here your content -->
+        </div>
+    &lt;/body>
+</pre>        
+        
+        <h4 id="cnl">Structure of document with custom navigation</h4>
+<pre class="brush: xml">
+    &lt;body><!-- Add classes to change background -->
+
+        <div class="page-container"><!-- page container -->
+            <div class="page-sidebar"><!-- side bar -->
+                <!-- place for navigation -->
+            </div>
+            <div class="page-content"><!-- page content wrapper -->                
+                <div class="container">
+                    <!-- here your content -->
+                </div>                
+            </div>
+        </div>
+
+
+    &lt;/body>
+</pre>        
+        <p><strong>Check "How to..." section to get more information about themes usage</strong></p>
+        
+        <h4>Header structure</h4>
+        
+<pre class="brush: xml">
+
+    <div class="row">                   
+        <div class="col-md-12">
+            
+            <nav class="navbar brb" role="navigation">
+                <div class="navbar-header">
+                    <!-- Here your logo or another info -->
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse"> <!-- Top navigation -->                    
+                    <ul class="nav navbar-nav">                        
+                        
+                        <li class="active"><!-- simple active element -->
+                            <a href="#">Item</a>
+                        </li>                            
+                        
+                        <li class="dropdown"><!-- dropdown element -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Item</a><!-- link -->
+                            <ul class="dropdown-menu"><!-- sub items -->                                    
+                                <li><a href="#">Item</a></li><!-- subitem -->
+                            </ul>                                
+                        </li>
+                        
+                    </ul>                    
+                </div>                
+            </nav>
+            
+        </div>    
+    </div>
+
+</pre>          
+
+    <h4>Block usage</h4>
+<pre class="brush: xml">                        
+    
+    <div class="block">
+        <div class="header"><!-- or head(more customisable) -->
+            <h2>Title</h2>                        
+        </div>                   
+        <div class="toolbar">
+            Toolbar
+        </div>                     
+        <div class="content">
+            Content
+        </div>
+        <div class="footer">
+            Footer
+        </div>
+    </div>    
+
+</pre>
+    <p>This is sample of default block usage. Also available custom block backgrounds and backgrounds of each element.</p>
+    <p>Block helpers:</p>
+<pre class="brush: xml">                            
+    .block .block-transparent // each element in block will be transparent
+    .block .block-white // each element in block will be white
+    .block .block-fill-white // each element in block will be with white(without transparency)        
+</pre>    
+    <p id="header_colors">Header helpers:</p>
+<pre class="brush: xml">                            
+    .header .header-default // Default header
+    .header .header-transparent // Transparent header
+    .header .header-white // Transparent white header
+    .header .header-fill-white // White background
+</pre>
+    <p>Toolbar helpers:</p>
+<pre class="brush: xml">                            
+    .toolbar .toolbar-default // Default toolbar
+    .toolbar .toolbar-transparent // Transparent toolbar
+    .toolbar .toolbar-white // Transparent white toolbar
+    .toolbar .toolbar-fill-white // White background
+</pre>    
+    <p>Content helpers:</p>
+<pre class="brush: xml">                            
+    .content .content-default // Default content
+    .content .content-transparent // Transparent content
+    .content .content-white // Transparent white content
+    .content .content-fill-white // White background
+</pre>    
+    <p>Footer helpers:</p>
+<pre class="brush: xml">                            
+    .footer .toolbar-default // Default footer
+    .footer .toolbar-transparent // Transparent footer
+    .footer .toolbar-white // Transparent white footer
+    .footer .toolbar-fill-white // White background
+</pre>     
+    
+    <h4>List structure</h4>    
+    <p>Custom list structure(Check official site of bootstrap to get information about bootstrap listing)</p>
+    <p>Simple list:</p>
+<pre class="brush: xml">                            
+    <div class="list">  
+        ...
+        <div class="list-item"><!-- new item -->                         
+            <div class="list-text">Description</div><!-- text in item -->
+        </div> 
+        ...
+    </div>
+</pre> 
+    <p>Best way to use it, is include list into block > content</p>
+    <p>List with elements:</p>
+<pre class="brush: xml">                            
+    <div class="list">                        
+        ...
+        <div class="list-item"><!-- new item -->
+            <div class="list-datetime"><!-- date and time -->
+                <div class="date">00.00</div>
+                <div class="time">00:00 am</div>
+            </div>
+            <div class="list-info"><!-- image -->
+                <img src="path/to.img" class="img-circle img-thumbnail"/>
+            </div>
+            <div class="list-text"><!-- text description of item -->
+                <a href="#" class="list-text-name">Title</a>
+                <p>Description</p>
+            </div>
+            <div class="list-controls"><!-- controls of item-->
+                <a href="#" class="widget-icon widget-icon-circle"><!-- controls element -->
+                    <span class="icon-remove"></span><!-- icon -->
+                </a>
+            </div>                            
+        </div><!-- end of item -->       
+        ...
+    </div>
+</pre>    
+    <h4>Contacts structure</h4>
+    <pre class="brush: xml">                            
+        <div class="list list-contacts">
+            ...
+            <a href="#" class="list-item"><!-- new item -->                                
+                <div class="list-text">John Doe</div><!-- text in item -->                                
+            </a>                                      
+            ...
+        </div>
+    </pre>     
+    <p>Contacts with elements:</p>
+    <pre class="brush: xml">
+        <div class="list list-contacts">
+            ...
+            <div class="list-item"><!-- new item -->
+                <div class="list-info"><!-- image -->
+                    <img src="path/to.img" class="img-circle img-thumbnail">
+                </div>                                                            
+                <div class="list-text"><!-- title and description -->
+                    <span class="list-text-name">Title</span>
+                    <div class="list-text-info">Description</div>
+                </div>
+                <div class="list-status list-status-online"></div><!-- Status -->
+                <div class="list-controls"><!-- controls of item -->                           
+                    <a href="#" class="widget-icon widget-icon-circle"><!-- controls element -->
+                        <span class="icon-comment"></span><!-- icon -->
+                    </a>                    
+                </div>
+            </div><!-- end of item -->        
+            ...
+        </div>
+    </pre>
+    <p>List statuses:</p>
+    <pre class="brush: xml">
+        <div class="list-status list-status-online"></div><!-- green dot -->
+        <div class="list-status list-status-offline"></div><!-- red dot -->
+        <div class="list-status list-status-away"></div><!-- yellow dot -->
+    </pre>
+    
+    <h4>Messages structure</h4>
+    
+    <pre class="brush: xml">
+        <div class="messages"><!-- messages block -->               
+            ...
+            <div class="messages-item"><!-- messages item -->
+                <img src="link/to.img" class="img-circle img-thumbnail"><!-- messages image logo -->
+                <div class="messages-item-text"><!-- messages  text-->
+                    text
+                    <div class="messages-attachment"><!-- messages attachment info(not important)-->
+                        <a href="#">text</a><!-- attachment item -->                      
+                    </div>
+                </div>
+                <div class="messages-item-date">00:00 00.00.0000</div><!-- messages date -->
+            </div>           
+            ...
+        </div>
+    </pre>
+    <h4>Gallery structure</h4>
+    <p>Simple:</p>
+    <pre class="brush: xml">
+        <div class="gallery"><!-- new gallery -->
+            ...
+            <a class="fancybox" rel="group" href="path/to.img"><!-- gallery item -->
+                <img src="path/to.img" class="img-thumbnail"><!-- image -->
+            </a>
+            ...
+        </div>
+    </pre>    
+    <p>Gallery list:</p>
+    <pre class="brush: xml">
+        <div class="gallery-list"><!-- new Gallery list -->
+            ...
+            <div class="gallery-item"><!-- gallery item -->
+                <div class="gallery-image"><!-- gallery image -->
+                    <a class="fancybox" rel="group" href="path/to.img"><!-- image preview -->
+                        <img src="path/to.img" class="img-thumbnail"><!-- img -->
+                    </a>
+                </div>
+                <div class="gallery-controls"><!-- img controls -->                    
+                    <a href="#"><span class="icon-pencil"></span></a><!-- controls item -->
+                </div>
+            </div>                                                            
+            ...
+        </div>
+    </pre>
+    <p>Thumbnails:</p>
+    <pre class="brush: xml">
+        <div class="gallery-list"><!-- new gallery -->
+            ...
+            <div class="gallery-item"><!-- new item -->
+                <div class="gallery-image"><!-- item image -->
+                    <a class="fancybox" rel="group" href="path/to.img"><!-- image preview -->
+                        <img src="path/to.img" class="img-thumbnail"><!-- image -->
+                    </a>
+                </div>
+                <div class="gallery-content"><!-- item description -->
+                    <div class="title">Title</div><!-- title -->
+                    <div class="text">Text</div><!-- text -->
+                </div>                            
+            </div> 
+            ...
+        </div>
+    </pre>
+</section>
+<section id="css_structure">
+	<h3>CSS structure</h3><hr class="notop">
+        <p><strong>stylesheets.css</strong> is the main CSS file that includes:</p>
+<pre class="brush: css">        
+    @import "bootstrap/bootstrap.min.css";
+    @import "jquery/jquery-ui.min.css";
+
+    @import "icons/font-awesome.min.css";
+
+    @import "mcustomscrollbar/jquery.mCustomScrollbar.css";
+    @import "select2/select2.css";
+
+    @import "shbrush/shCoreDefault.css";
+    @import "shbrush/shThemeDefault.css";
+
+    @import "cleditor/jquery.cleditor.css";
+    @import "codemirror/codemirror.css";
+    @import "validationengine/validationEngine.css";
+
+    @import "fancybox/jquery.fancybox.css";
+
+    @import "fullcalendar/fullcalendar.css";
+
+    @import "elfinder/elfinder.min.css";
+    @import "filetree/jqueryFileTree.css";
+
+    @import "stylesheet.css";
+    @import "backgrounds.css";
+    @import "themes.css";
+    @import "mystyles.css";
+</pre>        
+        <ul>            
+            <li><strong>bootstrap/bootstrap.min.css</strong> - bootstrap stylesheets</li>
+            <li><strong>jquery/jquery-ui.min.css</strong> - jQuery UI custom stylesheets</li>
+            <li><strong>icons/font-awesome.min.css</strong> - font awesome icons stylesheets</li>            
+            <li><strong>fullcalendar/fullcalendar.css</strong> - full calendar plugin stylesheets</li>                        
+            <li><strong>fancybox/jquery.fancybox.css</strong> - fancybox plugin stylesheets</li>            
+            <li><strong>select2/select2.css</strong> - Select2 stylesheets</li>                                          
+            <li><strong>validationengine/validationEngine.css</strong> - Validation engine stylesheets</li>            
+            <li><strong>mcustomscrollbar/jquery.mCustomScrollbar.css</strong> - Custom scrollbar stylesheets</li>            
+            <li><strong>cleditor/jquery.cleditor.css</strong> - WYSIWYG plugin stylesheets</li>
+            <li><strong>shCoreDefault.css, shThemeDefault.css</strong> - SyntaxHighlight plugin stylesheets</li>                        
+            <li><strong>elfinder/elfinder.min.css</strong> - Elfinder plugin stylesheets</li>                        
+            <li><strong>filetree/jqueryFileTree.css</strong> - File Tree plugin stylesheets</li>                        
+                        
+            <li><strong>stylesheet.css</strong> - <strong>Taurus styleshets</strong></li>
+            <li><strong>backgrounds.css</strong> - backgrounds stylesheet</li>                                    
+            <li><strong>themes.css</strong> - <strong>Themes styleshets(can be cleaned after choose of theme)</strong></li>
+            <li><strong>mystyles.css</strong> - <strong>Your own styles</strong></li>
+        </ul>
+</section>
+        
+<section id="javascript_structure">
+	<h3>Javascript structure</h3><hr class="notop">
+
+        <h4>Basics</h4>
+<pre class="brush: xml">    
+    &lt;script type='text/javascript' src='js/plugins/jquery/jquery.min.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/jquery/globalize.js'>&lt;/script>    
+    &lt;script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'>&lt;/script>
+    
+    &lt;script type='text/javascript' src='js/plugins.js'>&lt;/script>    
+    &lt;script type='text/javascript' src='js/actions.js'>&lt;/script>      
+</pre>
+        
+        <h4>Uniform plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'>&lt;/script>
+</pre>
+        <p>Designed form elements: input:checkbox,input:radio</p>
+
+        <h4>Custom scrollbar</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use custom content scroller</p>        
+
+        <h4>iButton plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/ibutton/jquery.ibutton.js'>&lt;/script>
+</pre>
+        <p>Allows you to use iButton plugin(styleed checkbox/radio)</p>                
+        
+    <h4>Select2 plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/select2/select2.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use custom select element(custom design of select/select:multiple with search)</p>
+
+        <h4>Tags input plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/tagsinput/jquery.tagsinput.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use field with tags</p>
+        
+        <h4>Timepicker addon</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/jquery/jquery-ui-timepicker-addon.js'>&lt;/script>
+</pre>
+        <p>Allows you to use addon for jquery-ui. Timepicker or date-and-time picker.</p>
+        
+        <h4>Notify plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/noty/jquery.noty.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/noty/layouts/topCenter.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/noty/layouts/topLeft.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/noty/layouts/topRight.js'>&lt;/script>    
+    &lt;script type='text/javascript' src='js/plugins/noty/themes/default.js'>&lt;/script>
+</pre>
+        <p>Allows you to use notify massages. Also check official site of plugin to get more information about usage(direction etc.)</p>
+        
+        <h4>Fancybox plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/fancybox/jquery.fancybox.pack.js'>&lt;/script>
+</pre>
+        <p>Allows you to use popup preview of large image</p>
+
+        <h4>Knob plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/knob/jquery.knob.js'>&lt;/script>
+</pre>
+        <p>Allows you to use knob circle charts</p>
+
+        <h4>Flot charts plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/flot/jquery.flot.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/flot/jquery.flot.pie.js'>&lt;/script>    
+    &lt;script type='text/javascript' src='js/plugins/flot/jquery.flot.resize.js'>&lt;/script>
+</pre>
+        <p>Allows you to use flot charts</p>
+        
+        <h4>Sparkline charts plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/sparkline/jquery.sparkline.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use sparkline charts</p>        
+        
+        <h4>Fullcalendar plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/fullcalendar/fullcalendar.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use fullcalendar plugin</p>
+        
+        <h4>Google maps plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places">&lt;/script>
+</pre>
+        <p>Allows you to use Google maps plugin</p>        
+
+        <h4>Datatables plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/datatables/jquery.dataTables.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use datatables plugin(sortable tables, with paging, search and other controls).</p>        
+        
+        <h4>Google maps plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places">&lt;/script>
+</pre>
+        <p>Allows you to use Google maps plugin</p>                
+
+        <h4>ShBrush plugin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/shbrush/XRegExp.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/shbrush/shCore.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/shbrush/shBrushXml.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/shbrush/shBrushJScript.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/shbrush/shBrushCss.js'>&lt;/script>
+</pre>
+        <p>Allows you to use ShBrush plugin(SyntaxHighlighter).</p>         
+
+        <h4>ClEditor plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/cleditor/jquery.cleditor.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use ClEditor plguin(WYSIWYG editor).</p>                 
+
+        <h4>Codemirror plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/codemirror/codemirror.js'>&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/addon/edit/matchbrackets.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/htmlmixed/htmlmixed.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/xml/xml.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/javascript/javascript.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/css/css.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/clike/clike.js">&lt;/script>
+    &lt;script type='text/javascript' src="js/plugins/codemirror/mode/php/php.js">&lt;/script>
+</pre>
+        <p>Allows you to use Codemirror plguin(WYSIWYG code editor).</p>                 
+        
+        <h4>Plupload plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.gears.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.silverlight.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.flash.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.browserplus.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.html4.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/plupload.html5.js'>&lt;/script>
+    &lt;script type='text/javascript' src='js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.js'>&lt;/script> 
+</pre>
+        <p>Allows you to use Plupload plguin(File uploads plugin).</p>
+
+        <h4>Elfinder plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/elfinder/elfinder.min.js'>&lt;/script>
+</pre>
+        <p>Allows you to use Elfinder plguin(File manager plugin).</p>
+        
+        <h4>jQuery File Tree plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/filetree/jqueryFileTree.js'>&lt;/script>    
+</pre>
+        <p>Allows you to use File Tree plguin.</p>        
+        
+        <h4>TinyMCE plguin</h4>
+<pre class="brush: xml">                    
+    &lt;script type='text/javascript' src='js/plugins/tinymce/tinymce.min.js'>&lt;/script>    
+</pre>
+        <p>Allows you to use TinyMCE plguin(wysiwyg editro).</p>
+        
+        <h4>Taurus javascript</h4>
+<pre class="brush: xml">                    
+    <script type='text/javascript' src='js/plugins.js'></script><!-- inits of plugins - important -->
+    <script type='text/javascript' src='js/actions.js'></script><!-- scripts - important -->    
+    <script type='text/javascript' src='js/charts.js'></script><!-- chart examples -->
+    <script type='text/javascript' src='js/maps.js'></script><!-- map examples -->
+    <script type='text/javascript' src='js/settings.js'></script><!-- template settings -->
+</pre>
+        
+</section>
+
+        
+        
+<section id="how_to">
+	<h3>How-to...?</h3><hr class="notop">
+        
+        <h4 id="hts">How to start using Taurus template?</h4>
+        <ol>
+            <li> Chose theme and background that you will use, and set default controls. <a href="#htdt">How to do this check it in next part</a></li>
+            <li> Remove from plugins.js all code that commented with <strong>(demo)</strong>(samples)</li>
+            <li> Remove from /js folder files: charts.js, maps.js, settings.js(smaples)</li>
+            <li> Remove from /img examples folder. Replace logo with your own. Also You can remove all backgrounds and wallpapers that you doesnt use</li>
+            <li> Open css/stylesheet.css and remove part of code commented with /* site settings */ (not important). Also find <strong>.container.container-fixed</strong> and set width for fixed version of site(by default 1200px)</li>
+            <li> Open css/themes.css and remove themes that you doesnt use</li>
+            <li> Use <strong>component_layout_blank.html</strong> as basic HTML file</li>
+        </ol>
+        
+        <h4 id="htdt">How to use themes?</h4>
+        <p>All themes you can find in css/themes.css, all background options in backgrounds.css. For example if you choose theme .theme-black and wallpaper .wall-num6:</p>
+<pre class="brush: xml">    
+    &lt;body class="wall-num6"><!-- add background/wallpaper class to body tag -->
+        
+        <div class="container theme-black"><!-- add theme class to container element -->
+            ...
+        </div>
+    
+    &lt;/body>    
+</pre>        
+        <p>If you need to use fixed content, you should add to .container class .container-fixed</p>
+<pre class="brush: xml">    
+    &lt;body class="wall-num6"><!-- add background/wallpaper class to body tag -->
+        
+        <div class="container theme-black container-fixed"><!-- add theme class to container element -->
+            ...
+        </div>
+    
+    &lt;/body>    
+</pre>        
+        <p>Dont forget to change width of fixed content in stylesheet.css(<strong>.container.container-fixed</strong>)</p>
+        
+        
+        <h4>How to white content?</h4>
+        <p>There two types. 1st is use <strong>.block.block-fill-white</strong>. 2nd is use custom layout with "white" background(<strong>.page-content.page-content-white</strong>), there you also shoud use <strong>block.block-fill-white</strong>, but in this case more available elements.</p>        
+        <p>Also you should to know, that white content support only form elements(example you can find on form_elements.html).</p>
+        <p>Structure of block with white background same as in default block:</p>
+<pre class="brush: xml">
+    <div class="block block-fill-white">        
+        <div class="header">...</div>
+        <div class="head">...</div>
+        <div class="toolbar">...</div>
+        <div class="content">...</div>
+        <div class="footer">...</div>
+    </div>
+</pre>        
+        <p>Structure of page with white content same as custom navigation content, but you should also add .page-content-white to .page-content:</p>
+        
+<pre class="brush: xml">
+    &lt;body><!-- Add classes to change background -->
+
+        <div class="page-container"><!-- page container -->
+            <div class="page-sidebar"><!-- side bar -->
+                <!-- place for navigation -->
+            </div>
+            <div class="page-content page-content-white"><!-- page content wrapper, and white background -->                
+                <div class="container">
+                    <!-- here your content -->
+                </div>                
+            </div>
+        </div>
+
+
+    &lt;/body>
+</pre> 
+        
+        
+        <h4>How to use horizontal navigation?</h4>
+        <p>Horizontal navigation based on Bootstrap3 Navbar. All except second and lower level dropdown. Use <strong>ul.dropdown-submenu</strong>:</p>
+<pre class="brush: xml">
+    ...
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">link name</a>
+        <ul class="dropdown-menu">
+            ...
+            <li>
+                <a href="#">link name</a>
+                <ul class="dropdown-submenu"><!-- this is second and lower level navigation block -->
+                    ...
+                    <li><a href="#">link name</a></li>                    
+                    ...
+                </ul>
+            </li> 
+            ...
+        </ul>
+    </li>
+    ...
+</pre>
+        <p>For more information how to use Navbar <a href="http://getbootstrap.com/components/#navbar" target="_blank">check this page</a></p>
+        
+        
+        <h4>How to use vertical navigation?</h4>
+<pre class="brush: xml">
+    <ul class="page-navigation"><!-- navigation block -->
+        ...
+        <li><!-- first level item -->
+             <a href="#"><span class="icon-*"></span> Firstlevel</a><!-- first level item link with icon -->
+                <ul><!-- second level block -->
+                    ...
+                    <li><!-- second level item -->
+                        <a href="#">Second and lower level</a><!-- second level item link -->
+                    </li>
+                    ...
+                </ul>             
+        </li>
+        ...
+    </ul>
+</pre>  
+
+        <h4>How to collapse vertical navigation?</h4>
+        <p>Vertical navigation collapse available only in <a href="#cnl">Custom Navigation Layout</a>. Collapse controller: .psn-control. Also navigation auto-collapse if width of window is lower than 768, and expand if more than 768.</p>
+        <p>Check example from component_layout_custom.html:</p>
+<pre class="brush: xml">
+    <div class="page-sidebar">
+        ...
+        <div class="page-navigation-panel">
+            ...
+            <div class="control"><!-- block floated to left and minor controls-->
+                <a href="#" class="psn-control"><span class="icon-reorder"></span></a><!-- controller with icon -->
+            </div>
+            ...
+        </div>
+        ...
+    </div>
+</pre>        
+        
+        <h4>How to hide elements in panel-sidebar when it collapsed?</h4>
+        <p>You should add class <strong>page-navigation-hide</strong> to element you want to hide.</p>
+<pre class="brush: xml">
+    <div class="page-sidebar">
+        ...
+        <div class="block page-navigation-hide">
+            ...
+        </div>
+        ...
+    </div>
+</pre>        
+
+    <h4>How to use header/head in block?</h4>
+    <p>All available items in <strong>header</strong>:</p>
+<pre class="brush: xml">
+
+    <div class="block"><!-- some content box -->        
+        <div class="header"><!-- header -->
+            <h2>Title</h2><!-- header title -->
+            <ul class="buttons pull-right"><!-- buttons panel -->
+                <li><a href="#">Button</a></li><!-- panel item -->
+            </ul>
+        </div>        
+        ...
+    </div>                                                 
+
+</pre>        
+    <p>Also you can change background of header. <a href="header_colors">Check this for more information</a>.</p>
+    
+    <p>All available items in <strong>head</strong>:</p>
+<pre class="brush: xml">
+
+    <div class="block"><!-- some content box -->        
+        <div class="head"><!-- head -->
+            
+            <h2>Title</h2><!-- head title -->
+            
+            <ul class="buttons pull-right"><!-- buttons panel -->
+                <li><a href="#">Button</a></li><!-- panel item -->
+            </ul>
+            
+            <div class="head-subtitle">Subtitle</div><!-- subtitle block -->
+            
+            <div class="head-panel"><!-- head panel -->
+                
+                <div class="hp-info"><!-- information block -->
+                    <div class="hp-icon"><!-- icon block -->
+                        <span class="icon-thumbs-up-alt"></span><!-- icon -->
+                    </div>
+                    <span class="hp-main">text</span><!-- main info -->
+                    <span class="hp-sm">other text</span><!-- submain info -->
+                </div>                
+                
+                <a href="#" class="hp-info hp-one pull-right"><!-- hp-info also available as link. hp-one - is information block with hp-main only -->
+                    <div class="hp-icon"><!-- icon block -->
+                        <span class="icon-refresh"></span><!-- icon -->
+                    </div>                                                 
+                    <span class="hp-main">Text</span><!-- main info -->                                
+                </a>
+                <div class="hp-info hp-simple hp-inline"><!-- hp-inline is information block in one line. hp-simple - without image -->
+                    ...
+                </div>
+                
+            </div>
+            
+        </div>        
+        ...
+    </div>                                                 
+
+</pre>    
+    <p><strong>head</strong> doesnt have default background. So dont forget to set it:</p>        
+<pre class="brush: xml">
+    ...
+    <div class="block">        
+        <div class="head bg-default"><!-- bg-default is default background of theme. -->
+            ...
+        </div>
+    </div>
+    ...
+</pre>    
+    
+    <h4>How to use backgrounds?</h4>
+    <p>First of all let's see all available customisible backgrounds(backgrounds.css):</p>
+<pre class="brush: css">
+/* eof background images */
+...
+.bg-light{background-image: url('../img/background/blight.png'); background-position: center top; background-repeat: no-repeat;}
+.bg-light-ltr{background-image: url('../img/background/blight_ltr.png'); background-position: left top; background-repeat: no-repeat;}
+.bg-light-rtl{background-image: url('../img/background/blight_rtl.png'); background-position: right top; background-repeat: no-repeat;}
+.bg-splash-white{background-image: url('../img/background/splash_white.png'); background-position: center top; background-repeat: no-repeat;}
+.bg-splash-blue{background-image: url('../img/background/splash_blue.png'); background-position: center top; background-repeat: no-repeat;}
+...
+/* eof background images */
+
+/* background colors */
+.bg-white{background-color: #FFFFFF !important;}
+.bg-lblue{background-color: #34A6C8 !important;}
+.bg-blue{background-color: #2F80A6 !important;}
+.bg-dblue,.bg-default{background-color: #133959 !important;}
+.bg-turquoise{background-color: #40BABD !important;}
+/* eof background colors */    
+</pre>    
+    <p>So, to build your own background you can use class="bg-blue bg-light-ltr" to get blue background with light from left to right.</p>
+    <p>Also you can add your own colors, and use it for page background or for block > head elements.</p>
+    
+    <h4>How to create a custom scrollbar in block?</h4>        
+<pre class="brush: xml">
+
+    <div class="block"><!-- some content box -->
+        
+        <div class="scroll" style="height: 300px;"> <!-- new content wrapper with custom scroll -->
+            ...
+        </div>
+        
+    </div>                                                 
+
+</pre>        
+    <p>Important thing to use scrollbar is add for wrapper personal div, and set for it height as on example above.</p>
+
+    <h4>How to use plugins?</h4>    
+    <p>Almost all plugins in template can be called with classes. Samples:</p>
+    <pre class="brush: xml">
+        <!-- iButton(switch) -->
+        <input type="checkbox" class="ibutton"/>
+        <input type="radio" class="ibutton"/><!-- use class .ibutton -->
+
+        <!-- Select2 -->
+        <select class="select2" style="width: 100%;">...</select>
+        <select class="select2" multiple="multiple" style="width: 100%;" tabindex="-1"></select><!-- use class .select2 -->
+
+        <!-- Tags Input -->
+        <input type="text" class="tags"/><!-- use class .tags -->
+
+        <!-- Date and time pickers -->
+        <input type="text" class="datepicker form-control"/><!-- use class .datepicker to call Datepicker -->
+        <input type="text" class="mdatepicker form-control"/><!-- use class .mdatepicker to call Multiple Datepicker -->
+        <input type="text" class="timepicker form-control"/><!-- use class .timepicker to call Timepciker -->
+        <input type="text" class="datetimepicker form-control"/><!-- use class .datetimepicker to call Date and Time picker -->
+
+        <!-- ClEditor -->
+        <textarea class="cle"></textarea><!-- use class .cle to call editor -->
+        <textarea class="scle"></textarea><!-- use class .scle to call simple editor -->
+
+        <!-- TinyMCE -->
+        <textarea class="tmce"></textarea><!-- use class .tmce to call editor -->
+        <textarea class="stmce"></textarea><!-- use class .stmce to call simple editor -->
+
+    </pre>     
+    
+</section>
+<section id="credits">
+	<h3>Credits</h3><hr class="notop">
+        
+        <ul>
+            <li><a href="http://jqueryui.com/">jQuery</a></li>
+            <li><a href="http://jqueryui.com/">jQuery UI</a></li>
+            <li><a href="http://getbootstrap.com/">Twitter Bootstrap</a></li>            
+            <li><a href="http://fancybox.net/">jQuery fancybox</a></li>            
+            <li><a href="http://omnipotent.net/jquery.sparkline/#s-about">jQuery Sparkline charts</a></li>
+            <li><a href="http://anthonyterrien.com/knob/">jQuery Knob charts</a></li>
+            <li><a href="http://needim.github.io/noty/">Notify plugin</a></li>
+            <li><a href="http://datatables.net/">jQuery DataTables</a></li>                        
+            <li><a href="http://manos.malihu.gr/jquery-custom-content-scroller/">jQuery custom content scroller</a></li>
+            <li><a href="http://uniformjs.com/">jQuery Uniform plugin</a></li>
+            <li><a href="http://ivaynberg.github.io/select2/">jQuery Select2 plugin</a></li>
+            <li><a href="http://xoxco.com/projects/code/tagsinput/">jQuery TagsInput plugin</a></li>
+            <li><a href="http://digitalbush.com/projects/masked-input-plugin/">jQuery maskedinput plugin</a></li>            
+            <li><a href="http://www.position-absolute.com/">jQuery Validation Engine plugin</a></li>
+            <li><a href="http://wbotelhos.com/stepy">jQuery Stepy</a></li>                        
+            <li><a href="http://premiumsoftware.net/cleditor/">jQuery CLEditor plugin</a></li>            
+            <li><a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter plugin</a></li>            
+            <li><a href="http://www.plupload.com/">jQuery Plupload</a></li>                                             
+            <li><a href="http://www.givainc.com/labs/ibutton_jquery_plugin.htm">jQuery iButton</a></li>
+            <li><a href="http://codemirror.net"/>Codemirror plugin</a></li>
+            <li><a href="http://arshaw.com/fullcalendar/"/>Fullcalendar plugin</a></li>            
+            <li><a href="http://elfinder.org/"/>Elfinder file manager plugin</a></li>
+            <li><a href="http://www.abeautifulsite.net/blog/2008/03/jquery-file-tree/"/>File tree plugin</a></li>
+            <li><a href="http://www.tinymce.com/"/>TinyMCE plugin</a></li>
+        </ul>        
+        
+</section>    
+<section id="changelog">
+        <h3>Changelog</h3><hr class="notop">
+        
+        <ul>                    
+            <li>
+                <strong>Version 1.0</strong> - 10.11.2013
+                <ul>
+                    <li>Initial release</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Version 1.1</strong> - 18.11.2013
+                <ul>
+                    <li>Added Tinymce wysiwyg editor</li>
+                    <li>Added Elfinder file manager</li>
+                    <li>Added File Tree plugin</li>
+                    <li>Added sortable and selectable element samples</li>
+                    <li>Added support form elements on white background</li>
+                    <li>Added new layout with white background</li>
+                    <li>Added modal with ajax load content sample</li>
+                    <li>Added full size modal</li>
+                    <li>Added draggable modal</li>
+                    <li>Added modal with white content</li>
+                    <li>Added messages with white background</li>
+                    <li>Added on/off series chart sample</li>
+                    <li>Added auto save site settings(now you can choose theme one per session)</li>
+                    <li>Updated documentation to v1.1</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Version 1.2</strong> - 04.11.2014
+                <ul>                    
+                    <li>Updated to Bootstrap v3.3.0</li>
+                    <li>Added Front-end template</li>
+                    <li>Added Switch Button with custom sizes</li>
+                    <li>Added Custom Input File Upload button</li>                    
+                    <li>Many corrections in design(desktop/mobile)</li>
+                    <li>Minor bugs fixed</li>
+                </ul>
+            </li>
+        </ul>
+        
+</section>
+</div>
+
+</body>
+</html>

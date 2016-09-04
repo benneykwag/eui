@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>    
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                 <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>                            
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>               
+
+            </div>            
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Pages</a></li>                    
+                    <li class="active">Invoice</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="block block-drop-shadow">
+                    
+                    <div class="header">
+                        <h2>Invoice #544</h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-print"></span></a></li>
+                                <li><a href="#"><span class="icon-save"></span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>From John Doe</h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-pencil"></span></a></li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="content">                        
+                        <address class="nm">
+                            <strong>John Doe</strong><br>
+                            44 Revutskogo, Suite 566<br>
+                            Kyiv, UA 02140<br>
+                            <abbr title="Phone">P:</abbr> +38 (012) 345-67-89
+                        </address>
+                    </div>
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>To Enterprise</h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-pencil"></span></a></li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="content">                        
+                        <address class="nm">
+                            <strong>Enterprise, Inc.</strong><br>
+                            321 Streeet, Suite 300<br>
+                            San Francisco, CA 94107<br>
+                            <abbr title="Phone">P:</abbr> +38 (123) 456-7890<br/>
+                            <abbr title="Phone">Fax:</abbr> +38 (987) 654-3210
+                        </address>                                                        
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-9">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Description</h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-pencil"></span></a></li>
+                                <li><a href="#"><span class="icon-remove"></span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <p>Vestibulum cursus augue sed leo tempor, at aliquam orci dictum. Sed mattis metus id velit aliquet, et interdum nulla porta. Etiam euismod pellentesque purus, in fermentum eros venenatis ut. Praesent vitae nibh ac augue gravida lacinia non a ipsum. Aenean vestibulum eu turpis eu posuere. Sed eget lacus lacinia, mollis urna et, interdum dui. Donec sed diam ut metus imperdiet malesuada. Maecenas tincidunt ultricies ipsum, lobortis pretium dolor sodales ut. Donec nec fringilla nulla. In mattis sapien lorem, nec tincidunt elit scelerisque tempus.</p>
+                    </div>
+                    <div class="content">
+
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="20"><input type="checkbox" class="checkall"/></th>
+                                    <th>Description</th>
+                                    <th width="10%">Price</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" name="checkbox"/></td>
+                                    <td>Web Design</td>
+                                    <td>$800</td>
+                                    <td>1</td>
+                                    <td>$800</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="checkbox"/></td>
+                                    <td>Programming</td>
+                                    <td>$1,151.50</td>
+                                    <td>1</td>
+                                    <td>$1,151.50</td>
+                                </tr>                                
+                                <tr>
+                                    <td><input type="checkbox" name="checkbox"/></td>
+                                    <td>Logo Design</td>
+                                    <td>$400</td>
+                                    <td>1</td>
+                                    <td>$400</td>
+                                </tr>                                            
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    
+                </div>                
+                
+            </div>
+        
+        </div>
+        
+        <div class="row">
+            <div class="col-md-5">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Payment method: <span class="text-warning">International Transfer (SWIFT)</span></h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-pencil"></span></a></li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="content">                    
+                        <p><strong>Country:</strong> Ukraine</p>
+                        <p><strong>Holder's Name:</strong> John Doe</p>
+                        <p><strong>Number/IBAN:</strong> UA85 3996 2200 0000 0260 0123 3566 1</p>
+                        <p><strong>SWIFT Code:</strong> 1234567891</p>
+                        <p><strong>Bank Name in Full:</strong> Bank of Ukraine</p>
+                    </div>
+                </div>                                               
+                
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Invoice</h2>
+                        <div class="pull-right">
+                            <ul class="buttons">
+                                <li><a href="#"><span class="icon-pencil"></span></a></li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="content">                 
+                        <p><strong>Date invoice:</strong> Dec 20, 2012</p>
+                        <p><strong>Payment due:</strong> Dec 29, 2012</p>
+                        <p><strong>Payment status:</strong> <span class="text-success"><strong>Paid</strong></span></p>
+                        <p><strong>Amount Due:</strong> $2,351.50</p>
+                    </div>
+                </div>                 
+                
+                <div class="block block-drop-shadow">
+                    <div class="content">
+                        <p><strong>Subtotal:</strong> $2,351.50</p>                        
+                        <p><strong>Total:</strong> $2,351.50</p>                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+</html>

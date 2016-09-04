@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js'></script>    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/noty/jquery.noty.js'></script>
+    <script type='text/javascript' src='js/plugins/noty/layouts/topCenter.js'></script>
+    <script type='text/javascript' src='js/plugins/noty/layouts/topLeft.js'></script>
+    <script type='text/javascript' src='js/plugins/noty/layouts/topRight.js'></script>    
+    <script type='text/javascript' src='js/plugins/noty/themes/default.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>      
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>                                    
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>                 
+
+            </div>            
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Components</a></li>                    
+                    <li class="active">Modals and popups</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="row">                                    
+            <div class="col-md-6">
+                <div class="block">
+                    <div class="header">
+                        <h2>Modals</h2>
+                    </div>
+                    <div class="content controls">
+
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_1" data-toggle="modal" class="btn btn-default btn-block btn-clean">Default modal</a>
+                            </div>
+                            <div class="col-md-9">
+                                Default modal with text and close button.
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_2" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal with form</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal with form elements and buttons.
+                            </div>
+                        </div>                    
+                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_3" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal with table</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal with default table and buttons.
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_4" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal with scrolling</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal with content scrolling and buttons.
+                            </div>
+                        </div>                        
+                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_5" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal alert</a>
+                            </div>
+                            <div class="col-md-9">
+                                Alert modal with close button.
+                            </div>
+                        </div>                        
+                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_6" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal confirm</a>
+                            </div>
+                            <div class="col-md-9">
+                                Confirm modal with buttons.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_11" data-toggle="modal" class="btn btn-default btn-block btn-clean">Modal with contacts</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal with list of contacts.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="assets/ajax_modal_content.html" data-title="Modal with AJAX" class="modal-ajax btn btn-success btn-block">Modal with AJAX</a>
+                            </div>
+                            <div class="col-md-9">
+                                AJAX load list with controls.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_wide_1" class="modal-wide btn btn-success btn-block">Wide modal</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal with window sizes
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#modal_default_13" data-toggle="modal" class="btn btn-success btn-block">Draggable modal</a>
+                            </div>
+                            <div class="col-md-9">
+                                Modal supports draggable function
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="header">
+                        <h2>Custom colors</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <a href="#modal_default_7" data-toggle="modal" class="btn btn-success">Success modal</a>
+                                <a href="#modal_default_8" data-toggle="modal" class="btn btn-warning">Warning modal</a>
+                                <a href="#modal_default_9" data-toggle="modal" class="btn btn-danger">Danger modal</a>
+                                <a href="#modal_default_10" data-toggle="modal" class="btn btn-info">Info modal</a>
+                                <a href="#modal_default_14" data-toggle="modal" class="btn btn-default">White modal</a>
+                            </div>                            
+                        </div>                                                                        
+                    </div>
+                </div>
+                
+                <div class="block">
+                    <div class="header">
+                        <h2>Status bar</h2>
+                    </div>
+                    <div class="content controls">
+
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#statusbar_1" class="btn btn-default btn-block btn-clean stbar">Default status</a>
+                            </div>
+                            <div class="col-md-9">
+                                Default status bar with text.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#statusbar_2" class="btn btn-default btn-block btn-clean stbar">Loading status</a>
+                            </div>
+                            <div class="col-md-9">
+                                Status bar with loading.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#statusbar_3" class="btn btn-default btn-block btn-clean stbar">Status with icon</a>
+                            </div>
+                            <div class="col-md-9">
+                                Status bar with icon.
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <a href="#statusbar_8" class="btn btn-default btn-block btn-clean stbar">Status form</a>
+                            </div>
+                            <div class="col-md-9">
+                                Status bar with form elements.
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="header">
+                        <h2>Custom colors</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <a href="#statusbar_4" class="btn btn-success stbar">Success statusbar</a>
+                                <a href="#statusbar_5" class="btn btn-warning stbar">Warning statusbar</a>                                
+                                <a href="#statusbar_6" class="btn btn-info stbar">Info statusbar</a>                                
+                                <a href="#statusbar_7" class="btn btn-danger stbar">Danger statusbar</a>
+                            </div>                            
+                        </div>                                                                        
+                    </div>                    
+                </div>
+                
+            </div>
+            <div class="col-md-6">
+                <div class="block">
+                    <div class="header">
+                        <h2>Tooltips</h2>
+                    </div>
+                    <div class="content controls">    
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <button class="btn btn-info tip" title="Default">Default</button>
+                                <button class="btn btn-primary tipr" title="Right">Right</button>
+                                <button class="btn btn-success tipb" title="Bottom">Bottom</button>
+                                <button class="btn btn-warning tipl" title="Left">Left</button>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block">
+                    <div class="header">
+                        <h2>Popovers</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-12">                                
+                                <button type="button" class="btn btn-info" data-container="body" data-toggle="popover" data-placement="left" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="" title="">
+                                Popover on left
+                                </button>
+                                <button type="button" class="btn btn-primary" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="" title="">
+                                Popover on top
+                                </button>
+                                <button type="button" class="btn btn-success" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="" title="">
+                                Popover on bottom
+                                </button>
+                                <button type="button" class="btn btn-warning" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="" title="">
+                                Popover on right
+                                </button>                                                                      
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="block">
+                    <div class="header">
+                        <h2>Noty</h2>
+                        <div class="side pull-right">
+                            <button class="btn btn-default btn-clean" onClick="$.noty.closeAll();">Close all</button>
+                        </div>
+                    </div>
+                    <div class="content controls">                        
+                        <script type="text/javascript">                                            
+                            function notyConfirm(){
+                                noty({
+                                text: 'Do you want to continue?',                                
+                                buttons: [
+                                        {addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function($noty) {
+                                            $noty.close();
+                                            noty({text: 'You clicked "Ok" button', type: 'success'});
+                                        }
+                                        },
+                                        {addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function($noty) {
+                                            $noty.close();
+                                            noty({text: 'You clicked "Cancel" button', type: 'error'});
+                                        }
+                                        }
+                                    ]
+                                })                                                    
+                            }                                            
+                        </script>                                        
+                        <div class="form-row">
+                            <div class="col-md-12">                               
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'Left top notify', layout: 'topLeft'});">Left top</button> 
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'Center top notify', layout: 'topCenter'});">Center top</button> 
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'Right top notify'});">Right top</button> 
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">                                            
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'Successful action', type: 'success'});">Success</button> 
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'There was an error', type: 'error'});">Error</button> 
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'Best check yo self', type: 'warning'});">Warning</button> 
+                                <button class="btn btn-default btn-clean" onClick="noty({text: 'This alert needs your attention', type: 'information'});">Warning</button>
+                                <button class="btn btn-default btn-clean" onClick="notyConfirm();">Confirm</button>                                            
+                            </div>
+                        </div>                                                                                
+                    </div>
+                </div>                
+                
+                <div class="block">
+                    <div class="alert alert-success">
+                        <b>Success!</b> This is success alert!
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
+                    <div class="alert alert-info">
+                        <b>Information!</b> This is information alert!
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>                    
+                    <div class="alert alert-warning">
+                        <b>Warning!</b> This is warning alert!
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
+                    <div class="alert alert-danger">
+                        <b>Danger!</b> This is danger alert!
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="modal_default_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Default modal</h4>
+                </div>
+                <div class="modal-body clearfix">
+
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec molestie tristique odio vitae vulputate. Suspendisse quis ligula hendrerit, laoreet erat gravida, posuere massa. Curabitur magna magna, lacinia et mollis vel, aliquet a lacus. Quisque eget bibendum nulla. Phasellus vitae eros quis magna porta ultrices a in neque. Vestibulum quis nisi consequat, elementum lorem a, viverra metus. Cras feugiat tincidunt interdum. Vivamus accumsan gravida leo eget pulvinar. Aenean imperdiet bibendum ante, in egestas lectus auctor eu. Sed feugiat sem non rutrum vestibulum. Mauris condimentum, purus vitae porttitor dictum, tellus orci consequat dui, quis lobortis dui enim id justo. Nulla facilisi. Aenean sit amet bibendum ligula. Integer vel consequat nibh. Nulla in nisl elementum nulla mattis dictum et eu risus.</p>
+                    <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Pellentesque varius imperdiet turpis, nec condimentum erat dignissim quis. Duis ac metus facilisis, dictum arcu a, pellentesque nibh. Duis vestibulum et arcu ut fermentum. Quisque eget massa purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris magna massa, malesuada in euismod a, molestie in libero. Nullam sollicitudin erat non dapibus blandit.</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>              
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal" id="modal_default_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal with form</h4>
+                </div>
+                <div class="modal-body clearfix">
+
+                    <div class="controls">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="text" class="form-control datepicker" value=""/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="password" class="form-control" value="password"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <select class="form-control">                                    
+                                    <option selected="selected">Option 1</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                </select>
+                            </div>
+                        </div>                                                
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" checked="checked"/> Checkbox</label>
+                                </div>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="checkbox">
+                                    <label><input type="radio" checked="checked"/> Radio</label>
+                                </div>
+                            </div>
+                        </div>                                                
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <textarea class="form-control">Some textarea value</textarea>
+                            </div>
+                        </div>                    
+                    </div>
+
+                </div>
+                <div class="modal-footer">                
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success btn-clean">Submit form</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal" id="modal_default_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal with table</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Country</th>
+                                <th>Username</th>
+                                <th>Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>USA</td>
+                                <td>Otto</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Germany</td>
+                                <td>Thornton</td>
+                                <td>22</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Ukraine</td>
+                                <td>Dmitry</td>
+                                <td>19</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Poland</td>
+                                <td>Kack</td>
+                                <td>18</td>
+                            </tr>                                
+                        </tbody>
+                    </table>                     
+
+                </div>
+                <div class="modal-footer">                
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning btn-clean">Submit form</button>
+                </div>
+            </div>
+        </div>
+    </div>     
+    
+    <div class="modal" id="modal_default_4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal with scrolling</h4>
+                </div>
+                <div class="modal-body clearfix npr">
+                    <div class="scroll" style="height: 200px;">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec molestie tristique odio vitae vulputate. Suspendisse quis ligula hendrerit, laoreet erat gravida, posuere massa. Curabitur magna magna, lacinia et mollis vel, aliquet a lacus. Quisque eget bibendum nulla. Phasellus vitae eros quis magna porta ultrices a in neque. Vestibulum quis nisi consequat, elementum lorem a, viverra metus. Cras feugiat tincidunt interdum. Vivamus accumsan gravida leo eget pulvinar. Aenean imperdiet bibendum ante, in egestas lectus auctor eu. Sed feugiat sem non rutrum vestibulum. Mauris condimentum, purus vitae porttitor dictum, tellus orci consequat dui, quis lobortis dui enim id justo. Nulla facilisi. Aenean sit amet bibendum ligula. Integer vel consequat nibh. Nulla in nisl elementum nulla mattis dictum et eu risus.</p>
+                        <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Pellentesque varius imperdiet turpis, nec condimentum erat dignissim quis. Duis ac metus facilisis, dictum arcu a, pellentesque nibh. Duis vestibulum et arcu ut fermentum. Quisque eget massa purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris magna massa, malesuada in euismod a, molestie in libero. Nullam sollicitudin erat non dapibus blandit.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec molestie tristique odio vitae vulputate. Suspendisse quis ligula hendrerit, laoreet erat gravida, posuere massa. Curabitur magna magna, lacinia et mollis vel, aliquet a lacus. Quisque eget bibendum nulla. Phasellus vitae eros quis magna porta ultrices a in neque. Vestibulum quis nisi consequat, elementum lorem a, viverra metus. Cras feugiat tincidunt interdum. Vivamus accumsan gravida leo eget pulvinar. Aenean imperdiet bibendum ante, in egestas lectus auctor eu. Sed feugiat sem non rutrum vestibulum. Mauris condimentum, purus vitae porttitor dictum, tellus orci consequat dui, quis lobortis dui enim id justo. Nulla facilisi. Aenean sit amet bibendum ligula. Integer vel consequat nibh. Nulla in nisl elementum nulla mattis dictum et eu risus.</p>
+                        <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Pellentesque varius imperdiet turpis, nec condimentum erat dignissim quis. Duis ac metus facilisis, dictum arcu a, pellentesque nibh. Duis vestibulum et arcu ut fermentum. Quisque eget massa purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris magna massa, malesuada in euismod a, molestie in libero. Nullam sollicitudin erat non dapibus blandit.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>              
+                </div>
+            </div>
+        </div>
+    </div>     
+
+    <div class="modal" id="modal_default_5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-body clearfix">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning btn-clean" data-dismiss="modal">Ok</button>              
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal modal-draggable" id="modal_default_13" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Draggable modal window</h4>
+                </div>                
+                <div class="modal-body clearfix">
+                    Hello, i'm draggable modal window. Click on header and try to move me! :)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning btn-clean" data-dismiss="modal">Ok</button>              
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal" id="modal_default_6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Do you want to continue?</h4>
+                </div>                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-clean" data-dismiss="modal">Yes</button>
+                    <button type="button" class="btn btn-danger btn-clean" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <div class="modal modal-success" id="modal_default_7" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal success</h4>
+                </div>
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>     
+
+    <div class="modal modal-warning" id="modal_default_8" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal warning</h4>
+                </div>
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <div class="modal modal-danger" id="modal_default_9" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal danger</h4>
+                </div>
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-info" id="modal_default_10" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Modal info</h4>
+                </div>                
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal modal-white" id="modal_default_14" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">White modal</h4>
+                </div>                
+                <div class="modal-body clearfix">
+                    This is a white modal content!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>              
+                </div>
+            </div>
+        </div>
+    </div>     
+    
+    <div class="modal" id="modal_default_11" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Contacts</h4>
+                </div>                
+                <div class="modal-body clearfix np">
+                    
+                    <div class="list list-contacts">                                
+                        <a href="#" class="list-item">                                
+                            <div class="list-info">
+                                <img src="img/example/user/dmitry_s.jpg" class="img-circle img-thumbnail">
+                            </div>                                                            
+                            <div class="list-text">
+                                <span class="list-text-name">John Doe</span>
+                                <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                            </div>
+                            <div class="list-status list-status-online"></div>
+                        </a>
+                        <a href="#" class="list-item">  
+                            <div class="list-info">
+                                <img src="img/example/user/alexey_s.jpg" class="img-circle img-thumbnail">
+                            </div>
+                            <div class="list-text">
+                                <span class="list-text-name">Brad Pitt</span>
+                                <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                            </div>                                            
+                            <div class="list-status list-status-online"></div>
+                        </a>                            
+                        <a href="#" class="list-item">
+                            <div class="list-info">
+                                <img src="img/example/user/olga_s.jpg" class="img-circle img-thumbnail">
+                            </div>
+                            <div class="list-text">
+                                <span class="list-text-name">Angelina Jolie</span>
+                                <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                            </div>                                            
+                            <div class="list-status list-status-offline"></div>
+                        </a>                            
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal" id="modal_ajax" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body clearfix np">
+                    
+                </div>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="modal" id="modal_wide_1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Wide modal</h4>
+                </div>
+                <div class="modal-body clearfix npr">
+                    <div class="scroll">
+
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet pellentesque odio. Fusce vel venenatis odio. Vivamus porttitor dui vel felis adipiscing, commodo vehicula massa vestibulum. Praesent interdum nunc eu elementum fermentum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce commodo malesuada pellentesque. Suspendisse elementum, nunc vel tristique molestie, dolor diam faucibus turpis, at interdum neque erat non nisl. Nunc ut sagittis ligula.</p>
+                        <p>Mauris pulvinar non nibh vehicula lobortis. Cras dolor velit, porta ac justo a, iaculis vestibulum lacus. Nulla facilisi. Nunc aliquet enim at erat porta, nec sagittis ante adipiscing. Phasellus justo quam, volutpat at semper eu, tristique vitae nulla. Vivamus id rhoncus risus. Integer consequat lorem eget lacus dignissim, ultricies facilisis orci gravida. Suspendisse feugiat dolor sapien, eu malesuada turpis volutpat eget. In imperdiet eros id magna tincidunt, vel pulvinar justo pretium. Quisque et urna nec sapien dignissim feugiat. Curabitur cursus quam nisi, ut condimentum libero elementum et. Quisque mollis mauris scelerisque urna tempor, in congue neque laoreet. Suspendisse sed tincidunt justo, et feugiat est. Aenean non dui in urna imperdiet dictum eu ac nisi.</p>
+                        <p>Nulla eget tincidunt orci, et pharetra ipsum. Aliquam erat metus, convallis et odio quis, lacinia commodo leo. Maecenas tincidunt magna ullamcorper, tincidunt lacus at, auctor leo. Nullam eu risus in nunc convallis luctus id ultricies purus. Vivamus feugiat ligula non elit lacinia adipiscing non eget diam. Etiam sit amet rutrum leo. Vivamus condimentum ante mi, a tristique enim pharetra id. Ut non vulputate nulla, non dignissim libero. Etiam et arcu gravida, volutpat tortor in, elementum arcu. Proin porta velit quis ipsum interdum, quis ornare purus mollis.</p>
+                        <p>Aliquam consectetur ultricies nulla, a adipiscing nisi tristique in. Nunc gravida volutpat diam, et consectetur purus sodales in. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam eu mauris aliquet, sollicitudin lorem quis, dignissim turpis. Etiam vitae tortor libero. Aliquam facilisis tempus nisl quis pellentesque. Nullam pharetra tristique lacus vitae tempor. Etiam vulputate nulla massa, vitae fringilla dolor pretium vel. Sed non tellus eget ante venenatis elementum eu nec neque. Quisque eget lobortis diam. Maecenas non sapien in eros mattis euismod. Aenean id nibh a dolor lacinia elementum et ac ipsum. Mauris eleifend aliquam arcu, ac pharetra lacus interdum ut. Ut bibendum nunc at volutpat mollis.</p>
+                        <p>Nullam viverra augue mi, non rutrum magna elementum at. Duis purus enim, mattis in sodales id, placerat eget sapien. Donec pharetra nec ante ut lobortis. Integer accumsan dignissim consequat. Integer est sapien, imperdiet adipiscing turpis in, fermentum auctor ante. Nulla rutrum massa tincidunt convallis lobortis. Sed aliquam lacus libero, eu congue orci mattis quis. Nunc commodo nulla quis hendrerit rutrum. Donec a mi sapien. Donec suscipit arcu nisi, posuere ornare nisl volutpat vehicula. Vestibulum a justo consequat, vestibulum urna sit amet, vehicula augue. In nec arcu convallis, suscipit enim sed, porttitor massa. Fusce sit amet iaculis augue. Cras a turpis massa. Donec dictum sed nibh eu vehicula. In laoreet fringilla turpis eget ullamcorper.</p>
+                        <p>Aliquam leo libero, luctus non volutpat ac, adipiscing eget sapien. Vivamus ante augue, interdum placerat commodo id, posuere id ligula. Cras facilisis gravida ornare. Suspendisse consequat fermentum ante ac rutrum. Nunc ornare tortor sit amet nulla egestas, ut auctor magna blandit. Suspendisse in placerat nisi. Praesent sit amet leo sed purus gravida gravida sed ac dolor.</p>
+                        <p>Donec auctor mi vel tempus ornare. Sed vitae volutpat velit, a gravida urna. Quisque id luctus justo, a mattis metus. Praesent non turpis sed libero lacinia euismod. Nulla mattis lacus mollis nisi pulvinar tempor. Etiam faucibus neque in dui porttitor, non consectetur mi adipiscing. Praesent consectetur cursus eros eu tempus. Nulla tristique, ante non laoreet mollis, est massa cursus risus, et condimentum mauris mi sit amet purus. In massa urna, aliquet eget ultrices ut, dictum vel turpis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis interdum nulla. Donec commodo tincidunt magna, non viverra leo varius eget. Vivamus scelerisque rutrum faucibus. Suspendisse blandit, nisl et commodo tincidunt, dui arcu iaculis tellus, a tristique nibh risus id nunc. Praesent pellentesque tortor et augue hendrerit, a euismod tortor tristique.</p>
+                        <p>In euismod ante ac erat tristique venenatis. Integer pulvinar imperdiet dui, vitae pharetra lectus sollicitudin gravida. Aliquam congue nibh nec tellus ullamcorper, semper condimentum quam condimentum. Ut luctus mollis neque et varius. In viverra at ante sed molestie. Proin consequat mauris eget lorem hendrerit ullamcorper. Duis consequat sagittis tellus, sed aliquam magna condimentum nec. Donec sem neque, porta vitae dapibus porta, hendrerit eget metus. Etiam varius ac neque quis facilisis. Fusce a nisi ac dolor pretium lobortis sit amet eu quam. Vestibulum condimentum sagittis lectus sit amet posuere. Praesent vitae est et sapien congue molestie in ac mauris.</p>
+                        <p>Cras id massa adipiscing, scelerisque arcu id, venenatis nisi. Maecenas tincidunt pharetra nunc at tincidunt. Duis aliquet sapien leo, at feugiat erat faucibus eu. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas facilisis tempus consectetur. Donec pharetra erat ut nibh sagittis mattis. Nulla facilisi. Ut at enim malesuada, volutpat elit in, accumsan nulla. Etiam interdum, purus id gravida iaculis, erat ipsum semper nibh, vel bibendum eros est vel tortor. Duis suscipit mollis tellus, a rhoncus dolor adipiscing sit amet. Mauris vitae venenatis sapien. Aenean at ante sollicitudin, facilisis justo ut, consectetur eros. Aenean eget congue erat. Pellentesque molestie fringilla eleifend. Cras in pretium ante.</p>
+                        <p>Nunc velit lectus, tempus ut facilisis eu, tincidunt vel lorem. Donec mollis sodales tortor sed molestie. Etiam et erat elit. Morbi lacus arcu, pharetra a augue a, laoreet ultricies urna. Pellentesque ornare tellus eleifend, consequat turpis vel, sodales nunc. Nullam ullamcorper dui eu magna posuere, non condimentum nunc consectetur. Donec a ligula eget ante commodo consequat. Donec venenatis, dui non posuere commodo, dolor leo elementum ligula, quis sagittis neque est vel felis. Morbi convallis ante est, a auctor augue volutpat at. Etiam non neque eu quam sollicitudin posuere sit amet in orci. Integer vitae ipsum sit amet libero iaculis hendrerit. Suspendisse dui mi, vulputate vel diam vel, vulputate egestas erat. Quisque lacinia vel arcu eu vulputate. Nullam magna odio, tincidunt sed dui ut, accumsan pulvinar sem. Morbi vestibulum odio libero, sit amet egestas nunc consectetur non.</p>
+                        <p>Integer lacus orci, varius in purus vel, bibendum vestibulum dolor. Pellentesque fermentum dapibus purus, quis viverra massa iaculis in. Nullam aliquam vulputate quam in porttitor. Ut non sem nec urna vestibulum elementum eget sit amet nunc. Nam nisi quam, ultricies at nisl sed, dignissim tincidunt dolor. Nam luctus nunc a aliquam mollis. Integer semper sapien nunc, ut venenatis erat dignissim id. Etiam et bibendum massa. Fusce sollicitudin purus urna, nec molestie leo ullamcorper eget. Integer rhoncus metus orci, vitae accumsan sapien interdum ac. Praesent non facilisis sem. Vestibulum dui metus, ultricies vitae cursus at, sollicitudin eu nulla.</p>
+                        <p>Pellentesque aliquam augue sit amet arcu rhoncus iaculis ac at leo. Nulla odio sapien, iaculis vitae volutpat a, iaculis vitae enim. Morbi id ligula et dui vestibulum cursus. Nunc laoreet leo eget arcu rhoncus pretium. Vivamus nec metus eu ipsum volutpat ornare sed quis felis. Donec fringilla posuere tortor eu dignissim. Sed congue ipsum purus, nec malesuada erat pretium ac. In facilisis tincidunt quam ut mattis. In sed blandit sem, nec fringilla tortor. Sed non metus congue, ornare purus et, molestie enim. Nulla sit amet lacus vitae mi dignissim gravida sed at enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque enim arcu, pretium at commodo sit amet, eleifend eget augue. Quisque justo enim, tristique sed gravida id, suscipit quis arcu. Praesent mattis lorem eu mauris fringilla, eget vulputate purus consectetur.</p>
+                        <p>Suspendisse convallis tristique mi, at pellentesque turpis pharetra a. Aliquam id hendrerit dolor, at condimentum metus. Nulla egestas imperdiet lorem, vel lobortis sem ullamcorper ac. Vivamus et quam a justo hendrerit condimentum. Nulla consectetur urna non sodales ornare. Ut metus erat, congue vel ornare at, adipiscing at magna. Sed commodo in nibh quis euismod. Aenean et aliquam ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas feugiat posuere nunc et laoreet. Morbi vitae risus lacinia, auctor diam quis, tempor sem. Vivamus pellentesque accumsan nibh eget volutpat.</p>
+                        <p>Aenean ac erat diam. Nulla facilisi. Vivamus sit amet sagittis nisi, id commodo nunc. Suspendisse dictum fringilla fringilla. Aliquam aliquet vestibulum enim, a suscipit eros tristique eu. Etiam sodales erat in bibendum fermentum. Nulla mollis nunc nunc, eget ornare nisl facilisis nec. Suspendisse non nisi ornare, pulvinar mauris et, ultrices odio. Donec consequat tempus dui, in commodo erat malesuada nec. Sed elementum id metus non gravida. Nullam rutrum, massa eget lacinia consectetur, nisl nibh viverra risus, et condimentum eros purus iaculis quam. Suspendisse sed nunc et orci lobortis ultrices sit amet quis ipsum. Aenean velit nunc, cursus sit amet nisi eu, cursus aliquet tortor.</p>
+                        <p>Donec eleifend lectus risus, in aliquet nisi accumsan at. In ornare aliquet nulla, id facilisis leo molestie at. Maecenas leo tellus, bibendum ac consectetur et, egestas vel orci. Nam nibh sapien, egestas sed blandit tempus, vulputate dictum nulla. Maecenas porttitor mauris in lacinia laoreet. Donec interdum sit amet elit a tincidunt. Nulla adipiscing purus turpis, eget fermentum tortor vehicula vel. Sed arcu lacus, venenatis hendrerit dictum sit amet, dignissim eu elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur nec metus quis enim facilisis scelerisque. Integer egestas commodo faucibus. In sed quam eu augue consectetur hendrerit. Quisque in erat mattis, sagittis risus sed, auctor nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam euismod, leo nec rhoncus dignissim, quam augue aliquam felis, non molestie enim ipsum id turpis.</p>
+
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>    
+    
+    <div class="statusbar" id="statusbar_1">
+        <div class="statusbar-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>
+
+    <div class="statusbar" id="statusbar_2">
+        <div class="statusbar-icon"><img src="img/loader.gif"/></div>
+        <div class="statusbar-text">Loading...</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>    
+
+    <div class="statusbar" id="statusbar_3">
+        <div class="statusbar-icon"><span class="icon-globe"></span></div>
+        <div class="statusbar-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>    
+
+    <div class="statusbar statusbar-success" id="statusbar_4">        
+        <div class="statusbar-icon"><span class="icon-ok"></span></div>
+        <div class="statusbar-text">Success statusbar</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>    
+
+    <div class="statusbar statusbar-warning" id="statusbar_5">        
+        <div class="statusbar-icon"><span class="icon-warning-sign"></span></div>
+        <div class="statusbar-text">Warning statusbar</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>        
+
+    <div class="statusbar statusbar-info" id="statusbar_6">        
+        <div class="statusbar-icon"><span class="icon-info"></span></div>
+        <div class="statusbar-text">Info statusbar</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>            
+
+    <div class="statusbar statusbar-danger" id="statusbar_7">        
+        <div class="statusbar-icon"><span class="icon-remove"></span></div>
+        <div class="statusbar-text">Danger statusbar</div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>            
+
+    <div class="statusbar statusbar-danger" id="statusbar_8">                
+        <div class="statusbar-body">
+            <form class="form-inline">
+                <div class="form-group">                    
+                    <label>Login:</label>
+                </div>
+                <div class="form-group">                    
+                    <input type="text" class="form-control"/>
+                </div>                                
+                <div class="form-group">                    
+                    <label>Password:</label>
+                </div>                
+                <div class="form-group">                    
+                    <input type="password" class="form-control"/>
+                </div>                                                
+                <div class="form-group">                    
+                    <button class="btn btn-default btn-clean">Submit</button>
+                </div>                                                                
+            </form>             
+        </div>
+        <div class="statusbar-close icon-remove"></div>
+    </div>     
+    
+</body>
+</html>

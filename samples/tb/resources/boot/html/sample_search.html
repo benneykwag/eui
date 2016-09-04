@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>        
+    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>        
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                 <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>                            
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>               
+
+            </div>            
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Pages</a></li>                    
+                    <li class="active">Search</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-2">
+                <div class="block">
+                    <div class="input-group">
+                        <div class="input-group-addon"><span class="icon-search"></span></div>
+                        <input type="text" class="form-control" value="Lorem ipsum dolor..." placeholder="Keyword..."/>                        
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Price</h2>
+                    </div>
+                    <div class="content npt">
+                        <div id="price_amount"></div>
+                        <div id="price_rage"></div>
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Order by</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Date</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Name</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Price: Lowest first</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Price: Hightest first</div>                                
+                            </a>      
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block  block-drop-shadow">
+                    <div class="header">
+                        <h2>Company</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">SomeCompany ltd.</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Development Inc.</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">American developers</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Kyiv softwares</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">FSV</div>                                
+                            </a>                            
+                        </div>
+                    </div>
+                </div>                
+                
+                <div class="block tar">
+                    <button class="btn btn-default btn-clean">Filter</button>
+                </div>
+                
+            </div>
+            <div class="col-md-10">
+                <div class="block block-transparent">
+                    <div class="header">
+                        <h2>Search result: Lorem ipsum dolor...</h2>
+                        <ul class="pagination nm pull-right">
+                            <li class="disabled"><a href="#"><span class="icon-angle-left"></span></a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#"><span class="icon-angle-right"></span></a></li>
+                        </ul>                                                                
+                    </div>                    
+                </div>
+                <div class="block block-transparent">
+                    
+                    <div class="content list list-default">
+                        
+                        <div class="list-item">
+                            <div class="list-title">Lorem ipsum dolor sit amet</div>
+                            <div class="list-text">
+                                <p>Aliquam a justo id augue condimentum fringilla nec et elit. Aliquam lacinia molestie odio, at dictum lacus venenatis sit amet. Vivamus rutrum malesuada augue. Nam tristique accumsan orci, nec convallis nisl adipiscing vel. Fusce erat velit, varius nec aliquam sit amet, cursus sed purus. Phasellus mollis at mauris vitae tristique. Duis rhoncus luctus purus sed dictum.</p>                                
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-title">Vestibulum rhoncus pretium quam in blandit.</div>
+                            <div class="list-text">
+                                <img src="img/example/photo/img_2s.jpg" align="left" class="img-thumbnail"/> 
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae turpis vel orci vestibulum feugiat. Maecenas lorem est, fermentum non lobortis id, auctor nec ligula. Sed feugiat arcu vel diam ullamcorper tempus. Curabitur non lorem placerat, pretium metus vel.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>                            
+                        </div>                                                
+                        <div class="list-item">
+                            <div class="list-title">ivamus sed volutpat neque, non pulvinar sem</div>
+                            <div class="list-text">
+                                <p>Etiam vitae venenatis lectus. Proin auctor mi quam. Nullam tristique semper nisi, egestas ullamcorper turpis sagittis eget. Nunc at fermentum odio. Ut eget arcu luctus, mollis ipsum eu, volutpat nulla. Sed libero tortor, ultrices eget egestas molestie, ullamcorper in magna. Suspendisse vel eros arcu. Maecenas ac fringilla nunc, nec pretium mauris.</p>                                
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                        
+                        <div class="list-item">
+                            <div class="list-title">Donec aliquam nec ante eget sollicitudin</div>
+                            <div class="list-text">
+                                <img src="img/example/photo/img_3s.jpg" align="left" class="img-thumbnail"/> 
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae turpis vel orci vestibulum feugiat. Maecenas lorem est, fermentum non lobortis id, auctor nec ligula. Sed feugiat arcu vel diam ullamcorper tempus. Curabitur non lorem placerat, pretium metus vel.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>                                          
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                                                
+                        <div class="list-item">
+                            <div class="list-title">Praesent dictum porta sollicitudin</div>
+                            <div class="list-text">
+                                <p>Praesent quis ultricies libero. Integer quis convallis purus, eu aliquet justo. Vestibulum pulvinar, elit ac viverra fermentum, neque urna pretium odio, sed faucibus quam mauris ut urna. Phasellus lorem velit, sodales ut quam sit amet, ornare lacinia metus. Mauris condimentum aliquam commodo. Nullam tincidunt magna at risus rhoncus ullamcorper. Pellentesque eu volutpat risus, non venenatis quam.</p>
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                        
+                        <div class="list-item">
+                            <div class="list-title">Lorem ipsum dolor sit amet</div>
+                            <div class="list-text">
+                                <p>Aliquam a justo id augue condimentum fringilla nec et elit. Aliquam lacinia molestie odio, at dictum lacus venenatis sit amet. Vivamus rutrum malesuada augue. Nam tristique accumsan orci, nec convallis nisl adipiscing vel. Fusce erat velit, varius nec aliquam sit amet, cursus sed purus. Phasellus mollis at mauris vitae tristique. Duis rhoncus luctus purus sed dictum.</p>
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-title">Vestibulum rhoncus pretium quam in blandit.</div>
+                            <div class="list-text">
+                                <img src="img/example/photo/img_4s.jpg" align="left" class="img-thumbnail"/> 
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae turpis vel orci vestibulum feugiat. Maecenas lorem est, fermentum non lobortis id, auctor nec ligula. Sed feugiat arcu vel diam ullamcorper tempus. Curabitur non lorem placerat, pretium metus vel.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>
+                                <p>Pellentesque fringilla venenatis lectus, eu adipiscing dolor dapibus at. Phasellus vel purus quis lectus malesuada commodo ac ut mi. Cras rhoncus aliquam lectus vitae elementum. Nullam et bibendum nisl. Ut placerat imperdiet bibendum. Donec pharetra dui a sem tempus, vitae eleifend tortor venenatis. Vivamus sodales pharetra turpis, eget vehicula sapien luctus vitae.</p>                                          
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                                                
+                        <div class="list-item">
+                            <div class="list-title">ivamus sed volutpat neque, non pulvinar sem</div>
+                            <div class="list-text">
+                                <p>Etiam vitae venenatis lectus. Proin auctor mi quam. Nullam tristique semper nisi, egestas ullamcorper turpis sagittis eget. Nunc at fermentum odio. Ut eget arcu luctus, mollis ipsum eu, volutpat nulla. Sed libero tortor, ultrices eget egestas molestie, ullamcorper in magna. Suspendisse vel eros arcu. Maecenas ac fringilla nunc, nec pretium mauris.</p>              
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                        
+                        <div class="list-item">
+                            <div class="list-title">Donec aliquam nec ante eget sollicitudin</div>
+                            <div class="list-text">
+                                <p>Mauris eleifend nulla ac sapien mattis ullamcorper. Vivamus nec augue vel purus laoreet tristique. Proin aliquet erat metus, ac viverra nunc mattis in. Suspendisse a suscipit justo. Nullam euismod elit mauris, non auctor diam varius nec. Suspendisse ut pretium mi. Aliquam sed congue mauris. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam eu elit arcu. Proin non ornare nisl.</p>              
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                                                
+                        <div class="list-item">
+                            <div class="list-title">Praesent dictum porta sollicitudin</div>
+                            <div class="list-text">
+                                <img src="img/example/photo/img_2s.jpg" align="left" class="img-thumbnail"/>
+                                <p>Praesent quis ultricies libero. Integer quis convallis purus, eu aliquet justo. Vestibulum pulvinar, elit ac viverra fermentum, neque urna pretium odio, sed faucibus quam mauris ut urna. Phasellus lorem velit, sodales ut quam sit amet, ornare lacinia metus. Mauris condimentum aliquam commodo. Nullam tincidunt magna at risus rhoncus ullamcorper. Pellentesque eu volutpat risus, non venenatis quam.</p>
+                                <p>Mauris eleifend nulla ac sapien mattis ullamcorper. Vivamus nec augue vel purus laoreet tristique. Proin aliquet erat metus, ac viverra nunc mattis in. Suspendisse a suscipit justo. Nullam euismod elit mauris, non auctor diam varius nec. Suspendisse ut pretium mi. Aliquam sed congue mauris. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam eu elit arcu. Proin non ornare nisl.</p>
+                                <p>Mauris eleifend nulla ac sapien mattis ullamcorper. Vivamus nec augue vel purus laoreet tristique. Proin aliquet erat metus, ac viverra nunc mattis in. Suspendisse a suscipit justo. Nullam euismod elit mauris, non auctor diam varius nec. Suspendisse ut pretium mi. Aliquam sed congue mauris. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam eu elit arcu. Proin non ornare nisl.</p>
+                                <p>Mauris eleifend nulla ac sapien mattis ullamcorper. Vivamus nec augue vel purus laoreet tristique. Proin aliquet erat metus, ac viverra nunc mattis in. Suspendisse a suscipit justo. Nullam euismod elit mauris, non auctor diam varius nec. Suspendisse ut pretium mi. Aliquam sed congue mauris. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam eu elit arcu. Proin non ornare nisl.</p>
+                            </div>
+                            <div class="list-text">Tags: <span class="label label-default">Sometag</span> <span class="label label-default">Anothertag</span> <span class="label label-default">Tagname</span></div>
+                        </div>                        
+                        
+                    </div>
+                    
+                </div>
+                
+                <ul class="pagination nmt pull-right">
+                    <li class="disabled"><a href="#"><span class="icon-angle-left"></span></a></li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#"><span class="icon-angle-right"></span></a></li>
+                </ul>
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+</body>
+</html>

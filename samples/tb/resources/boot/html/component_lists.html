@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>                                    
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>               
+
+            </div>            
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Components</a></li>                    
+                    <li class="active">List groups</li>
+                </ol>
+            </div>
+        </div>        
+        
+        <div class="row">
+            
+            <div class="col-md-4">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Simple list group</h2>
+                    </div>                    
+                    <div class="content list-group">
+                        <a href="#" class="list-group-item">Example 1</a>
+                        <a href="#" class="list-group-item">Example 2</a>
+                        <a href="#" class="list-group-item">Example 3</a>
+                    </div>                
+                </div>        
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>List group with dropdown</h2>
+                    </div>                    
+                    <ul class="content list-group">
+                        <li><a href="#" class="list-group-item">Example 1</a></li>                        
+                        <li class="dropdown">
+                            <a href="#" class="list-group-item dropdown-toggle" data-toggle="dropdown">Dropdown<i class="icon-angle-right pull-right"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" class="list-group-item">Example 3</a></li>                        
+                    </ul>                
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>List group with icons</h2>
+                    </div>                    
+                    <div class="content list-group list-group-icons">
+                        <a href="#" class="list-group-item"><span class="icon-globe"></span>Example 1<i class="icon-angle-right pull-right"></i></a>
+                        <a href="#" class="list-group-item"><span class="icon-gears"></span>Example 2<i class="icon-angle-right pull-right"></i></a>
+                        <a href="#" class="list-group-item"><span class="icon-leaf"></span>Example 3<i class="icon-angle-right pull-right"></i></a>
+                    </div>                
+                </div>
+                
+                <div class="block block-transparent">
+                    <div class="header">
+                        <h2>Default listing</h2>
+                    </div>                    
+                    <div class="content list list-default">
+                        <div class="list-item">                            
+                            <div class="list-text">
+                                <p>Example 1</p>                                
+                            </div>                            
+                        </div>
+                        <div class="list-item">                            
+                            <div class="list-text">
+                                <p>Example 2</p>                                
+                            </div>                            
+                        </div>
+                        <div class="list-item">                            
+                            <div class="list-text">
+                                <p>Example 3</p>                                
+                            </div>                            
+                        </div>
+                    </div>                
+                </div>                
+                
+                <div class="block block-transparent">
+                    <div class="header">
+                        <h2>Listing with title</h2>
+                    </div>                    
+                    <div class="content list list-default">
+                        <div class="list-item">
+                            <div class="list-title">
+                                Example 1
+                            </div>
+                            <div class="list-text">
+                                <p>Example 1</p>                                
+                            </div>                            
+                        </div>
+                        <div class="list-item">                            
+                            <div class="list-title">
+                                Example 2
+                            </div>                            
+                            <div class="list-text">
+                                <p>Example 2</p>                                
+                            </div>                            
+                        </div>
+                        <div class="list-item">                            
+                            <div class="list-title">
+                                Example 3
+                            </div>                            
+                            <div class="list-text">
+                                <p>Example 3</p>                                
+                            </div>                            
+                        </div>
+                    </div>                
+                </div>                
+                
+            </div>
+            
+            <div class="col-md-4">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Simple list</h2>
+                    </div>
+                    <div class="content list">                        
+                        <div class="list-item">                                
+                            <div class="list-text">List Example</div>                                
+                        </div>
+                        <div class="list-item">                                
+                            <div class="list-text">List Example</div>                                
+                        </div>                            
+                        <div class="list-item">
+                            <div class="list-text">List Example</div>                                
+                        </div>                                                    
+                    </div>
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>List with time</h2>
+                    </div>
+                    <div class="content list">                        
+                        <div class="list-item">                                
+                            <div class="list-datetime">
+                                <div class="time">00:00 am</div>
+                            </div>                            
+                            <div class="list-text">Example 1</div>                                
+                        </div>
+                        <div class="list-item">                                
+                            <div class="list-datetime">
+                                <div class="time">01:23 am</div>
+                            </div>                            
+                            <div class="list-text">Example 2</div>                                
+                        </div>                        
+                        <div class="list-item">                                
+                            <div class="list-datetime">
+                                <div class="time">02:34 am</div>
+                            </div>                            
+                            <div class="list-text">Example 3</div>                                
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Date, time and description</h2>
+                    </div>       
+                    <div class="content list">
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.02</div>
+                                <div class="time">00:00 am</div>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 1</a>
+                                <p>Morbi tincidunt, tellus ut fermentum accumsan, est justo pretium enim, eget.</p>
+                            </div>
+                        </div>
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.03</div>
+                                <div class="time">14:02 pm</div>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 2</a>
+                                <p>Aliquam blandit turpis ligula, eget faucibus diam sagittis et.</p>
+                            </div>
+                        </div>
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.04</div>
+                                <div class="time">15:32 pm</div>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 3</a>
+                                <p>Suspendisse id tristique turpis, quis luctus odio. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>List with image</h2>
+                    </div>       
+                    <div class="content list">
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.02</div>
+                                <div class="time">00:00 am</div>
+                            </div>         
+                            <div class="list-info">
+                                <img src="img/example/user/dmitry.jpg" class="img-circle img-thumbnail"/>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 1</a>
+                                <p>Morbi tincidunt, tellus ut fermentum accumsan, est justo pretium enim, eget.</p>
+                            </div>
+                        </div>
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.03</div>
+                                <div class="time">14:02 pm</div>
+                            </div>
+                            <div class="list-info">
+                                <img src="img/example/user/alexey.jpg" class="img-circle img-thumbnail"/>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 2</a>
+                                <p>Aliquam blandit turpis ligula, eget faucibus diam sagittis et.</p>
+                            </div>
+                        </div>
+                        <div class="list-item">                     
+                            <div class="list-datetime">
+                                <div class="date">01.04</div>
+                                <div class="time">15:32 pm</div>
+                            </div>                        
+                            <div class="list-info">
+                                <img src="img/example/user/olga.jpg" class="img-circle img-thumbnail"/>
+                            </div>                            
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Example 3</a>
+                                <p>Suspendisse id tristique turpis, quis luctus odio. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>List with contols</h2>
+                    </div>       
+                    <div class="content list">                        
+                        <div class="list-item">
+                            <div class="list-datetime">
+                                <div class="time">8:16 am</div>
+                            </div>
+                            <div class="list-info">
+                                <img src="img/example/user/alexey.jpg" class="img-circle img-thumbnail"/>
+                            </div>
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Brad Pitt</a>
+                                <p>Duis eu libero pellentesque, dapibus ante eu, vehicula leo. Nulla gravida rutrum neque.</p>
+                            </div>
+                            <div class="list-controls">
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-rotate-right"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-pushpin"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-remove"></span></a>
+                            </div>                            
+                        </div>
+                        <div class="list-item">
+                            <div class="list-datetime">
+                                <div class="date">27.08</div>
+                                <div class="time">21:59 pm</div>
+                            </div>
+                            <div class="list-info">
+                                <img src="img/example/user/olga.jpg" class="img-circle img-thumbnail"/>
+                            </div>
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Angelina Jolie</a>
+                                <p>Morbi tincidunt, tellus ut fermentum accumsan, est justo pretium enim, eget.</p>
+                            </div>
+                            <div class="list-controls">
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-rotate-right"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-pushpin"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-remove"></span></a>
+                            </div>                            
+                        </div>
+                        <div class="list-item">
+                            <div class="list-datetime">
+                                <div class="date">27.08</div>
+                                <div class="time">16:34 pm</div>
+                            </div>
+                            <div class="list-info">
+                                <img src="img/example/user/helen.jpg" class="img-circle img-thumbnail"/>
+                            </div>
+                            <div class="list-text">
+                                <a href="#" class="list-text-name">Keira Knightley</a>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum nisl velit.</p>
+                            </div>
+                            <div class="list-controls">
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-rotate-right"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-pushpin"></span></a>
+                                <a href="#" class="widget-icon widget-icon-circle"><span class="icon-remove"></span></a>
+                            </div>                            
+                        </div>                        
+                    </div>                 
+                </div>                
+                
+            </div>
+            
+            <div class="col-md-4">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Simple list contacts</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">John Doe</div>                                
+                            </a>
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">Brad Pitt</div>                                
+                            </a>                            
+                            <a href="#" class="list-item">
+                                <div class="list-text">Valentin Ratushev</div>                                
+                            </a>                            
+                        </div>                        
+                    </div>
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Contacts with description</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">
+                                    <span class="list-text-name">John Doe</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                                                
+                            </a>
+                            <a href="#" class="list-item">  
+                                <div class="list-text">
+                                    <span class="list-text-name">Brad Pitt</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                                                
+                            </a>                            
+                            <a href="#" class="list-item">
+                                <div class="list-text">
+                                    <span class="list-text-name">Valentin Ratushev</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                                                
+                            </a>                            
+                        </div>                        
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Contatcts with status</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">
+                            <a href="#" class="list-item">                                
+                                <div class="list-text">
+                                    <span class="list-text-name">John Doe</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>
+                                <div class="list-status list-status-online"></div>
+                            </a>
+                            <a href="#" class="list-item">  
+                                <div class="list-text">
+                                    <span class="list-text-name">Brad Pitt</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>
+                                <div class="list-status list-status-away"></div>
+                            </a>                            
+                            <a href="#" class="list-item">
+                                <div class="list-text">
+                                    <span class="list-text-name">Valentin Ratushev</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>
+                                <div class="list-status list-status-offline"></div>
+                            </a>                            
+                        </div>                        
+                    </div>
+                </div>                
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Contacts with image</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">                                
+                            <a href="#" class="list-item">                                
+                                <div class="list-info">
+                                    <img src="img/example/user/dmitry_s.jpg" class="img-circle img-thumbnail">
+                                </div>                                                            
+                                <div class="list-text">
+                                    <span class="list-text-name">John Doe</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>
+                                <div class="list-status list-status-online"></div>
+                            </a>
+                            <a href="#" class="list-item">  
+                                <div class="list-info">
+                                    <img src="img/example/user/alexey_s.jpg" class="img-circle img-thumbnail">
+                                </div>
+                                <div class="list-text">
+                                    <span class="list-text-name">Brad Pitt</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                            
+                                <div class="list-status list-status-online"></div>
+                            </a>                            
+                            <a href="#" class="list-item">
+                                <div class="list-info">
+                                    <img src="img/example/user/olga_s.jpg" class="img-circle img-thumbnail">
+                                </div>
+                                <div class="list-text">
+                                    <span class="list-text-name">Angelina Jolie</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                            
+                                <div class="list-status list-status-offline"></div>
+                            </a>                            
+                        </div>                        
+                    </div>
+                </div>              
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Contacts with controls</h2>
+                    </div>
+                    <div class="content content-transparent np">
+                        <div class="list list-contacts">                                
+                            <div class="list-item">                                
+                                <div class="list-info">
+                                    <img src="img/example/user/dmitry_s.jpg" class="img-circle img-thumbnail">
+                                </div>                                                            
+                                <div class="list-text">
+                                    <span class="list-text-name">John Doe</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>
+                                <div class="list-status list-status-online"></div>
+                                <div class="list-controls">                                                                 
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-comment"></span></a>
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-envelope"></span></a>                                    
+                                </div>
+                            </div>
+                            <div class="list-item">  
+                                <div class="list-info">
+                                    <img src="img/example/user/alexey_s.jpg" class="img-circle img-thumbnail">
+                                </div>
+                                <div class="list-text">
+                                    <span class="list-text-name">Brad Pitt</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                            
+                                <div class="list-status list-status-online"></div>
+                                <div class="list-controls">
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-comment"></span></a>
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-envelope"></span></a>                                    
+                                </div>
+                            </div>                            
+                            <div class="list-item">
+                                <div class="list-info">
+                                    <img src="img/example/user/olga_s.jpg" class="img-circle img-thumbnail">
+                                </div>
+                                <div class="list-text">
+                                    <span class="list-text-name">Angelina Jolie</span>
+                                    <div class="list-text-info"><i class="icon-info"></i> Some text information</div>
+                                </div>                                            
+                                <div class="list-status list-status-offline"></div>
+                                <div class="list-controls">
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-comment"></span></a>
+                                    <a href="#" class="widget-icon widget-icon-circle"><span class="icon-envelope"></span></a>                                                                        
+                                </div>
+                            </div>                            
+                        </div>                        
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+            
+    </div>
+    
+</body>
+</html>

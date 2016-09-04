@@ -1,0 +1,14 @@
+.button-back { float: left; }
+.button-next, .finish { float: right; }
+.step {clear: left;}
+.step label, .step legend { display: none; }
+
+.error-image { background: url('../img/error.png') no-repeat right top; }
+
+.stepy-titles { list-style: none; margin: 0; padding: 0; background: #F7F7F7; width: 100%; float: left; border-bottom: 1px solid #DAE2E8;}
+.stepy-titles li { color: #BBB; cursor: pointer; font-size: 12px; font-weight: bold; font-family: Tahoma, Arial, Verdana; float: left; padding: 8px 10px; line-height: 14px;}
+.stepy-titles li span { font-size: 10px; display: block; }
+.stepy-titles .current-step { color: #333; cursor: auto; }
+.stepy-titles .current-step span{color: #666;}
+
+.stepy_buttons{padding: 5px; margin: 0px;}

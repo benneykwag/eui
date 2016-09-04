@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    <script type='text/javascript' src='js/plugins/select2/select2.min.js'></script>
+    <script type='text/javascript' src='js/plugins/tagsinput/jquery.tagsinput.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui-timepicker-addon.js'></script>
+    <script type='text/javascript' src='js/plugins/ibutton/jquery.ibutton.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/validationengine/languages/jquery.validationEngine-en.js'></script>
+    <script type='text/javascript' src='js/plugins/validationengine/jquery.validationEngine.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/maskedinput/jquery.maskedinput.min.js'></script>    
+    <script type='text/javascript' src='js/plugins/stepy/jquery.stepy.min.js'></script>    
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                 <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>                                    
+                                    <li><a href="sample_mail.html">Mail</a></li>
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>                                    
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>               
+
+            </div>            
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Components</a></li>                    
+                    <li class="active">Validation</li>
+                </ol>
+            </div>
+        </div>        
+        
+        <div class="row">
+
+            <div class="col-md-6">
+                <form id="validate" method="POST" action="javascript:alert('Form #validate submited');">
+                <div class="block">
+                    <div class="header">
+                        <h2>Default fileds</h2>
+                        <div class="side pull-right">
+                            <button class="btn btn-default btn-clean" onClick="clear_form('#validate');" type="button">Clear form</button>
+                        </div>
+                    </div>
+                    <div class="content controls">    
+
+                            <div class="form-row">
+                                <div class="col-md-3">Login:</div>
+                                <div class="col-md-9">
+                                    <input type="text" class="validate[required,maxSize[8]] form-control"/>
+                                    <span class="help-block">Required, max size = 8</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-3">Password:</div>
+                                <div class="col-md-9">
+                                    <input type="password" class="validate[required,minSize[5],maxSize[10]] form-control" id="password"/>
+                                    <span class="help-block">Required, min size = 5, max size = 10</span>
+                                </div>
+                            </div>                    
+                            <div class="form-row">
+                                <div class="col-md-3">Confirm Password:</div>
+                                <div class="col-md-9">
+                                    <input type="password" class="validate[required,equals[password]] form-control"/>
+                                    <span class="help-block">Required, equals Password</span>
+                                </div>
+                            </div>                            
+                            <div class="form-row">
+                                <div class="col-md-3">Age:</div>
+                                <div class="col-md-4">
+                                    <input type="text" class="validate[required,custom[integer],min[18],max[120]] form-control"/>
+                                    <span class="help-block">Required, integer, min value = 18, max = 120</span>
+                                </div>                        
+                                <div class="col-md-2 tar">Gender:</div>
+                                <div class="col-md-3">
+                                    <div class="checkbox-inline">
+                                        <label>
+                                            <input type="radio" class="validate[required]" name="gender" value="1"/> Male
+                                        </label>
+                                    </div>                                    
+                                    <div class="checkbox-inline">
+                                        <label>
+                                            <input type="radio" class="validate[required]" name="gender" value="0"/> Famale
+                                        </label>
+                                    </div>                                             
+                                </div>                        
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-3">Date of birth:</div>
+                                <div class="col-md-9">
+                                    <input type="text" class="validate[required,custom[date]] form-control"/>
+                                    <span class="help-block">Required, date YYYY-MM-DD</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-3">Credit card:</div>
+                                <div class="col-md-9">
+                                    <input type="text" class="validate[required,creditCard] form-control"/>
+                                    <span class="help-block">Required, credit card number</span>
+                                </div>
+                            </div>             
+                            <div class="form-row">
+                                <div class="col-md-3">Site:</div>
+                                <div class="col-md-9">
+                                    <input type="text" value="http://" class="validate[required,custom[url]] form-control"/>
+                                    <span class="help-block">Required, url</span>
+                                </div>
+                            </div>                              
+                            <div class="form-row">                        
+                                <div class="col-md-12">
+                                    <label class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="validate[required]" name="terms" value="1"/> Yes, I accept your terms and conditions.
+                                        </label>
+                                    </label>
+                                </div>
+                            </div>
+
+                    </div>
+                    <div class="footer">
+                        <div class="side pull-right">
+                            <div class="btn-group">
+                                <button class="btn btn-default" type="button" onClick="$('#validate').validationEngine('hide');">Hide prompts</button>
+                                <button class="btn btn-success" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </div>                                    
+                </div>
+                </form>
+
+            </div>
+
+            <div class="col-md-6">
+                <form id="validate_custom" method="POST" action="javascript:alert('#validate_custom submited');">
+                <div class="block">
+                    <div class="header">
+                        <h2>Custom fields validation</h2>
+                        <div class="side pull-right">
+                            <button class="btn btn-default btn-clean" onClick="clear_form('#validate_custom');" type="button">Clear form</button>
+                        </div>                                        
+                    </div>
+                    <div class="content controls">   
+
+                        <div class="form-row">
+                            <div class="col-md-3">Select:</div>
+                            <div class="col-md-9">                            
+                                <select name="s_example" class="validate[required] form-control">
+                                    <option value=""></option>
+                                    <option value="1">Andorra</option>
+                                    <option value="2">Antarctica</option>                                
+                                    <option value="3">Ukraine</option>                                                                       
+                                </select>                            
+                                <span class="help-block">Required</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Checkbox:</div>
+                            <div class="col-md-9">
+                                <div class="checkbox-inline">
+                                    <label>
+                                        <input type="checkbox" class="validate[required] form-control" name="vcheck" value="1"/> Enabled 
+                                    </label>
+                                </div>                                                
+                                <div class="checkbox-inline">
+                                    <label>
+                                        <input name="vcheck" value="0" type="checkbox" disabled="disabled" class="validate[required]"/> Disabled                                                    
+                                    </label>
+                                </div>                                                
+                            </div>
+                        </div>                    
+                        <div class="form-row">
+                            <div class="col-md-3">Radio:</div>
+                            <div class="col-md-9">                                
+                                <div class="checkbox-inline">
+                                    <label>
+                                        <input type="radio" class="validate[required]" name="vradio" value="1"/> Enabled
+                                    </label>
+                                </div>
+                                <div class="checkbox-inline">
+                                    <label>
+                                        <input type="radio" disabled="disabled" class="validate[required]" name="vradio" value="0"/> Disabled
+                                    </label>
+                                </div>                                                 
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Datepicker:</div>
+                            <div class="col-md-9">                            
+                                <input type="text" class="validate[required] datepicker form-control"/>
+                                <span class="help-block">Required</span>
+                            </div>
+                        </div>                                       
+
+                        <div class="form-row">
+                            <div class="col-md-3">Group required:</div>
+                            <div class="col-md-9">                            
+                                <input class="validate[groupRequired[payments]] form-control" type="text" name="credit" id="credit" />
+                                <span class="help-block">Any of group fields must be filled</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">                            
+                                <input class="validate[groupRequired[payments]] form-control" type="text" name="paypal" id="paypal" />
+                                <span class="help-block">Any of group fields must be filled</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-3">Condition required:</div>
+                            <div class="col-md-9">                            
+                                <input type="text" name="creditcard" id="creditcard" placeholder="Credit card" class="form-control"/>                   
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">                            
+                                <input class="validate[condRequired[creditcard]] form-control" type="text" id="ccv" name="ccv" placeholder="CCV"/>
+                                <span class="help-block">This field is required if "Credit card" field is filled</span>
+                            </div>
+                        </div>                                        
+
+                    </div>
+                    <div class="footer">
+                        <div class="side pull-right">
+                            <div class="btn-group">
+                                <button class="btn btn-default" type="button" onClick="$('#validate_custom').validationEngine('hide');">Hide prompts</button>
+                                <button class="btn btn-success" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </div>                                    
+                </div>
+                </form>
+            </div>
+
+        </div>        
+        
+        <div class="row">
+            
+            <div class="col-md-12">
+                
+                <div class="block">
+                    <div class="header">
+                        <h2>Masked inputs</h2>
+                        <div class="side pull-right">
+                            <button class="btn btn-default btn-clean" onClick="clear_form('#makedinputs');" type="button">Clear form</button>
+                        </div>                                        
+                    </div>
+                    <div class="content controls">   
+                        <form id="makedinputs" action="#" method="post">
+
+                            <div class="col-md-6">
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Date:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_date" value=""/>
+                                        <span class="help-inline">Example: 2012-12-21</span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Phone:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_phone" value=""/>
+                                        <span class="help-inline">Example: 98 (765) 432-10-98</span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Phone + Ext:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_phone_ext" value=""/>
+                                        <span class="help-inline">Example: 98 (765) 432-10-98 x9999</span>
+                                    </div>
+                                </div>                    
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Credit:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_credit" value=""/>
+                                        <span class="help-inline">Example: 9876-5432-1098-7654</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">TIN:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_tin" value=""/>
+                                        <span class="help-inline">Example: 98-7654321</span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">SSN:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_ssn" value=""/>
+                                        <span class="help-inline">Example: 987-65-4321</span>
+                                    </div>
+                                </div>                    
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Product:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_product" value=""/>
+                                        <span class="help-inline">Example: A1-234-B567</span>
+                                    </div>
+                                </div>                       
+                                <div class="form-row">
+                                    <div class="col-md-3 tar">Percent:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="mask_percent" value=""/>
+                                        <span class="help-inline">Example: 50%</span>
+                                    </div>
+                                </div>                                    
+                            </div>
+                        </form>
+                    </div>                                    
+                </div>                
+                
+            </div>
+            
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="block">
+                    <div class="header">                                        
+                        <h2>Default wizard</h2>                              
+                    </div>                
+                    <div class="content controls">                
+
+                        <form action="javascript:alert('Form #wizard submited');" method="POST" id="wizard">
+                            <fieldset title="Step 1">                            
+                                <legend>Fields</legend>
+                                <div class="form-row">
+                                    <div class="col-md-3">First Name:</div>
+                                    <div class="col-md-9"><input type="text" name="fname"/></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">Second Name:</div>
+                                    <div class="col-md-9"><input type="password" name="sname"/></div>
+                                </div>                                
+                                <div class="form-row">
+                                    <div class="col-md-3">City:</div>
+                                    <div class="col-md-9"><input type="text" name="city"/></div>
+                                </div>                                
+                                <div class="form-row">
+                                    <div class="col-md-3">Country:</div>
+                                    <div class="col-md-9">
+                                        <select class="select" name="country">
+                                            <option value="0">Italy</option>
+                                            <option value="1">Andorra</option>
+                                            <option value="2">Antarctica</option>                                
+                                            <option value="3">Ukraine</option>      
+                                        </select>
+                                    </div>
+                                </div>                                                             
+                            </fieldset>
+
+                            <fieldset title="Step 2">
+                                <legend>Text</legend>
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie rhoncus elit lobortis lacinia.</p>
+                                        <ul>
+                                            <li>Aliquam laoreet vehicula odio.</li>
+                                            <li>Faucibus congue risus vehicula et.</li>
+                                            <li>Fusce consequat porta sagittis.</li>
+                                        </ul>
+                                        <p> Donec nec ante purus. Mauris auctor risus eu ante porttitor mollis. Praesent eleifend mauris at odio porttitor iaculis.</p>
+                                        <p>Duis libero nisl, rutrum et rutrum quis, iaculis non justo. Quisque libero nisl, egestas quis condimentum consectetur, elementum id felis. Vivamus consectetur semper mi ut rhoncus.</p>
+                                        <p>Aliquam eu metus ullamcorper sapien ultrices tincidunt at vitae sem. Aenean sit amet urna ac massa bibendum facilisis id id leo.</p>
+                                    </div>
+                                </div>                                        
+                            </fieldset>
+
+                            <button type="submit" class="btn btn-primary finish">Submit</button>
+                        </form>                
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+
+                <div class="block">
+                    <div class="header">                                        
+                        <h2>Wizard with validation</h2>
+                        <div class="side pull-right">
+                            <button class="btn" type="button" onClick="$('#wizard_validate').validationEngine('hide');">Hide prompts</button>
+                        </div>
+                    </div>                
+                    <div class="content controls">                
+
+                        <form action="javascript:alert('Form #wizard_validate submited')" method="POST" id="wizard_validate">
+                            <fieldset title="Step 1">                            
+                                <legend>Registration</legend>
+                                <div class="form-row">
+                                    <div class="col-md-3">Login:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="login" class="validate[required,minSize[4]]"/>
+                                        <span class="help-inline">Required, minSize = 4</span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">Password:</div>
+                                    <div class="col-md-9">
+                                        <input type="password" name="password" class="validate[required,minSize[4],maxSize[10]]"/>
+                                        <span class="help-inline">Required, minSize = 4, maxSize = 10</span>
+                                    </div>
+                                </div>                                
+                                <div class="form-row">
+                                    <div class="col-md-3">E-mail:</div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="email" class="validate[required,custom[email]]"/>
+                                        <span class="help-inline">Required, email</span>
+                                    </div>
+                                </div>                                
+                            </fieldset>
+
+                            <fieldset title="Step 2">
+                                <legend>Personal data</legend>
+                                <div class="form-row">
+                                    <div class="col-md-3">Nickname:</div>
+                                    <div class="col-md-9"><input type="text" name="nick"/></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-3">About:</div>
+                                    <div class="col-md-9">
+                                        <textarea name="about" class="validate[required,minSize[5],maxSize[150]]"></textarea>
+                                        <span class="help-inline">Required, minSize = 5, maxSize = 150</span>
+                                    </div>
+                                </div>  
+                            </fieldset>
+
+                            <button type="submit" class="btn btn-primary finish">Submit</button>
+                        </form>                
+
+                    </div>
+                </div>
+
+            </div>            
+
+        </div>        
+        
+    </div>
+    
+</body>
+</html>

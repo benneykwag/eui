@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Taurus</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />
+
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+
+    <script type='text/javascript' src='js/plugins/fancybox/jquery.fancybox.pack.js'></script>
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+
+    <script type='text/javascript' src='js/plugins.js'></script>
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+    <title>ptl</title>
+
+</head>
+
+<body class="bg-img-num1" data-settings="open">
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <nav class="navbar brb" role="navigation">
+                <!--<div class="navbar-header">-->
+                    <!--<button type="button" class="navbar-toggle" data-toggle="collapse"-->
+                            <!--data-target=".navbar-ex1-collapse">-->
+                        <!--<span class="sr-only">Toggle navigation</span>-->
+                        <!--<span class="icon-reorder"></span>-->
+                    <!--</button>-->
+                    <!--<a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>-->
+                <!--</div>-->
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="index.html">
+                                <span class="icon-home"></span> dashboard
+                            </a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span>
+                                forms</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="form_elements.html">Form elements</a></li>
+                                <li><a href="form_editors.html">WYSIWYG</a></li>
+                                <li><a href="form_files.html">File handling</a></li>
+                                <li><a href="form_validation.html">Validation and wizard</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span>
+                                components</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                <li><a href="component_buttons.html">Buttons</a></li>
+                                <li><a href="component_modals.html">Modals and popups</a></li>
+                                <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                <li><a href="component_progress.html">Progressbars</a></li>
+                                <li><a href="component_lists.html">List groups</a></li>
+                                <li><a href="component_messages.html">Messages</a></li>
+                                <li>
+                                    <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                    <ul class="dropdown-submenu">
+                                        <li><a href="component_table_default.html">Default tables</a></li>
+                                        <li><a href="component_table_sortable.html">Sortable tables</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                    <ul class="dropdown-submenu">
+                                        <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                        <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                        <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                        <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                        <li><a href="component_layout_white.html">White layout</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="component_charts.html">Charts</a></li>
+                                <li><a href="component_maps.html">Maps</a></li>
+                                <li><a href="component_typography.html">Typography</a></li>
+                                <li><a href="component_gallery.html">Gallery</a></li>
+                                <li><a href="component_calendar.html">Calendar</a></li>
+                                <li><a href="component_icons.html">Icons</a></li>
+                                <li><a href="component_portlet.html">Portlet</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                    class="icon-file-alt"></span> pages</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="sample_login.html">Login</a></li>
+                                <li><a href="sample_registration.html">Registration</a></li>
+                                <li><a href="sample_profile.html">User profile</a></li>
+                                <li><a href="sample_profile_social.html">Social profile</a></li>
+                                <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                <li><a href="sample_mail.html">Mail</a></li>
+                                <li><a href="sample_search.html">Search</a></li>
+                                <li><a href="sample_invoice.html">Invoice</a></li>
+                                <li><a href="sample_contacts.html">Contacts</a></li>
+                                <li><a href="sample_tasks.html">Tasks</a></li>
+                                <li><a href="sample_timeline.html">Timeline</a></li>
+                                <li>
+                                    <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                    <ul class="dropdown-submenu">
+                                        <li><a href="email_sample_1.html">Sample 1</a></li>
+                                        <li><a href="email_sample_2.html">Sample 2</a></li>
+                                        <li><a href="email_sample_3.html">Sample 3</a></li>
+                                        <li><a href="email_sample_4.html">Sample 4</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                    <ul class="dropdown-submenu">
+                                        <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                        <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                        <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                        <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                        <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="navbar-form navbar-right" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="search..."/>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="block nav-tabs-vertical">
+                <div class="head bg-default bg-light">
+                    <h2>컴포넌트</h2>
+                    <div class="side pull-right">
+                        <ul class="buttons">
+                            <li><a href="#"><span class="icon-plus"></span></a></li>
+                            <li><a href="#"><span class="icon-cogs"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="head-panel nm">
+                        <a href="#" class="hp-info pull-left">
+                            <div class="hp-icon">
+                                <span class="icon-download-alt"></span>
+                            </div>
+                            <span class="hp-main">25</span>
+                            <span class="hp-sm">recived</span>
+                        </a>
+                        <a href="#" class="hp-info pull-left">
+                            <div class="hp-icon">
+                                <span class="icon-upload-alt"></span>
+                            </div>
+                            <span class="hp-main">10</span>
+                            <span class="hp-sm">sent</span>
+                        </a>
+                        <a href="#" class="hp-info hp-one pull-right tip" title="" data-original-title="Refresh">
+                            <div class="hp-icon">
+                                <span class="icon-refresh"></span>
+                            </div>
+                            <span class="hp-main">9:24 am</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="tabs">
+                    <ul class="nav nav-tabs list-group list-group-icons">
+                        <li class="active">
+                            <a href="#tab19" class="list-group-item" data-toggle="tab"><span
+                                    class="icon-envelope"></span>서비스 맵<i class="icon-angle-right pull-right"></i></a>
+                            <!--<a href="#tab19" data-toggle="tab">서비스 맵</a>-->
+                        </li>
+                        <li>
+                            <a href="#tab20" class="list-group-item" data-toggle="tab"><span
+                                    class="icon-bar-chart"></span>Users<i
+                                    class="icon-angle-right pull-right"></i></a>
+
+                        </li>
+                        <li>
+                            <a href="#tab21" class="list-group-item" data-toggle="tab"><span class="icon-cogs"></span>Settings<i
+                                    class="icon-angle-right pull-right"></i></a>
+                        </li>
+                        <li>
+
+                            <a href="sample_login.html" class="list-group-item"><span class="icon-off"></span>Logout<i
+                                    class="icon-angle-right pull-right"></i></a>
+                        </li>
+                        <!--<li><a href="#tab20" data-toggle="tab">유저</a></li>-->
+                        <!--<li><a href="#tab21" data-toggle="tab">송선설비</a></li>-->
+                    </ul>
+                    <div class="content tab-content">
+                        <div class="tab-pane active" id="tab19">
+                            <div class=" gallery-list">
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">전국전력망맵</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">시도지역맵</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">경기도전력맵</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">전라도전력맵</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab20">
+                            <div class=" gallery-list">
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">전력복구담당자</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">송전탑복구담당자</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">노인</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gallery-item" style="margin: 5px;">
+                                    <div class="gallery-image">
+                                        <a class="fancybox" rel="group" href="img/example/example_500x380.jpg"><img src="img/example/example_150x115.jpg" class="img-thumbnail"></a>
+                                    </div>
+                                    <div class="gallery-content">
+                                        <!--<div class="text">전국전략망서비스</div>-->
+                                        <div class="text">
+                                            <button class="btn btn-default btn-clean btn-block">선로관리자</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab21">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum dolor sem, quis
+                                pharetra dui ultricies vel. Cras non pulvinar tellus, vel bibendum magna. Morbi tellus
+                                nulla, cursus non nisi sed, porttitor dignissim erat. Lorem ipsum dolor sit amet,
+                                consectetur adipiscing elit. Nunc facilisis commodo lectus. Vivamus vel tincidunt enim,
+                                non vulputate ipsum. Ut pellentesque consectetur arcu sit amet scelerisque. Fusce
+                                commodo leo eros, ut eleifend massa congue at.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="block block-drop-shadow">
+                <div class="header">
+                    <h2>전력망서비스</h2>
+                    <div class="side pull-right">
+                        <ul class="buttons">
+                            <li><a href="#"><span class="icon-plus"></span></a></li>
+                            <li><a href="#"><span class="icon-cogs"></span></a></li>
+                            <li><a href="#"><span class="icon-indent-right"></span></a></li>
+                            <li><a href="#"><span class="icon-download-alt"></span></a></li>
+                            <li><a href="#"><span class="icon-print"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="content np">
+                    <div id="google_eu_map" style="width: 100%; height: 400px; position: relative; overflow: hidden; transform: translateZ(0px); background-color: rgb(229, 227, 223);"><div class="gm-style" style="position: absolute; left: 0px; top: 0px; overflow: hidden; width: 100%; height: 100%; z-index: 0;"><div style="position: absolute; left: 0px; top: 0px; overflow: hidden; width: 100%; height: 100%; z-index: 0; cursor: url(&quot;https://maps.gstatic.com/mapfiles/openhand_8_8.cur&quot;) 8 8, default;"><div style="position: absolute; left: 0px; top: 0px; z-index: 1; width: 100%; transform-origin: 0px 0px 0px; transform: matrix(1, 0, 0, 1, 0, 0);"><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 100; width: 100%;"><div style="position: absolute; left: 0px; top: 0px; z-index: 0;"><div aria-hidden="true" style="position: absolute; left: 0px; top: 0px; z-index: 1; visibility: inherit;"><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 16px; top: -33px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 16px; top: 223px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 272px; top: -33px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 272px; top: 223px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: -240px; top: -33px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: -240px; top: 223px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 528px; top: -33px;"></div><div style="width: 256px; height: 256px; transform: translateZ(0px); position: absolute; left: 528px; top: 223px;"></div></div></div></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 101; width: 100%;"></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 102; width: 100%;"></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 103; width: 100%;"><div style="position: absolute; left: 0px; top: 0px; z-index: -1;"><div aria-hidden="true" style="position: absolute; left: 0px; top: 0px; z-index: 1; visibility: inherit;"><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 16px; top: -33px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 16px; top: 223px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 272px; top: -33px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 272px; top: 223px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: -240px; top: -33px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: -240px; top: 223px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 528px; top: -33px;"></div><div style="width: 256px; height: 256px; overflow: hidden; transform: translateZ(0px); position: absolute; left: 528px; top: 223px;"></div></div></div></div><div style="position: absolute; z-index: 0; transform: translateZ(0px); left: 0px; top: 0px;"><div style="overflow: hidden; width: 658px; height: 300px;"><img src="https://maps.googleapis.com/maps/api/js/StaticMapService.GetMapImage?1m2&amp;1i752&amp;2i545&amp;2e1&amp;3u3&amp;4m2&amp;1u658&amp;2u300&amp;5m5&amp;1e0&amp;5sko-KR&amp;6sus&amp;10b1&amp;12b1&amp;token=96356" style="width: 658px; height: 300px;"></div></div><div style="position: absolute; left: 0px; top: 0px; z-index: 0;"><div aria-hidden="true" style="position: absolute; left: 0px; top: 0px; z-index: 1; visibility: inherit;"><div style="transform: translateZ(0px); position: absolute; left: 16px; top: 223px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i3!3i3!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=111047" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: 16px; top: -33px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i3!3i2!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=19697" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: 272px; top: -33px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i4!3i2!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=97733" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: -240px; top: -33px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i2!3i2!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=72732" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: 272px; top: 223px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i4!3i3!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=58012" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: 528px; top: -33px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i5!3i2!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=44698" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: -240px; top: 223px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i2!3i3!4i256!2m3!1e0!2sm!3i352021745!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=27688" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div style="transform: translateZ(0px); position: absolute; left: 528px; top: 223px; transition: opacity 200ms ease-out;"><img src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i3!2i5!3i3!4i256!2m3!1e0!2sm!3i352021781!3m9!2sko-KR!3sUS!5e18!12m1!1e47!12m3!1e37!2m1!1ssmartmaps!4e0!5m1!5f2&amp;token=4977" draggable="false" alt="" style="position: absolute; left: 0px; top: 0px; width: 256px; height: 256px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div></div></div><div class="gm-style-pbc" style="position: absolute; left: 0px; top: 0px; z-index: 2; width: 100%; height: 100%; transition-duration: 0.3s; opacity: 0; display: none;"><p class="gm-style-pbt">지도를 움직이려면 두 손가락을 사용하세요.</p></div><div style="position: absolute; left: 0px; top: 0px; z-index: 3; width: 100%; height: 100%;"></div><div style="position: absolute; left: 0px; top: 0px; z-index: 4; width: 100%; transform-origin: 0px 0px 0px; transform: matrix(1, 0, 0, 1, 0, 0);"><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 104; width: 100%;"></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 105; width: 100%;"></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 106; width: 100%;"></div><div style="transform: translateZ(0px); position: absolute; left: 0px; top: 0px; z-index: 107; width: 100%;"></div></div></div><div style="margin-left: 5px; margin-right: 5px; z-index: 1000000; position: absolute; left: 0px; bottom: 0px;"><a target="_blank" href="https://maps.google.com/maps?ll=50,10&amp;z=3&amp;t=m&amp;hl=ko-KR&amp;gl=US&amp;mapclient=apiv3" title="Google 지도에서 이 지역을 보려면 클릭하세요." style="position: static; overflow: visible; float: none; display: inline;"><div style="width: 66px; height: 26px; cursor: pointer;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/google4_hdpi.png" draggable="false" style="position: absolute; left: 0px; top: 0px; width: 66px; height: 26px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px;"></div></a></div><div style="padding: 15px 21px; border: 1px solid rgb(171, 171, 171); font-family: Roboto, Arial, sans-serif; color: rgb(34, 34, 34); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 16px; z-index: 10000002; display: none; width: 256px; height: 148px; position: absolute; left: 179px; top: 60px; background-color: white;"><div style="padding: 0px 0px 10px; font-size: 16px;">지도 데이터</div><div style="font-size: 13px;">지도 데이터 ©2016 Google, INEGI</div><div style="width: 13px; height: 13px; overflow: hidden; position: absolute; opacity: 0.7; right: 12px; top: 12px; z-index: 10000; cursor: pointer;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/mapcnt6.png" draggable="false" style="position: absolute; left: -2px; top: -336px; width: 59px; height: 492px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div><div class="gmnoprint" style="z-index: 1000001; position: absolute; right: 116px; bottom: 0px; width: 155px;"><div draggable="false" class="gm-style-cc" style="-webkit-user-select: none; height: 14px; line-height: 14px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="width: auto; height: 100%; margin-left: 1px; background-color: rgb(245, 245, 245);"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a style="color: rgb(68, 68, 68); text-decoration: none; cursor: pointer; display: none;">지도 데이터</a><span style="">지도 데이터 ©2016 Google, INEGI</span></div></div></div><div class="gmnoscreen" style="position: absolute; right: 0px; bottom: 0px;"><div style="font-family: Roboto, Arial, sans-serif; font-size: 11px; color: rgb(68, 68, 68); direction: ltr; text-align: right; background-color: rgb(245, 245, 245);">지도 데이터 ©2016 Google, INEGI</div></div><div class="gmnoprint gm-style-cc" draggable="false" style="z-index: 1000001; -webkit-user-select: none; height: 14px; line-height: 14px; position: absolute; right: 69px; bottom: 0px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="width: auto; height: 100%; margin-left: 1px; background-color: rgb(245, 245, 245);"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a href="https://www.google.com/intl/ko-KR_US/help/terms_maps.html" target="_blank" style="text-decoration: none; cursor: pointer; color: rgb(68, 68, 68);">이용약관</a></div></div><div style="width: 25px; height: 25px; overflow: hidden; display: none; margin: 10px 14px; position: absolute; top: 0px; right: 0px;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/sv5.png" draggable="false" class="gm-fullscreen-control" style="position: absolute; left: -52px; top: -86px; width: 164px; height: 112px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px;"></div><div draggable="false" class="gm-style-cc" style="-webkit-user-select: none; height: 14px; line-height: 14px; position: absolute; right: 0px; bottom: 0px;"><div style="opacity: 0.7; width: 100%; height: 100%; position: absolute;"><div style="width: 1px;"></div><div style="width: auto; height: 100%; margin-left: 1px; background-color: rgb(245, 245, 245);"></div></div><div style="position: relative; padding-right: 6px; padding-left: 6px; font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); white-space: nowrap; direction: ltr; text-align: right; vertical-align: middle; display: inline-block;"><a target="_new" title="Google에 도로 지도 또는 이미지 오류 신고" href="https://www.google.com/maps/@50,10,3z/data=!10m1!1e1!12b1?source=apiv3&amp;rapsrc=apiv3" style="font-family: Roboto, Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68); text-decoration: none; position: relative;">지도 오류 신고</a></div></div><div class="gmnoprint gm-bundled-control gm-bundled-control-on-bottom" draggable="false" controlwidth="28" controlheight="93" style="margin: 10px; -webkit-user-select: none; position: absolute; bottom: 107px; right: 28px;"><div class="gmnoprint" controlwidth="28" controlheight="55" style="position: absolute; left: 0px; top: 38px;"><div draggable="false" style="-webkit-user-select: none; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; border-radius: 2px; cursor: pointer; width: 28px; height: 55px; background-color: rgb(255, 255, 255);"><div title="확대" style="position: relative; width: 28px; height: 27px; left: 0px; top: 0px;"><div style="overflow: hidden; position: absolute; width: 15px; height: 15px; left: 7px; top: 6px;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/tmapctrl_hdpi.png" draggable="false" style="position: absolute; left: 0px; top: 0px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none; width: 120px; height: 54px;"></div></div><div style="position: relative; overflow: hidden; width: 67%; height: 1px; left: 16%; top: 0px; background-color: rgb(230, 230, 230);"></div><div title="축소" style="position: relative; width: 28px; height: 27px; left: 0px; top: 0px;"><div style="overflow: hidden; position: absolute; width: 15px; height: 15px; left: 7px; top: 6px;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/tmapctrl_hdpi.png" draggable="false" style="position: absolute; left: 0px; top: -15px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none; width: 120px; height: 54px;"></div></div></div></div><div class="gm-svpc" controlwidth="28" controlheight="28" style="box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; border-radius: 2px; width: 28px; height: 28px; cursor: url(&quot;https://maps.gstatic.com/mapfiles/openhand_8_8.cur&quot;) 8 8, default; position: absolute; left: 0px; top: 0px; background-color: rgb(255, 255, 255);"><div style="position: absolute; left: 1px; top: 1px;"></div><div style="position: absolute; left: 1px; top: 1px;"><div aria-label="스트리트 뷰 페그맨 컨트롤" style="width: 26px; height: 26px; overflow: hidden; position: absolute; left: 0px; top: 0px;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/cb_scout5_hdpi.png" draggable="false" style="position: absolute; left: -147px; top: -26px; width: 215px; height: 835px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div aria-label="지도 위에 페그맨이 있음" style="width: 26px; height: 26px; overflow: hidden; position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/cb_scout5_hdpi.png" draggable="false" style="position: absolute; left: -147px; top: -52px; width: 215px; height: 835px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div aria-label="스트리트 뷰 페그맨 컨트롤" style="width: 26px; height: 26px; overflow: hidden; position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="https://maps.gstatic.com/mapfiles/api-3/images/cb_scout5_hdpi.png" draggable="false" style="position: absolute; left: -147px; top: -78px; width: 215px; height: 835px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div></div><div class="gmnoprint" controlwidth="28" controlheight="0" style="display: none; position: absolute;"><div title="지도 90도 회전" style="width: 28px; height: 28px; overflow: hidden; position: absolute; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; cursor: pointer; display: none; background-color: rgb(255, 255, 255);"><img src="https://maps.gstatic.com/mapfiles/api-3/images/tmapctrl4_hdpi.png" draggable="false" style="position: absolute; left: -141px; top: 6px; width: 170px; height: 54px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div><div class="gm-tilt" style="width: 28px; height: 28px; overflow: hidden; position: absolute; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; top: 0px; cursor: pointer; background-color: rgb(255, 255, 255);"><img src="https://maps.gstatic.com/mapfiles/api-3/images/tmapctrl4_hdpi.png" draggable="false" style="position: absolute; left: -141px; top: -13px; width: 170px; height: 54px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none;"></div></div></div><div class="gmnoprint" style="margin: 10px; z-index: 0; position: absolute; cursor: pointer; left: 0px; top: 0px;"><div class="gm-style-mtc" style="float: left;"><div draggable="false" title="거리 지도 보기" style="direction: ltr; overflow: hidden; text-align: center; position: relative; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 19px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;">지도</div><div style="z-index: -1; padding: 2px; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; position: absolute; left: 0px; top: 31px; text-align: left; display: none; background-color: white;"><div draggable="false" title="지형과 거리 지도 보기" style="color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 6px 8px 6px 6px; direction: ltr; text-align: left; white-space: nowrap; background-color: rgb(255, 255, 255);"><span role="checkbox" style="box-sizing: border-box; position: relative; line-height: 0; font-size: 0px; margin: 0px 5px 0px 0px; display: inline-block; border: 1px solid rgb(198, 198, 198); border-radius: 1px; width: 13px; height: 13px; vertical-align: middle; background-color: rgb(255, 255, 255);"><div style="position: absolute; left: 1px; top: -2px; width: 13px; height: 11px; overflow: hidden; display: none;"><img src="https://maps.gstatic.com/mapfiles/mv/imgs8.png" draggable="false" style="position: absolute; left: -52px; top: -44px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none; width: 68px; height: 67px;"></div></span><label style="vertical-align: middle; cursor: pointer;">지형</label></div></div></div><div class="gm-style-mtc" style="float: left;"><div draggable="false" title="위성 이미지 보기" style="direction: ltr; overflow: hidden; text-align: center; position: relative; color: rgb(86, 86, 86); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-right-radius: 2px; border-top-right-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; border-left-width: 0px; min-width: 19px; background-color: rgb(255, 255, 255); background-clip: padding-box;">위성</div><div style="z-index: -1; padding: 2px; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; position: absolute; right: 0px; top: 31px; text-align: left; display: none; background-color: white;"><div draggable="false" title="거리 이름과 이미지 함께 보기" style="color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 6px 8px 6px 6px; direction: ltr; text-align: left; white-space: nowrap; background-color: rgb(255, 255, 255);"><span role="checkbox" style="box-sizing: border-box; position: relative; line-height: 0; font-size: 0px; margin: 0px 5px 0px 0px; display: inline-block; border: 1px solid rgb(198, 198, 198); border-radius: 1px; width: 13px; height: 13px; vertical-align: middle; background-color: rgb(255, 255, 255);"><div style="position: absolute; left: 1px; top: -2px; width: 13px; height: 11px; overflow: hidden;"><img src="https://maps.gstatic.com/mapfiles/mv/imgs8.png" draggable="false" style="position: absolute; left: -52px; top: -44px; -webkit-user-select: none; border: 0px; padding: 0px; margin: 0px; max-width: none; width: 68px; height: 67px;"></div></span><label style="vertical-align: middle; cursor: pointer;">라벨</label></div></div></div></div></div></div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="header">
+                    <h2>Map Configuration</h2>
+                </div>
+                <div class="content controls">
+                    <div class="form-row">
+                        <div class="col-md-3">Text:</div>
+                        <div class="col-md-9"><input type="text" class="form-control" value="text value"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-3">Default:</div>
+                        <div class="col-md-9">
+                            <select class="form-control">
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                                <option>Option 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">Multiple:</div>
+                        <div class="col-md-9">
+                            <select class="form-control" multiple="multiple">
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                                <option>Option 4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

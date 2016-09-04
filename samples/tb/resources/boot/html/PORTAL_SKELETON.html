@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js'></script>
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/knob/jquery.knob.js'></script>
+    <script type='text/javascript' src='js/plugins/sparkline/jquery.sparkline.min.js'></script>
+    <script type='text/javascript' src='js/plugins/flot/jquery.flot.js'></script>
+    <script type='text/javascript' src='js/plugins/flot/jquery.flot.resize.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/charts.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+    
+</head>
+<body class="bg-img-num1" data-settings="open"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                 <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                    
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>                                    
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>                
+
+            </div>            
+        </div>
+        <div class="row">
+            
+            <div class="col-md-2">
+                
+                <div class="block block-drop-shadow">
+                    <div class="user bg-default bg-light-rtl">
+                        <div class="info">                                                                                
+                            <a href="#" class="informer informer-three">
+                                <span>14 / 255</span>
+                                Messages
+                            </a>                            
+                            <a href="#" class="informer informer-four">
+                                <span>$549.44</span>
+                                Balance
+                            </a>                                                        
+                            <img src="img/example/user/dmitry_b.jpg" class="img-circle img-thumbnail"/>
+                        </div>
+                    </div>
+                    <div class="content list-group list-group-icons">
+                        <a href="component_messages.html" class="list-group-item"><span class="icon-envelope"></span>Messages<i class="icon-angle-right pull-right"></i></a>
+                        <a href="component_charts.html" class="list-group-item"><span class="icon-bar-chart"></span>Statistic<i class="icon-angle-right pull-right"></i></a>
+                        <a href="sample_profile.html" class="list-group-item"><span class="icon-cogs"></span>Settings<i class="icon-angle-right pull-right"></i></a>
+                        <a href="sample_login.html" class="list-group-item"><span class="icon-off"></span>Logout<i class="icon-angle-right pull-right"></i></a>
+                    </div>
+                </div> 
+                
+                <div class="block block-drop-shadow">
+                    <div class="head bg-default bg-light-ltr">
+                        <h2>CPU</h2>
+                        <div class="side pull-right">               
+                            <ul class="buttons">                                
+                                <li><a href="#"><span class="icon-cogs"></span></a></li>
+                            </ul>
+                        </div>
+                        <div class="head-subtitle">Intel Core2 Duo T6670 2.20GHz</div>                                            
+                        <div class="head-panel nm">
+                            <div class="hp-info hp-simple pull-left hp-inline">
+                                <span class="hp-main">Core 0 <span class="icon-angle-right"></span> 89%</span>
+                                <div class="hp-sm">                                    
+                                    <div class="progress progress-small">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100" style="width: 89%"></div>
+                                    </div>                                                            
+                                </div>
+                            </div>
+                            <div class="hp-info hp-simple pull-left hp-inline">
+                                <span class="hp-main">Core 1 <span class="icon-angle-right"></span> 56%</span>
+                                <div class="hp-sm">                                    
+                                    <div class="progress progress-small">
+                                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100" style="width: 56%"></div>
+                                    </div>                                                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="block block-drop-shadow">
+                    <div class="head bg-dot20">
+                        <h2>Memory</h2>
+                        <div class="side pull-right">               
+                            <ul class="buttons">                                
+                                <li><a href="#"><span class="icon-cogs"></span></a></li>
+                            </ul>
+                        </div>
+                        <div class="head-subtitle">Kingston 2x8Gb DDR3 1866MHz</div>                        
+                        <div class="head-panel nm tac">
+                            <div class="sparkline">                            
+                                <span sparkType="pie" sparkWidth="100" sparkHeight="100">5079,3768,7537</span>
+                            </div>                                                         
+                        </div>
+                        <div class="head-panel nm">
+                            <div class="hp-info hp-simple pull-left hp-inline">
+                                <span class="hp-main"><span class="icon-circle"></span> Allocated 5079 Mb [ 31% ]</span>                                
+                            </div>                 
+                            <div class="hp-info hp-simple pull-left hp-inline">                                
+                                <span class="hp-main"><span class="icon-circle text-info"></span> In Cache 3768 Mb [ 23% ]</span>
+                            </div>                            
+                            <div class="hp-info hp-simple pull-left hp-inline">                                
+                                <span class="hp-main"><span class="icon-circle text-primary"></span> Aviable 7537 Mb [ 46% ]</span>
+                            </div>                                                
+                        </div>                        
+                    </div>
+                </div>
+                <div class="block block-drop-shadow">                    
+                    <div class="head bg-dot20">
+                        <h2>Volumes status</h2>
+                        <div class="side pull-right">               
+                            <ul class="buttons">                                
+                                <li><a href="#"><span class="icon-cogs"></span></a></li>
+                            </ul>
+                        </div>
+                        <div class="head-subtitle">WD Caviar Blue 1TB</div>                        
+                        <div class="head-panel nm tac" style="line-height: 0px;">
+                            <div class="knob">
+                                <input type="text" data-fgColor="#3F97FE" data-min="0" data-max="1024" data-width="100" data-height="100" value="654" data-readOnly="true"/>
+                            </div>                              
+                        </div>
+                        <div class="head-panel nm">
+                            <div class="hp-info hp-simple pull-left hp-inline">
+                                <span class="hp-main">Volume 1 [ 0.5 TB ]</span>
+                                <span class="hp-sm">Used: 450.0 GB [ 90% ] </span>
+                                <span class="hp-sm">Free: 50.0 GB [ 10% ] </span>
+                            </div>                 
+                            <div class="hp-info hp-simple pull-left hp-inline">
+                                <span class="hp-main">Volume 2 [ 0.5 TB ]</span>
+                                <span class="hp-sm">Used: 154.0 GB [ 30% ] </span>
+                                <span class="hp-sm">Free: 346.0 GB [ 70% ] </span>
+                            </div>                 
+                        </div>                        
+                    </div>                    
+                    
+                </div>                
+                
+            </div>
+            
+
+            <div class="col-md-10">
+
+                <div class="block">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab1" data-toggle="tab">Home</a></li>
+                        <li><a href="#tab2" data-toggle="tab">Example 2</a></li>
+                        <li class="dropdown">
+                            <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                                <li><a href="#tab3" tabindex="-1" data-toggle="tab">Example 3</a></li>
+                                <li><a href="#tab4" tabindex="-1" data-toggle="tab">Example 4</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="content tab-content">
+                        <div class="tab-pane active" id="tab1">
+
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block block-drop-shadow">
+                                <div class="head bg-dot30">
+                                    <h2>This week visits</h2>
+
+                                </div>
+
+                                <div class="head bg-dot30">
+                                    <h2>Visits by browser</h2>
+                                    <div class="head-panel nm">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success tip" title="Chrome" style="width: 35%"></div>
+                                            <div class="progress-bar progress-bar-info tip" title="Firefox" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-warning tip" title="Opera" style="width: 20%"></div>
+                                            <div class="progress-bar progress-bar-danger tip" title="Safari" style="width: 10%"></div>
+                                            <div class="progress-bar tip" title="Internet Explorer" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="tab-pane" id="tab2">
+                            <p>Donec tristique eu sem et aliquam. Proin sodales elementum urna et euismod. Quisque nisl nisl, venenatis eget dignissim et, adipiscing eu tellus. Sed nulla massa, luctus id orci sed, elementum consequat est. Proin dictum odio quis diam gravida facilisis. Sed pharetra dolor a tempor tristique. Sed semper sed urna ac dignissim. Aenean fermentum leo at posuere mattis. Etiam vitae quam in magna viverra dictum. Curabitur feugiat ligula in dui luctus, sed aliquet neque posuere.</p>
+                        </div>
+                        <div class="tab-pane" id="tab3">
+                            <p>Vestibulum cursus augue sed leo tempor, at aliquam orci dictum. Sed mattis metus id velit aliquet, et interdum nulla porta. Etiam euismod pellentesque purus, in fermentum eros venenatis ut. Praesent vitae nibh ac augue gravida lacinia non a ipsum. Aenean vestibulum eu turpis eu posuere. Sed eget lacus lacinia, mollis urna et, interdum dui. Donec sed diam ut metus imperdiet malesuada. Maecenas tincidunt ultricies ipsum, lobortis pretium dolor sodales ut. Donec nec fringilla nulla. In mattis sapien lorem, nec tincidunt elit scelerisque tempus.</p>
+                        </div>
+                        <div class="tab-pane" id="tab4">
+                            <p>Etiam vitae tristique dolor. Proin non tempor mi, a congue dolor. Aenean adipiscing nisl id ligula hendrerit, sit amet blandit ligula sodales. Proin quis fermentum urna, laoreet pulvinar sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent eget arcu vitae lorem laoreet convallis. Donec eget leo viverra, egestas enim ac, bibendum dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In viverra magna sit amet sem vulputate blandit. Etiam a tortor quis ante porttitor semper in at orci. Donec quis nibh dolor. Proin tincidunt justo quis turpis condimentum sagittis.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>            
+            
+        </div>
+
+
+        <div class="row">
+            <div class="page-footer">
+                <div class="page-footer-wrap">
+                    <div class="side pull-left">
+                        Copyirght &COPY; YourCompany 2013. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

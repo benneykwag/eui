@@ -1,0 +1,28 @@
+{
+    "data": [
+        {
+            "label" : "Internet Explorer 8",
+            "percent": 26.43
+        },
+        {
+            "label" : "Google Chrome",
+            "percent": 22.70
+        },
+        {
+            "label" : "Internet Explorer 11",
+            "percent": 18.10
+        },
+        {
+            "label" : "Internet Explorer 9",
+            "percent": 17.33
+        },
+        {
+            "label" : "Internet Explorer 10",
+            "percent": 12.1
+        },
+        {
+            "label" : "FireFox",
+            "percent": 1.58
+        }
+    ]
+}

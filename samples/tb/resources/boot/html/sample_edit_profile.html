@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>        
+    <title>Taurus</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    
+    <link href="css/stylesheets.css" rel="stylesheet" type="text/css" />        
+    
+    <script type='text/javascript' src='js/plugins/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/jquery-ui.min.js'></script>   
+    <script type='text/javascript' src='js/plugins/jquery/jquery-migrate.min.js'></script>
+    <script type='text/javascript' src='js/plugins/jquery/globalize.js'></script>    
+    <script type='text/javascript' src='js/plugins/bootstrap/bootstrap.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/uniform/jquery.uniform.min.js'></script>
+    <script type='text/javascript' src='js/plugins/tagsinput/jquery.tagsinput.min.js'></script>
+    
+    <script type='text/javascript' src='js/plugins/ibutton/jquery.ibutton.js'></script>
+    
+    <script type='text/javascript' src='js/plugins.js'></script>    
+    <script type='text/javascript' src='js/actions.js'></script>
+    <script type='text/javascript' src='js/settings.js'></script>
+</head>
+<body class="bg-img-num1"> 
+    
+    <div class="container">        
+        <div class="row">                   
+            <div class="col-md-12">
+                
+                 <nav class="navbar brb" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-reorder"></span>                            
+                        </button>                                                
+                        <a class="navbar-brand" href="index.html"><img src="img/logo.png"/></a>                                                                                     
+                    </div>
+                    <div class="collapse navbar-collapse navbar-ex1-collapse">                                     
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="index.html">
+                                    <span class="icon-home"></span> dashboard
+                                </a>
+                            </li>                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-pencil"></span> forms</a>
+                                <ul class="dropdown-menu">                                    
+                                    <li><a href="form_elements.html">Form elements</a></li>
+                                    <li><a href="form_editors.html">WYSIWYG</a></li>
+                                    <li><a href="form_files.html">File handling</a></li>
+                                    <li><a href="form_validation.html">Validation and wizard</a></li>
+                                </ul>                                
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-cogs"></span> components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="component_blocks.html">Blocks and panels</a></li>
+                                    <li><a href="component_buttons.html">Buttons</a></li>
+                                    <li><a href="component_modals.html">Modals and popups</a></li>                                    
+                                    <li><a href="component_tabs.html">Tabs, accordion, selectable, sortable</a></li>
+                                    <li><a href="component_progress.html">Progressbars</a></li>
+                                    <li><a href="component_lists.html">List groups</a></li>
+                                    <li><a href="component_messages.html">Messages</a></li>                                    
+                                    <li>
+                                        <a href="#">Tables<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_table_default.html">Default tables</a></li>
+                                            <li><a href="component_table_sortable.html">Sortable tables</a></li>                                            
+                                        </ul>
+                                    </li>                                                                        
+                                    <li>
+                                        <a href="#">Layouts<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="component_layout_blank.html">Default layout(blank)</a></li>
+                                            <li><a href="component_layout_custom.html">Custom navigation</a></li>
+                                            <li><a href="component_layout_scroll.html">Content scroll</a></li>
+                                            <li><a href="component_layout_fixed.html">Fixed content</a></li>
+                                            <li><a href="component_layout_white.html">White layout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="component_charts.html">Charts</a></li>
+                                    <li><a href="component_maps.html">Maps</a></li>
+                                    <li><a href="component_typography.html">Typography</a></li>
+                                    <li><a href="component_gallery.html">Gallery</a></li>
+                                    <li><a href="component_calendar.html">Calendar</a></li>
+                                    <li><a href="component_icons.html">Icons</a></li>
+                                    <li><a href="component_portlet.html">Portlet</a></li>
+                                </ul>
+                            </li>                          
+                            <li><a href="widgets.html"><span class="icon-globe"></span> widgets</a></li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-file-alt"></span> pages</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="sample_login.html">Login</a></li>
+                                    <li><a href="sample_registration.html">Registration</a></li>
+                                    <li><a href="sample_profile.html">User profile</a></li>
+                                    <li><a href="sample_profile_social.html">Social profile</a></li>
+                                    <li><a href="sample_edit_profile.html">Edit profile</a></li>
+                                    <li><a href="sample_mail.html">Mail</a></li>
+                                    <li><a href="sample_search.html">Search</a></li>
+                                    <li><a href="sample_invoice.html">Invoice</a></li>                                   
+                                    <li><a href="sample_contacts.html">Contacts</a></li>
+                                    <li><a href="sample_tasks.html">Tasks</a></li>
+                                    <li><a href="sample_timeline.html">Timeline</a></li>
+                                    <li>
+                                        <a href="#">Email templates<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="email_sample_1.html">Sample 1</a></li>
+                                            <li><a href="email_sample_2.html">Sample 2</a></li>
+                                            <li><a href="email_sample_3.html">Sample 3</a></li>
+                                            <li><a href="email_sample_4.html">Sample 4</a></li>
+                                        </ul>
+                                    </li>                                     
+                                    <li>
+                                        <a href="#">Error pages<i class="icon-angle-right pull-right"></i></a>
+                                        <ul class="dropdown-submenu">
+                                            <li><a href="sample_error_403.html">403 Forbidden</a></li>
+                                            <li><a href="sample_error_404.html">404 Not Found</a></li>
+                                            <li><a href="sample_error_500.html">500 Internal Server Error</a></li>
+                                            <li><a href="sample_error_503.html">503 Service Unavailable</a></li>
+                                            <li><a href="sample_error_504.html">504 Gateway Timeout</a></li>                                                                                       
+                                        </ul>
+                                    </li>                                    
+                                </ul>
+                            </li>                            
+                        </ul>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="search..."/>
+                            </div>                            
+                        </form>                                            
+                    </div>
+                </nav>               
+
+            </div>            
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>                    
+                    <li><a href="#">Pages</a></li>                    
+                    <li><a href="#">Edit profile</a></li>
+                    <li class="active">John Doe</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="row">
+            
+            <div class="col-md-2">
+                
+                <div class="block block-drop-shadow">
+                    
+                    <div class="head bg-dot30 npb">
+                        <h2>Picture</h2>
+                        <div class="pull-right">
+                            <button class="btn btn-default btn-clean">Save</button>
+                        </div>                        
+                    </div>
+                    <div class="head bg-dot30 np tac">
+                        <img src="img/example/user/dmitry_b.jpg" class="img-thumbnail img-circle"/>
+                    </div>                    
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="input-group file">                                    
+                                    <input type="text" class="form-control" value="img/example/user/dmitry_b.jpg"/>
+                                    <input type="file" name="file"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn" type="button">Browse</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" value="Aqvatarius"/>
+                            </div>                            
+                        </div>                        
+                    </div>
+                </div>
+                
+                <div class="block block-drop-shadow">
+                    
+                    <div class="header">
+                        <h2>Change password</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" placeholder="Old password"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" placeholder="New password"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" placeholder="Re-password"/>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="footer tar">
+                        <button class="btn btn-default btn-clean">Confirm</button>
+                    </div>
+                </div>                
+                
+            </div>
+            
+            <div class="col-md-8">
+                
+                <div class="block block-drop-shadow">
+                    
+                    <div class="header">
+                        <h2>Edit profile</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-3">First Name:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="Dmitry"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Last Name:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="Ivaniuk"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">E-mail:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="someemail@email.com"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Phone:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="+9(876) 543-21-09"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">Gender:</div>
+                            <div class="col-md-9">
+                                <div class="checkbox">
+                                    <label><input type="radio" name="gender" checked="checked"/> Male</label>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="radio" name="gender"/> Famale</label>
+                                </div>                                
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">Birthday:</div>
+                            <div class="col-md-2">
+                                <select class="form-control">
+                                    <option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option><option>13</option><option selected="selected">14</option><option>15</option>
+                                    <option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">                            
+                                <select class="form-control">
+                                    <option>01</option><option selected="selected">02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option>                                    
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-control">
+                                    <option>1984</option><option>1985</option><option>1986</option><option>1987</option><option>1988</option><option selected="selected">1989</option><option>1990</option><option>1991</option><option>1992</option><option>1993</option><option>1994</option><option>1998</option><option>1999</option><option>2000</option>                                    
+                                </select>                                
+                            </div>
+                        </div>                                                
+                    </div>
+                    <div class="header">
+                        <h2>Company</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-3">Company Name:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="MyCompany Name Ltd."/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Phone:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="+9(876) 543-21-09"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-3">Fax:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="+9(123) 456-78-90"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">E-mail:</div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" value="bussiness@email.com"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">Job:</div>
+                            <div class="col-md-9">
+                                <select class="form-control">
+                                    <option>Programmer</option>
+                                    <option selected="selected">Web designer</option>
+                                    <option>Project manager</option>
+                                    <option>Content manager</option>
+                                    <option>Tester</option>                                    
+                                </select>                                
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-3">Languages:</div>
+                            <div class="col-md-9">
+                                <input type="text" value="PHP,HTML,CSS,JS" class="tags"/>
+                            </div>
+                        </div>                                                
+                    </div>
+                    <div class="footer tar">
+                        <button class="btn btn-default btn-clean">Confirm</button>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="col-md-2">
+                
+                <div class="block block-drop-shadow">
+                    <div class="header">
+                        <h2>Settings</h2>
+                    </div>
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-6">Active:</div>
+                            <div class="col-md-6">
+                                <input type="checkbox" class="ibutton" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">Updating:</div>
+                            <div class="col-md-6">
+                                <input type="checkbox" class="ibutton"/>
+                            </div>
+                        </div>                        
+                        <div class="form-row">
+                            <div class="col-md-6">Notifications:</div>
+                            <div class="col-md-6">
+                                <input type="checkbox" class="ibutton" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">Quick upload:</div>
+                            <div class="col-md-6">
+                                <input type="checkbox" class="ibutton" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">Locations:</div>
+                            <div class="col-md-6">
+                                <input type="checkbox" class="ibutton" disabled="disabled"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">Items on page:</div>
+                            <div class="col-md-6">
+                                <input id="spinner" class="form-control" name="spinner" value="10"/>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            
+            </div>
+            
+        </div>
+        
+    </div>
+
+</body>
+</html>

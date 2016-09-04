@@ -1,0 +1,92 @@
+/* background images */
+.bg-img-light-ltr{background: url('../img/background/light_ltr.png') left top no-repeat #34A6C8;}
+.bg-img-light-rtl{background: url('../img/background/light_rtl.png') left top no-repeat #34A6C8;}
+.bg-img-light{background: url('../img/background/light.png') center top no-repeat #34A6C8;}    
+.bg-img-num0{background: url('../img/background/bt_cubs.png') left top repeat #133959;}
+.bg-img-num1{background: url('../img/background/bg_num1.jpg') left top repeat-x #082648;}    
+.bg-img-num2{background: url('../img/background/bg_num2.jpg') left top repeat-x #2D3245;}
+.bg-img-num3{background: url('../img/background/bg_num3.jpg') left top repeat-x #000000;}
+.bg-img-num4{background: url('../img/background/splash_blue.png') center center no-repeat #2C5C82;}
+.bg-img-num5{background: url('../img/background/splash_white.png') center center no-repeat #548CB2;}
+.bg-img-num6{background: url('../img/background/light_ltr.png') left top no-repeat #4B586B;}
+.bg-img-num7{background: url('../img/background/light_rtl.png') right top no-repeat #4E617F;}
+.bg-img-num8{background: url('../img/background/splash_white.png') center center no-repeat #3A5363;}
+
+.bg-img-num9{background: #333;}
+.bg-img-num10{background: url('../img/background/bt_cubs.png') center center repeat #212121;}
+.bg-img-num11{background: url('../img/background/splash_white.png') center center no-repeat #333333;}
+.bg-img-num12{background: url('../img/background/splash_blue.png') center center no-repeat #000E17;}
+.bg-img-num13{background: url('../img/background/splash_white.png') center center no-repeat #111;}
+.bg-img-num14{background: url('../img/background/light_ltr.png') left top no-repeat #222;}
+.bg-img-num15{background: url('../img/background/splash_white.png') center center no-repeat #666;}
+.bg-img-num16{background: url('../img/background/light.png') center top no-repeat #AAA;}
+
+.bg-img-num17{background: url('../img/background/light.png') center top no-repeat #629065;}
+.bg-img-num18{background: url('../img/background/splash_white.png') center center no-repeat #003729;}
+.bg-img-num19{background: url('../img/background/light_ltr.png') left top no-repeat #6D8316;}
+.bg-img-num20{background: url('../img/background/splash_white.png') center center no-repeat #487737;}
+
+.bg-img-num21{background: url('../img/background/bg_num4.jpg') left top repeat-x #000000;}
+
+
+.bg-light{background-image: url('../img/background/blight.png'); background-position: center top; background-repeat: no-repeat;}
+.bg-light-ltr{background-image: url('../img/background/blight_ltr.png'); background-position: left top; background-repeat: no-repeat;}
+.bg-light-rtl{background-image: url('../img/background/blight_rtl.png'); background-position: right top; background-repeat: no-repeat;}
+.bg-splash-white{background-image: url('../img/background/splash_white.png'); background-position: center top; background-repeat: no-repeat;}
+.bg-splash-blue{background-image: url('../img/background/splash_blue.png'); background-position: center top; background-repeat: no-repeat;}
+                 
+.bg-cubs{background: url('../img/background/bt_cubs.png') left top repeat #222;}
+/* eof background images */
+
+/* background colors */
+.bg-white{background-color: #FFFFFF !important;}
+.bg-lblue{background-color: #34A6C8 !important;}
+.bg-blue{background-color: #2F80A6 !important;}
+.bg-dblue,.bg-default{background-color: #133959 !important;}
+.bg-turquoise{background-color: #40BABD !important;}
+.bg-dark-gray{background-color: #333 !important;}
+.bg-dark-gray_ni{background: #333 !important;}
+/* eof background colors */
+
+/* wallpappers */
+.wall-num1{background: url('../img/wallpapers/wall_num1.jpg') center top no-repeat fixed #000000;}
+.wall-num2{background: url('../img/wallpapers/wall_num2.jpg') center top no-repeat fixed #000000;}
+.wall-num3{background: url('../img/wallpapers/wall_num3.jpg') center top no-repeat fixed #000000;}
+.wall-num4{background: url('../img/wallpapers/wall_num4.jpg') center top no-repeat fixed #000000;}
+.wall-num5{background: url('../img/wallpapers/wall_num5.jpg') center top no-repeat fixed #000000;}
+.wall-num6{background: url('../img/wallpapers/wall_num6.jpg') center top no-repeat fixed #000000;}
+.wall-num7{background: url('../img/wallpapers/wall_num7.jpg') center top no-repeat fixed #000000;}
+.wall-num8{background: url('../img/wallpapers/wall_num8.jpg') center top no-repeat fixed #000000;}
+.wall-num9{background: url('../img/wallpapers/wall_num9.jpg') center top no-repeat fixed #000000;}
+.wall-num10{background: url('../img/wallpapers/wall_num10.jpg') center top no-repeat fixed #000000;}
+.wall-num11{background: url('../img/wallpapers/wall_num11.jpg') center top no-repeat fixed #000000;}
+.wall-num12{background: url('../img/wallpapers/wall_num12.jpg') center top no-repeat fixed #000000;}
+.wall-num13{background: url('../img/wallpapers/wall_num13.jpg') center top no-repeat fixed #000000;}
+.wall-num14{background: url('../img/wallpapers/wall_num14.jpg') center top no-repeat fixed #000000;}
+.wall-num15{background: url('../img/wallpapers/wall_num15.jpg') center top no-repeat fixed #000000;}
+.wall-num16{background: url('../img/wallpapers/wall_num16.jpg') center top no-repeat fixed #000000;}
+/* eof wallpappers */
+
+/* transparent backgrounds */
+.bg-dot10{background: rgba(0,0,0,0.1);}
+.bg-dot20{background: rgba(0,0,0,0.2);}
+.bg-dot30{background: rgba(0,0,0,0.3);}
+.bg-dot40{background: rgba(0,0,0,0.4);}
+.bg-dot50{background: rgba(0,0,0,0.5);}
+.bg-dot60{background: rgba(0,0,0,0.6);}
+.bg-dot70{background: rgba(0,0,0,0.7);}
+.bg-dot80{background: rgba(0,0,0,0.8);}
+.bg-dot90{background: rgba(0,0,0,0.9);}
+.bg-dot100{background: rgba(0,0,0,1);}
+
+.bg-wdot10{background: rgba(255,255,255,0.1);}
+.bg-wdot20{background: rgba(255,255,255,0.2);}
+.bg-wdot30{background: rgba(255,255,255,0.3);}
+.bg-wdot40{background: rgba(255,255,255,0.4);}
+.bg-wdot50{background: rgba(255,255,255,0.5);}
+.bg-wdot60{background: rgba(255,255,255,0.6);}
+.bg-wdot70{background: rgba(255,255,255,0.7);}
+.bg-wdot80{background: rgba(255,255,255,0.8);}
+.bg-wdot90{background: rgba(255,255,255,0.9);}
+.bg-wdot100{background: rgba(255,255,255,1);}
+/* eof transparent backgrounds */

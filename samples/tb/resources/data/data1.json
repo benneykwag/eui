@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "label" : "Apple Co.",
+            "percent": 87
+        },
+        {
+            "label" : "Samsung Elect Co.",
+            "percent": 94
+        },
+        {
+            "label" : "LG Elect",
+            "percent": 90
+        },
+        {
+            "label" : "Sony Co.",
+            "percent": 48
+        }
+    ]
+}
