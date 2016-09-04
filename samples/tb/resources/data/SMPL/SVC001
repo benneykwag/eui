@@ -1,0 +1,72 @@
+{
+    "success":true,
+    "MSG":"정상적으로 처리되었습니다.",
+    "data":[
+         {
+            "CATEGORY1_NAME": '전력망정보',
+            "children": [
+                {
+                    "CMP_ID": "CP0001",
+                    "CHART_ID":"CHT0001",
+                    "TITLE": "2011년전력소비량",
+                    "IMGSRC": "resources/images/example/example_150x115.jpg",
+                    "API": "http://ur.com/API/aa",
+                    "FLAG": "DATA",
+                    "MAPURL":"",
+                    "CHARTS":[
+                        {
+                            xtype: 'chart-line'
+                        }
+                    ]
+                },
+                {
+                    "CMP_ID": "CP0001",
+                    "CHART_ID":"CHT0001",
+                    "TITLE": "2012년전력소비량",
+                    "IMGSRC": "resources/images/example/example_150x115.jpg",
+                    "API": "http://ur.com/API/aa",
+                    "FLAG": "DATA",
+                    "MAPURL":"",
+                    "CHARTS":[
+                        {
+                            xtype: 'chart-column'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "CATEGORY1_NAME": '전력시설정보',
+            "children": [
+                {
+                    "CMP_ID": "CP0001",
+                    "CHART_ID":"CHT0001",
+                    "TITLE": "2013년전력소비량",
+                    "IMGSRC": "resources/images/example/example_150x115.jpg",
+                    "API": "http://ur.com/API/aa",
+                    "FLAG": "DATA",
+                    "MAPURL":"",
+                    "CHARTS":[
+                        {
+                            xtype: 'chart-line'
+                        }
+                    ]
+                },
+                {
+                    "CMP_ID": "CP0001",
+                    "CHART_ID":"CHT0001",
+                    "TITLE": "2014년전력소비량",
+                    "IMGSRC": "resources/images/example/example_150x115.jpg",
+                    "API": "http://ur.com/API/aa",
+                    "FLAG": "DATA",
+                    "MAPURL":"",
+                    "CHARTS":[
+                            {
+                                xtype: 'chart-line'
+                            }
+                        ]
+                }
+            ]
+        }
+    ]
+}

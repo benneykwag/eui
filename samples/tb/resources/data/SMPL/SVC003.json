@@ -1,0 +1,105 @@
+{
+    "success": true,
+    "MSG": "정상적으로 처리되었습니다.",
+    "data": [
+        {
+            "chartConfig": [
+                {
+                    "title": "상반기 물동량 실적",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "xtype": "smpl04-inbox"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "선적지 통관량",
+                    "colspan": 2,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "2016년도 특송 화물실적",
+                    "colspan": 1,
+                    "rowspan": 2,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "해상항공 실적",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "height": 200,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "통관/관세",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "창고별 재고현황",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "2016년 항공물류실",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "유럽국가별 현황 ",
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        },
+        {
+            "chartConfig": [
+                {
+                    "title": "미주지역 발주현황",
+                    "colspan": 2,
+                    "rowspan": 1,
+                    "ui": "default-block",
+                    "xtype": "smpl-chart-line"
+                }
+            ]
+        }
+    ]
+}

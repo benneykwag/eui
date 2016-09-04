@@ -1,0 +1,14 @@
+{
+    "success":true,
+    "MSG":"정상적으로 처리되었습니다.",
+    "data":[
+         {
+            DSB_ID: 'DB001',
+            TITLE: '대시보드1'
+         },
+         {
+             DSB_ID: 'DB002',
+             TITLE: '대시보드1'
+          }
+    ]
+}
