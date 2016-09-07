@@ -139,6 +139,26 @@
             "PCODE": "COMPONENTS",
             "ID": "ADM010104V",
             "MAXIMIZABLE": "Y"
+        },
+        {
+            "CHILD_YN": "N",
+            "ICONCLS": "ae-shortcut",
+            "SWIDGET": "sample-mergegrid",
+            "TEXT": "Rowspan, Colspan Grid",
+            "WIDTH": 1000,
+            "SHOTCUT": "Y",
+            "LEVEL": 2,
+            "CLS": "ae-shortcut",
+            "HEIGHT": 700,
+            "RESIZABLE": "Y",
+            "SCLASS": "tb.view.smpl.MergeGrid",
+            "CODE": "MNADM0103",
+            "DSKT_SQ": 1,
+            "DSKT_CD": "MNADM",
+            "ORDER_SEQ": 1,
+            "PCODE": "COMPONENTS",
+            "ID": "ADM010104V",
+            "MAXIMIZABLE": "Y"
         }
     ],
     "message": [
