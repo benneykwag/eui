@@ -181,7 +181,7 @@ Ext.define('eui.Util', {
         Ext.require('Util', function () {
             // sessiong check
             var cfg = {
-                url: "api/G1E000000SVC/getInit",
+                url: "api/service/getInit",
                 params: {
                 },
                 pSync: false,

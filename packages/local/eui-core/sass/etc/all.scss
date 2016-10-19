@@ -117,10 +117,11 @@ $font-icon-font-family: dynamic(FontAwesome);
   margin: 7px;
 }
 // table cells
-.table-cell-merge-table < td {
-  border: 1px solid navy;
-  height: 40px;
-  width: 70px;
-  text-align: center;
-  padding: 2px;
-}
+// to do >> 일단 주석. 처리 컴파일 오류 발생.
+//.table-cell-merge-table < td {
+//  border: 1px solid navy;
+//  height: 40px;
+//  width: 70px;
+//  text-align: center;
+//  padding: 2px;
+//}

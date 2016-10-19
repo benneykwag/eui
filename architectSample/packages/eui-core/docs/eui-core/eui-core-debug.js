@@ -573,7 +573,7 @@ Ext.define('eui.Util', {
         Ext.require('Util', function() {
             // sessiong check
             var cfg = {
-                    url: "api/G1E000000SVC/getInit",
+                    url: "api/service/getInit",
                     params: {},
                     pSync: false,
                     pCallback: function(pScope, params, retData) {
@@ -1863,6 +1863,7 @@ Ext.define('eui.form.field.Checkbox', {
     inputValue: 'Y',
     uncheckedValue: 'N',
     cellCls: 'fo-table-row-td',
+    width: '100%',
     initComponent: function() {
         var me = this;
         me.callParent(arguments);
