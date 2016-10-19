@@ -5,6 +5,7 @@ Ext.define('eui.button.Button', {
 //    ui: 'basicbtn',
 
     config: {
+        iconCls: null,
         showText: true
     },
 
