@@ -122,12 +122,15 @@
         </copy>
     </target>
 
-    <!--<target name="copy.test">-->
+    <target name="copy.test">
+        <copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">
+            <fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />
+        </copy>
         <!--<copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">-->
             <!--<fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />-->
         <!--</copy>-->
         <!--<delete  verbose="true" overwrite="true" force="true">-->
             <!--<fileset dir="c:/myDir" includes="sub_dir/**"/>-->
         <!--</delete>-->
-    <!--</target>-->
+    </target>
 </project>
