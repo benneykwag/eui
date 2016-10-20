@@ -91,6 +91,7 @@ Ext.define('eui.grid.Panel', {
         'eui.mixin.Panel'
     ],
 
+    cls: 'eui-form-table',
     /**
      * @event rowaddbtnclick
      * eui.toolbar.Command를 사용할 경우 "추가"버튼을 클릭하면 발생하는 이벤트.
@@ -133,7 +134,11 @@ Ext.define('eui.grid.Panel', {
         var me = this;
 
         me.setBottomToolbar();
-
+        if(me.title){
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-table'
+            })
+        }
         me.callParent(arguments);
 
     },

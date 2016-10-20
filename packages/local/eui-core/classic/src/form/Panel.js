@@ -55,6 +55,11 @@ Ext.define('eui.form.Panel', {
 //        me.setHeader();
 //        me.setBottomToolbar();
         me.setTableLayout();
+        if(me.title){
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-pencil-square'
+            })
+        }
         me.callParent(arguments);
         me.on('afterrender', function () {
             me.isValid();

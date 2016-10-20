@@ -125,3 +125,28 @@ $font-icon-font-family: dynamic(FontAwesome);
 //  text-align: center;
 //  padding: 2px;
 //}
+
+// panel 종류의 헤더를 정리한다.
+// grid, panel에 cls: 'eui-form-table'로 설정
+// 헤더 배경 투명 , 폰트 크기
+.eui-form-table .x-panel-header-default {
+  border: 0px solid #d0d0d0;
+  background-image: none;
+  background-color: transparent !important;
+}
+.eui-form-table .x-panel-header-title-default {
+  color: #333;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: tahoma, arial, verdana, sans-serif;
+  line-height: 15px;
+}
+.eui-form-table .x-panel-header-default-top {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+// panel header setting end..
+
+
+//

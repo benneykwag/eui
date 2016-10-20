@@ -35,7 +35,6 @@ Ext.define('Eui.sample.view.form.Panel', {
         {
             flex: 1,
             xtype: 'euiform',
-            frame: true,
             title: 'EUI 폼',
             tableColumns: 2,
             defaults: {

@@ -36,7 +36,6 @@ Ext.define('Eui.sample.view.form.ResponsiveForm', {
         {
             flex: 1,
             xtype: 'euiform',
-            frame: true,
             title: 'EUI 폼',
             tableColumns: 2,
             defaults: {

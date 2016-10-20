@@ -28,6 +28,13 @@ Ext.define('Eui.sample.view.main.LeftMenu', {
                 children: [
                     { text: 'TableCellMerge', leaf: true, pgmClass: 'Eui.sample.view.ux.TableCellMerge', pgmAlias: 'sample-tablemerge'}
                 ]
+            },
+            {
+                text: "템플릿",
+                expanded: true,
+                children: [
+                    { text: '템플릿1', leaf: true, pgmClass: 'Eui.sample.view.template.TMP001.TMP001V', pgmAlias: 'TMP001V'}
+                ]
             }
         ]
     },
