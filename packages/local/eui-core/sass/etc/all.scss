@@ -243,3 +243,9 @@ $font-icon-font-family: dynamic(FontAwesome);
   width: 18px;
   padding-right: 2px;
 }
+
+// 툴바 내부에서 테두리 보이도록 개선.
+.x-btn-default-toolbar-small {
+  border-color: #9d9d9d !important;
+  background-color: #f3f3f3 !important;
+}
