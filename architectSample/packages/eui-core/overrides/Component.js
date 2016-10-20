@@ -23,7 +23,7 @@ Ext.define('Override.Component', {
      * Method that will create a setter function that will localize the string and pass it to the original setter.
      */
     _createLocaleSetter: function (property) {
-        var configurator = this.getConfigurator(),
+        var configurator = this.self.getConfigurator(),//this.getConfigurator(),
             config = configurator.configs[property],
             store = Ext.getStore('i18n'),
             re = this._localeRe,

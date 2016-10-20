@@ -2,6 +2,9 @@ Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.euiform',
     localeProperties: ['title'],
+    ui: 'euipanel',
+//    iconCls: 'x-fa fa-plus-square',
+    glyph: 'xf002@FontAwesome',
     requires: [
         'eui.button.Button',
         'Ext.layout.container.Column',

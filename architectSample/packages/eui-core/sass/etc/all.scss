@@ -125,3 +125,70 @@ $font-icon-font-family: dynamic(FontAwesome);
 //  text-align: center;
 //  padding: 2px;
 //}
+
+/*
+ * ui : euipanel
+ *      panel 종류의 헤더를 없앰
+ */
+//.x-panel-euipanel{padding: 0;border: none;background: transparent;}
+//.x-panel-header-euipanel {
+//  font-size: 12px;
+//  border: none;
+//  background-image: none;
+//  background-color: transparent;
+//}
+//
+//.x-panel-header-euipanel-form {-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
+//.x-panel-header-euipanel-horizontal {padding: 5px 0;}
+//.x-panel-header-title-euipanel>.x-title-text-euipanel {
+//  padding: 0 0 0 22px;
+//  color: #666;
+//  font-size: 14px;
+//  font-weight: bold;
+//  font-family: NG;
+////  background: url("../resources/images/bullet_h2.png") no-repeat 0 50%;
+//}
+//.x-panel-euipanel.nonetitle .x-panel-header-title-euipanel>.x-title-text-euipanel {background: none;}
+//.x-panel-body-euipanel {
+//  color: #666;
+//  font-size: 12px;
+//  font-weight: normal;
+//  font-family: NG;
+//  border: none;
+//  border-top: 1px solid #cacaca;
+//  border-left: 1px solid #cacaca;
+//  background: #fff;
+//}
+//.x-panel-body-euipanel .fo-table-row{margin: 0;padding: 0;background: #fff;border-left: 1px solid #cacaca;border-top: 1px solid #cacaca}
+//.x-panel-body-euipanel .fo-table-row-th{
+//  width: 150px;
+//  padding: 0 5px 0 12px;
+//  color: #666;
+//  font-weight: normal;
+//  /*letter-spacing: -1px;*/
+//  white-space: nowrap;
+//  border-right: 1px solid #cacaca;
+//  border-bottom: 1px solid #cacaca;
+//  background-color: #f1f6ff;
+//}
+//.x-panel-body-euipanel .fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/customui/grid/icon_required.png) no-repeat  5px 50%;}
+//.x-panel-body-euipanel .fo-table-row-td{padding: 2px;border-right: 1px solid #cacaca;border-bottom: 1px solid #cacaca}
+///*readonly의 border제거.*/
+//.x-panel-body-euipanel .x-form-readonly .x-form-trigger-wrap {
+//  border: 1px solid rgba(243, 252, 249, 0.00);
+//}
+
+//x-panel-header
+//x-header x-docked
+//x-unselectable
+//x-panel-header-default
+//x-horizontal
+//x-panel-header-horizontal
+//x-panel-header-default-horizontal
+//x-top
+//x-panel-header-top
+//x-panel-header-default-top
+//x-docked-top
+//x-panel-header-docked-top
+//x-panel-header-default-docked-top
+//x-box-layout-ct

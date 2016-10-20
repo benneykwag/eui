@@ -22,7 +22,8 @@ Ext.define('Override.Component', {
      * Method that will create a setter function that will localize the string and pass it to the original setter.
      */
     _createLocaleSetter: function(property) {
-        var configurator = this.getConfigurator(),
+        var configurator = this.self.getConfigurator(),
+            //this.getConfigurator(),
             config = configurator.configs[property],
             store = Ext.getStore('i18n'),
             re = this._localeRe,
@@ -1219,6 +1220,7 @@ Ext.define('eui.button.Button', {
     //    text: 'SpButton',
     //    ui: 'basicbtn',
     config: {
+        iconCls: null,
         showText: true
     },
     localeProperties: [
@@ -1599,6 +1601,9 @@ Ext.define('eui.form.Panel', {
     localeProperties: [
         'title'
     ],
+    ui: 'euipanel',
+    //    iconCls: 'x-fa fa-plus-square',
+    glyph: 'xf002@FontAwesome',
     requires: [
         'eui.button.Button',
         'Ext.layout.container.Column',
@@ -5221,7 +5226,7 @@ Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.euigrid',
     columnLines: true,
-    //    ui: 'basicgrid',
+    ui: 'euipanel',
     localeProperties: [
         'title'
     ],
@@ -5873,9 +5878,9 @@ Ext.define('eui.mvvm.ViewController', {
 
 Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.euipanel'
+    alias: 'widget.euipanel',
+    ui: 'euipanel'
 });
-//    ui : 'highlight'
 
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',

@@ -22,7 +22,8 @@ Ext.define('Override.Component', {
      * Method that will create a setter function that will localize the string and pass it to the original setter.
      */
     _createLocaleSetter: function(property) {
-        var configurator = this.getConfigurator(),
+        var configurator = this.self.getConfigurator(),
+            //this.getConfigurator(),
             config = configurator.configs[property],
             store = Ext.getStore('i18n'),
             re = this._localeRe,
@@ -1219,6 +1220,7 @@ Ext.define('eui.button.Button', {
     //    text: 'SpButton',
     //    ui: 'basicbtn',
     config: {
+        iconCls: null,
         showText: true
     },
     localeProperties: [
@@ -1648,6 +1650,11 @@ Ext.define('eui.form.Panel', {
         //        me.setHeader();
         //        me.setBottomToolbar();
         me.setTableLayout();
+        if (me.title) {
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-pencil-square'
+            });
+        }
         me.callParent(arguments);
         me.on('afterrender', function() {
             me.isValid();
@@ -5228,6 +5235,7 @@ Ext.define('eui.grid.Panel', {
     mixins: [
         'eui.mixin.Panel'
     ],
+    cls: 'eui-form-table',
     /**
      * @event rowaddbtnclick
      * eui.toolbar.Command를 사용할 경우 "추가"버튼을 클릭하면 발생하는 이벤트.
@@ -5261,6 +5269,11 @@ Ext.define('eui.grid.Panel', {
     initComponent: function() {
         var me = this;
         me.setBottomToolbar();
+        if (me.title) {
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-table'
+            });
+        }
         me.callParent(arguments);
     },
     checkComplete: function(editor, context) {
@@ -5873,9 +5886,33 @@ Ext.define('eui.mvvm.ViewController', {
 
 Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.euipanel'
+    alias: 'widget.euipanel',
+    cls: 'eui-form-table',
+    initComponent: function() {
+        var me = this;
+        if (me.title) {
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-bars'
+            });
+        }
+        me.callParent(arguments);
+    }
 });
-//    ui : 'highlight'
+
+Ext.define('eui.tab.Panel', {
+    extend: 'Ext.tab.Panel',
+    alias: 'widget.euitabpanel',
+    ui: 'euitabpanel',
+    initComponent: function() {
+        var me = this;
+        if (me.title) {
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-bars'
+            });
+        }
+        me.callParent(arguments);
+    }
+});
 
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',

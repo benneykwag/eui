@@ -65,69 +65,72 @@
 
     </target>
 
-    <target name="-before-pkg" description="Sencha Cmd package extension point">
+    <!--<target name="-before-pkg" description="Sencha Cmd package extension point">-->
 
-        <antcall target="docs" />
+        <!--<antcall target="docs" />-->
 
-    </target>
-
-
-    <target name="docs" description="Generates JSDuck API documentation">
-
-       <!-- JSDuck should be installed and made available via your PATH. See: https://github.com/senchalabs/jsduck/wiki/Installation -->
-        <condition property="jsDuckExecutable" value="jsduck.exe">
-            <os family="windows" />
-        </condition>
-        <condition property="jsDuckExecutable" value="jsduck">
-            <os family="unix" />
-        </condition>
-
-        <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="./docs" />
-        </delete>
-
-        <!-- For some reason, deleting and re-adding the docs folder often causes a write error. A slight delay usually avoids this. -->
-        <sleep seconds="2" />
-
-        <!-- Create updated JSDuck configuration file. -->
-        <loadfile property="jsduck.config" srcFile=".jsduck/jsduck.template.json">
-            <filterchain>
-                <expandproperties/>
-            </filterchain>
-        </loadfile>
-        <echo message="${jsduck.config}" file="jsduck.json" />
-
-        <echo message="Generating API documentation..." />
-        <exec executable="${jsDuckExecutable}" timeout="20000" failonerror="true" />
+    <!--</target>-->
 
 
+    <!--<target name="docs" description="Generates JSDuck API documentation">-->
+
+       <!--&lt;!&ndash; JSDuck should be installed and made available via your PATH. See: https://github.com/senchalabs/jsduck/wiki/Installation &ndash;&gt;-->
+        <!--<condition property="jsDuckExecutable" value="jsduck.exe">-->
+            <!--<os family="windows" />-->
+        <!--</condition>-->
+        <!--<condition property="jsDuckExecutable" value="jsduck">-->
+            <!--<os family="unix" />-->
+        <!--</condition>-->
+
+        <!--<delete includeemptydirs="true" failonerror="false">-->
+            <!--<fileset dir="./docs" />-->
+        <!--</delete>-->
+
+        <!--&lt;!&ndash; For some reason, deleting and re-adding the docs folder often causes a write error. A slight delay usually avoids this. &ndash;&gt;-->
+        <!--<sleep seconds="2" />-->
+
+        <!--&lt;!&ndash; Create updated JSDuck configuration file. &ndash;&gt;-->
+        <!--<loadfile property="jsduck.config" srcFile=".jsduck/jsduck.template.json">-->
+            <!--<filterchain>-->
+                <!--<expandproperties/>-->
+            <!--</filterchain>-->
+        <!--</loadfile>-->
+        <!--<echo message="${jsduck.config}" file="jsduck.json" />-->
+
+        <!--<echo message="Generating API documentation..." />-->
+        <!--<exec executable="${jsDuckExecutable}" timeout="20000" failonerror="true" />-->
 
 
-        <echo message="Applying custom JSDuck theme..." />
-        <copy todir="docs" overwrite="true">
-            <fileset file=".jsduck/eg-iframe.html"></fileset>
-        </copy>
-        <copy todir="docs/eui-core" overwrite="true">
-            <fileset dir="build"></fileset>
-        </copy>
-        <copy todir="docs/extjs" overwrite="true">
-            <fileset file="${workspace.dir}/ext/build/ext-all-debug.js"></fileset>
-        </copy>
-        <copy todir="docs/theme-triton"  overwrite="true">
-            <fileset dir="${workspace.dir}/ext/build/classic/theme-triton"></fileset>
-        </copy>
 
-        <copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">
-            <fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>
-        </copy>
-    </target>
 
-    <!--<target name="copy.test">-->
+        <!--<echo message="Applying custom JSDuck theme..." />-->
+        <!--<copy todir="docs" overwrite="true">-->
+            <!--<fileset file=".jsduck/eg-iframe.html"></fileset>-->
+        <!--</copy>-->
+        <!--<copy todir="docs/eui-core" overwrite="true">-->
+            <!--<fileset dir="build"></fileset>-->
+        <!--</copy>-->
+        <!--<copy todir="docs/extjs" overwrite="true">-->
+            <!--<fileset file="${workspace.dir}/ext/build/ext-all-debug.js"></fileset>-->
+        <!--</copy>-->
+        <!--<copy todir="docs/theme-triton"  overwrite="true">-->
+            <!--<fileset dir="${workspace.dir}/ext/build/classic/theme-triton"></fileset>-->
+        <!--</copy>-->
+
+        <!--<copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">-->
+            <!--<fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>-->
+        <!--</copy>-->
+    <!--</target>-->
+
+    <target name="copy.test">
+        <!--<copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">-->
+            <!--<fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />-->
+        <!--</copy>-->
         <!--<copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">-->
             <!--<fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />-->
         <!--</copy>-->
         <!--<delete  verbose="true" overwrite="true" force="true">-->
             <!--<fileset dir="c:/myDir" includes="sub_dir/**"/>-->
         <!--</delete>-->
-    <!--</target>-->
+    </target>
 </project>

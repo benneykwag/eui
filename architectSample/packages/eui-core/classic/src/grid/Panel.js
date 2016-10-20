@@ -83,7 +83,7 @@ Ext.define('eui.grid.Panel', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.euigrid',
     columnLines: true,
-//    ui: 'basicgrid',
+    ui: 'euipanel',
 
     localeProperties: ['title'],
 

@@ -38,7 +38,8 @@
     "architect":{
         "compatFrameworks": [
             "ext51",
-            "ext60"
+            "ext60",
+            "ext62"
         ],
         "classes": [
             {
