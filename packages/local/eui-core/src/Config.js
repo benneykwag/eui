@@ -26,9 +26,9 @@ Ext.define('eui.Config', {
     initLocaleMessage: function () {
         var me = this,
             store = Ext.create('Ext.data.Store', {
-            fields: [],
-            storeId: 'i18n'
-        });
+                fields: [],
+                storeId: 'i18n'
+            });
         var cfg = {
             pMethod: 'GET',
             url : Config.localeUrl,
@@ -87,7 +87,11 @@ Ext.define('eui.Config', {
             {"MSG_ID": "수정", "MSG_LABEL": "수정"},
             {"MSG_ID": "수정아이콘", "MSG_LABEL": "x-fa fa-th"},
             {"MSG_ID": "저장", "MSG_LABEL": "저장"},
-            {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"}
+            {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"},
+            {"MSG_ID": "CONFIRM", "MSG_LABEL": "확인"},
+            {"MSG_ID": "RECORD_DIRTY", "MSG_LABEL": "레코드가 수정중 입니다"},
+            {"MSG_ID": "RECORD_DELETE", "MSG_LABEL": "레코드를 삭제하시겠습니까.?"},
+            {"MSG_ID": "RECORD_DELETED", "MSG_LABEL": "레코드가 삭제되었습니다"}
         ]
     }
 });
