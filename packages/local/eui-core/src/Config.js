@@ -7,7 +7,8 @@ Ext.define('eui.Config', {
     localeCode : 'kr',
     localeValueField: 'MSG_ID',
     localeDisplayField : 'MSG_LABEL',
-
+    defaultDateFormat : 'Y.m.d',
+    defaultDateTimeFormat : '',
     /***
      * 메시지 제공용 서버사이드 주소.
      *
