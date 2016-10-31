@@ -281,10 +281,10 @@ Ext.define('eui.grid.Panel', {
         }
 
         Ext.Msg.show({
-            title: '#{삭제}',
+            title:Util.getLocaleValue('행삭제'),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: '#{삭제하시겠습니까?}',
+            message: Util.getLocaleValue('RECORD_DELETE'),
             fn: function (btn) {
                 if (btn === 'yes') {
                     // 위치 고민...
