@@ -80,6 +80,9 @@ Ext.define('eui.form.Panel', {
      * @param height
      */
     responsiveColumn : function (ct, width, height) {
+        if(ct.tableColumns == 1){
+            return;
+        }
         if(window.innerWidth < 992) {
             if(ct.getLayout().columns !== 1){
                 ct.beforeColumn =  ct.getLayout().columns;
