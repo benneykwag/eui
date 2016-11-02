@@ -63,7 +63,7 @@ Ext.define('eui.form.Panel', {
         }
 
         if (me.title && !me.hideHeaderICon) {
-            Ext.applyIf(me, {
+            Ext.apply(me, {
                 iconCls: 'x-fa fa-pencil-square'
             })
         }

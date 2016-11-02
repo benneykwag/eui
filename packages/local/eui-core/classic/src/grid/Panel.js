@@ -139,7 +139,7 @@ Ext.define('eui.grid.Panel', {
         }
 
         if (me.title && !me.hideHeaderICon) {
-            Ext.applyIf(me, {
+            Ext.apply(me, {
                 iconCls: 'x-fa fa-table'
             })
         }
