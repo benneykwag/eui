@@ -84,7 +84,7 @@ Ext.define('eui.grid.Panel', {
     alias: 'widget.euigrid',
     columnLines: true,
 //    ui: 'basicgrid',
-
+    requires: ['Ext.ux.grid.PageSize'],
     localeProperties: ['title'],
 
     mixins: [
@@ -392,7 +392,13 @@ Ext.define('eui.grid.Panel', {
                 {
                     xtype: 'pagingtoolbar',
                     dock: 'bottom',
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: [
+                        {
+                            ptype: "pagesize",
+                            pageSize: 50
+                        }
+                    ]
                 }
             );
         }
