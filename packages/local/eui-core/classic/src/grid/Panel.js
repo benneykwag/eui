@@ -134,8 +134,12 @@ Ext.define('eui.grid.Panel', {
         var me = this;
 
         me.setBottomToolbar();
-        if(me.title){
-            Ext.apply(me, {
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title && !me.hideHeaderICon) {
+            Ext.applyIf(me, {
                 iconCls: 'x-fa fa-table'
             })
         }

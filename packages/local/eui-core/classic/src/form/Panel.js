@@ -47,7 +47,9 @@ Ext.define('eui.form.Panel', {
          * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
-        useRespColumn: true
+        useRespColumn: true,
+
+        usePagingToolbar: false
     },
 
     initComponent: function () {
@@ -55,11 +57,17 @@ Ext.define('eui.form.Panel', {
 //        me.setHeader();
 //        me.setBottomToolbar();
         me.setTableLayout();
-        if(me.title){
-            Ext.apply(me, {
+
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title && !me.hideHeaderICon) {
+            Ext.applyIf(me, {
                 iconCls: 'x-fa fa-pencil-square'
             })
         }
+
         me.callParent(arguments);
         me.on('afterrender', function () {
             me.isValid();
