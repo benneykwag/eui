@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Trigger&#39;, {
+    extend: &#39;Ext.form.field.Text&#39;,
+    alias: &#39;widget.sptrigger&#39;,
+
+    cellCls: &#39;fo-table-row-td&#39;,
+
+    triggers: {
+        search: {
+//            cls: &#39;x-form-clear-trigger&#39;,
+            handler: &#39;onTriggerClick&#39;,
+            scope: &#39;this&#39;
+        }
+    },
+    onTriggerClick: function() {
+        //noinspection JSUnresolvedFunction
+        this.setValue(&#39;&#39;);
+        this.fireEvent(&quot;ontriggerclick&quot;, this, event);
+    },
+
+    initComponent: function() {
+        var me = this;
+        me.callParent(arguments);
+    }
+});</pre>
+</body>
+</html>

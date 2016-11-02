@@ -2,9 +2,6 @@ Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.euiform',
     localeProperties: ['title'],
-    ui: 'euipanel',
-//    iconCls: 'x-fa fa-plus-square',
-    glyph: 'xf002@FontAwesome',
     requires: [
         'eui.button.Button',
         'Ext.layout.container.Column',
@@ -58,6 +55,11 @@ Ext.define('eui.form.Panel', {
 //        me.setHeader();
 //        me.setBottomToolbar();
         me.setTableLayout();
+        if(me.title){
+            Ext.apply(me, {
+                iconCls: 'x-fa fa-pencil-square'
+            })
+        }
         me.callParent(arguments);
         me.on('afterrender', function () {
             me.isValid();

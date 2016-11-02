@@ -1,6 +1,6 @@
 Ext.define('eui.grid.column.Check', {
     extend: 'Ext.grid.column.Check',
-    alias: 'widget.spcheckcolumn',
+    alias: 'widget.euicheckcolumn',
 
     isRecordChecked: function (record) {
         var prop = this.property;

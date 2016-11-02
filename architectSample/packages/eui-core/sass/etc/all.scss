@@ -126,69 +126,126 @@ $font-icon-font-family: dynamic(FontAwesome);
 //  padding: 2px;
 //}
 
-/*
- * ui : euipanel
- *      panel 종류의 헤더를 없앰
- */
-//.x-panel-euipanel{padding: 0;border: none;background: transparent;}
-//.x-panel-header-euipanel {
-//  font-size: 12px;
-//  border: none;
-//  background-image: none;
-//  background-color: transparent;
-//}
-//
-//.x-panel-header-euipanel-form {-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
-//.x-panel-header-euipanel-horizontal {padding: 5px 0;}
-//.x-panel-header-title-euipanel>.x-title-text-euipanel {
+// panel 종류의 헤더를 정리한다.
+// grid, panel에 cls: 'eui-form-table'로 설정
+// 헤더 배경 투명 , 폰트 크기
+.eui-form-table .x-panel-header-default {
+  border: 0px solid #d0d0d0;
+  background-image: none;
+  background-color: transparent !important;
+}
+.eui-form-table .x-panel-header-title-default {
+  color: #333;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: tahoma, arial, verdana, sans-serif;
+  line-height: 15px;
+}
+.eui-form-table .x-panel-header-default-top {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+// panel header setting end..
+
+
+/* tab - euitabpanel */
+.x-panel-euitabpanel{padding: 0;border: none;background: transparent;}
+.x-panel-euitabpanel {
+  font-size: 12px;
+  border: none;
+  background-image: none;
+  background-color: transparent;
+}
+
+.x-panel-header-euitabpanel {-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
+.x-panel-header-euitabpanel-horizontal {padding: 5px 0;}
+//.x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {
 //  padding: 0 0 0 22px;
 //  color: #666;
 //  font-size: 14px;
 //  font-weight: bold;
 //  font-family: NG;
-////  background: url("../resources/images/bullet_h2.png") no-repeat 0 50%;
+//  background: url("../images/customui/htns/bullet_h2.png") no-repeat 0 50%;
 //}
-//.x-panel-euipanel.nonetitle .x-panel-header-title-euipanel>.x-title-text-euipanel {background: none;}
-//.x-panel-body-euipanel {
-//  color: #666;
-//  font-size: 12px;
-//  font-weight: normal;
-//  font-family: NG;
-//  border: none;
-//  border-top: 1px solid #cacaca;
-//  border-left: 1px solid #cacaca;
-//  background: #fff;
-//}
-//.x-panel-body-euipanel .fo-table-row{margin: 0;padding: 0;background: #fff;border-left: 1px solid #cacaca;border-top: 1px solid #cacaca}
-//.x-panel-body-euipanel .fo-table-row-th{
-//  width: 150px;
-//  padding: 0 5px 0 12px;
-//  color: #666;
-//  font-weight: normal;
-//  /*letter-spacing: -1px;*/
-//  white-space: nowrap;
-//  border-right: 1px solid #cacaca;
-//  border-bottom: 1px solid #cacaca;
-//  background-color: #f1f6ff;
-//}
-//.x-panel-body-euipanel .fo-table-row-th label.fo-required{margin: 0 0 0 -12px;padding: 0 5px 0 12px;background: url(../images/customui/grid/icon_required.png) no-repeat  5px 50%;}
-//.x-panel-body-euipanel .fo-table-row-td{padding: 2px;border-right: 1px solid #cacaca;border-bottom: 1px solid #cacaca}
-///*readonly의 border제거.*/
-//.x-panel-body-euipanel .x-form-readonly .x-form-trigger-wrap {
-//  border: 1px solid rgba(243, 252, 249, 0.00);
-//}
+//.x-panel-euitabpanel.nonetitle .x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {background: none;}
 
-//x-panel-header
-//x-header x-docked
-//x-unselectable
-//x-panel-header-default
-//x-horizontal
-//x-panel-header-horizontal
-//x-panel-header-default-horizontal
-//x-top
-//x-panel-header-top
-//x-panel-header-default-top
-//x-docked-top
-//x-panel-header-docked-top
-//x-panel-header-default-docked-top
-//x-box-layout-ct
+.x-panel-euitabpanel {padding: 0;border-color: #cacaca;}
+.x-tab-bar-euitabpanel {border: none;background: transparent;}
+.x-tab-bar-euitabpanel-top {border: none;background-image: none;background-color: none;}
+.x-panel-body-euitabpanel {
+  padding: 0!important;
+  color: #666;
+  font-size: 12px;
+  font-weight: normal;
+  background: #fff;
+  border: 1px solid #cacaca;
+}
+.x-tab-euitabpanel {border-color: #cacaca;cursor: pointer;-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
+.x-tab-euitabpanel-top {
+  margin: 0 0 0 1px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.x-tab-euitabpanel-top:first-child{margin: 0;}
+.x-tab-euitabpanel-top {
+  -moz-border-radius-topleft: 4px;
+  -webkit-border-top-left-radius: 4px;
+  border-top-left-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -webkit-border-top-right-radius: 4px;
+  border-top-right-radius: 4px;
+  -moz-border-radius-bottomright: 0;
+  -webkit-border-bottom-right-radius: 0;
+  border-bottom-right-radius: 0;
+  -moz-border-radius-bottomleft: 0;
+  -webkit-border-bottom-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 3px 14px 3px 14px;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  background-image: none;
+  background-color: #fafafa;
+}
+.x-tab-euitabpanel-top.x-tab.x-tab-active {-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
+.x-tab.x-tab-active.x-tab-euitabpanel-top, .x-tab.x-tab-active.x-tab-euitabpanel-left, .x-tab.x-tab-active.x-tab-euitabpanel-right {
+  background-image: none;
+  background-color: #f1f6ff;
+}
+.x-tab-button-euitabpanel {height: 18px;}
+.x-tab-inner-euitabpanel {
+  font: bold 12px/14px NG;
+  color: #666;
+  max-width: 100%;
+}
+.x-tab.x-tab-active.x-tab-euitabpanel .x-tab-inner-euitabpanel {color: #0575c5;}
+
+
+.x-panel-header-euitabpanel {
+  border: 0px solid #d0d0d0;
+  background-image: none;
+  background-color: transparent !important;
+}
+.x-panel-header-title-euitabpanel {
+  color: #333;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: tahoma, arial, verdana, sans-serif;
+  line-height: 15px;
+}
+.x-panel-header-euitabpanel-top {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.x-panel-header-title-euitabpanel > .x-title-icon-wrap-euitabpanel.x-title-icon-left {
+  width: 18px;
+  padding-right: 2px;
+}
+
+// 툴바 내부에서 테두리 보이도록 개선.
+.x-btn-default-toolbar-small {
+  border-color: #9d9d9d !important;
+  background-color: #f3f3f3 !important;
+}

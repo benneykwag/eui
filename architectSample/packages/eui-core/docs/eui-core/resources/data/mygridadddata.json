@@ -1,0 +1,7 @@
+{
+    "success": "true",
+    "message": "Error message goes here.",
+    "data": [
+//        {"ID":"1119", "MSG_ID": "F000000999", "MSG_LABEL": "신규 메시지."}
+    ]
+}

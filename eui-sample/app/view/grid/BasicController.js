@@ -51,6 +51,10 @@ Ext.define('Eui.sample.view.grid.BasicController', {
         }, true).show();
     },
 
+    onDelFormRecord: function () {
+        this.getViewModel().get('messageRecord').erase();
+    },
+
     onRowDelete: function (grid) {
         grid.onRowDelete(grid, function (store, records) {
             store.remove(records);

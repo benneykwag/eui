@@ -391,6 +391,22 @@ Ext.define('eui.Config', {
             {
                 "MSG_ID": "저장아이콘",
                 "MSG_LABEL": "x-fa fa-save"
+            },
+            {
+                "MSG_ID": "CONFIRM",
+                "MSG_LABEL": "확인"
+            },
+            {
+                "MSG_ID": "RECORD_DIRTY",
+                "MSG_LABEL": "레코드가 수정중 입니다"
+            },
+            {
+                "MSG_ID": "RECORD_DELETE",
+                "MSG_LABEL": "레코드를 삭제하시겠습니까.?"
+            },
+            {
+                "MSG_ID": "RECORD_DELETED",
+                "MSG_LABEL": "레코드가 삭제되었습니다"
             }
         ]
     }
@@ -5521,7 +5537,7 @@ Ext.define('eui.grid.Panel', {
 
 Ext.define('eui.grid.column.Check', {
     extend: 'Ext.grid.column.Check',
-    alias: 'widget.spcheckcolumn',
+    alias: 'widget.euicheckcolumn',
     isRecordChecked: function(record) {
         var prop = this.property;
         if (prop) {
@@ -5548,7 +5564,7 @@ Ext.define('eui.grid.column.Check', {
 
 Ext.define('eui.grid.column.Column', {
     extend: 'Ext.grid.column.Column',
-    alias: 'widget.spcolumn',
+    alias: 'widget.euicolumn',
     initComponent: function() {
         var me = this;
         me.callParent(arguments);
@@ -5580,7 +5596,7 @@ Ext.define('eui.mvvm.GridRenderer', {
 
 Ext.define('eui.grid.column.Date', {
     extend: 'Ext.grid.column.Date',
-    alias: 'widget.spdatecolumn',
+    alias: 'widget.euidatecolumn',
     format: 'Y/m/d',
     align: 'center',
     width: 100,

@@ -1,6 +1,6 @@
 Ext.define('eui.grid.column.Date', {
     extend: 'Ext.grid.column.Date',
-    alias: 'widget.spdatecolumn',
+    alias: 'widget.euidatecolumn',
     format: 'Y/m/d',
 	align : 'center',
 	width : 100,

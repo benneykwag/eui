@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.PopupTriggerSet&#39;, {
+    extend: &#39;eui.form.FieldContainer&#39;,
+    alias: &#39;widget.sppopupset&#39;,
+    requires: [&#39;eui.form.field.PopupTrigger&#39;],
+
+<span id='global-property-codeFieldName'>    /***** Custom Config Start *****/
+</span>    codeFieldName: null,
+    textFieldName: null,
+
+<span id='global-method-setCallBackData'>    /***** Custom Config End *****/
+</span>
+    setCallBackData: function (trigger, codeNewValue, nameNewValue, codeOldValue, nameOldValue, records) {
+        this.down(&#39;sptext&#39;).setValue(nameNewValue);
+    },
+
+    bindVar: {
+        CD: null,
+        NM: null
+    },
+    initComponent: function () {
+        var me = this;
+        var options = {
+            width: &#39;60%&#39;,
+            allowBlank: me.allowBlank || true,  // 필수 처리 추가
+            name: me.codeFieldName,
+            xtype: &#39;sppopup&#39;,
+            bind: me.bindVar.CD,
+            listeners: {
+                select: {
+                    fn: &#39;setCallBackData&#39;,
+                    scope: me
+                }
+            }
+        };
+
+
+        if (me.valueField) {
+            Ext.apply(options, {
+                valueField: me.valueField
+            });
+        }
+
+        if (me.displayField) {
+            Ext.apply(options, {
+                displayField: me.displayField
+            });
+        }
+
+        if (me.popupConfig) {
+            Ext.apply(options, {
+                popupConfig: me.popupConfig
+            });
+        }
+        var sppopup = Ext.widget(&#39;sppopup&#39;, options);
+        me.relayEvents(sppopup, [
+            &#39;select&#39;
+        ]);
+        Ext.apply(me, {
+            items: [
+                sppopup,
+                {
+                    name: me.textFieldName,
+                    allowBlank: me.allowBlank || true,  // 필수 처리 속성 추가
+                    width: &#39;40%&#39;,
+                    readOnly: true,
+                    bind: me.bindVar.NM,
+                    xtype: &#39;euitext&#39;
+                }
+            ]
+        });
+
+        me.callParent(arguments);
+
+    }
+});</pre>
+</body>
+</html>

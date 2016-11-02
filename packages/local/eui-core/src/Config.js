@@ -79,9 +79,9 @@ Ext.define('eui.Config', {
 
     data: {
         message : [
-            {"MSG_ID": "행추가", "MSG_LABEL": "행추가"},
+            {"MSG_ID": "행추가", "MSG_LABEL": "레코드추가"},
             {"MSG_ID": "행추가아이콘", "MSG_LABEL": "x-fa fa-plus-square"},
-            {"MSG_ID": "행삭제", "MSG_LABEL": "행삭제"},
+            {"MSG_ID": "행삭제", "MSG_LABEL": "레코드삭제"},
             {"MSG_ID": "행삭제아이콘", "MSG_LABEL": "x-fa fa-minus-square"},
             {"MSG_ID": "등록", "MSG_LABEL": "등록"},
             {"MSG_ID": "등록아이콘", "MSG_LABEL": "x-fa fa-table"},

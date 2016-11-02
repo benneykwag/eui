@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&quot;eui.mixin.Panel&quot;, {
+    extend: &#39;Ext.Mixin&#39;,
+
+    mixinConfig: {
+    },
+
+    config: {
+        // 하단 명령 툴바 제어.
+        hiddenBtmTbar: false,
+        defaultToolbarPosition: &#39;top&#39;,
+        defaultToolbarUi: &#39;default&#39;
+    },
+
+    // grid, form
+//    margin: &#39;10 10 10 10&#39;,
+
+<span id='global-method-applyButtonToolBar'>    /***
+</span>     * 명령 라인 버튼 설정
+     * hbuttons으로 추가될 경우 기존 버튼과 합쳐보여준다.
+     * @param defaultButtons
+     * @param otherButtons
+     */
+    applyButtonToolBar: function (defaultButtons, otherButtons) {
+        var me = this;
+        if (me.bbar || me.hiddenBtmTbar) {
+            return;
+        }
+
+        if (otherButtons) {
+            Ext.each(otherButtons, function (btn) {
+                if (btn.insertBefore) {
+                    defaultButtons.unshift(btn);
+                } else {
+                    defaultButtons.push(btn)
+                }
+            });
+        }
+
+        defaultButtons.unshift(&#39;-&gt;&#39;);
+
+        var visibleCnt = 0;
+        Ext.each(defaultButtons, function (btn, idx) {
+            if (idx &gt; 0 &amp;&amp; (btn.hidden == false || btn.hidden === undefined)) {
+                visibleCnt++;
+            }
+        });
+
+        if (visibleCnt &gt; 0) {
+            if(Ext.isEmpty(me.dockedItems)){
+                me.dockedItems = [];
+            }
+            console.log(&#39;me.getDefaultUi():&#39;, me.getDefaultToolbarUi())
+            me.dockedItems.push(
+                {
+                    xtype: &#39;toolbar&#39;,
+                    ui: me.getDefaultToolbarUi(),
+                    dock: me.getDefaultToolbarPosition(),
+                    items: defaultButtons
+                }
+            );
+        }
+        return defaultButtons;
+    }
+});</pre>
+</body>
+</html>
