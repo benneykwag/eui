@@ -6,8 +6,11 @@ Ext.define('eui.form.CheckboxGroup', {
     ],
     cellCls: 'fo-table-row-td',
     width: '100%',
+    defaultListenerScope: true,
+    listeners: {
+        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+    },
     initComponent: function () {
-        this.setCheckboxGroupRadioGroupBindVar();
         this.setAllowBlank();
         this.callParent(arguments);
     }
