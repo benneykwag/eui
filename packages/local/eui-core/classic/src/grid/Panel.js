@@ -126,9 +126,21 @@ Ext.define('eui.grid.Panel', {
         // defaultButtons에 추가할 버튼을 정의한다.
         otherButtons: null,
 
+        /**
+         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 페이징 툴바를 표시한다. 보이게 하려면 `true`로 설정한다.
+         */
         usePagingToolbar: false,
-
-        hideHeaderICon: false
+        /**
+         * @cfg {Boolean} [hideHeaderICon=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
+        hideHeaderICon: false,
+        /**
+         * @cfg {Boolean} [showRowCountStatusBar=`true`]
+         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         */
+        showRowCountStatusBar: true
     },
 
 
@@ -453,7 +465,7 @@ Ext.define('eui.grid.Panel', {
                     ]
                 }
             );
-        }else{
+        }else if(me.getShowRowCountStatusBar()){
             me.dockedItems.push(
                 {
                     dock: 'bottom',
