@@ -1,6 +1,7 @@
 Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',
+
     dateRenderer: function (v) {
         var date;
         if (Ext.isDate(v)) {
