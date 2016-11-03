@@ -2,6 +2,7 @@ Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',
     dateRenderer: function (v) {
+//        debugger;
         var date;
         if (Ext.isDate(v)) {
             return Ext.Date.format(v, eui.Config.defaultDateFormat);
@@ -19,5 +20,12 @@ Ext.define('eui.mvvm.GridRenderer', {
         } else {
             return v;
         }
+    },
+
+    descRowRenderer: function (value, meta, record, row, col, store) {
+        // set up the meta styles appropriately, etc.
+
+        // then:
+        return store.getCount() - row;
     }
 });
