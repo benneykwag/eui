@@ -39,7 +39,7 @@ Ext.define("eui.mixin.FormField", {
                     bind: '{'+path+'}',
                     get: function (value) {
                         var model = this.get(recordVar);
-                        if(model.isModel && this.get(recordVar).validate().map[name]){
+                        if (model.isModel && this.get(recordVar).getFields().length > 0 && (this.get(recordVar).validate().map[name])) {
                             me.allowBlank = false;
                         }
                         var ret = {};

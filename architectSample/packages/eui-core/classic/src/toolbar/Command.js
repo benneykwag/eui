@@ -11,7 +11,8 @@ Ext.define('eui.toolbar.Command', {
         showReloadBtn: false,
         showModBtn: false,
         showSaveBtn: false,
-        showCloseBtn: false
+        showCloseBtn: false,
+        showGridCount: false
     },
 
     initComponent: function () {
@@ -19,6 +20,13 @@ Ext.define('eui.toolbar.Command', {
             owner = this.up('grid,form');
         Ext.apply(me, {
             items: [
+                {
+                    xtype: 'component',
+                    itemId: 'status',
+                    tpl: '({count}개)',
+                    margin : '0 10 0 20',
+                    hidden: !me.getShowGridCount()
+                },
                 {
                     xtype: 'euibutton',
                     text: '#{행추가}',
@@ -128,5 +136,13 @@ Ext.define('eui.toolbar.Command', {
             ]
         });
         me.callParent(arguments);
+        var store = owner.store;
+        if (owner.bind && owner.bind['store']) {
+            store = owner.bind.store.owner.get(owner.bind.store.stub.path);
+        }
+
+        store.on('datachanged', function () {
+            owner.down('#status').update({count: store.getTotalCount()});
+        });
     }
 });

@@ -18,13 +18,17 @@
   <pre class="prettyprint lang-js">Ext.define(&#39;eui.mvvm.GridRenderer&#39;, {
     extend: &#39;Ext.Mixin&#39;,
     mixinId: &#39;gridrenderer&#39;,
+
     dateRenderer: function (v) {
         var date;
         if (Ext.isDate(v)) {
-            return Ext.Date.format(v, &#39;Y/m/d&#39;);
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
         } else if (Ext.Date.parse(v, &#39;Ymd&#39;)) {
             date = Ext.Date.parse(v, &#39;Ymd&#39;);
-            return Ext.Date.format(date, &#39;Y/m/d&#39;);
+            return Ext.Date.format(date, eui.Config.defaultDateFormat);
+        } else if (Ext.Date.parse(v, &#39;YmdHis&#39;)) {
+            date = Ext.Date.parse(v, &#39;YmdHis&#39;);
+            return Ext.Date.format(date, eui.Config.defaultDateTimeFormat);
         } else {
             return v;
         }
@@ -32,10 +36,17 @@
 
     currencyRenderer: function (v) {
         if (Ext.isNumber(v)) {
-            return Ext.util.Format.number(v, &#39;#,###.##&#39;);
+            return Ext.util.Format.number(v, &#39;#,###.###&#39;);
         } else {
             return v;
         }
+    },
+
+    descRowRenderer: function (value, meta, record, row, col, store) {
+        // set up the meta styles appropriately, etc.
+
+        // then:
+        return store.getCount() - row;
     }
 });</pre>
 </body>

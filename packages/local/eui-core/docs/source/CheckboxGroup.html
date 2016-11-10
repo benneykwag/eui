@@ -23,8 +23,11 @@
     ],
     cellCls: &#39;fo-table-row-td&#39;,
     width: &#39;100%&#39;,
+    defaultListenerScope: true,
+    listeners: {
+        afterrender: &#39;setCheckboxGroupRadioGroupBindVar&#39;
+    },
     initComponent: function () {
-        this.setCheckboxGroupRadioGroupBindVar();
         this.setAllowBlank();
         this.callParent(arguments);
     }

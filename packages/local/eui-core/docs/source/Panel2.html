@@ -103,7 +103,7 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
 </span><span id='eui-grid-Panel-property-localeProperties'>//    ui: &#39;basicgrid&#39;,
 </span>
     localeProperties: [&#39;title&#39;],
-
+    requires: [&#39;Ext.ux.grid.PageSize&#39;],
     mixins: [
         &#39;eui.mixin.Panel&#39;
     ],
@@ -143,15 +143,33 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
 <span id='eui-grid-Panel-cfg-otherButtons'>        // defaultButtons에 추가할 버튼을 정의한다.
 </span>        otherButtons: null,
 
-<span id='eui-grid-Panel-cfg-usePagingToolbar'>        usePagingToolbar: false
-</span>    },
+<span id='eui-grid-Panel-cfg-usePagingToolbar'>        /**
+</span>         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 페이징 툴바를 표시한다. 보이게 하려면 `true`로 설정한다.
+         */
+        usePagingToolbar: false,
+<span id='eui-grid-Panel-cfg-hideHeaderICon'>        /**
+</span>         * @cfg {Boolean} [hideHeaderICon=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
+        hideHeaderICon: false,
+<span id='eui-grid-Panel-cfg-showRowCountStatusBar'>        /**
+</span>         * @cfg {Boolean} [showRowCountStatusBar=`true`]
+         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         */
+        showRowCountStatusBar: true
+    },
 
 
 <span id='eui-grid-Panel-method-initComponent'>    initComponent: function () {
 </span>        var me = this;
 
         me.setBottomToolbar();
-        if(me.title){
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title &amp;&amp; !me.hideHeaderICon) {
             Ext.apply(me, {
                 iconCls: &#39;x-fa fa-table&#39;
             })
@@ -191,8 +209,54 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
     },
 
 <span id='eui-grid-Panel-method-onRender'>    onRender: function (cmp) {
-</span>        this.setPagingToolbarStore();
+</span>        this.setStatusbar();
+        this.setPagingToolbarStore();
         this.callParent(arguments);
+    },
+
+<span id='eui-grid-Panel-method-setStatusbar'>    setStatusbar: function () {
+</span>        var me = this,
+            statusbar = this.down(&#39;statusbar[itemId=commonStatus]&#39;),
+            statusbarHandler = function (store) {
+                if (statusbar)
+                    statusbar.down(&#39;tbtext[itemId=rowcnt]&#39;).setText(&#39;Rows : &#39; + store.getCount());
+            },
+            exceptionHandler = function (conn, response) {
+                if (!response) {
+                    return;
+                }
+                var result = Ext.JSON.decode(response.responseText, true);
+                if (result &amp;&amp; !Ext.isEmpty(result.MSG)) {
+                    if (statusbar) {
+                        statusbar.setStatus({
+                            text: result.MSG
+                        });
+                    }
+                }
+
+            },
+            loadHandler = function (store, records, successful, operation) {
+                if(operation){
+                    exceptionHandler(null, operation._response);
+                }
+            };
+
+        if (!me.getUsePagingToolbar()) {
+            if (this.bind &amp;&amp; this.bind[&#39;store&#39;]) {
+                var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
+                if (store &amp;&amp; store.getProxy() != null) {//store.getProxy()가 없는경우대비 null체크 같은텝의 두그리드가 같은 store를 사용시 에러발생
+                    store.on(&#39;datachanged&#39;, statusbarHandler, this);
+                    store.on(&#39;load&#39;, loadHandler, this);
+                    store.getProxy().on(&#39;exception&#39;, exceptionHandler, this);
+                }
+
+            } else if (this.store) {
+                this.store.on(&#39;datachanged&#39;, statusbarHandler, this);
+                this.store.getProxy().on(&#39;exception&#39;, exceptionHandler, this);
+
+                this.store.on(&#39;load&#39;, loadHandler, this);
+            }
+        }
     },
 
 <span id='eui-grid-Panel-method-setPagingToolbarStore'>    /***
@@ -298,10 +362,10 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
         }
 
         Ext.Msg.show({
-            title: &#39;#{삭제}&#39;,
+            title: Util.getLocaleValue(&#39;행삭제&#39;),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: &#39;#{삭제하시겠습니까?}&#39;,
+            message: Util.getLocaleValue(&#39;RECORD_DELETE&#39;),
             fn: function (btn) {
                 if (btn === &#39;yes&#39;) {
                     // 위치 고민...
@@ -340,7 +404,7 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
                             me.fireEvent(&#39;SPGridRowAdd&#39;, me);
                         } else {
                             me.onRowAdd(me, {
-                                randomInt : Ext.Number.randomInt(1, 1000000000000)
+                                randomInt: Ext.Number.randomInt(1, 1000000000000)
                             }, 0, null);
                         }
                     }
@@ -401,15 +465,36 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
             }
         ];
         var btns = this.applyButtonToolBar(buttons, this.otherButtons);
+        if (Ext.isEmpty(me.dockedItems)) {
+            me.dockedItems = [];
+        }
         if (me.getUsePagingToolbar()) {
-            if (Ext.isEmpty(me.dockedItems)) {
-                me.dockedItems = [];
-            }
             me.dockedItems.push(
                 {
                     xtype: &#39;pagingtoolbar&#39;,
                     dock: &#39;bottom&#39;,
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: [
+                        {
+                            ptype: &quot;pagesize&quot;,
+                            pageSize: 50
+                        }
+                    ]
+                }
+            );
+        }else if(me.getShowRowCountStatusBar()){
+            me.dockedItems.push(
+                {
+                    dock: &#39;bottom&#39;,
+                    itemId: &#39;commonStatus&#39;,
+                    xtype: &#39;statusbar&#39;,
+                    items: [
+                        {
+                            xtype: &#39;tbtext&#39;,
+                            itemId: &#39;rowcnt&#39;,
+                            text: &#39;Rows : 0&#39;
+                        }
+                    ]
                 }
             );
         }

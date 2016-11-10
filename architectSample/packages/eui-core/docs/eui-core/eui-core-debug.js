@@ -212,7 +212,7 @@ Ext.define("eui.mixin.FormField", {
                     bind: '{' + path + '}',
                     get: function(value) {
                         var model = this.get(recordVar);
-                        if (model.isModel && this.get(recordVar).validate().map[name]) {
+                        if (model.isModel && this.get(recordVar).getFields().length > 0 && (this.get(recordVar).validate().map[name])) {
                             me.allowBlank = false;
                         }
                         var ret = {};
@@ -284,6 +284,8 @@ Ext.define('eui.Config', {
     localeCode: 'kr',
     localeValueField: 'MSG_ID',
     localeDisplayField: 'MSG_LABEL',
+    defaultDateFormat: 'Y.m.d',
+    defaultDateTimeFormat: 'Y.m.d H:i:s',
     /***
      * 메시지 제공용 서버사이드 주소.
      *
@@ -354,7 +356,7 @@ Ext.define('eui.Config', {
         message: [
             {
                 "MSG_ID": "행추가",
-                "MSG_LABEL": "행추가"
+                "MSG_LABEL": "레코드추가"
             },
             {
                 "MSG_ID": "행추가아이콘",
@@ -362,7 +364,7 @@ Ext.define('eui.Config', {
             },
             {
                 "MSG_ID": "행삭제",
-                "MSG_LABEL": "행삭제"
+                "MSG_LABEL": "레코드삭제"
             },
             {
                 "MSG_ID": "행삭제아이콘",
@@ -1255,17 +1257,17 @@ Ext.define('eui.button.Button', {
 
 Ext.define('eui.container.BaseContainer', {
     extend: 'Ext.container.Container',
-    alias: 'widget.spbasecontainer',
+    alias: 'widget.euibasecontainer',
     mixins: [],
     //        'com.ux.mixin.BaseContainer'
-    scrollable: 'y',
-    layout: {
-        type: 'vbox',
-        align: 'stretch'
-    },
-    style: {
-        'background-color': 'white'
-    },
+    //    scrollable: 'y',
+    //    layout: {
+    //        type :'vbox',
+    //        align: 'stretch'
+    //    },
+    //    style: {
+    //        'background-color': 'white'
+    //    },
     initComponent: function() {
         var me = this;
         me.callParent(arguments);
@@ -1515,8 +1517,11 @@ Ext.define('eui.form.CheckboxGroup', {
     ],
     cellCls: 'fo-table-row-td',
     width: '100%',
+    defaultListenerScope: true,
+    listeners: {
+        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+    },
     initComponent: function() {
-        this.setCheckboxGroupRadioGroupBindVar();
         this.setAllowBlank();
         this.callParent(arguments);
     }
@@ -1659,14 +1664,18 @@ Ext.define('eui.form.Panel', {
          * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
-        useRespColumn: true
+        useRespColumn: true,
+        usePagingToolbar: false
     },
     initComponent: function() {
         var me = this;
         //        me.setHeader();
         //        me.setBottomToolbar();
         me.setTableLayout();
-        if (me.title) {
+        if (me.iconCls) {
+            me.setHideHeaderICon(false);
+        }
+        if (me.title && !me.hideHeaderICon) {
             Ext.apply(me, {
                 iconCls: 'x-fa fa-pencil-square'
             });
@@ -1690,6 +1699,9 @@ Ext.define('eui.form.Panel', {
      * @param height
      */
     responsiveColumn: function(ct, width, height) {
+        if (ct.tableColumns == 1) {
+            return;
+        }
         if (window.innerWidth < 992) {
             if (ct.getLayout().columns !== 1) {
                 ct.beforeColumn = ct.getLayout().columns;
@@ -1869,8 +1881,11 @@ Ext.define('eui.form.RadioGroup', {
     ],
     cellCls: 'fo-table-row-td',
     width: '100%',
+    defaultListenerScope: true,
+    listeners: {
+        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+    },
     initComponent: function() {
-        this.setCheckboxGroupRadioGroupBindVar();
         this.setAllowBlank();
         this.callParent(arguments);
     }
@@ -5160,6 +5175,100 @@ Ext.define('eui.grid.Merge', {
     }
 });
 
+Ext.define('Ext.ux.grid.PageSize', {
+    extend: 'Ext.form.field.ComboBox',
+    alias: 'plugin.pagesize',
+    //    beforeText  : 'Show',
+    //    afterText   : 'rows/page',
+    mode: 'local',
+    displayField: 'text',
+    valueField: 'value',
+    allowBlank: false,
+    hideLabel: true,
+    triggerAction: 'all',
+    editable: false,
+    width: 50,
+    maskRe: /[0-9]/,
+    /**
+     * initialize the paging combo after the pagebar is randered
+     */
+    init: function(paging) {
+        if (this.pageSize) {
+            paging.store.pageSize = this.pageSize;
+            this.setValue(this.pageSize);
+        }
+        paging.on('afterrender', this.onInitView, this);
+    },
+    /**
+     * create a local store for availabe range of pages
+     */
+    store: new Ext.data.SimpleStore({
+        fields: [
+            'text',
+            'value'
+        ],
+        data: [
+            [
+                '5',
+                5
+            ],
+            [
+                '10',
+                10
+            ],
+            [
+                '15',
+                15
+            ],
+            [
+                '20',
+                20
+            ],
+            [
+                '25',
+                25
+            ],
+            [
+                '50',
+                50
+            ],
+            [
+                '100',
+                100
+            ],
+            [
+                '200',
+                200
+            ],
+            [
+                '500',
+                500
+            ]
+        ]
+    }),
+    /**
+     * assing the select and specialkey events for the combobox
+     * after the pagebar is rendered.
+     */
+    onInitView: function(paging) {
+        this.setValue(paging.store.pageSize);
+        paging.add('-', this.beforeText, this, this.afterText);
+        this.on('select', this.onPageSizeChanged, paging);
+        this.on('specialkey', function(combo, e) {
+            if (13 === e.getKey()) {
+                this.onPageSizeChanged.call(paging, this);
+            }
+        });
+    },
+    /**
+     * refresh the page when the value is changed
+     */
+    onPageSizeChanged: function(combo) {
+        this.store.pageSize = parseInt(combo.getRawValue(), 10);
+        this.moveFirst();
+    }
+});
+
 /**
  * Ext.grid.Panel 클래스를 확장했다.
  *
@@ -5248,6 +5357,9 @@ Ext.define('eui.grid.Panel', {
     localeProperties: [
         'title'
     ],
+    requires: [
+        'Ext.ux.grid.PageSize'
+    ],
     mixins: [
         'eui.mixin.Panel'
     ],
@@ -5280,12 +5392,29 @@ Ext.define('eui.grid.Panel', {
         showRowSaveBtn: false,
         // defaultButtons에 추가할 버튼을 정의한다.
         otherButtons: null,
-        usePagingToolbar: false
+        /**
+         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 페이징 툴바를 표시한다. 보이게 하려면 `true`로 설정한다.
+         */
+        usePagingToolbar: false,
+        /**
+         * @cfg {Boolean} [hideHeaderICon=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
+        hideHeaderICon: false,
+        /**
+         * @cfg {Boolean} [showRowCountStatusBar=`true`]
+         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         */
+        showRowCountStatusBar: true
     },
     initComponent: function() {
         var me = this;
         me.setBottomToolbar();
-        if (me.title) {
+        if (me.iconCls) {
+            me.setHideHeaderICon(false);
+        }
+        if (me.title && !me.hideHeaderICon) {
             Ext.apply(me, {
                 iconCls: 'x-fa fa-table'
             });
@@ -5318,8 +5447,52 @@ Ext.define('eui.grid.Panel', {
         Ext.get(nodeId).select('.x-grid-row-checker').elements[0].click();
     },
     onRender: function(cmp) {
+        this.setStatusbar();
         this.setPagingToolbarStore();
         this.callParent(arguments);
+    },
+    setStatusbar: function() {
+        var me = this,
+            statusbar = this.down('statusbar[itemId=commonStatus]'),
+            statusbarHandler = function(store) {
+                if (statusbar)  {
+                    statusbar.down('tbtext[itemId=rowcnt]').setText('Rows : ' + store.getCount());
+                }
+                
+            },
+            exceptionHandler = function(conn, response) {
+                if (!response) {
+                    return;
+                }
+                var result = Ext.JSON.decode(response.responseText, true);
+                if (result && !Ext.isEmpty(result.MSG)) {
+                    if (statusbar) {
+                        statusbar.setStatus({
+                            text: result.MSG
+                        });
+                    }
+                }
+            },
+            loadHandler = function(store, records, successful, operation) {
+                if (operation) {
+                    exceptionHandler(null, operation._response);
+                }
+            };
+        if (!me.getUsePagingToolbar()) {
+            if (this.bind && this.bind['store']) {
+                var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
+                if (store && store.getProxy() != null) {
+                    //store.getProxy()가 없는경우대비 null체크 같은텝의 두그리드가 같은 store를 사용시 에러발생
+                    store.on('datachanged', statusbarHandler, this);
+                    store.on('load', loadHandler, this);
+                    store.getProxy().on('exception', exceptionHandler, this);
+                }
+            } else if (this.store) {
+                this.store.on('datachanged', statusbarHandler, this);
+                this.store.getProxy().on('exception', exceptionHandler, this);
+                this.store.on('load', loadHandler, this);
+            }
+        }
     },
     /***
      * Paging Toolbar store를 설정한다.
@@ -5420,10 +5593,10 @@ Ext.define('eui.grid.Panel', {
             scope = grid;
         }
         Ext.Msg.show({
-            title: '#{삭제}',
+            title: Util.getLocaleValue('행삭제'),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: '#{삭제하시겠습니까?}',
+            message: Util.getLocaleValue('RECORD_DELETE'),
             fn: function(btn) {
                 if (btn === 'yes') {
                     // 위치 고민...
@@ -5522,14 +5695,33 @@ Ext.define('eui.grid.Panel', {
                 }
             ];
         var btns = this.applyButtonToolBar(buttons, this.otherButtons);
+        if (Ext.isEmpty(me.dockedItems)) {
+            me.dockedItems = [];
+        }
         if (me.getUsePagingToolbar()) {
-            if (Ext.isEmpty(me.dockedItems)) {
-                me.dockedItems = [];
-            }
             me.dockedItems.push({
                 xtype: 'pagingtoolbar',
                 dock: 'bottom',
-                displayInfo: true
+                displayInfo: true,
+                plugins: [
+                    {
+                        ptype: "pagesize",
+                        pageSize: 50
+                    }
+                ]
+            });
+        } else if (me.getShowRowCountStatusBar()) {
+            me.dockedItems.push({
+                dock: 'bottom',
+                itemId: 'commonStatus',
+                xtype: 'statusbar',
+                items: [
+                    {
+                        xtype: 'tbtext',
+                        itemId: 'rowcnt',
+                        text: 'Rows : 0'
+                    }
+                ]
             });
         }
     }
@@ -5577,20 +5769,28 @@ Ext.define('eui.mvvm.GridRenderer', {
     dateRenderer: function(v) {
         var date;
         if (Ext.isDate(v)) {
-            return Ext.Date.format(v, 'Y/m/d');
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
         } else if (Ext.Date.parse(v, 'Ymd')) {
             date = Ext.Date.parse(v, 'Ymd');
-            return Ext.Date.format(date, 'Y/m/d');
+            return Ext.Date.format(date, eui.Config.defaultDateFormat);
+        } else if (Ext.Date.parse(v, 'YmdHis')) {
+            date = Ext.Date.parse(v, 'YmdHis');
+            return Ext.Date.format(date, eui.Config.defaultDateTimeFormat);
         } else {
             return v;
         }
     },
     currencyRenderer: function(v) {
         if (Ext.isNumber(v)) {
-            return Ext.util.Format.number(v, '#,###.##');
+            return Ext.util.Format.number(v, '#,###.###');
         } else {
             return v;
         }
+    },
+    descRowRenderer: function(value, meta, record, row, col, store) {
+        // set up the meta styles appropriately, etc.
+        // then:
+        return store.getCount() - row;
     }
 });
 
@@ -5619,10 +5819,39 @@ Ext.define('eui.grid.column.Number', {
     mixins: [
         'eui.mvvm.GridRenderer'
     ],
+    config: {
+        /**
+         * @cfg {Boolean} [isCurrency=`true`]
+         * currencyRenderer가 기본 적용되고 이를 피하고 싶을 경우 `false`로 설정한다.
+         * false로 지정하고 포맷을 지정할 경우
+         * 예 ) 소숫점 3자리로 모두 통일 할 경우
+         * isCurrency: false,
+         * format:'0,000.000/i',
+         */
+        isCurrency: true
+    },
+    initComponent: function() {
+        var me = this;
+        if (!me.renderer && me.isCurrency) {
+            me.renderer = me.currencyRenderer;
+        }
+        me.callParent(arguments);
+    }
+});
+
+Ext.define('eui.grid.column.RowNumberer', {
+    extend: 'Ext.grid.column.Number',
+    alias: 'widget.euirownumberer',
+    align: 'right',
+    mixins: [
+        'eui.mvvm.GridRenderer'
+    ],
+    text: 'No',
+    width: 40,
     initComponent: function() {
         var me = this;
         if (!me.renderer) {
-            me.renderer = me.currencyRenderer;
+            me.renderer = me.descRowRenderer;
         }
         me.callParent(arguments);
     }
@@ -5904,21 +6133,37 @@ Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.euipanel',
     cls: 'eui-form-table',
+    config: {
+        usePagingToolbar: false
+    },
     initComponent: function() {
         var me = this;
-        if (me.title) {
+        if (me.iconCls) {
+            me.setHideHeaderICon(false);
+        }
+        if (me.title && !me.hideHeaderICon) {
             Ext.apply(me, {
-                iconCls: 'x-fa fa-bars'
+                iconCls: 'x-fa fa-pencil-square'
             });
         }
         me.callParent(arguments);
     }
 });
 
+Ext.define('eui.panel.BasePanel', {
+    extend: 'eui.panel.Panel',
+    alias: 'widget.euibasepanel'
+});
+
 Ext.define('eui.tab.Panel', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.euitabpanel',
     ui: 'euitabpanel',
+    /**
+     * @event euitabload
+     * 탭 변경에 따른 하위 자식의 데이터 재로드 처리.
+     * @param {Object[]} 파라메터
+     */
     initComponent: function() {
         var me = this;
         if (me.title) {
@@ -5927,6 +6172,30 @@ Ext.define('eui.tab.Panel', {
             });
         }
         me.callParent(arguments);
+    },
+    listeners: {
+        /***
+         * 탭 변경시마다 파라메터를 비교해 다를 경우 euitabload이벤트를 발생시킨다.
+         * @param tabPanel
+         * @param newCard
+         * @param oldCard
+         */
+        tabchange: function(tabPanel, newCard, oldCard) {
+            if (JSON.stringify(tabPanel.tabLoadParameters) != JSON.stringify(newCard.tabLoadParameters)) {
+                newCard.fireEvent('euitabload', tabPanel.tabLoadParameters);
+                newCard.tabLoadParameters = tabPanel.tabLoadParameters;
+            }
+        },
+        /***
+         * 하위 아이템에게 euitabload이벤트를 발생시켜 데이터를 로드하도록 한다.
+         * @param parameters
+         * @param e
+         */
+        euitabload: function(parameters, e) {
+            var activeItem = this.getLayout().getActiveItem();
+            activeItem.fireEvent('euitabload', parameters, e);
+            this.tabLoadParameters = activeItem.tabLoadParameters = parameters;
+        }
     }
 });
 
@@ -5942,13 +6211,21 @@ Ext.define('eui.toolbar.Command', {
         showReloadBtn: false,
         showModBtn: false,
         showSaveBtn: false,
-        showCloseBtn: false
+        showCloseBtn: false,
+        showGridCount: false
     },
     initComponent: function() {
         var me = this,
             owner = this.up('grid,form');
         Ext.apply(me, {
             items: [
+                {
+                    xtype: 'component',
+                    itemId: 'status',
+                    tpl: '({count}개)',
+                    margin: '0 10 0 20',
+                    hidden: !me.getShowGridCount()
+                },
                 {
                     xtype: 'euibutton',
                     text: '#{행추가}',
@@ -6058,6 +6335,15 @@ Ext.define('eui.toolbar.Command', {
             ]
         });
         me.callParent(arguments);
+        var store = owner.store;
+        if (owner.bind && owner.bind['store']) {
+            store = owner.bind.store.owner.get(owner.bind.store.stub.path);
+        }
+        store.on('datachanged', function() {
+            owner.down('#status').update({
+                count: store.getTotalCount()
+            });
+        });
     }
 });
 

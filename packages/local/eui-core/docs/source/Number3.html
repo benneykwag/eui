@@ -18,13 +18,24 @@
   <pre class="prettyprint lang-js">Ext.define(&#39;eui.grid.column.Number&#39;, {
     extend: &#39;Ext.grid.column.Number&#39;,
     alias: &#39;widget.euinumbercolumn&#39;,
-	align : &#39;right&#39;,
+    align : &#39;right&#39;,
     mixins: [
         &#39;eui.mvvm.GridRenderer&#39;
     ],
+    config: {
+<span id='global-cfg-isCurrency'>        /**
+</span>         * @cfg {Boolean} [isCurrency=`true`]
+         * currencyRenderer가 기본 적용되고 이를 피하고 싶을 경우 `false`로 설정한다.
+         * false로 지정하고 포맷을 지정할 경우
+         * 예 ) 소숫점 3자리로 모두 통일 할 경우
+         * isCurrency: false,
+         * format:&#39;0,000.000/i&#39;,
+         */
+        isCurrency: true
+    },
     initComponent: function() {
         var me = this;
-        if(!me.renderer){
+        if(!me.renderer &amp;&amp; me.isCurrency){
             me.renderer = me.currencyRenderer
         }
         me.callParent(arguments);

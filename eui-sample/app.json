@@ -65,6 +65,7 @@
      *      ]
      */
     "requires": [
+        "ext-ux",
         "font-awesome",
         "eui-core"
     ],

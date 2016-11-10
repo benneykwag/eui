@@ -35,20 +35,20 @@
             <target name="-after-build"/>
     -->
 
-    <target name="-before-build">
+    <!--<target name="-before-build">
         <delete dir="${workspace.dir}/packages/local/eui-core/resources/css">
             <include name="**/eui-core-all*.css"/>
         </delete>
-    </target>
+    </target>-->
 
     <target name="-after-build">
-        <copy todir="${workspace.dir}/packages/local/eui-core/resources/css">
+        <!--<copy todir="${workspace.dir}/packages/local/eui-core/resources/css">
             <fileset dir="${workspace.dir}/packages/local/eui-core/build/resources">
                 <include name="**/eui-core-all*.css"/>
             </fileset>
-        </copy>
+        </copy>-->
 
-        <delete dir="${workspace.dir}/architectSample/packages/eui-core"/>
+        <!--<delete dir="${workspace.dir}/architectSample/packages/eui-core"/>
         <copy todir="${workspace.dir}/architectSample/packages/eui-core">
             <fileset dir="${workspace.dir}/packages/local/eui-core"/>
         </copy>
@@ -66,11 +66,22 @@
         <delete dir="/Volumes/Disk2/DevRoot/PrivateCodes/dm_project/workspace/packages/local/eui-core/"/>
         <copy todir="/Volumes/Disk2/DevRoot/PrivateCodes/dm_project/workspace/packages/local/eui-core/">
             <fileset dir="${workspace.dir}/packages/local/eui-core"/>
-        </copy>
+        </copy>-->
 
+        <!--// 사용하는 프로젝트에 설정 //-->
+        <delete dir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/packages/local/eui-core/resources"/>
+        <copy todir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/packages/local/eui-core/resources">
+            <fileset dir="${workspace.dir}/packages/local/eui-core/build/resources"/>
+        </copy>
+        <delete dir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/packages/local/eui-core/src"/>
+        <copy todir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/packages/local/eui-core/src">
+            <fileset dir="${workspace.dir}/packages/local/eui-core/build/">
+                <include name="eui-core-debug.js"/>
+            </fileset>
+        </copy>
     </target>
 
-    <target name="-before-pkg" description="Sencha Cmd package extension point">
+    <!--<target name="-before-pkg" description="Sencha Cmd package extension point">
 
         <antcall target="docs" />
 
@@ -79,7 +90,6 @@
 
     <target name="docs" description="Generates JSDuck API documentation">
 
-       <!-- JSDuck should be installed and made available via your PATH. See: https://github.com/senchalabs/jsduck/wiki/Installation -->
         <condition property="jsDuckExecutable" value="jsduck.exe">
             <os family="windows" />
         </condition>
@@ -91,10 +101,8 @@
             <fileset dir="./docs" />
         </delete>
 
-        <!-- For some reason, deleting and re-adding the docs folder often causes a write error. A slight delay usually avoids this. -->
         <sleep seconds="2" />
 
-        <!-- Create updated JSDuck configuration file. -->
         <loadfile property="jsduck.config" srcFile=".jsduck/jsduck.template.json">
             <filterchain>
                 <expandproperties/>
@@ -131,5 +139,7 @@
         <copy dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions/eui/1.0.0">
             <fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />
         </copy>
-    </target>
+    </target>-->
+
+
 </project>

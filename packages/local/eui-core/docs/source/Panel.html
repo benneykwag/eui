@@ -64,7 +64,9 @@
 </span>         * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
-        useRespColumn: true
+        useRespColumn: true,
+
+        usePagingToolbar: false
     },
 
     initComponent: function () {
@@ -72,11 +74,17 @@
 //        me.setHeader();
 //        me.setBottomToolbar();
         me.setTableLayout();
-        if(me.title){
+
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title &amp;&amp; !me.hideHeaderICon) {
             Ext.apply(me, {
                 iconCls: &#39;x-fa fa-pencil-square&#39;
             })
         }
+
         me.callParent(arguments);
         me.on(&#39;afterrender&#39;, function () {
             me.isValid();
@@ -97,6 +105,9 @@
      * @param height
      */
     responsiveColumn : function (ct, width, height) {
+        if(ct.tableColumns == 1){
+            return;
+        }
         if(window.innerWidth &lt; 992) {
             if(ct.getLayout().columns !== 1){
                 ct.beforeColumn =  ct.getLayout().columns;

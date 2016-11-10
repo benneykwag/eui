@@ -86,7 +86,7 @@ Ext.define('eui.grid.Panel', {
 //    ui: 'basicgrid',
 
     localeProperties: ['title'],
-
+    requires: ['Ext.ux.grid.PageSize'],
     mixins: [
         'eui.mixin.Panel'
     ],
@@ -126,7 +126,21 @@ Ext.define('eui.grid.Panel', {
         // defaultButtons에 추가할 버튼을 정의한다.
         otherButtons: null,
 
-        usePagingToolbar: false
+        /**
+         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 페이징 툴바를 표시한다. 보이게 하려면 `true`로 설정한다.
+         */
+        usePagingToolbar: false,
+        /**
+         * @cfg {Boolean} [hideHeaderICon=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
+        hideHeaderICon: false,
+        /**
+         * @cfg {Boolean} [showRowCountStatusBar=`true`]
+         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         */
+        showRowCountStatusBar: true
     },
 
 
@@ -134,7 +148,11 @@ Ext.define('eui.grid.Panel', {
         var me = this;
 
         me.setBottomToolbar();
-        if(me.title){
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title && !me.hideHeaderICon) {
             Ext.apply(me, {
                 iconCls: 'x-fa fa-table'
             })
@@ -174,8 +192,54 @@ Ext.define('eui.grid.Panel', {
     },
 
     onRender: function (cmp) {
+        this.setStatusbar();
         this.setPagingToolbarStore();
         this.callParent(arguments);
+    },
+
+    setStatusbar: function () {
+        var me = this,
+            statusbar = this.down('statusbar[itemId=commonStatus]'),
+            statusbarHandler = function (store) {
+                if (statusbar)
+                    statusbar.down('tbtext[itemId=rowcnt]').setText('Rows : ' + store.getCount());
+            },
+            exceptionHandler = function (conn, response) {
+                if (!response) {
+                    return;
+                }
+                var result = Ext.JSON.decode(response.responseText, true);
+                if (result && !Ext.isEmpty(result.MSG)) {
+                    if (statusbar) {
+                        statusbar.setStatus({
+                            text: result.MSG
+                        });
+                    }
+                }
+
+            },
+            loadHandler = function (store, records, successful, operation) {
+                if(operation){
+                    exceptionHandler(null, operation._response);
+                }
+            };
+
+        if (!me.getUsePagingToolbar()) {
+            if (this.bind && this.bind['store']) {
+                var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
+                if (store && store.getProxy() != null) {//store.getProxy()가 없는경우대비 null체크 같은텝의 두그리드가 같은 store를 사용시 에러발생
+                    store.on('datachanged', statusbarHandler, this);
+                    store.on('load', loadHandler, this);
+                    store.getProxy().on('exception', exceptionHandler, this);
+                }
+
+            } else if (this.store) {
+                this.store.on('datachanged', statusbarHandler, this);
+                this.store.getProxy().on('exception', exceptionHandler, this);
+
+                this.store.on('load', loadHandler, this);
+            }
+        }
     },
 
     /***
@@ -281,10 +345,10 @@ Ext.define('eui.grid.Panel', {
         }
 
         Ext.Msg.show({
-            title: '#{삭제}',
+            title: Util.getLocaleValue('행삭제'),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
-            message: '#{삭제하시겠습니까?}',
+            message: Util.getLocaleValue('RECORD_DELETE'),
             fn: function (btn) {
                 if (btn === 'yes') {
                     // 위치 고민...
@@ -323,7 +387,7 @@ Ext.define('eui.grid.Panel', {
                             me.fireEvent('SPGridRowAdd', me);
                         } else {
                             me.onRowAdd(me, {
-                                randomInt : Ext.Number.randomInt(1, 1000000000000)
+                                randomInt: Ext.Number.randomInt(1, 1000000000000)
                             }, 0, null);
                         }
                     }
@@ -384,15 +448,36 @@ Ext.define('eui.grid.Panel', {
             }
         ];
         var btns = this.applyButtonToolBar(buttons, this.otherButtons);
+        if (Ext.isEmpty(me.dockedItems)) {
+            me.dockedItems = [];
+        }
         if (me.getUsePagingToolbar()) {
-            if (Ext.isEmpty(me.dockedItems)) {
-                me.dockedItems = [];
-            }
             me.dockedItems.push(
                 {
                     xtype: 'pagingtoolbar',
                     dock: 'bottom',
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: [
+                        {
+                            ptype: "pagesize",
+                            pageSize: 50
+                        }
+                    ]
+                }
+            );
+        }else if(me.getShowRowCountStatusBar()){
+            me.dockedItems.push(
+                {
+                    dock: 'bottom',
+                    itemId: 'commonStatus',
+                    xtype: 'statusbar',
+                    items: [
+                        {
+                            xtype: 'tbtext',
+                            itemId: 'rowcnt',
+                            text: 'Rows : 0'
+                        }
+                    ]
                 }
             );
         }

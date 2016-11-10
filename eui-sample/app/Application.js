@@ -6,6 +6,7 @@
 Ext.define('Eui.sample.Application', {
     extend: 'Ext.app.Application',
     requires: [
+        'Ext.ux.statusbar.StatusBar'
     ],
     name: 'Eui.sample',
 

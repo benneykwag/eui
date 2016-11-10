@@ -26,14 +26,14 @@
         "var": "${package.dir}/sass/var,${package.dir}/${toolkit.name}/sass/var",
         "src": "${package.dir}/sass/src,${package.dir}/${toolkit.name}/sass/src"
     },
-    "classpath": "${package.dir}/src,${package.dir}/${toolkit.name}/src",
+    "classpath": "${package.dir}/src,${package.dir}/${toolkit.name}/src,${package.dir}/lib,",
     "overrides": "${package.dir}/overrides,${package.dir}/${toolkit.name}/overrides",
     "requires": [],
     "js":[
-        {
-            "path": "resources/js/REDIPS_table_merge/redips-table.js",
-            "bundle": false
-        }
+//        {
+//            "path": "resources/js/REDIPS_table_merge/redips-table.js",
+//            "bundle": false
+//        }
     ],
     "architect":{
         "compatFrameworks": [
