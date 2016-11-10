@@ -28,7 +28,8 @@
         showReloadBtn: false,
         showModBtn: false,
         showSaveBtn: false,
-        showCloseBtn: false
+        showCloseBtn: false,
+        showGridCount: false
     },
 
     initComponent: function () {
@@ -36,6 +37,13 @@
             owner = this.up(&#39;grid,form&#39;);
         Ext.apply(me, {
             items: [
+                {
+                    xtype: &#39;component&#39;,
+                    itemId: &#39;status&#39;,
+                    tpl: &#39;({count}개)&#39;,
+                    margin : &#39;0 10 0 20&#39;,
+                    hidden: !me.getShowGridCount()
+                },
                 {
                     xtype: &#39;euibutton&#39;,
                     text: &#39;#{행추가}&#39;,
@@ -145,6 +153,14 @@
             ]
         });
         me.callParent(arguments);
+        var store = owner.store;
+        if (owner.bind &amp;&amp; owner.bind[&#39;store&#39;]) {
+            store = owner.bind.store.owner.get(owner.bind.store.stub.path);
+        }
+
+        store.on(&#39;datachanged&#39;, function () {
+            owner.down(&#39;#status&#39;).update({count: store.getTotalCount()});
+        });
     }
 });</pre>
 </body>

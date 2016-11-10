@@ -56,7 +56,7 @@
                     bind: &#39;{&#39;+path+&#39;}&#39;,
                     get: function (value) {
                         var model = this.get(recordVar);
-                        if(model.isModel &amp;&amp; this.get(recordVar).validate().map[name]){
+                        if (model.isModel &amp;&amp; this.get(recordVar).getFields().length &gt; 0 &amp;&amp; (this.get(recordVar).validate().map[name])) {
                             me.allowBlank = false;
                         }
                         var ret = {};

@@ -17,8 +17,27 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">Ext.define(&#39;eui.panel.Panel&#39;, {
     extend: &#39;Ext.panel.Panel&#39;,
-    alias: &#39;widget.euipanel&#39;
-//    ui : &#39;highlight&#39;
+    alias: &#39;widget.euipanel&#39;,
+    cls: &#39;eui-form-table&#39;,
+    config: {
+        usePagingToolbar: false
+    },
+
+    initComponent: function () {
+        var me = this;
+
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title &amp;&amp; !me.hideHeaderICon) {
+            Ext.apply(me, {
+                iconCls: &#39;x-fa fa-pencil-square&#39;
+            })
+        }
+        me.callParent(arguments);
+
+    }
 });</pre>
 </body>
 </html>

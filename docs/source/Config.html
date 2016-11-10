@@ -24,6 +24,8 @@ Ext.define(&#39;eui.Config&#39;, {
 <span id='eui-Config-property-localeCode'>    localeCode : &#39;kr&#39;,
 </span><span id='eui-Config-property-localeValueField'>    localeValueField: &#39;MSG_ID&#39;,
 </span><span id='eui-Config-property-localeDisplayField'>    localeDisplayField : &#39;MSG_LABEL&#39;,
+</span><span id='eui-Config-property-defaultDateFormat'>    defaultDateFormat : &#39;Y.m.d&#39;,
+</span><span id='eui-Config-property-defaultDateTimeFormat'>    defaultDateTimeFormat : &#39;Y.m.d H:i:s&#39;,
 </span>
 <span id='eui-Config-property-localeUrl'>    /***
 </span>     * 메시지 제공용 서버사이드 주소.
@@ -43,9 +45,9 @@ Ext.define(&#39;eui.Config&#39;, {
     initLocaleMessage: function () {
         var me = this,
             store = Ext.create(&#39;Ext.data.Store&#39;, {
-            fields: [],
-            storeId: &#39;i18n&#39;
-        });
+                fields: [],
+                storeId: &#39;i18n&#39;
+            });
         var cfg = {
             pMethod: &#39;GET&#39;,
             url : Config.localeUrl,
@@ -95,16 +97,20 @@ Ext.define(&#39;eui.Config&#39;, {
 
 <span id='eui-Config-property-data'>    data: {
 </span>        message : [
-            {&quot;MSG_ID&quot;: &quot;행추가&quot;, &quot;MSG_LABEL&quot;: &quot;행추가&quot;},
+            {&quot;MSG_ID&quot;: &quot;행추가&quot;, &quot;MSG_LABEL&quot;: &quot;레코드추가&quot;},
             {&quot;MSG_ID&quot;: &quot;행추가아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-plus-square&quot;},
-            {&quot;MSG_ID&quot;: &quot;행삭제&quot;, &quot;MSG_LABEL&quot;: &quot;행삭제&quot;},
+            {&quot;MSG_ID&quot;: &quot;행삭제&quot;, &quot;MSG_LABEL&quot;: &quot;레코드삭제&quot;},
             {&quot;MSG_ID&quot;: &quot;행삭제아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-minus-square&quot;},
             {&quot;MSG_ID&quot;: &quot;등록&quot;, &quot;MSG_LABEL&quot;: &quot;등록&quot;},
             {&quot;MSG_ID&quot;: &quot;등록아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-table&quot;},
             {&quot;MSG_ID&quot;: &quot;수정&quot;, &quot;MSG_LABEL&quot;: &quot;수정&quot;},
             {&quot;MSG_ID&quot;: &quot;수정아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-th&quot;},
             {&quot;MSG_ID&quot;: &quot;저장&quot;, &quot;MSG_LABEL&quot;: &quot;저장&quot;},
-            {&quot;MSG_ID&quot;: &quot;저장아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-save&quot;}
+            {&quot;MSG_ID&quot;: &quot;저장아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-save&quot;},
+            {&quot;MSG_ID&quot;: &quot;CONFIRM&quot;, &quot;MSG_LABEL&quot;: &quot;확인&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DIRTY&quot;, &quot;MSG_LABEL&quot;: &quot;레코드가 수정중 입니다&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DELETE&quot;, &quot;MSG_LABEL&quot;: &quot;레코드를 삭제하시겠습니까.?&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DELETED&quot;, &quot;MSG_LABEL&quot;: &quot;레코드가 삭제되었습니다&quot;}
         ]
     }
 });</pre>
