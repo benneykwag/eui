@@ -539,7 +539,7 @@ Ext.define('eui.Util', {
     getDatasetParam: function (store) {
         var me = store;
         var returnDataset = {
-            deletedData: [],
+//            deletedData: [],
             data: []
         };
 
@@ -586,7 +586,9 @@ Ext.define('eui.Util', {
 
         records = me.getRemovedRecords(), len = records.length;
         for (var i = 0; i < len; i++) {
-            returnDataset.deletedData.push(getRecordData(records[i]));
+            var rtv = getRecordData(records[i]);
+            rtv = Ext.apply(rtv, {'__rowStatus': 'D'});
+            returnDataset.data.push(rtv);
         }
 
         return returnDataset;
@@ -681,11 +683,11 @@ Ext.define('eui.Util', {
     },
     
     init: function(){
-    	Ext.EventManager.on(Ext.isIE ? document : window, 'keydown', function(e, t) {
-    		if (e.getKey() == e.BACKSPACE && ((!/^input$/i.test(t.tagName) && !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
-    			e.stopEvent();
-    		}
-    	});
+//    	Ext.EventManager.on(Ext.isIE ? document : window, 'keydown', function(e, t) {
+//    		if (e.getKey() == e.BACKSPACE && ((!/^input$/i.test(t.tagName) && !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
+//    			e.stopEvent();
+//    		}
+//    	});
     	
     	Ext.getDoc().on("contextmenu", function(ev){ ev.preventDefault();});
     	
