@@ -50,9 +50,12 @@ Ext.define("Ext.ux.exporter.Exporter", {
             if(grid.store_){
                 store = grid.store_;
             }
-//            debugger;
             var columns = Ext.Array.filter(grid.getColumns(), function(col) {
-                return !col.hidden; // && (!col.xtype || col.xtype != "actioncolumn");
+                if(col.hidden || Ext.isEmpty(col.dataIndex)){
+                    return false;
+                }
+                return true;
+//                return !col.hidden || Ext.isEmpty(col.dataIndex); // && (!col.xtype || col.xtype != "actioncolumn");
                 //return !col.hidden; // && (!col.xtype || col.xtype != "actioncolumn");
             });
 
