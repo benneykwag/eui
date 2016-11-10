@@ -192,9 +192,22 @@ Ext.define('eui.grid.Panel', {
     },
 
     onRender: function (cmp) {
-        this.setStatusbar();
-        this.setPagingToolbarStore();
-        this.callParent(arguments);
+        var me = this;
+        me.setStatusbar();
+        me.setPagingToolbarStore();
+        me.callParent(arguments);
+
+        //
+        focusgridrecord = function (record) {
+            me.getSelectionModel().select(record);
+        }
+        if (this.bind && this.bind['store']) {
+            var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
+            store.on('focusgridrecord', focusgridrecord, this);
+
+        } else if (this.store) {
+            this.store.on('focusgridrecord', focusgridrecord, this);
+        }
     },
 
     setStatusbar: function () {

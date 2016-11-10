@@ -5,7 +5,8 @@ Ext.define('Override.data.ProxyStore', {
      * 모델 validat가 false인 경우 메시지를 호출해 알린다.
      */
     recordsValidationCheck: function () {
-        var source = this.getDataSource(),
+        var me = this,
+            source = me.getDataSource(),
             items = source.items,
             len = items.length,
             i,
@@ -13,6 +14,8 @@ Ext.define('Override.data.ProxyStore', {
 
         for (i = 0; i < len; i++) {
             if (!items[i].recordValidationCheck()) {
+                // 문제 레코드를 전달한다.
+                me.fireEvent('focusgridrecord', items[i]);
                 retValue = false;
                 break;
             }
