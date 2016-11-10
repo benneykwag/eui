@@ -33,6 +33,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
                     showModBtn: true,       // 수정 버튼 활성화
                     showSaveBtn: true,      // 저장 버튼 활성화
                     showReloadBtn: true,    // 조회 버튼 활성화
+                    showExcelDownBtn: true,
                     xtype: 'commandtoolbar' // eui.toolbar.Command 클래스
                 }
             ],

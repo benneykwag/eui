@@ -12,7 +12,8 @@ Ext.define('eui.toolbar.Command', {
         showModBtn: false,
         showSaveBtn: false,
         showCloseBtn: false,
-        showGridCount: false
+        showGridCount: false,
+        showExcelDownBtn: false
     },
 
     initComponent: function () {
@@ -114,6 +115,17 @@ Ext.define('eui.toolbar.Command', {
                             }
                         }
                     }
+                },
+                {
+                    text: '#{엑셀다운로드}',
+                    iconCls: '#{엑셀다운로드아이콘}',
+                    hidden: !me.getShowExcelDownBtn(),
+                    xtype: 'exporterbutton'
+//                    targetGrid: owner
+                    //Or you can use
+                    //component: someGrid
+                    //component: someTree
+                    //component: '#someGridItemId'
                 },
                 {
                     xtype: 'euibutton',

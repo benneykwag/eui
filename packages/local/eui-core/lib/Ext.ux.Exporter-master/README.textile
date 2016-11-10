@@ -1,0 +1,43 @@
+h1. Ext.ux.Exporter
+
+h2. About
+
+p. Exporter is a generic export class which takes any Ext.data.Store-based component (e.g. grids and similar) and exports the data in any format.
+
+p. Exporter can work both client-side and server-side(only if browser doesn't support client side save).  
+
+p. It uses a Formatter classes to generate a document (.xls, .csv etc) which is then used to create a Blob. With this blob url you can save file locally in browser. 
+If browser doesn't support blob, you can either open document in new window with data: uri or download remotely by sending data to server
+
+h2. Installation
+
+* Download the latest version from here and copy it into your ux/exporter folder.
+
+* Include "Ext.ux.exporter.Exporter" in requires of your App
+
+* Create an instance of ExporterButton with required configs
+
+h2. Usage
+
+p. The most common use case for the Exporter is exporting a grid to CSV/Excel, which is as simple as doing the following:
+
+bc.. var grid = new Ext.grid.GridPanel({
+  store: someStore,
+  tbar : [
+    {
+      xtype: 'exporterbutton',
+      store: someStore
+	//Or you can use
+      //component: someGrid
+      //component: someTree
+      //component: '#someGridItemId'
+    }
+  ],
+  //your normal grid config goes here
+});
+
+p. The provided 'exportbutton' is just a specialised Ext.Button subclass which uses Ext.ux.exporter.FileSaver to save file locally or download remotely.  
+
+h2. Demo
+
+https://fiddle.sencha.com/#fiddle/6st
