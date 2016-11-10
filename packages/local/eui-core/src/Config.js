@@ -90,6 +90,8 @@ Ext.define('eui.Config', {
             {"MSG_ID": "수정아이콘", "MSG_LABEL": "x-fa fa-th"},
             {"MSG_ID": "저장", "MSG_LABEL": "저장"},
             {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"},
+            {"MSG_ID": "조회", "MSG_LABEL": "조회"},
+            {"MSG_ID": "조회아이콘", "MSG_LABEL": "x-fa fa-search"},
             {"MSG_ID": "CONFIRM", "MSG_LABEL": "확인"},
             {"MSG_ID": "RECORD_DIRTY", "MSG_LABEL": "레코드가 수정중 입니다"},
             {"MSG_ID": "RECORD_DELETE", "MSG_LABEL": "레코드를 삭제하시겠습니까.?"},

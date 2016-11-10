@@ -103,7 +103,7 @@ Ext.define('eui.toolbar.Command', {
                 {
                     xtype: 'euibutton',
                     text: '#{조회}',
-                    iconCls: '#{저장아이콘}',
+                    iconCls: '#{조회아이콘}',
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function () {
