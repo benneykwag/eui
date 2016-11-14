@@ -14,36 +14,43 @@ Ext.define('Eui.sample.view.main.Main', {
         'Ext.window.MessageBox',
         'Eui.sample.view.main.MainController',
         'Eui.sample.view.main.MainModel',
-        'Eui.sample.view.main.List'
+        'Eui.sample.view.frame.Header',
+        'Eui.sample.view.frame.SideBar',
+        'Eui.sample.view.template.TMP001.TMP001V'
     ],
 
     controller: 'main',
     viewModel: {
         type:'main'
     },
-    layout: 'border',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
     items: [
         {
-            title: 'Menu#{행추가}',
-            region: 'west',
-            xtype: 'leftmenu',
-            margin: '5 0 0 5',
-            width: 200,
-            collapsed: true,
-            collapsible: true, // make collapsible
-            itemId: 'west-region-container',
-            split: true
+            xtype: 'simheader'
         },
         {
-            title: 'Main View',
-            region: 'center', // center region is required, no width/height
-            // specified
-            xtype: 'tabpanel',
-            itemId: 'maintab',
-            margin: '5 5 0 0',
+            flex: 1,
+            xtype: 'container',
+            layout: 'border',
             items: [
                 {
-                    xtype: 'TMP001V'
+                    xtype: 'sidebar',
+                    region: 'west'
+                },
+                {
+                    xtype: 'tabpanel',
+                    id : 'contentPanel',
+                    region: 'center',
+                    items: [
+                        {
+                            title: 'HOME',
+                            xtype: 'TMP001V'
+                        }
+                    ]
                 }
             ]
         }

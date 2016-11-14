@@ -6,11 +6,31 @@ Ext.define('Eui.sample.view.main.MainModel', {
 
     alias: 'viewmodel.main',
 
-    data: {
-        name: 'Eui.sample',
-
-        loremIpsum: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    stores: {
+        shortcuts: {
+            fields: [
+                { name: 'name' },
+                { name: 'iconCls' },
+                { name: 'module' },
+                'CHILD_YN',
+                'CLS',
+                'CODE',
+                'DSKT_CD',
+                'DSKT_SQ',
+                'HEIGHT',
+                'ICONCLS',
+                'ID',
+                'LEVEL',
+                'MAXIMIZABLE',
+                'ORDER_SEQ',
+                'PCODE',
+                'RESIZABLE',
+                'SCLASS',
+                'SHOTCUT',
+                'SWIDGET',
+                'TEXT',
+                'WIDTH'
+            ]
+        }
     }
-
-    //TODO - add data, formulas and/or methods to support your view
 });

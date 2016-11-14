@@ -7880,11 +7880,13 @@ Ext.define("Ext.ux.exporter.Exporter", {
             if (grid.store_) {
                 store = grid.store_;
             }
-            //            debugger;
             var columns = Ext.Array.filter(grid.getColumns(), function(col) {
-                    return !col.hidden;
+                    if (col.hidden || Ext.isEmpty(col.dataIndex)) {
+                        return false;
+                    }
+                    return true;
                 });
-            // && (!col.xtype || col.xtype != "actioncolumn");
+            //                return !col.hidden || Ext.isEmpty(col.dataIndex); // && (!col.xtype || col.xtype != "actioncolumn");
             //return !col.hidden; // && (!col.xtype || col.xtype != "actioncolumn");
             Ext.applyIf(config, {
                 title: grid.title,
