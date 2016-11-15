@@ -109,6 +109,3 @@ This area is intended for overrides like these:
         ...
     });
 
-Such overrides, while automatically required, will only be included if their target
-class ("Ext.foo.Bar" in this case) is also required. This simplifies applying
-patches or extensions to other classes.
