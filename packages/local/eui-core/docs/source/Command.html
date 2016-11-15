@@ -29,7 +29,8 @@
         showModBtn: false,
         showSaveBtn: false,
         showCloseBtn: false,
-        showGridCount: false
+        showGridCount: false,
+        showExcelDownBtn: false
     },
 
     initComponent: function () {
@@ -120,7 +121,7 @@
                 {
                     xtype: &#39;euibutton&#39;,
                     text: &#39;#{조회}&#39;,
-                    iconCls: &#39;#{저장아이콘}&#39;,
+                    iconCls: &#39;#{조회아이콘}&#39;,
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function () {
@@ -131,6 +132,17 @@
                             }
                         }
                     }
+                },
+                {
+                    text: &#39;#{엑셀다운로드}&#39;,
+                    iconCls: &#39;#{엑셀다운로드아이콘}&#39;,
+                    hidden: !me.getShowExcelDownBtn(),
+                    xtype: &#39;exporterbutton&#39;
+//                    targetGrid: owner
+                    //Or you can use
+                    //component: someGrid
+                    //component: someTree
+                    //component: &#39;#someGridItemId&#39;
                 },
                 {
                     xtype: &#39;euibutton&#39;,
