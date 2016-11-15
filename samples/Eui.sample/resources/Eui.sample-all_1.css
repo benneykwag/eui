@@ -2238,38 +2238,6 @@ the height of a multi-line element */
 .x-box-scroller-plain {
     background-color: transparent !important;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:4 */
-.x-autowidth-table .x-grid-item-container {
-    overflow: visible;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:8 */
-.x-autowidth-table .x-grid-item {
-    table-layout: auto;
-    width: auto !important;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:14 */
-.x-tree-view {
-    overflow: hidden;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:18 */
-.x-tree-elbow-img,
-.x-tree-icon {
-    display: inline-block;
-    text-align: center;
-    background-repeat: no-repeat;
-    background-position: 0 center;
-    vertical-align: top;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:27 */
-.x-tree-checkbox {
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/src/tree/View.scss:33 */
-.x-tree-animator-wrap {
-    overflow: hidden;
-}
 /* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/scroll/Indicator.scss:1 */
 .x-scroll-indicator {
     position: absolute;
@@ -11166,11 +11134,6 @@ a.x-color-picker-item:hover {
     padding-left: 5px;
     padding-right: 5px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/grid/plugin/CellEditing.scss:3 */
-.x-tree-cell-editor .x-form-text {
-    padding-left: 2px;
-    padding-right: 2px;
-}
 /* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/layout/container/Border.scss:5 */
 body.x-border-layout-ct,
 div.x-border-layout-ct {
@@ -13232,124 +13195,6 @@ div.x-border-layout-ct {
     /*<if slicer>*/
     display: none;
     content: "x-slicer:, bg:url(images/tab-bar/tab-bar-default-right-bg.gif), stretch:left" !important;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:1 */
-.x-tree-expander {
-    cursor: pointer;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:23 */
-.x-tree-arrows .x-tree-expander {
-    background-image: url(images/tree/arrows.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:27 */
-.x-tree-arrows .x-tree-expander-over .x-tree-expander {
-    background-position: -32px center;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:31 */
-.x-tree-arrows .x-grid-tree-node-expanded .x-tree-expander {
-    background-position: -16px center;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:35 */
-.x-tree-arrows .x-grid-tree-node-expanded .x-tree-expander-over .x-tree-expander {
-    background-position: -48px center;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:77 */
-.x-tree-lines .x-tree-elbow {
-    background-image: url(images/tree/elbow.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:81 */
-.x-tree-lines .x-tree-elbow-end {
-    background-image: url(images/tree/elbow-end.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:85 */
-.x-tree-lines .x-tree-elbow-plus {
-    background-image: url(images/tree/elbow-plus.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:89 */
-.x-tree-lines .x-tree-elbow-end-plus {
-    background-image: url(images/tree/elbow-end-plus.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:93 */
-.x-tree-lines .x-grid-tree-node-expanded .x-tree-elbow-plus {
-    background-image: url(images/tree/elbow-minus.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:97 */
-.x-tree-lines .x-grid-tree-node-expanded .x-tree-elbow-end-plus {
-    background-image: url(images/tree/elbow-end-minus.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:101 */
-.x-tree-lines .x-tree-elbow-line {
-    background-image: url(images/tree/elbow-line.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:137 */
-.x-tree-no-lines .x-tree-expander {
-    background-image: url(images/tree/elbow-plus-nl.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:141 */
-.x-tree-no-lines .x-grid-tree-node-expanded .x-tree-expander {
-    background-image: url(images/tree/elbow-minus-nl.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:157 */
-.x-tree-icon {
-    width: 16px;
-    height: 20px;
-    line-height: 20px;
-    color: gray;
-    font-size: 16px;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:165 */
-.x-tree-elbow-img {
-    width: 16px;
-    height: 20px;
-    line-height: 20px;
-    margin-right: 0;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:179 */
-.x-tree-icon,
-.x-tree-elbow-img,
-.x-tree-checkbox {
-    margin-top: -3px;
-    margin-bottom: -4px;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:189 */
-.x-tree-icon-leaf {
-    background-image: url(images/tree/leaf.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:204 */
-.x-tree-icon-parent {
-    background-image: url(images/tree/folder.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:225 */
-.x-tree-icon-parent-expanded {
-    background-image: url(images/tree/folder-open.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:236 */
-.x-tree-icon-custom {
-    background-image: none;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:252 */
-.x-tree-checkbox {
-    margin-right: 3px;
-    top: 4px;
-    width: 13px;
-    height: 13px;
-    background-image: url(images/form/checkbox.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:272 */
-.x-tree-checkbox-checked {
-    background-position: 0 -13px;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:280 */
-.x-grid-tree-loading .x-tree-icon {
-    background-image: url(images/tree/loading.gif);
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:290 */
-.x-tree-node-text {
-    padding-left: 3px;
-}
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tree/View.scss:302 */
-.x-grid-cell-inner-treecolumn {
-    padding: 3px 6px 4px 0;
 }
 /* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-classic/sass/src/dom/Element.scss:2 */
 .x-box-tl {
@@ -16224,4 +16069,152 @@ div.x-border-layout-ct {
 /* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:662 */
 .fa-amazon:before {
     content: "\f270" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:663 */
+.fa-calendar-plus-o:before {
+    content: "\f271" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:664 */
+.fa-calendar-minus-o:before {
+    content: "\f272" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:665 */
+.fa-calendar-times-o:before {
+    content: "\f273" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:666 */
+.fa-calendar-check-o:before {
+    content: "\f274" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:667 */
+.fa-industry:before {
+    content: "\f275" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:668 */
+.fa-map-pin:before {
+    content: "\f276" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:669 */
+.fa-map-signs:before {
+    content: "\f277" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:670 */
+.fa-map-o:before {
+    content: "\f278" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:671 */
+.fa-map:before {
+    content: "\f279" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:672 */
+.fa-commenting:before {
+    content: "\f27a" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:673 */
+.fa-commenting-o:before {
+    content: "\f27b" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:674 */
+.fa-houzz:before {
+    content: "\f27c" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:675 */
+.fa-vimeo:before {
+    content: "\f27d" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:676 */
+.fa-black-tie:before {
+    content: "\f27e" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/etc/_icons.scss:677 */
+.fa-fonticons:before {
+    content: "\f280" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/packages/font-awesome/sass/src/all.scss:20 */
+.x-fa:before {
+    font-family: FontAwesome !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:187 */
+.x-tab-navigation-top {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    padding: 24px 24px 24px 24px;
+    border-width: 0;
+    border-style: solid;
+    background-color: transparent;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:237 */
+.x-tab-navigation-top-mc {
+    background-color: transparent;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:264 */
+.x-nbr .x-tab-navigation-top {
+    padding: 0 !important;
+    border-width: 0 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:281 */
+.x-tab-navigation-top-frameInfo {
+    font-family: th-0-0-0-0-0-0-0-0-24-24-24-24;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:347 */
+.x-tab-navigation-top-tl {
+    background-position: 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:351 */
+.x-tab-navigation-top-tr {
+    background-position: right 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:355 */
+.x-tab-navigation-top-bl {
+    background-position: 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:359 */
+.x-tab-navigation-top-br {
+    background-position: right 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:363 */
+.x-tab-navigation-top-ml {
+    background-position: 0 top;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:371 */
+.x-tab-navigation-top-mr {
+    background-position: right top;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:379 */
+.x-tab-navigation-top-tc {
+    background-position: 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:383 */
+.x-tab-navigation-top-bc {
+    background-position: 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:388 */
+.x-tab-navigation-top-tr,
+.x-tab-navigation-top-br,
+.x-tab-navigation-top-mr {
+    padding-right: 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:394 */
+.x-tab-navigation-top-tl,
+.x-tab-navigation-top-bl,
+.x-tab-navigation-top-ml {
+    padding-left: 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:400 */
+.x-tab-navigation-top-tc {
+    height: 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/frame.scss:403 */
+.x-tab-navigation-top-bc {
+    height: 0;
 }

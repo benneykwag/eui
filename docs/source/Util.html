@@ -556,7 +556,7 @@
     getDatasetParam: function (store) {
         var me = store;
         var returnDataset = {
-            deletedData: [],
+//            deletedData: [],
             data: []
         };
 
@@ -603,7 +603,9 @@
 
         records = me.getRemovedRecords(), len = records.length;
         for (var i = 0; i &lt; len; i++) {
-            returnDataset.deletedData.push(getRecordData(records[i]));
+            var rtv = getRecordData(records[i]);
+            rtv = Ext.apply(rtv, {&#39;__rowStatus&#39;: &#39;D&#39;});
+            returnDataset.data.push(rtv);
         }
 
         return returnDataset;
@@ -698,11 +700,11 @@
     },
     
     init: function(){
-    	Ext.EventManager.on(Ext.isIE ? document : window, &#39;keydown&#39;, function(e, t) {
-    		if (e.getKey() == e.BACKSPACE &amp;&amp; ((!/^input$/i.test(t.tagName) &amp;&amp; !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
-    			e.stopEvent();
-    		}
-    	});
+//    	Ext.EventManager.on(Ext.isIE ? document : window, &#39;keydown&#39;, function(e, t) {
+//    		if (e.getKey() == e.BACKSPACE &amp;&amp; ((!/^input$/i.test(t.tagName) &amp;&amp; !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
+//    			e.stopEvent();
+//    		}
+//    	});
     	
     	Ext.getDoc().on(&quot;contextmenu&quot;, function(ev){ ev.preventDefault();});
     	

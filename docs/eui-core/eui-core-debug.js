@@ -126,13 +126,16 @@ Ext.define('Override.data.ProxyStore', {
      * 모델 validat가 false인 경우 메시지를 호출해 알린다.
      */
     recordsValidationCheck: function() {
-        var source = this.getDataSource(),
+        var me = this,
+            source = me.getDataSource(),
             items = source.items,
             len = items.length,
             i,
             retValue = true;
         for (i = 0; i < len; i++) {
             if (!items[i].recordValidationCheck()) {
+                // 문제 레코드를 전달한다.
+                me.fireEvent('focusgridrecord', items[i]);
                 retValue = false;
                 break;
             }
@@ -355,8 +358,16 @@ Ext.define('eui.Config', {
     data: {
         message: [
             {
+                "MSG_ID": "엑셀다운로드",
+                "MSG_LABEL": "엑셀다운로드"
+            },
+            {
+                "MSG_ID": "엑셀다운로드아이콘",
+                "MSG_LABEL": "x-fa fa-download"
+            },
+            {
                 "MSG_ID": "행추가",
-                "MSG_LABEL": "레코드추가"
+                "MSG_LABEL": "추가"
             },
             {
                 "MSG_ID": "행추가아이콘",
@@ -364,7 +375,7 @@ Ext.define('eui.Config', {
             },
             {
                 "MSG_ID": "행삭제",
-                "MSG_LABEL": "레코드삭제"
+                "MSG_LABEL": "삭제"
             },
             {
                 "MSG_ID": "행삭제아이콘",
@@ -393,6 +404,14 @@ Ext.define('eui.Config', {
             {
                 "MSG_ID": "저장아이콘",
                 "MSG_LABEL": "x-fa fa-save"
+            },
+            {
+                "MSG_ID": "조회",
+                "MSG_LABEL": "조회"
+            },
+            {
+                "MSG_ID": "조회아이콘",
+                "MSG_LABEL": "x-fa fa-search"
             },
             {
                 "MSG_ID": "CONFIRM",
@@ -935,7 +954,7 @@ Ext.define('eui.Util', {
     getDatasetParam: function(store) {
         var me = store;
         var returnDataset = {
-                deletedData: [],
+                //            deletedData: [],
                 data: []
             };
         function writeValue(data, field, record) {
@@ -981,7 +1000,11 @@ Ext.define('eui.Util', {
         }
         records = me.getRemovedRecords() , len = records.length;
         for (var i = 0; i < len; i++) {
-            returnDataset.deletedData.push(getRecordData(records[i]));
+            var rtv = getRecordData(records[i]);
+            rtv = Ext.apply(rtv, {
+                '__rowStatus': 'D'
+            });
+            returnDataset.data.push(rtv);
         }
         return returnDataset;
     },
@@ -1070,11 +1093,11 @@ Ext.define('eui.Util', {
         this.init();
     },
     init: function() {
-        Ext.EventManager.on(Ext.isIE ? document : window, 'keydown', function(e, t) {
-            if (e.getKey() == e.BACKSPACE && ((!/^input$/i.test(t.tagName) && !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
-                e.stopEvent();
-            }
-        });
+        //    	Ext.EventManager.on(Ext.isIE ? document : window, 'keydown', function(e, t) {
+        //    		if (e.getKey() == e.BACKSPACE && ((!/^input$/i.test(t.tagName) && !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
+        //    			e.stopEvent();
+        //    		}
+        //    	});
         Ext.getDoc().on("contextmenu", function(ev) {
             ev.preventDefault();
         });
@@ -5447,9 +5470,20 @@ Ext.define('eui.grid.Panel', {
         Ext.get(nodeId).select('.x-grid-row-checker').elements[0].click();
     },
     onRender: function(cmp) {
-        this.setStatusbar();
-        this.setPagingToolbarStore();
-        this.callParent(arguments);
+        var me = this;
+        me.setStatusbar();
+        me.setPagingToolbarStore();
+        me.callParent(arguments);
+        //
+        focusgridrecord = function(record) {
+            me.getSelectionModel().select(record);
+        };
+        if (this.bind && this.bind['store']) {
+            var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
+            store.on('focusgridrecord', focusgridrecord, this);
+        } else if (this.store) {
+            this.store.on('focusgridrecord', focusgridrecord, this);
+        }
     },
     setStatusbar: function() {
         var me = this,
@@ -6212,7 +6246,8 @@ Ext.define('eui.toolbar.Command', {
         showModBtn: false,
         showSaveBtn: false,
         showCloseBtn: false,
-        showGridCount: false
+        showGridCount: false,
+        showExcelDownBtn: false
     },
     initComponent: function() {
         var me = this,
@@ -6302,7 +6337,7 @@ Ext.define('eui.toolbar.Command', {
                 {
                     xtype: 'euibutton',
                     text: '#{조회}',
-                    iconCls: '#{저장아이콘}',
+                    iconCls: '#{조회아이콘}',
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
                         click: function() {
@@ -6314,6 +6349,17 @@ Ext.define('eui.toolbar.Command', {
                         }
                     }
                 },
+                {
+                    text: '#{엑셀다운로드}',
+                    iconCls: '#{엑셀다운로드아이콘}',
+                    hidden: !me.getShowExcelDownBtn(),
+                    xtype: 'exporterbutton'
+                },
+                //                    targetGrid: owner
+                //Or you can use
+                //component: someGrid
+                //component: someTree
+                //component: '#someGridItemId'
                 {
                     xtype: 'euibutton',
                     text: '#{닫기}',
@@ -7046,4 +7092,2562 @@ Ext.define('eui.window.Notification', {
         }
     }
 });
+
+/**
+ * @class Ext.ux.exporter.Formatter
+ * @author Ed Spencer (http://edspencer.net)
+ * @cfg {Ext.data.Store} store The store to export
+ */
+Ext.define("Ext.ux.exporter.Formatter", {
+    /**
+     * Performs the actual formatting. This must be overridden by a subclass
+     */
+    format: Ext.emptyFn,
+    constructor: function(config) {
+        config = config || {};
+        Ext.applyIf(config, {});
+    }
+});
+
+/**
+ * @class Ext.ux.exporter.csvFormatter.CsvFormatter
+ * @extends Ext.ux.Exporter.Formatter
+ * Specialised Format class for outputting .csv files
+ * modification from Yogesh to extract value if renderers returning html
+ */
+Ext.define("Ext.ux.exporter.csvFormatter.CsvFormatter", {
+    extend: "Ext.ux.exporter.Formatter",
+    mimeType: 'text/csv',
+    charset: 'UTF-8',
+    separator: ",",
+    extension: "csv",
+    format: function(store, config) {
+        this.columns = config.columns || (store.fields ? store.fields.items : store.model.prototype.fields.items);
+        this.parserDiv = document.createElement("div");
+        return this.getHeaders() + "\n" + this.getRows(store);
+    },
+    getHeaders: function(store) {
+        var columns = [],
+            title;
+        Ext.each(this.columns, function(col) {
+            var title;
+            if (col.getXType() != "rownumberer") {
+                if (col.text != undefined) {
+                    title = col.text;
+                } else if (col.name) {
+                    title = col.name.replace(/_/g, " ");
+                    title = Ext.String.capitalize(title);
+                }
+                columns.push(title);
+            }
+        }, this);
+        return columns.join(this.separator);
+    },
+    getRows: function(store) {
+        var rows = [];
+        store.each(function(record, index) {
+            rows.push(this.getCell(record, index));
+        }, this);
+        return rows.join("\n");
+    },
+    getCell: function(record, index) {
+        var cells = [];
+        Ext.each(this.columns, function(col) {
+            var name = col.name || col.dataIndex || col.stateId;
+            if (name && col.getXType() != "rownumberer") {
+                if (Ext.isFunction(col.renderer)) {
+                    var value = col.renderer(record.get(name), {}, record);
+                    //to handle specific case if renderer returning html(img tags inside div)
+                    this.parserDiv.innerHTML = value;
+                    var values = [];
+                    var divEls = this.parserDiv.getElementsByTagName('div');
+                    if (divEls && divEls.length > 0) {
+                        Ext.each(divEls, function(divEl) {
+                            var innerValues = [];
+                            var imgEls = divEl.getElementsByTagName('img');
+                            Ext.each(imgEls, function(imgEl) {
+                                innerValues.push(imgEl.getAttribute('title'));
+                            });
+                            innerValues.push(divEl.innerText || divEl.textContent);
+                            values.push(innerValues.join(':'));
+                        });
+                    } else {
+                        values.push(this.parserDiv.innerText || this.parserDiv.textContent);
+                    }
+                    value = values.join('\n');
+                } else {
+                    var value = record.get(name);
+                }
+                cells.push("\"" + value + "\"");
+            }
+        }, this);
+        return cells.join(this.separator);
+    }
+});
+
+/**
+ * @class Ext.ux.exporter.excelFormatter.Cell
+ * @extends Object
+ * Represents a single cell in a worksheet
+ */
+Ext.define("Ext.ux.exporter.excelFormatter.Cell", {
+    constructor: function(config) {
+        Ext.applyIf(config, {
+            type: "String"
+        });
+        Ext.apply(this, config);
+        Ext.ux.exporter.excelFormatter.Cell.superclass.constructor.apply(this, arguments);
+    },
+    render: function() {
+        return this.tpl.apply(this);
+    },
+    tpl: new Ext.XTemplate('<ss:Cell ss:StyleID="{style}">', '<ss:Data ss:Type="{type}">{value}</ss:Data>', '</ss:Cell>')
+});
+
+/**
+ * @class Ext.ux.exporter.excelFormatter.ExcelFormatter
+ * @extends Ext.ux.exporter.Formatter
+ * Specialised Format class for outputting .xls files
+ */
+Ext.define("Ext.ux.exporter.excelFormatter.ExcelFormatter", {
+    extend: "Ext.ux.exporter.Formatter",
+    uses: [
+        "Ext.ux.exporter.excelFormatter.Cell",
+        "Ext.ux.exporter.excelFormatter.Style",
+        "Ext.ux.exporter.excelFormatter.Worksheet",
+        "Ext.ux.exporter.excelFormatter.Workbook"
+    ],
+    //contentType: 'data:application/vnd.ms-excel;base64,',
+    //contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8",
+    //mimeType: "application/vnd.ms-excel",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //charset:"base64",
+    charset: "UTF-8",
+    extension: "xls",
+    format: function(store, config) {
+        var workbook = new Ext.ux.exporter.excelFormatter.Workbook(config);
+        workbook.addWorksheet(store, config || {});
+        return workbook.render();
+    }
+});
+
+/**
+ * @class Ext.ux.exporter.excelFormatter.Style
+ * @extends Object
+ * Represents a style declaration for a Workbook (this is like defining CSS rules). Example:
+ *
+ * new Ext.ux.exporter.excelFormatter.Style({
+ *   attributes: [
+ *     {
+ *       name: "Alignment",
+ *       properties: [
+ *         {name: "Vertical", value: "Top"},
+ *         {name: "WrapText", value: "1"}
+ *       ]
+ *     },
+ *     {
+ *       name: "Borders",
+ *       children: [
+ *         name: "Border",
+ *         properties: [
+ *           {name: "Color", value: "#e4e4e4"},
+ *           {name: "Weight", value: "1"}
+ *         ]
+ *       ]
+ *     }
+ *   ]
+ * })
+ *
+ * @cfg {String} id The ID of this style (required)
+ * @cfg {Array} attributes The attributes for this style
+ * @cfg {String} parentStyle The (optional parentStyle ID)
+ */
+Ext.define("Ext.ux.exporter.excelFormatter.Style", {
+    constructor: function(config) {
+        config = config || {};
+        Ext.apply(this, config, {
+            parentStyle: '',
+            attributes: []
+        });
+        Ext.ux.exporter.excelFormatter.Style.superclass.constructor.apply(this, arguments);
+        if (this.id == undefined)  {
+            throw new Error("An ID must be provided to Style");
+        }
+        
+        this.preparePropertyStrings();
+    },
+    /**
+   * Iterates over the attributes in this style, and any children they may have, creating property
+   * strings on each suitable for use in the XTemplate
+   */
+    preparePropertyStrings: function() {
+        Ext.each(this.attributes, function(attr, index) {
+            this.attributes[index].propertiesString = this.buildPropertyString(attr);
+            this.attributes[index].children = attr.children || [];
+            Ext.each(attr.children, function(child, childIndex) {
+                this.attributes[index].children[childIndex].propertiesString = this.buildPropertyString(child);
+            }, this);
+        }, this);
+    },
+    /**
+   * Builds a concatenated property string for a given attribute, suitable for use in the XTemplate
+   */
+    buildPropertyString: function(attribute) {
+        var propertiesString = "";
+        Ext.each(attribute.properties || [], function(property) {
+            propertiesString += Ext.String.format('ss:{0}="{1}" ', property.name, property.value);
+        }, this);
+        return propertiesString;
+    },
+    render: function() {
+        return this.tpl.apply(this);
+    },
+    tpl: new Ext.XTemplate('<tpl if="parentStyle.length == 0">', '<ss:Style ss:ID="{id}">', '</tpl>', '<tpl if="parentStyle.length != 0">', '<ss:Style ss:ID="{id}" ss:Parent="{parentStyle}">', '</tpl>', '<tpl for="attributes">', '<tpl if="children.length == 0">', '<ss:{name} {propertiesString} />', '</tpl>', '<tpl if="children.length != 0">', '<ss:{name} {propertiesString}>', '<tpl for="children">', '<ss:{name} {propertiesString} />', '</tpl>', '</ss:{name}>', '</tpl>', '</tpl>', '</ss:Style>')
+});
+
+/**
+ * @class Ext.ux.exporter.excelFormatter.Workbook
+ * @extends Object
+ * Represents an Excel workbook
+ */
+Ext.define("Ext.ux.exporter.excelFormatter.Workbook", {
+    constructor: function(config) {
+        config = config || {};
+        Ext.apply(this, config, {
+            /**
+       * @property title
+       * @type String
+       * The title of the workbook (defaults to "Workbook")
+       */
+            title: "Workbook",
+            /**
+       * @property worksheets
+       * @type Array
+       * The array of worksheets inside this workbook
+       */
+            worksheets: [],
+            /**
+       * @property compileWorksheets
+       * @type Array
+       * Array of all rendered Worksheets
+       */
+            compiledWorksheets: [],
+            /**
+       * @property cellBorderColor
+       * @type String
+       * The colour of border to use for each Cell
+       */
+            cellBorderColor: "#e4e4e4",
+            /**
+       * @property styles
+       * @type Array
+       * The array of Ext.ux.Exporter.ExcelFormatter.Style objects attached to this workbook
+       */
+            styles: [],
+            /**
+       * @property compiledStyles
+       * @type Array
+       * Array of all rendered Ext.ux.Exporter.ExcelFormatter.Style objects for this workbook
+       */
+            compiledStyles: [],
+            /**
+       * @property hasDefaultStyle
+       * @type Boolean
+       * True to add the default styling options to all cells (defaults to true)
+       */
+            hasDefaultStyle: true,
+            /**
+       * @property hasStripeStyles
+       * @type Boolean
+       * True to add the striping styles (defaults to true)
+       */
+            hasStripeStyles: true,
+            windowHeight: 9000,
+            windowWidth: 50000,
+            protectStructure: false,
+            protectWindows: false
+        });
+        if (this.hasDefaultStyle)  {
+            this.addDefaultStyle();
+        }
+        
+        if (this.hasStripeStyles)  {
+            this.addStripedStyles();
+        }
+        
+        this.addTitleStyle();
+        this.addHeaderStyle();
+    },
+    render: function() {
+        this.compileStyles();
+        this.joinedCompiledStyles = this.compiledStyles.join("");
+        this.compileWorksheets();
+        this.joinedWorksheets = this.compiledWorksheets.join("");
+        return this.tpl.apply(this);
+    },
+    /**
+   * Adds a worksheet to this workbook based on a store and optional config
+   * @param {Ext.data.Store} store The store to initialize the worksheet with
+   * @param {Object} config Optional config object
+   * @return {Ext.ux.Exporter.ExcelFormatter.Worksheet} The worksheet
+   */
+    addWorksheet: function(store, config) {
+        var worksheet = new Ext.ux.exporter.excelFormatter.Worksheet(store, config);
+        this.worksheets.push(worksheet);
+        return worksheet;
+    },
+    /**
+   * Adds a new Ext.ux.Exporter.ExcelFormatter.Style to this Workbook
+   * @param {Object} config The style config, passed to the Style constructor (required)
+   */
+    addStyle: function(config) {
+        var style = new Ext.ux.exporter.excelFormatter.Style(config || {});
+        this.styles.push(style);
+        return style;
+    },
+    /**
+   * Compiles each Style attached to this Workbook by rendering it
+   * @return {Array} The compiled styles array
+   */
+    compileStyles: function() {
+        this.compiledStyles = [];
+        Ext.each(this.styles, function(style) {
+            this.compiledStyles.push(style.render());
+        }, this);
+        return this.compiledStyles;
+    },
+    /**
+   * Compiles each Worksheet attached to this Workbook by rendering it
+   * @return {Array} The compiled worksheets array
+   */
+    compileWorksheets: function() {
+        this.compiledWorksheets = [];
+        Ext.each(this.worksheets, function(worksheet) {
+            this.compiledWorksheets.push(worksheet.render());
+        }, this);
+        return this.compiledWorksheets;
+    },
+    tpl: new Ext.XTemplate('<?xml version="1.0" encoding="utf-8"?>', '<ss:Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:o="urn:schemas-microsoft-com:office:office">', '<o:DocumentProperties>', '<o:Title>{title}</o:Title>', '</o:DocumentProperties>', '<x:ExcelWorkbook>', '<x:WindowHeight>{windowHeight}</x:WindowHeight>', '<x:WindowWidth>{windowWidth}</x:WindowWidth>', '<x:ProtectStructure>{protectStructure}</x:ProtectStructure>', '<x:ProtectWindows>{protectWindows}</x:ProtectWindows>', '</x:ExcelWorkbook>', '<ss:Styles>', '{joinedCompiledStyles}', '</ss:Styles>', '{joinedWorksheets}', '</ss:Workbook>'),
+    /**
+   * Adds the default Style to this workbook. This sets the default font face and size, as well as cell borders
+   */
+    addDefaultStyle: function() {
+        var borderProperties = [
+                {
+                    name: "Color",
+                    value: this.cellBorderColor
+                },
+                {
+                    name: "Weight",
+                    value: "1"
+                },
+                {
+                    name: "LineStyle",
+                    value: "Continuous"
+                }
+            ];
+        this.addStyle({
+            id: 'Default',
+            attributes: [
+                {
+                    name: "Alignment",
+                    properties: [
+                        {
+                            name: "Vertical",
+                            value: "Top"
+                        },
+                        {
+                            name: "WrapText",
+                            value: "1"
+                        }
+                    ]
+                },
+                {
+                    name: "Font",
+                    properties: [
+                        {
+                            name: "FontName",
+                            value: "arial"
+                        },
+                        {
+                            name: "Size",
+                            value: "10"
+                        }
+                    ]
+                },
+                {
+                    name: "Interior"
+                },
+                {
+                    name: "NumberFormat"
+                },
+                {
+                    name: "Protection"
+                },
+                {
+                    name: "Borders",
+                    children: [
+                        {
+                            name: "Border",
+                            properties: [
+                                {
+                                    name: "Position",
+                                    value: "Top"
+                                }
+                            ].concat(borderProperties)
+                        },
+                        {
+                            name: "Border",
+                            properties: [
+                                {
+                                    name: "Position",
+                                    value: "Bottom"
+                                }
+                            ].concat(borderProperties)
+                        },
+                        {
+                            name: "Border",
+                            properties: [
+                                {
+                                    name: "Position",
+                                    value: "Left"
+                                }
+                            ].concat(borderProperties)
+                        },
+                        {
+                            name: "Border",
+                            properties: [
+                                {
+                                    name: "Position",
+                                    value: "Right"
+                                }
+                            ].concat(borderProperties)
+                        }
+                    ]
+                }
+            ]
+        });
+    },
+    addTitleStyle: function() {
+        this.addStyle({
+            id: "title",
+            attributes: [
+                {
+                    name: "Borders"
+                },
+                {
+                    name: "Font"
+                },
+                {
+                    name: "NumberFormat",
+                    properties: [
+                        {
+                            name: "Format",
+                            value: "@"
+                        }
+                    ]
+                },
+                {
+                    name: "Alignment",
+                    properties: [
+                        {
+                            name: "WrapText",
+                            value: "1"
+                        },
+                        {
+                            name: "Horizontal",
+                            value: "Center"
+                        },
+                        {
+                            name: "Vertical",
+                            value: "Center"
+                        }
+                    ]
+                }
+            ]
+        });
+    },
+    addHeaderStyle: function() {
+        this.addStyle({
+            id: "headercell",
+            attributes: [
+                {
+                    name: "Font",
+                    properties: [
+                        {
+                            name: "Bold",
+                            value: "1"
+                        },
+                        {
+                            name: "Size",
+                            value: "10"
+                        }
+                    ]
+                },
+                {
+                    name: "Interior",
+                    properties: [
+                        {
+                            name: "Pattern",
+                            value: "Solid"
+                        },
+                        {
+                            name: "Color",
+                            value: "#A3C9F1"
+                        }
+                    ]
+                },
+                {
+                    name: "Alignment",
+                    properties: [
+                        {
+                            name: "WrapText",
+                            value: "1"
+                        },
+                        {
+                            name: "Horizontal",
+                            value: "Center"
+                        }
+                    ]
+                }
+            ]
+        });
+    },
+    /**
+   * Adds the default striping styles to this workbook
+   */
+    addStripedStyles: function() {
+        this.addStyle({
+            id: "even",
+            attributes: [
+                {
+                    name: "Interior",
+                    properties: [
+                        {
+                            name: "Pattern",
+                            value: "Solid"
+                        },
+                        {
+                            name: "Color",
+                            value: "#CCFFFF"
+                        }
+                    ]
+                }
+            ]
+        });
+        this.addStyle({
+            id: "odd",
+            attributes: [
+                {
+                    name: "Interior",
+                    properties: [
+                        {
+                            name: "Pattern",
+                            value: "Solid"
+                        },
+                        {
+                            name: "Color",
+                            value: "#CCCCFF"
+                        }
+                    ]
+                }
+            ]
+        });
+        Ext.each([
+            'even',
+            'odd'
+        ], function(parentStyle) {
+            this.addChildNumberFormatStyle(parentStyle, parentStyle + 'date', "[ENG][$-409]dd-mmm-yyyy;@");
+            this.addChildNumberFormatStyle(parentStyle, parentStyle + 'int', "0");
+            this.addChildNumberFormatStyle(parentStyle, parentStyle + 'float', "0.00");
+        }, this);
+    },
+    /**
+   * Private convenience function to easily add a NumberFormat style for a given parentStyle
+   * @param {String} parentStyle The ID of the parentStyle Style
+   * @param {String} id The ID of the new style
+   * @param {String} value The value of the NumberFormat's Format property
+   */
+    addChildNumberFormatStyle: function(parentStyle, id, value) {
+        this.addStyle({
+            id: id,
+            parentStyle: "even",
+            attributes: [
+                {
+                    name: "NumberFormat",
+                    properties: [
+                        {
+                            name: "Format",
+                            value: value
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+});
+
+/**
+ * @class Ext.ux.exporter.excelFormatter.Worksheet
+ * @extends Object
+ * Represents an Excel worksheet
+ * @cfg {Ext.data.Store} store The store to use (required)
+ */
+Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
+    constructor: function(store, config) {
+        config = config || {};
+        this.store = store;
+        Ext.applyIf(config, {
+            hasTitle: true,
+            hasHeadings: true,
+            stripeRows: true,
+            parserDiv: document.createElement("div"),
+            title: "Workbook",
+            columns: store.fields == undefined ? {} : store.fields.items
+        });
+        Ext.apply(this, config);
+        Ext.ux.exporter.excelFormatter.Worksheet.superclass.constructor.apply(this, arguments);
+    },
+    /**
+     * @property dateFormatString
+     * @type String
+     * String used to format dates (defaults to "Y-m-d"). All other data types are left unmolested
+     */
+    dateFormatString: "Y-m-d",
+    worksheetTpl: new Ext.XTemplate('<ss:Worksheet ss:Name="{title}">', '<ss:Names>', '<ss:NamedRange ss:Name="Print_Titles" ss:RefersTo="=\'{title}\'!R1:R2" />', '</ss:Names>', '<ss:Table x:FullRows="1" x:FullColumns="1" ss:ExpandedColumnCount="{colCount}" ss:ExpandedRowCount="{rowCount}">', '{columns}', '<ss:Row ss:Height="38">', '<ss:Cell ss:StyleID="title" ss:MergeAcross="{colCount - 1}">', '<ss:Data xmlns:html="http://www.w3.org/TR/REC-html40" ss:Type="String">', '<html:B><html:U><html:Font html:Size="15">{title}', '</html:Font></html:U></html:B></ss:Data><ss:NamedCell ss:Name="Print_Titles" />', '</ss:Cell>', '</ss:Row>', '<ss:Row ss:AutoFitHeight="1">', '{header}', '</ss:Row>', '{rows}', '</ss:Table>', '<x:WorksheetOptions>', '<x:PageSetup>', '<x:Layout x:CenterHorizontal="1" x:Orientation="Landscape" />', '<x:Footer x:Data="Page &amp;P of &amp;N" x:Margin="0.5" />', '<x:PageMargins x:Top="0.5" x:Right="0.5" x:Left="0.5" x:Bottom="0.8" />', '</x:PageSetup>', '<x:FitToPage />', '<x:Print>', '<x:PrintErrors>Blank</x:PrintErrors>', '<x:FitWidth>1</x:FitWidth>', '<x:FitHeight>32767</x:FitHeight>', '<x:ValidPrinterInfo />', '<x:VerticalResolution>600</x:VerticalResolution>', '</x:Print>', '<x:Selected />', '<x:DoNotDisplayGridlines />', '<x:ProtectObjects>False</x:ProtectObjects>', '<x:ProtectScenarios>False</x:ProtectScenarios>', '</x:WorksheetOptions>', '</ss:Worksheet>'),
+    /**
+     * Builds the Worksheet XML
+     * @param {Ext.data.Store} store The store to build from
+     */
+    render: function(store) {
+        return this.worksheetTpl.apply({
+            header: this.buildHeader(),
+            columns: this.buildColumns().join(""),
+            rows: this.buildRows().join(""),
+            colCount: this.columns.length,
+            rowCount: this.store.getCount() + 2,
+            title: this.title
+        });
+    },
+    buildColumns: function() {
+        var cols = [];
+        Ext.each(this.columns, function(column) {
+            cols.push(this.buildColumn());
+        }, this);
+        return cols;
+    },
+    buildColumn: function(width) {
+        return Ext.String.format('<ss:Column ss:AutoFitWidth="1" ss:Width="{0}" />', width || 164);
+    },
+    buildRows: function() {
+        var rows = [];
+        this.store.each(function(record, index) {
+            rows.push(this.buildRow(record, index));
+        }, this);
+        return rows;
+    },
+    buildHeader: function() {
+        var cells = [];
+        Ext.each(this.columns, function(col) {
+            var title;
+            //if(col.dataIndex) {
+            if (col.text != undefined) {
+                title = col.text;
+            } else if (col.name) {
+                //make columns taken from Record fields (e.g. with a col.name) human-readable
+                title = col.name.replace(/_/g, " ");
+                title = Ext.String.capitalize(title);
+            }
+            cells.push(Ext.String.format('<ss:Cell ss:StyleID="headercell"><ss:Data ss:Type="String">{0}</ss:Data><ss:NamedCell ss:Name="Print_Titles" /></ss:Cell>', title));
+        }, //}
+        this);
+        return cells.join("");
+    },
+    buildRow: function(record, index) {
+        var style,
+            cells = [];
+        if (this.stripeRows === true)  {
+            style = index % 2 == 0 ? 'even' : 'odd';
+        }
+        
+        Ext.each(this.columns, function(col) {
+            var name = col.name || col.dataIndex;
+            if (name) {
+                //if given a renderer via a ColumnModel, use it and ensure data type is set to String
+                if (Ext.isFunction(col.renderer) && col.xtype !== 'hcheckcolumn') {
+                    var value = col.renderer(record.get(name), {}, record),
+                        type = "String";
+                    var values = [];
+                    //to extract value if renderers returning html
+                    this.parserDiv.innerHTML = value;
+                    var divEls = this.parserDiv.getElementsByTagName('div');
+                    if (divEls && divEls.length > 0) {
+                        Ext.each(divEls, function(divEl) {
+                            var innerValues = [];
+                            var imgEls = divEl.getElementsByTagName('img');
+                            Ext.each(imgEls, function(imgEl) {
+                                innerValues.push(imgEl.getAttribute('title'));
+                            });
+                            innerValues.push(divEl.innerText || divEl.textContent);
+                            values.push(innerValues.join(':'));
+                        });
+                    } else {
+                        values.push(this.parserDiv.innerText || this.parserDiv.textContent);
+                    }
+                    value = values.join(' ');
+                } else {
+                    var value = record.get(name),
+                        type = 'String';
+                }
+                //this.typeMappings[col.type || record.fields.get(name).type.type];
+                //                    var value = record.get(name),
+                //                        type = this.typeMappings[col.getXType() || record.fields.get(name).type.type];
+                cells.push(this.buildCell(value, type, style).render());
+            }
+        }, this);
+        return Ext.String.format("<ss:Row>{0}</ss:Row>", cells.join(""));
+    },
+    buildCell: function(value, type, style) {
+        if (type == "DateTime" && Ext.isFunction(value.format))  {
+            value = value.format(this.dateFormatString);
+        }
+        
+        return new Ext.ux.exporter.excelFormatter.Cell({
+            value: value,
+            type: type,
+            style: style
+        });
+    },
+    /**
+     * @property typeMappings
+     * @type Object
+     * Mappings from Ext.data.Record types to Excel types
+     */
+    typeMappings: {
+        'int': "Number",
+        //        'string': "String",
+        'gridcolumn': 'String',
+        'float': "Number",
+        'date': "DateTime"
+    }
+});
+
+/**
+ * @class Ext.ux.exporter.Exporter
+ * @author Ed Spencer (http://edspencer.net), with modifications from iwiznia, with modifications from yogesh
+ * Class providing a common way of downloading data in .xls or .csv format
+ */
+Ext.define("Ext.ux.exporter.Exporter", {
+    uses: [
+        "Ext.ux.exporter.ExporterButton",
+        "Ext.ux.exporter.csvFormatter.CsvFormatter",
+        "Ext.ux.exporter.excelFormatter.ExcelFormatter",
+        "Ext.ux.exporter.FileSaver"
+    ],
+    statics: {
+        /**
+         * Exports a grid, using formatter
+         * @param {Ext.grid.Panel/Ext.data.Store/Ext.tree.Panel} componet/store to export from
+         * @param {String/Ext.ux.exporter.Formatter} formatter
+         * @param {Object} config Optional config settings for the formatter
+         * @return {Object} with data, mimeType, charset, ext(extension)
+         */
+        exportAny: function(component, format, config) {
+            var func = "export";
+            if (!component.is) {
+                func = func + "Store";
+            } else if (component.is("gridpanel")) {
+                func = func + "Grid";
+            } else if (component.is("treepanel")) {
+                func = func + "Tree";
+            } else {
+                func = func + "Store";
+                component = component.getStore();
+            }
+            var formatter = this.getFormatterByName(format);
+            return this[func](component, formatter, config);
+        },
+        /**
+         * Exports a grid, using formatter
+         * @param {Ext.grid.Panel} grid The grid to export from
+         * @param {String/Ext.ux.exporter.Formatter} formatter
+         * @param {Object} config Optional config settings for the formatter
+         */
+        exportGrid: function(grid, formatter, config) {
+            config = config || {};
+            formatter = this.getFormatterByName(formatter);
+            var store = grid.getStore() || config.store;
+            if (grid.store_) {
+                store = grid.store_;
+            }
+            var columns = Ext.Array.filter(grid.getColumns(), function(col) {
+                    if (col.hidden || Ext.isEmpty(col.dataIndex)) {
+                        return false;
+                    }
+                    return true;
+                });
+            //                return !col.hidden || Ext.isEmpty(col.dataIndex); // && (!col.xtype || col.xtype != "actioncolumn");
+            //return !col.hidden; // && (!col.xtype || col.xtype != "actioncolumn");
+            Ext.applyIf(config, {
+                title: grid.title,
+                columns: columns
+            });
+            return {
+                data: formatter.format(store, config),
+                mimeType: formatter.mimeType,
+                charset: formatter.charset,
+                ext: formatter.extension
+            };
+        },
+        /**
+         * Exports a grid, using formatter
+         * @param {Ext.data.Store} store to export from
+         * @param {String/Ext.ux.exporter.Formatter} formatter
+         * @param {Object} config Optional config settings for the formatter
+         */
+        exportStore: function(store, formatter, config) {
+            config = config || {};
+            formatter = this.getFormatterByName(formatter);
+            Ext.applyIf(config, {
+                columns: store.fields ? store.fields.items : store.model.prototype.fields.items
+            });
+            return {
+                data: formatter.format(store, config),
+                mimeType: formatter.mimeType,
+                charset: formatter.charset,
+                ext: formatter.extension
+            };
+        },
+        /**
+         * Exports a tree, using formatter
+         * @param {Ext.tree.Panel} store to export from
+         * @param {String/Ext.ux.exporter.Formatter} formatter
+         * @param {Object} config Optional config settings for the formatter
+         */
+        exportTree: function(tree, formatter, config) {
+            config = config || {};
+            formatter = this.getFormatterByName(formatter);
+            var store = tree.getStore() || config.store;
+            Ext.applyIf(config, {
+                title: tree.title
+            });
+            return {
+                data: formatter.format(store, config),
+                mimeType: formatter.mimeType,
+                charset: formatter.charset,
+                ext: formatter.extension
+            };
+        },
+        /**
+         * Method returns the instance of {Ext.ux.exporter.Formatter} based on format
+         * @param {String/Ext.ux.exporter.Formatter} formatter
+         * @return {Ext.ux.exporter.Formatter}
+         */
+        getFormatterByName: function(formatter) {
+            formatter = formatter ? formatter : "excel";
+            formatter = !Ext.isString(formatter) ? formatter : Ext.create("Ext.ux.exporter." + formatter + "Formatter." + Ext.String.capitalize(formatter) + "Formatter");
+            return formatter;
+        }
+    }
+});
+
+/**
+ * @Class Ext.ux.exporter.FileSaver
+ * @author Yogesh
+ * Class that allows saving file via blobs: URIs or data: URIs or download remotely from server
+ */
+Ext.define('Ext.ux.exporter.FileSaver', {
+    statics: {
+        saveAs: function(data, mimeType, charset, filename, link, remote, cb, scope) {
+            window.URL = window.URL || window.webkitURL;
+            try {
+                //If browser supports Blob(Gecko,Chrome,IE10+)
+                var blob = new Blob([
+                        data
+                    ], {
+                        //safari 5 throws error
+                        type: mimeType + ";charset=" + charset + ","
+                    });
+                if (link && "download" in link) {
+                    blobURL = window.URL.createObjectURL(blob);
+                    link.href = blobURL;
+                    link.download = filename;
+                    if (cb)  {
+                        cb.call(scope);
+                    }
+                    
+                    this.cleanBlobURL(blobURL);
+                    return;
+                } else if (window.navigator.msSaveOrOpenBlob) {
+                    //IE 10+
+                    window.navigator.msSaveOrOpenBlob(blob, filename);
+                    if (cb)  {
+                        cb.call(scope);
+                    }
+                    
+                    return;
+                }
+            } catch (e) {
+                //open using data:URI 
+                Ext.log("Browser doesn't support Blob: " + e.message);
+            }
+            //Browser doesn't support Blob save
+            if (remote) {
+                //send data to sever to download
+                this.downloadUsingServer(data, mimeType, charset, filename, cb, scope);
+            } else {
+                //open data in new window
+                this.openUsingDataURI(data, mimeType, charset);
+                if (cb)  {
+                    cb.call(scope);
+                }
+                
+            }
+        },
+        downloadUsingServer: function(data, mimeType, charset, filename, cb, scope) {
+            var form = Ext.getDom('formDummy');
+            if (!form) {
+                form = document.createElement('form');
+                form.id = 'formDummy';
+                form.name = 'formDummy';
+                form.className = 'x-hidden';
+                document.body.appendChild(form);
+            }
+            Ext.Ajax.request({
+                url: '/ExportFileAction',
+                method: 'POST',
+                form: form,
+                isUpload: true,
+                params: {
+                    userAction: 'download',
+                    data: data,
+                    mimeType: mimeType,
+                    charset: charset,
+                    filename: filename
+                },
+                callback: function() {
+                    if (cb)  {
+                        cb.call(scope);
+                    }
+                    
+                }
+            });
+        },
+        openUsingDataURI: function(data, mimeType, charset) {
+            if (Ext.isIE9m) {
+                //for IE 9 or lesser
+                w = window.open();
+                doc = w.document;
+                doc.open(mimeType, 'replace');
+                doc.charset = charset;
+                doc.write(data);
+                doc.close();
+                doc.execCommand("SaveAs", null, filename);
+            } else {
+                window.open("data:" + mimeType + ";charset=" + charset + "," + encodeURIComponent(data), "_blank");
+            }
+        },
+        cleanBlobURL: function(blobURL) {
+            // Need a some delay for the revokeObjectURL to work properly.
+            setTimeout(function() {
+                window.URL.revokeObjectURL(blobURL);
+            }, 10000);
+        }
+    }
+});
+
+/**
+ * @class Ext.ux.Exporter.Button
+ * @extends Ext.Button
+ * @author Nige White, with modifications from Ed Spencer, with modifications from iwiznia with modifications from yogesh
+ * Internally, this is just a link.
+ * Pass it either an Ext.Component subclass with a 'store' property, or componentQuery of that component or just a store or nothing and it will try to grab the first parent of this button that is a grid or tree panel:
+ * new Ext.ux.Exporter.ExporterButton({component: someGrid});
+ * new Ext.ux.Exporter.ExporterButton({store: someStore});
+ * new Ext.ux.Exporter.ExporterButton({component: '#itemIdSomeGrid'});
+ * @cfg {Ext.Component} component The component the store is bound to
+ * @cfg {Ext.data.Store} store The store to export (alternatively, pass a component with a getStore method)
+ */
+Ext.define("Ext.ux.exporter.ExporterButton", {
+    extend: "Ext.Button",
+    requires: [
+        'Ext.ux.exporter.Exporter',
+        'Ext.ux.exporter.FileSaver'
+    ],
+    alias: "widget.exporterbutton",
+    config: {
+        iconCls: null,
+        showText: true
+    },
+    localeProperties: [
+        'text',
+        'iconCls'
+    ],
+    /**
+     * @cfg {String} text
+     * The button text to be used as innerHTML (html tags are accepted).
+     */
+    text: 'Download',
+    /**
+     * @cfg {String} format
+     * The Exported File formatter
+     */
+    format: 'excel',
+    /**
+     * @cfg {Boolean} preventDefault
+     * False to allow default action when the {@link #clickEvent} is processed.
+     */
+    preventDefault: false,
+    /**
+     * @cfg {Number} saveDelay
+     * Increased buffer to avoid clickEvent fired many times within a short period.
+     */
+    saveDelay: 300,
+    //iconCls: 'save',
+    /**
+     * @cfg {Boolean} remote
+     * To remotely download file only if browser doesn't support locally
+     * otherwise it will try to open in new window
+     */
+    remote: false,
+    /**
+     * @cfg {String} title
+     * To set name to eported file, extension will be appended based on format
+     */
+    title: 'export',
+    constructor: function(config) {
+        var me = this;
+        Ext.ux.exporter.ExporterButton.superclass.constructor.call(me, config);
+        me.on("afterrender", function() {
+            //wait for the button to be rendered, so we can look up to grab the component
+            if (me.component) {
+                me.component = !Ext.isString(me.component) ? me.component : Ext.ComponentQuery.query(me.component)[0];
+            }
+            me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+        });
+    },
+    onClick: function(e) {
+        var me = this,
+            blobURL = "",
+            format = me.format,
+            title = me.title,
+            remote = me.remote,
+            dt = new Date(),
+            link = me.el.dom,
+            res, fullname;
+        me.fireEvent('start', me);
+        res = Ext.ux.exporter.Exporter.exportAny(me.component, format, {
+            title: title
+        });
+        filename = title + "_" + Ext.Date.format(dt, "Y-m-d h:i:s") + "." + res.ext;
+        Ext.ux.exporter.FileSaver.saveAs(res.data, res.mimeType, res.charset, filename, link, remote, me.onComplete, me);
+        me.callParent(arguments);
+    },
+    setComponent: function(component, config) {
+        var me = this;
+        me.component = component;
+        var store = component.getStore(),
+            total = store.getCount();
+        //            extraParam = store.getProxy().getExtraParams()||{};
+        //        if (component.getStore().pageSize) {
+        //            Ext.getCmp(me.up('menu').getId()).mask("Updating... Please wait...", 'loading');
+        //            extraParam['limit'] = 5000;
+        //            extraParam['page'] = 1;
+        //            extraParam['start'] = 0;
+        //            component.store_ = Ext.create('Ext.data.Store', {
+        //                fields: [],
+        //                proxy: {
+        //                    type: 'memory',
+        //                    reader: {
+        //                        type: 'json',
+        //                        rootProperty: 'data'
+        //                    }
+        //                }
+        //            });
+        //            Ext.defer(function () {
+        //                Util.CommonAjax({
+        //                    url: component.getStore().getProxy().getUrl(),
+        ////                    params: extraParam,
+        //                    pSync: false,
+        //                    pCallback: function (pScope, params, retData) {
+        //                        component.store_.loadData(retData[component.getStore().getProxy().getReader().getRootProperty()]);
+        //                        Ext.getCmp(me.up('menu').getId()).unmask();
+        //                    }
+        //                });
+        //            },1000)
+        //
+        //        }
+        me.store = !component.is ? component : component.getStore();
+    },
+    // only components or stores, if it doesn't respond to is method, it's a store
+    onComplete: function() {
+        this.fireEvent('complete', this);
+    }
+});
+
+/*
+Copyright (c)  2008-2012, www.redips.net  All rights reserved.
+Code licensed under the BSD License: http://www.redips.net/license/
+http://www.redips.net/javascript/table-td-merge-split/
+Version 1.1.0
+May 15, 2012.
+*/
+"use strict";
+var REDIPS = REDIPS || {};
+REDIPS.table = (function() {
+    var onmousedown, handler_onmousedown, merge, merge_cells, max_cols, split, get_table, mark, cell_init, row, column, cell_list, relocate, remove_selection, cell_index, cell_ignore,
+        tables = [],
+        td_event, show_index,
+        color = {
+            cell: false,
+            row: false,
+            column: false
+        },
+        mark_nonempty = true;
+    onmousedown = function(el, flag, type) {
+        var td, i, t, get_tables;
+        get_tables = function(el) {
+            var arr = [],
+                nodes, i;
+            nodes = el.getElementsByTagName('table');
+            for (i = 0; i < nodes.length; i++) {
+                arr.push(nodes[i]);
+            }
+            return arr;
+        };
+        td_event = flag;
+        if (typeof (el) === 'string') {
+            if (type === 'classname') {
+                tables = get_tables(document);
+                for (i = 0; i < tables.length; i++) {
+                    if (tables[i].className.indexOf(el) === -1) {
+                        tables.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else {
+                el = document.getElementById(el);
+            }
+        }
+        if (el && typeof (el) === 'object') {
+            if (el.nodeName === 'TABLE') {
+                tables[0] = el;
+            } else {
+                tables = get_tables(el);
+            }
+        }
+        for (t = 0; t < tables.length; t++) {
+            td = tables[t].getElementsByTagName('td');
+            for (i = 0; i < td.length; i++) {
+                cell_init(td[i]);
+            }
+        }
+        cell_index();
+    };
+    cell_init = function(c) {
+        if (c.className.indexOf('ignore') > -1) {
+            return;
+        }
+        if (td_event === true) {
+            REDIPS.event.add(c, 'mousedown', handler_onmousedown);
+        } else {
+            REDIPS.event.remove(c, 'mousedown', handler_onmousedown);
+        }
+    };
+    cell_ignore = function(c) {
+        if (typeof (c) === 'string') {
+            c = document.getElementById(c);
+        }
+        REDIPS.event.remove(c, 'mousedown', handler_onmousedown);
+    };
+    handler_onmousedown = function(e) {
+        var evt = e || window.event,
+            td = evt.target || evt.srcElement,
+            mouseButton, empty;
+        empty = (/^\s*$/.test(td.innerHTML)) ? true : false;
+        if (REDIPS.table.mark_nonempty === false && empty === false) {
+            return;
+        }
+        if (evt.which) {
+            mouseButton = evt.which;
+        } else {
+            mouseButton = evt.button;
+        }
+        if (mouseButton === 1) {
+            td.redips = td.redips || {};
+            if (td.redips.selected === true) {
+                mark(false, td);
+            } else {
+                mark(true, td);
+            }
+        }
+    };
+    merge = function(mode, clear, table) {
+        var tbl, tr, c, rc1, rc2, marked, span, id, cl, t, i, j,
+            first = {
+                index: -1,
+                span: -1
+            };
+        remove_selection();
+        tbl = (table === undefined) ? tables : get_table(table);
+        for (t = 0; t < tbl.length; t++) {
+            cl = cell_list(tbl[t]);
+            tr = tbl[t].rows;
+            rc1 = (mode === 'v') ? max_cols(tbl[t]) : tr.length;
+            rc2 = (mode === 'v') ? tr.length : max_cols(tbl[t]);
+            for (i = 0; i < rc1; i++) {
+                first.index = first.span = -1;
+                for (j = 0; j <= rc2; j++) {
+                    id = (mode === 'v') ? (j + '-' + i) : (i + '-' + j);
+                    if (cl[id]) {
+                        c = cl[id];
+                        c.redips = c.redips || {};
+                        marked = c ? c.redips.selected : false;
+                        span = (mode === 'v') ? c.colSpan : c.rowSpan;
+                    } else {
+                        marked = false;
+                    }
+                    if (marked === true && first.index === -1) {
+                        first.index = j;
+                        first.span = span;
+                    } else if ((marked !== true && first.index > -1) || (first.span > -1 && first.span !== span)) {
+                        merge_cells(cl, i, first.index, j, mode, clear);
+                        first.index = first.span = -1;
+                        if (marked === true) {
+                            if (clear === true || clear === undefined) {
+                                mark(false, c);
+                            }
+                            marked = false;
+                        }
+                    }
+                    if (cl[id]) {
+                        j += (mode === 'v') ? c.rowSpan - 1 : c.colSpan - 1;
+                    }
+                }
+                if (marked === true) {
+                    merge_cells(cl, i, first.index, j, mode, clear);
+                }
+            }
+        }
+        cell_index();
+    };
+    merge_cells = function(cl, idx, pos1, pos2, mode, clear) {
+        var span = 0,
+            id, fc, c, i;
+        fc = (mode === 'v') ? cl[pos1 + '-' + idx] : cl[idx + '-' + pos1];
+        for (i = pos1 + 1; i < pos2; i++) {
+            id = (mode === 'v') ? (i + '-' + idx) : (idx + '-' + i);
+            if (cl[id]) {
+                c = cl[id];
+                span += (mode === 'v') ? c.rowSpan : c.colSpan;
+                relocate(c, fc);
+                c.parentNode.deleteCell(c.cellIndex);
+            }
+        }
+        if (fc !== undefined) {
+            if (mode === 'v') {
+                fc.rowSpan += span;
+            } else {
+                fc.colSpan += span;
+            }
+            if (clear === true || clear === undefined) {
+                mark(false, fc);
+            }
+        }
+    };
+    max_cols = function(table) {
+        var tr = table.rows,
+            span,
+            max = 0,
+            i, j;
+        if (typeof (table) === 'string') {
+            table = document.getElementById(table);
+        }
+        for (i = 0; i < tr.length; i++) {
+            span = 0;
+            for (j = 0; j < tr[i].cells.length; j++) {
+                span += tr[i].cells[j].colSpan || 1;
+            }
+            if (span > max) {
+                max = span;
+            }
+        }
+        return max;
+    };
+    split = function(mode, table) {
+        var tbl, tr, c, cl, rs, n, cols, max, t, i, j, get_rowspan;
+        get_rowspan = function(c, row, col) {
+            var rs, last, i;
+            rs = 0;
+            last = row + c.rowSpan - 1;
+            for (i = col - 1; i >= 0; i--) {
+                if (cl[last + '-' + i] === undefined) {
+                    rs++;
+                }
+            }
+            return rs;
+        };
+        remove_selection();
+        tbl = (table === undefined) ? tables : get_table(table);
+        for (t = 0; t < tbl.length; t++) {
+            cl = cell_list(tbl[t]);
+            max = max_cols(tbl[t]);
+            tr = tbl[t].rows;
+            for (i = 0; i < tr.length; i++) {
+                cols = (mode === 'v') ? max : tr[i].cells.length;
+                for (j = 0; j < cols; j++) {
+                    if (mode === 'v') {
+                        c = cl[i + '-' + j];
+                        if (c !== undefined) {
+                            c.redips = c.redips || {};
+                        }
+                        if (c !== undefined && c.redips.selected === true && c.rowSpan > 1) {
+                            rs = get_rowspan(c, i, j);
+                            n = tr[i + c.rowSpan - 1].insertCell(j - rs);
+                            n.colSpan = c.colSpan;
+                            c.rowSpan -= 1;
+                            cell_init(n);
+                            cl = cell_list(tbl[t]);
+                        }
+                    } else {
+                        c = tr[i].cells[j];
+                        c.redips = c.redips || {};
+                        if (c.redips.selected === true && c.colSpan > 1) {
+                            cols++;
+                            n = tr[i].insertCell(j + 1);
+                            n.rowSpan = c.rowSpan;
+                            c.colSpan -= 1;
+                            cell_init(n);
+                        }
+                    }
+                    if (c !== undefined) {
+                        mark(false, c);
+                    }
+                }
+            }
+        }
+        cell_index();
+    };
+    get_table = function(table) {
+        var tbl = [];
+        if (table !== undefined) {
+            if (typeof (table) === 'string') {
+                table = document.getElementById(table);
+            }
+            if (table && typeof (table) === 'object' && table.nodeName === 'TABLE') {
+                tbl[0] = table;
+            }
+        }
+        return tbl;
+    };
+    row = function(table, mode, index) {
+        var nc,
+            nr = null,
+            fr, c, cl,
+            cols = 0,
+            i, j, k;
+        remove_selection();
+        if (typeof (table) !== 'object') {
+            table = document.getElementById(table);
+        }
+        if (index === undefined) {
+            index = -1;
+        }
+        if (mode === 'insert') {
+            fr = table.rows[0];
+            for (i = 0; i < fr.cells.length; i++) {
+                cols += fr.cells[i].colSpan;
+            }
+            nr = table.insertRow(index);
+            for (i = 0; i < cols; i++) {
+                nc = nr.insertCell(i);
+                cell_init(nc);
+            }
+            cell_index();
+        } else {
+            if (table.rows.length === 1) {
+                return;
+            }
+            table.deleteRow(index);
+            cl = cell_list(table);
+            index = table.rows.length - 1;
+            cols = max_cols(table);
+            for (i = 0; i < cols; i++) {
+                c = cl[index + '-' + i];
+                if (c === undefined) {
+                    for (j = index , k = 1; j >= 0; j-- , k++) {
+                        c = cl[j + '-' + i];
+                        if (c !== undefined) {
+                            c.rowSpan = k;
+                            break;
+                        }
+                    }
+                } else if (c.rowSpan > 1) {
+                    c.rowSpan -= 1;
+                }
+                i += c.colSpan - 1;
+            }
+        }
+        return nr;
+    };
+    column = function(table, mode, index) {
+        var c, idx, nc, i;
+        remove_selection();
+        if (typeof (table) !== 'object') {
+            table = document.getElementById(table);
+        }
+        if (index === undefined) {
+            index = -1;
+        }
+        if (mode === 'insert') {
+            for (i = 0; i < table.rows.length; i++) {
+                nc = table.rows[i].insertCell(index);
+                cell_init(nc);
+            }
+            cell_index();
+        } else {
+            c = table.rows[0].cells;
+            if (c.length === 1 && (c[0].colSpan === 1 || c[0].colSpan === undefined)) {
+                return;
+            }
+            for (i = 0; i < table.rows.length; i++) {
+                if (index === -1) {
+                    idx = table.rows[i].cells.length - 1;
+                } else {
+                    idx = index;
+                }
+                c = table.rows[i].cells[idx];
+                if (c.colSpan > 1) {
+                    c.colSpan -= 1;
+                } else {
+                    table.rows[i].deleteCell(index);
+                }
+                i += c.rowSpan - 1;
+            }
+        }
+    };
+    mark = function(flag, el, row, col) {
+        var cl;
+        if (typeof (flag) !== 'boolean') {
+            return;
+        }
+        if (typeof (el) === 'string') {
+            el = document.getElementById(el);
+        } else if (typeof (el) !== 'object') {
+            return;
+        }
+        if (el.nodeName === 'TABLE') {
+            cl = cell_list(el);
+            el = cl[row + '-' + col];
+        }
+        if (!el || el.nodeName !== 'TD') {
+            return;
+        }
+        el.redips = el.redips || {};
+        if (typeof (REDIPS.table.color.cell) === 'string') {
+            if (flag === true) {
+                el.redips.background_old = el.style.backgroundColor;
+                el.style.backgroundColor = REDIPS.table.color.cell;
+            } else {
+                el.style.backgroundColor = el.redips.background_old;
+            }
+        }
+        el.redips.selected = flag;
+    };
+    remove_selection = function() {
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.selection && document.selection.type === "Text") {
+            try {
+                document.selection.empty();
+            } catch (error) {}
+        }
+    };
+    cell_list = function(table) {
+        var matrix = [],
+            matrixrow,
+            lookup = {},
+            c, ri, rowspan, colspan, firstAvailCol, tr, i, j, k, l;
+        tr = table.rows;
+        for (i = 0; i < tr.length; i++) {
+            for (j = 0; j < tr[i].cells.length; j++) {
+                c = tr[i].cells[j];
+                ri = c.parentNode.rowIndex;
+                rowspan = c.rowSpan || 1;
+                colspan = c.colSpan || 1;
+                matrix[ri] = matrix[ri] || [];
+                for (k = 0; k < matrix[ri].length + 1; k++) {
+                    if (typeof (matrix[ri][k]) === 'undefined') {
+                        firstAvailCol = k;
+                        break;
+                    }
+                }
+                lookup[ri + '-' + firstAvailCol] = c;
+                for (k = ri; k < ri + rowspan; k++) {
+                    matrix[k] = matrix[k] || [];
+                    matrixrow = matrix[k];
+                    for (l = firstAvailCol; l < firstAvailCol + colspan; l++) {
+                        matrixrow[l] = 'x';
+                    }
+                }
+            }
+        }
+        return lookup;
+    };
+    relocate = function(from, to) {
+        var cn, i, j;
+        if (from === to) {
+            return;
+        }
+        cn = from.childNodes.length;
+        for (i = 0 , j = 0; i < cn; i++) {
+            if (from.childNodes[j].nodeType === 1) {
+                to.appendChild(from.childNodes[j]);
+            } else {
+                j++;
+            }
+        }
+    };
+    cell_index = function(flag) {
+        if (flag === undefined && show_index !== true) {
+            return;
+        }
+        if (flag !== undefined) {
+            show_index = flag;
+        }
+        var tr, c, cl, cols, i, j, t;
+        for (t = 0; t < tables.length; t++) {
+            tr = tables[t].rows;
+            cols = max_cols(tables[t]);
+            cl = cell_list(tables[t]);
+            for (i = 0; i < tr.length; i++) {
+                for (j = 0; j < cols; j++) {
+                    if (cl[i + '-' + j]) {
+                        c = cl[i + '-' + j];
+                        c.innerHTML = (show_index) ? i + '-' + j : '';
+                    }
+                }
+            }
+        }
+    };
+    return {
+        color: color,
+        mark_nonempty: mark_nonempty,
+        onmousedown: onmousedown,
+        mark: mark,
+        merge: merge,
+        split: split,
+        row: row,
+        column: column,
+        cell_index: cell_index,
+        cell_ignore: cell_ignore
+    };
+}());
+if (!REDIPS.event) {
+    REDIPS.event = (function() {
+        var add, remove;
+        add = function(obj, eventName, handler) {
+            if (obj.addEventListener) {
+                obj.addEventListener(eventName, handler, false);
+            } else if (obj.attachEvent) {
+                obj.attachEvent('on' + eventName, handler);
+            } else {
+                obj['on' + eventName] = handler;
+            }
+        };
+        remove = function(obj, eventName, handler) {
+            if (obj.removeEventListener) {
+                obj.removeEventListener(eventName, handler, false);
+            } else if (obj.detachEvent) {
+                obj.detachEvent('on' + eventName, handler);
+            } else {
+                obj['on' + eventName] = null;
+            }
+        };
+        return {
+            add: add,
+            remove: remove
+        };
+    }());
+}
+
+/*
+Copyright (c)  2008-2012, www.redips.net  All rights reserved.
+Code licensed under the BSD License: http://www.redips.net/license/
+http://www.redips.net/javascript/table-td-merge-split/
+Version 1.1.0
+May 15, 2012.
+*/
+/*jslint white: true, browser: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, strict: true, newcap: true, immed: true, maxerr: 14 */
+/*global window: false */
+/* enable strict mode */
+"use strict";
+// create REDIPS namespace (if is not already defined in another REDIPS package)
+var REDIPS = REDIPS || {};
+/**
+ * @namespace
+ * @description REDIPS.table is a JavaScript library which enables dynamically merging and splitting table cells.
+ * @name REDIPS.table
+ * @author Darko Bunic
+ * @see
+ * <a href="http://www.redips.net/javascript/table-td-merge-split/">Merge and split table cells with JavaScript</a>
+ * @version 1.1.0
+ */
+REDIPS.table = (function() {
+    // methods declaration
+    var onmousedown, // method attaches onmousedown event listener to table cells
+        handler_onmousedown, // onmousedown handler
+        merge, // method merges marked cells
+        merge_cells, // method merges/deletes table cells (used by merge_h & merge_v)
+        max_cols, // method returns maximum number of columns in a table
+        split, // method splits merged cells (if cell has colspan/rowspan greater then 1)
+        get_table, // method sets reference to the table (it's used in "merge" and "split" public methods) 
+        mark, // method marks table cell
+        cell_init, // method attaches "mousedown" event listener and creates "redips" property to the newly created table cell
+        row, // method adds/deletes table row
+        column, // method adds/deletes table column
+        cell_list, // method returns cell list with new coordinates
+        relocate, // relocate element nodes from source cell to the target cell
+        remove_selection, // method removes text selection
+        cell_index, // method displays cellIndex (debug mode)
+        cell_ignore,
+        // method removes onmousedown even listener in case of active REDIPS.table.onmousedown mode
+        // private properties
+        tables = [],
+        // table collection
+        td_event, // (boolean) if set to true then cell_init will attach event listener to the table cell
+        show_index,
+        // (boolean) show cell index
+        // variables in the private scope revealed as public properties
+        color = {
+            cell: false,
+            // color of marked cell
+            row: false,
+            // color of marked row
+            column: false
+        },
+        // color of marked column
+        mark_nonempty = true;
+    // enable / disable marking not empty table cells.
+    /**
+	 * Method attaches or removes onmousedown event listener on TD elements depending on second parameter value (default is true).
+	 * If third parameter is set to "classname" then tables will be selected by class name (named in first parameter).
+	 * All found tables will be saved in internal array.
+	 * Sending reference in this case will not be needed when calling merge or split method.
+	 * Table cells marked with class name "ignore" will not have attached onmousedown event listener (in short, these table cells will be ignored).
+	 * @param {String|HTMLElement} el Container Id. TD elements within container will have added onmousewdown event listener.
+	 * @param {Boolean} [flag] If set to true then onmousedown event listener will be attached to every table cell.
+	 * @param {String} [type] If set to "class name" then all tables with a given class name (first parameter is considered as class name) will be initialized. Default is container/table reference or container/table id.
+	 * @example
+	 * // activate onmousedown event listener on cells within table with id="mainTable"
+	 * REDIPS.table.onmousedown('mainTable', true);
+	 *  
+	 * // activate onmousedown event listener on cells for tables with class="blue"
+	 * REDIPS.table.onmousedown('blue', true, 'classname');
+	 * @public
+	 * @function
+	 * @name REDIPS.table#onmousedown
+	 */
+    onmousedown = function(el, flag, type) {
+        var td, // collection of table cells within container
+            i, t, // loop variables
+            get_tables;
+        // private method returns array
+        // method returns array with table nodes for a DOM node
+        get_tables = function(el) {
+            var arr = [],
+                // result array
+                nodes, // node collection
+                i;
+            // loop variable
+            // collect table nodes
+            nodes = el.getElementsByTagName('table');
+            // open node loop and push to array
+            for (i = 0; i < nodes.length; i++) {
+                arr.push(nodes[i]);
+            }
+            // return result array
+            return arr;
+        };
+        // save event parameter to td_event private property
+        td_event = flag;
+        // if third parameter is set to "classname" then select tables by given class name (first parameter is considered as class name) 
+        if (typeof (el) === 'string') {
+            if (type === 'classname') {
+                // collect all tables on the page
+                tables = get_tables(document);
+                // open loop
+                for (i = 0; i < tables.length; i++) {
+                    // if class name is not found then cut out table from tables collection
+                    if (tables[i].className.indexOf(el) === -1) {
+                        tables.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else // first parameter is string and that should be id of container or id of a table
+            {
+                // set object reference (overwrite el parameter)
+                el = document.getElementById(el);
+            }
+        }
+        // el is object
+        if (el && typeof (el) === 'object') {
+            // if container is already a table
+            if (el.nodeName === 'TABLE') {
+                tables[0] = el;
+            } else // else collect tables within container
+            {
+                tables = get_tables(el);
+            }
+        }
+        // at this point tables should contain one or more tables
+        for (t = 0; t < tables.length; t++) {
+            // collect table cells from the selected table
+            td = tables[t].getElementsByTagName('td');
+            // loop goes through every collected TD
+            for (i = 0; i < td.length; i++) {
+                // add or remove event listener
+                cell_init(td[i]);
+            }
+        }
+        // show cell index (if show_index public property is set to true)
+        cell_index();
+    };
+    /**
+	 * Method attaches "mousedown" event listener to the newly created table cell or removes event listener if needed.
+	 * @param {HTMLElement} c Table cell element.
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    cell_init = function(c) {
+        // if cell contains "ignore" class name then ignore this table cell
+        if (c.className.indexOf('ignore') > -1) {
+            return;
+        }
+        // if td_event is set to true then onmousedown event listener will be attached to table cells
+        if (td_event === true) {
+            REDIPS.event.add(c, 'mousedown', handler_onmousedown);
+        } else {
+            REDIPS.event.remove(c, 'mousedown', handler_onmousedown);
+        }
+    };
+    /**
+	 * Method removes attached onmousedown event listener.
+	 * Sometimes is needed to manually ignore some cells in table after row/column were dynamically added.
+	 * @param {HTMLElement|String} c Cell id or cell reference of table that should be ignored (onmousedown event listener will be removed).
+	 * @public
+	 * @function
+	 * @name REDIPS.table#cell_ignore
+	 */
+    cell_ignore = function(c) {
+        // if input parameter is string then overwrite it with cell reference
+        if (typeof (c) === 'string') {
+            c = document.getElementById(c);
+        }
+        // remove onmousedown event listener
+        REDIPS.event.remove(c, 'mousedown', handler_onmousedown);
+    };
+    /**
+	 * On mousedown event attached to the table cell. If left mouse button is clicked and table cell is empty then cell will be marked or cleaned.
+	 * This event handler is attached to every TD element.
+	 * @param {Event} e Event information.
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    handler_onmousedown = function(e) {
+        var evt = e || window.event,
+            td = evt.target || evt.srcElement,
+            mouseButton, empty;
+        // set empty flag for clicked TD element
+        // http://forums.asp.net/t/1409248.aspx/1
+        empty = (/^\s*$/.test(td.innerHTML)) ? true : false;
+        // if "mark_nonempty" is set to false and current cell is not empty then do nothing (just return from the event handler)
+        if (REDIPS.table.mark_nonempty === false && empty === false) {
+            return;
+        }
+        // define which mouse button was pressed
+        if (evt.which) {
+            mouseButton = evt.which;
+        } else {
+            mouseButton = evt.button;
+        }
+        // if left mouse button is pressed and target cell is empty
+        if (mouseButton === 1) /*&& td.childNodes.length === 0*/
+        {
+            // if custom property "redips" doesn't exist then create custom property
+            td.redips = td.redips || {};
+            // cell is already marked
+            if (td.redips.selected === true) {
+                // return original background color and reset selected flag
+                mark(false, td);
+            } else // cell is not marked
+            {
+                mark(true, td);
+            }
+        }
+    };
+    /**
+	 * Method merges marked table cells horizontally or vertically.
+	 * @param {String} mode Merge type: h - horizontally, v - vertically. Default is "h".
+	 * @param {Boolean} [clear] true - cells will be clean (without mark) after merging, false -  cells will remain marked after merging. Default is "true". 
+	 * @param {HTMLElement|String} [table] Table id or table reference.
+	 * @public
+	 * @function
+	 * @name REDIPS.table#merge
+	 */
+    merge = function(mode, clear, table) {
+        var tbl, // table array (loaded from tables array or from table input parameter)
+            tr, // row reference in table
+            c, // current cell
+            rc1, // row/column maximum value for first loop
+            rc2, // row/column maximum value for second loop
+            marked, // (boolean) marked flag of current cell
+            span, // (integer) rowspan/colspan value
+            id, // cell id in format "1-2", "1-4" ...
+            cl, // cell list with new coordinates
+            t, // table reference
+            i, j,
+            // loop variables
+            first = {
+                index: -1,
+                // index of first cell in sequence
+                span: -1
+            };
+        // span value (colspan / rowspan) of first cell in sequence
+        // remove text selection
+        remove_selection();
+        // if table input parameter is undefined then use "tables" private property (table array) or set table reference from get_table method
+        tbl = (table === undefined) ? tables : get_table(table);
+        // open loop for each table inside container
+        for (t = 0; t < tbl.length; t++) {
+            // define cell list with new coordinates
+            cl = cell_list(tbl[t]);
+            // define row number in current table
+            tr = tbl[t].rows;
+            // define maximum value for first loop (depending on mode)
+            rc1 = (mode === 'v') ? max_cols(tbl[t]) : tr.length;
+            // define maximum value for second loop (depending on mode)
+            rc2 = (mode === 'v') ? tr.length : max_cols(tbl[t]);
+            // first loop
+            for (i = 0; i < rc1; i++) {
+                // reset marked cell index and span value
+                first.index = first.span = -1;
+                // second loop
+                for (j = 0; j <= rc2; j++) {
+                    // set cell id (depending on horizontal/verical merging)
+                    id = (mode === 'v') ? (j + '-' + i) : (i + '-' + j);
+                    // if cell with given coordinates (in form like "1-2") exists, then process this cell
+                    if (cl[id]) {
+                        // set current cell
+                        c = cl[id];
+                        // if custom property "redips" doesn't exist then create custom property
+                        c.redips = c.redips || {};
+                        // set marked flag for current cell
+                        marked = c ? c.redips.selected : false;
+                        // set opposite span value
+                        span = (mode === 'v') ? c.colSpan : c.rowSpan;
+                    } else {
+                        marked = false;
+                    }
+                    // if first marked cell in sequence is found then remember index of first marked cell and span value
+                    if (marked === true && first.index === -1) {
+                        first.index = j;
+                        first.span = span;
+                    }
+                    // sequence of marked cells is finished (naturally or next cell has different span value)
+                    else if ((marked !== true && first.index > -1) || (first.span > -1 && first.span !== span)) {
+                        // merge cells in a sequence (cell list, row/column, sequence start, sequence end, horizontal/vertical mode)
+                        merge_cells(cl, i, first.index, j, mode, clear);
+                        // reset marked cell index and span value
+                        first.index = first.span = -1;
+                        // if cell is selected then unmark and reset marked flag
+                        // reseting marked flag is needed in case for last cell in column/row (so merge_cells () outside for loop will not execute)
+                        if (marked === true) {
+                            // if clear flag is set to true (or undefined) then clear marked cell after merging
+                            if (clear === true || clear === undefined) {
+                                mark(false, c);
+                            }
+                            marked = false;
+                        }
+                    }
+                    // increase "j" counter for span value (needed for merging spanned cell and cell after when index is not in sequence)
+                    if (cl[id]) {
+                        j += (mode === 'v') ? c.rowSpan - 1 : c.colSpan - 1;
+                    }
+                }
+                // if loop is finished and last cell is marked (needed in case when TD sequence include last cell in table row)
+                if (marked === true) {
+                    merge_cells(cl, i, first.index, j, mode, clear);
+                }
+            }
+        }
+        // show cell index (if show_index public property is set to true)
+        cell_index();
+    };
+    /**
+	 * Method merges and deletes table cells in sequence (horizontally or vertically).
+	 * @param {Object} cl Cell list (output from cell_list method)
+	 * @param {Integer} idx Row/column index in which cells will be merged.
+	 * @param {Integer} pos1 Cell sequence start in row/column.
+	 * @param {Integer} pos2 Cell sequence end in row/column.
+	 * @param {String} mode Merge type: h - horizontally, v - vertically. Default is "h".
+	 * @param {Boolean} [clear] true - cells will be clean (without mark) after merging, false -  cells will remain marked after merging. Default is "true".
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    merge_cells = function(cl, idx, pos1, pos2, mode, clear) {
+        var span = 0,
+            // set initial span value to 0
+            id, // cell id in format "1-2", "1-4" ...
+            fc, // reference of first cell in sequence
+            c, // reference of current cell 
+            i;
+        // loop variable
+        // set reference of first cell in sequence
+        fc = (mode === 'v') ? cl[pos1 + '-' + idx] : cl[idx + '-' + pos1];
+        // delete table cells and sum their colspans
+        for (i = pos1 + 1; i < pos2; i++) {
+            // set cell id (depending on horizontal/verical merging)
+            id = (mode === 'v') ? (i + '-' + idx) : (idx + '-' + i);
+            // if cell with given coordinates (in form like "1-2") exists, then process this cell
+            if (cl[id]) {
+                // define next cell in column/row
+                c = cl[id];
+                // add colSpan/rowSpan value
+                span += (mode === 'v') ? c.rowSpan : c.colSpan;
+                // relocate content before deleting cell in merging process
+                relocate(c, fc);
+                // delete cell
+                c.parentNode.deleteCell(c.cellIndex);
+            }
+        }
+        // if cell exists
+        if (fc !== undefined) {
+            // vertical merging
+            if (mode === 'v') {
+                fc.rowSpan += span;
+            } else // set new rowspan value
+            // horizontal merging
+            {
+                fc.colSpan += span;
+            }
+            // set new rowspan value
+            // if clear flag is set to true (or undefined) then set original background color and reset selected flag
+            if (clear === true || clear === undefined) {
+                mark(false, fc);
+            }
+        }
+    };
+    /**
+	 * Method returns number of maximum columns in table (some row may contain merged cells).
+	 * @param {HTMLElement|String} table TABLE element.
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    max_cols = function(table) {
+        var tr = table.rows,
+            // define number of rows in current table
+            span,
+            // sum of colSpan values
+            max = 0,
+            // maximum number of columns
+            i, j;
+        // loop variable
+        // if input parameter is string then overwrite it with table reference
+        if (typeof (table) === 'string') {
+            table = document.getElementById(table);
+        }
+        // open loop for each TR within table
+        for (i = 0; i < tr.length; i++) {
+            // reset span value
+            span = 0;
+            // sum colspan value for each table cell
+            for (j = 0; j < tr[i].cells.length; j++) {
+                span += tr[i].cells[j].colSpan || 1;
+            }
+            // set maximum value
+            if (span > max) {
+                max = span;
+            }
+        }
+        // return maximum value
+        return max;
+    };
+    /**
+	 * Method splits marked table cell only if cell has colspan/rowspan greater then 1.
+	 * @param {String} mode Split type: h - horizontally, v - vertically. Default is "h".
+	 * @param {HTMLElement|String} [table] Table id or table reference.
+	 * @public
+	 * @function
+	 * @name REDIPS.table#split
+	 */
+    split = function(mode, table) {
+        var tbl, // table array (loaded from tables array or from table input parameter)
+            tr, // row reference in table
+            c, // current table cell
+            cl, // cell list with new coordinates
+            rs, // rowspan cells before
+            n, // reference of inserted table cell
+            cols, // number of columns (used in TD loop)
+            max, // maximum number of columns
+            t, // table reference
+            i, j, // loop variables
+            get_rowspan;
+        // method returns number of rowspan cells before current cell (in a row)
+        get_rowspan = function(c, row, col) {
+            var rs, last, i;
+            // set rs
+            rs = 0;
+            // set row index of bottom row for the current cell with rowspan value
+            last = row + c.rowSpan - 1;
+            // go through every cell before current cell in a row
+            for (i = col - 1; i >= 0; i--) {
+                // if cell doesn't exist then rowspan cell exists before
+                if (cl[last + '-' + i] === undefined) {
+                    rs++;
+                }
+            }
+            return rs;
+        };
+        // remove text selection
+        remove_selection();
+        // if table input parameter is undefined then use "tables" private property (table array) or set table reference from get_table method
+        tbl = (table === undefined) ? tables : get_table(table);
+        // loop TABLE
+        for (t = 0; t < tbl.length; t++) {
+            // define cell list with new coordinates
+            cl = cell_list(tbl[t]);
+            // define maximum number of columns in table
+            max = max_cols(tbl[t]);
+            // define row number in current table
+            tr = tbl[t].rows;
+            // loop TR
+            for (i = 0; i < tr.length; i++) {
+                // define column number (depending on mode)
+                cols = (mode === 'v') ? max : tr[i].cells.length;
+                // loop TD
+                for (j = 0; j < cols; j++) {
+                    // split vertically
+                    if (mode === 'v') {
+                        // define current table cell
+                        c = cl[i + '-' + j];
+                        // if custom property "redips" doesn't exist then create custom property
+                        if (c !== undefined) {
+                            c.redips = c.redips || {};
+                        }
+                        // if marked cell is found and rowspan property is greater then 1
+                        if (c !== undefined && c.redips.selected === true && c.rowSpan > 1) {
+                            // get rowspaned cells before current cell (in a row)
+                            rs = get_rowspan(c, i, j);
+                            // insert new cell at last position of rowspan (consider rowspan cells before)
+                            n = tr[i + c.rowSpan - 1].insertCell(j - rs);
+                            // set the same colspan value as it has current cell
+                            n.colSpan = c.colSpan;
+                            // decrease rowspan of marked cell
+                            c.rowSpan -= 1;
+                            // add "redips" property to the table cell and optionally event listener
+                            cell_init(n);
+                            // recreate cell list after vertical split (new cell is inserted)
+                            cl = cell_list(tbl[t]);
+                        }
+                    } else // split horizontally
+                    {
+                        // define current table cell
+                        c = tr[i].cells[j];
+                        // if custom property "redips" doesn't exist then create custom property
+                        c.redips = c.redips || {};
+                        // if marked cell is found and cell has colspan property greater then 1
+                        if (c.redips.selected === true && c.colSpan > 1) {
+                            // increase cols (because new cell is inserted)
+                            cols++;
+                            // insert cell after current cell
+                            n = tr[i].insertCell(j + 1);
+                            // set the same rowspan value as it has current cell
+                            n.rowSpan = c.rowSpan;
+                            // decrease colspan of marked cell
+                            c.colSpan -= 1;
+                            // add "redips" property to the table cell and optionally event listener
+                            cell_init(n);
+                        }
+                    }
+                    // return original background color and reset selected flag (if cell exists)
+                    if (c !== undefined) {
+                        mark(false, c);
+                    }
+                }
+            }
+        }
+        // show cell index (if show_index public property is set to true)
+        cell_index();
+    };
+    /**
+	 * Method sets reference to the table. It is used in "merge" and "split" public methods. 
+	 * @param {HTMLElement|String} table Table id or table reference.
+	 * @return {Array} Returns empty array or array with one member (table node).
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    get_table = function(table) {
+        // define output array
+        var tbl = [];
+        // input parameter should exits
+        if (table !== undefined) {
+            // if table parameter is string then set reference and overwrite input parameter
+            if (typeof (table) === 'string') {
+                table = document.getElementById(table);
+            }
+            // set table reference if table is not null and table is object and node is TABLE
+            if (table && typeof (table) === 'object' && table.nodeName === 'TABLE') {
+                tbl[0] = table;
+            }
+        }
+        // return table reference as array
+        return tbl;
+    };
+    /**
+	 * Method adds / deletes table row. If index is omitted then index of last row will be set.
+	 * @param {HTMLElement|String} table Table id or table reference.
+	 * @param {String} mode Insert/delete table row
+	 * @param {Integer} [index] Index where row will be inserted or deleted. Last row will be assumed if index is not defined.
+	 * @return {HTMLElement} Returns reference of inserted row or NULL (in case of deleting row).
+	 * @public
+	 * @function
+	 * @name REDIPS.table#row
+	 */
+    row = function(table, mode, index) {
+        var nc,
+            // new cell
+            nr = null,
+            // new row
+            fr, // reference of first row
+            c, // current cell reference
+            cl,
+            // cell list
+            cols = 0,
+            // number of columns
+            i, j, k;
+        // loop variables
+        // remove text selection
+        remove_selection();
+        // if table is not object then input parameter is id and table parameter will be overwritten with table reference
+        if (typeof (table) !== 'object') {
+            table = document.getElementById(table);
+        }
+        // if index is not defined then index of the last row
+        if (index === undefined) {
+            index = -1;
+        }
+        // insert table row
+        if (mode === 'insert') {
+            // set reference of first row
+            fr = table.rows[0];
+            // define number of columns (it is colspan sum)
+            for (i = 0; i < fr.cells.length; i++) {
+                cols += fr.cells[i].colSpan;
+            }
+            // insert table row (insertRow returns reference to the newly created row)
+            nr = table.insertRow(index);
+            // insert table cells to the new row
+            for (i = 0; i < cols; i++) {
+                nc = nr.insertCell(i);
+                // add "redips" property to the table cell and optionally event listener
+                cell_init(nc);
+            }
+            // show cell index (if show_index public property is set to true)
+            cell_index();
+        } else // delete table row and update rowspan for cells in upper rows if needed
+        {
+            // last row should not be deleted
+            if (table.rows.length === 1) {
+                return;
+            }
+            // delete last row
+            table.deleteRow(index);
+            // prepare cell list
+            cl = cell_list(table);
+            // set new index for last row
+            index = table.rows.length - 1;
+            // set maximum number of columns that table has
+            cols = max_cols(table);
+            // open loop for each cell in last row
+            for (i = 0; i < cols; i++) {
+                // try to find cell in last row
+                c = cl[index + '-' + i];
+                // if cell doesn't exist then update colspan in upper cells
+                if (c === undefined) {
+                    // open loop for cells up in column
+                    for (j = index , k = 1; j >= 0; j-- , k++) {
+                        // try to find cell upper cell with rowspan value
+                        c = cl[j + '-' + i];
+                        // if cell is found then update rowspan value
+                        if (c !== undefined) {
+                            c.rowSpan = k;
+                            break;
+                        }
+                    }
+                }
+                // if cell in last row has rowspan greater then 1
+                else if (c.rowSpan > 1) {
+                    c.rowSpan -= 1;
+                }
+                // increase loop variable "i" for colspan value
+                i += c.colSpan - 1;
+            }
+        }
+        // in case of inserting new table row method will return TR reference (otherwise it will return NULL)
+        return nr;
+    };
+    /**
+	 * Method adds / deletes table column. Last column will be assumed if index is omitted.
+	 * @param {HTMLElement|String} table Table id or table reference.
+	 * @param {String} mode Insert/delete table column
+	 * @param {Integer} [index] Index where column will be inserted or deleted. Last column will be assumed if index is not defined.  
+	 * @public
+	 * @function
+	 * @name REDIPS.table#column
+	 */
+    column = function(table, mode, index) {
+        var c, // current cell
+            idx, // cell index needed when column is deleted
+            nc, // new cell
+            i;
+        // loop variable
+        // remove text selection
+        remove_selection();
+        // if table is not object then input parameter is id and table parameter will be overwritten with table reference
+        if (typeof (table) !== 'object') {
+            table = document.getElementById(table);
+        }
+        // if index is not defined then index will be set to special value -1 (means to remove the very last column of a table or add column to the table end)
+        if (index === undefined) {
+            index = -1;
+        }
+        // insert table column
+        if (mode === 'insert') {
+            // loop iterates through each table row
+            for (i = 0; i < table.rows.length; i++) {
+                // insert cell
+                nc = table.rows[i].insertCell(index);
+                // add "redips" property to the table cell and optionally event listener
+                cell_init(nc);
+            }
+            // show cell index (if show_index public property is set to true)
+            cell_index();
+        } else // delete table column
+        {
+            // set reference to the first row
+            c = table.rows[0].cells;
+            // test column number and prevent deleting last column
+            if (c.length === 1 && (c[0].colSpan === 1 || c[0].colSpan === undefined)) {
+                return;
+            }
+            // row loop
+            for (i = 0; i < table.rows.length; i++) {
+                // define cell index for last column
+                if (index === -1) {
+                    idx = table.rows[i].cells.length - 1;
+                } else // if index is defined then use "index" value
+                {
+                    idx = index;
+                }
+                // define current cell (it can't use special value -1)
+                c = table.rows[i].cells[idx];
+                // if cell has colspan value then decrease colspan value
+                if (c.colSpan > 1) {
+                    c.colSpan -= 1;
+                } else // else delete cell
+                {
+                    table.rows[i].deleteCell(index);
+                }
+                // increase loop variable "i" for rowspan value
+                i += c.rowSpan - 1;
+            }
+        }
+    };
+    /**
+	 * Method sets or removes mark from table cell. It can be called on several ways:
+	 * with direct cell address (cell reference or cell id) or with cell coordinates (row and column).
+	 * @param {Boolean} flag If set to true then TD will be marked, otherwise table cell will be cleaned.
+	 * @param {HTMLElement|String} el Cell reference or id of table cell. Or it can be table reference or id of the table.  
+	 * @param {Integer} [row] Row of the cell.
+	 * @param {Integer} [col] Column of the cell.
+	 * @example
+	 * // set mark to the cell with "mycell" reference
+	 * REDIPS.table.mark(true, mycell);
+	 *  
+	 * // remove mark from the cell with id "a1"
+	 * REDIPS.table.mark(false, "a1");
+	 *  
+	 * // set mark to the cell with coordinates (1,2) on table with reference "mytable"   
+	 * REDIPS.table.mark(true, mytable, 1, 2);
+	 *  
+	 * // remove mark from the cell with coordinates (4,5) on table with id "t3"
+	 * REDIPS.table.mark(false, "t3", 4, 5);
+	 * @public
+	 * @function
+	 * @name REDIPS.table#mark
+	 */
+    mark = function(flag, el, row, col) {
+        // cell list with new coordinates
+        var cl;
+        // first parameter "flag" should be boolean (if not, then return from method
+        if (typeof (flag) !== 'boolean') {
+            return;
+        }
+        // test type of the second parameter (it can be string or object)
+        if (typeof (el) === 'string') {
+            // set reference to table or table cell (overwrite input el parameter)
+            el = document.getElementById(el);
+        }
+        // if el is not string and is not an object then return from the method
+        else if (typeof (el) !== 'object') {
+            return;
+        }
+        // at this point, el should be an object - so test if it's TD or TABLE
+        if (el.nodeName === 'TABLE') {
+            // prepare cell list
+            cl = cell_list(el);
+            // set reference to the cell (overwrite input el parameter)
+            el = cl[row + '-' + col];
+        }
+        // if el doesn't exist (el is not set in previous step) or el is not table cell either then return from method
+        if (!el || el.nodeName !== 'TD') {
+            return;
+        }
+        // if custom property "redips" doesn't exist then create custom property
+        el.redips = el.redips || {};
+        // if color property is string, then TD background color will be changed (REDIPS.table.color.cell can be set to false)
+        if (typeof (REDIPS.table.color.cell) === 'string') {
+            // mark table cell
+            if (flag === true) {
+                // remember old color
+                el.redips.background_old = el.style.backgroundColor;
+                // set background color
+                el.style.backgroundColor = REDIPS.table.color.cell;
+            } else // umark table cell
+            {
+                // return original background color and reset selected flag
+                el.style.backgroundColor = el.redips.background_old;
+            }
+        }
+        // set flag (true/false) to the cell "selected" property
+        el.redips.selected = flag;
+    };
+    /**
+	 * Method removes text selection.
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    remove_selection = function() {
+        // remove text selection (Chrome, FF, Opera, Safari)
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        }
+        // IE8
+        else if (document.selection && document.selection.type === "Text") {
+            try {
+                document.selection.empty();
+            } catch (error) {}
+        }
+    };
+    // ignore error to as a workaround for bug in IE8
+    /**
+	 * Determining a table cell's X and Y position/index.
+	 * @see <a href="http://www.javascripttoolbox.com/temp/table_cellindex.html">http://www.javascripttoolbox.com/temp/table_cellindex.html</a>
+	 * @see <a href="http://www.barryvan.com.au/2012/03/determining-a-table-cells-x-and-y-positionindex/">http://www.barryvan.com.au/2012/03/determining-a-table-cells-x-and-y-positionindex/</a>
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    cell_list = function(table) {
+        var matrix = [],
+            matrixrow,
+            lookup = {},
+            c, // current cell
+            ri, // row index
+            rowspan, colspan, firstAvailCol, tr, // TR collection
+            i, j, k, l;
+        // loop variables
+        // set HTML collection of table rows
+        tr = table.rows;
+        // open loop for each TR element
+        for (i = 0; i < tr.length; i++) {
+            // open loop for each cell within current row
+            for (j = 0; j < tr[i].cells.length; j++) {
+                // define current cell
+                c = tr[i].cells[j];
+                // set row index
+                ri = c.parentNode.rowIndex;
+                // define cell rowspan and colspan values
+                rowspan = c.rowSpan || 1;
+                colspan = c.colSpan || 1;
+                // if matrix for row index is not defined then initialize array
+                matrix[ri] = matrix[ri] || [];
+                // find first available column in the first row
+                for (k = 0; k < matrix[ri].length + 1; k++) {
+                    if (typeof (matrix[ri][k]) === 'undefined') {
+                        firstAvailCol = k;
+                        break;
+                    }
+                }
+                // set cell coordinates and reference to the table cell
+                lookup[ri + '-' + firstAvailCol] = c;
+                for (k = ri; k < ri + rowspan; k++) {
+                    matrix[k] = matrix[k] || [];
+                    matrixrow = matrix[k];
+                    for (l = firstAvailCol; l < firstAvailCol + colspan; l++) {
+                        matrixrow[l] = 'x';
+                    }
+                }
+            }
+        }
+        return lookup;
+    };
+    /**
+	 * Method relocates element nodes from source cell to the target table cell.
+	 * It is used in case of merging table cells.
+	 * @param {HTMLElement} from Source table cell.
+	 * @param {HTMLElement} to Target table cell.
+	 * @private
+	 * @memberOf REDIPS.table#
+	 */
+    relocate = function(from, to) {
+        var cn, // number of child nodes
+            i, j;
+        // loop variables
+        // test if "from" cell is equal to "to" cell then do nothing
+        if (from === to) {
+            return;
+        }
+        // define childnodes length before loop
+        cn = from.childNodes.length;
+        // loop through all child nodes in table cell
+        // 'j', not 'i' because NodeList objects in the DOM are live
+        for (i = 0 , j = 0; i < cn; i++) {
+            // relocate only element nodes
+            if (from.childNodes[j].nodeType === 1) {
+                to.appendChild(from.childNodes[j]);
+            } else // skip text nodes, attribute nodes ...
+            {
+                j++;
+            }
+        }
+    };
+    /**
+	 * Method displays cellIndex for each cell in tables. It is useful in debuging process.
+	 * @param {Boolean} flag If set to true then cell content will be replaced with cell index.
+	 * @public
+	 * @function
+	 * @name REDIPS.table#cell_index
+	 */
+    cell_index = function(flag) {
+        // if input parameter isn't set and show_index private property is'nt true, then return
+        // input parameter "flag" can be undefined in case of internal calls 
+        if (flag === undefined && show_index !== true) {
+            return;
+        }
+        // if input parameter is set, then save parameter to the private property show_index
+        if (flag !== undefined) {
+            // save flag to the show_index private parameter
+            show_index = flag;
+        }
+        // variable declaration
+        var tr, // number of rows in a table
+            c, // current cell
+            cl, // cell list
+            cols, // maximum number of columns that table contains
+            i, j, t;
+        // loop variables
+        // open loop for each table inside container
+        for (t = 0; t < tables.length; t++) {
+            // define row number in current table
+            tr = tables[t].rows;
+            // define maximum number of columns (table row may contain merged table cells)
+            cols = max_cols(tables[t]);
+            // define cell list
+            cl = cell_list(tables[t]);
+            // open loop for each row
+            for (i = 0; i < tr.length; i++) {
+                // open loop for every TD element in current row
+                for (j = 0; j < cols; j++) {
+                    // if cell exists then display cell index
+                    if (cl[i + '-' + j]) {
+                        // set reference to the current cell
+                        c = cl[i + '-' + j];
+                        // set innerHTML with cellIndex property
+                        c.innerHTML = (show_index) ? i + '-' + j : '';
+                    }
+                }
+            }
+        }
+    };
+    return {
+        /* public properties */
+        /**
+		 * color.cell defines background color for marked table cell. If not set then background color will not be changed.
+		 * @type Object
+		 * @name REDIPS.table#color
+		 * @default null
+		 * @example
+		 * // set "#9BB3DA" as color for marked cell
+		 * REDIPS.table.color.cell = '#9BB3DA';
+		 */
+        color: color,
+        /**
+		 * Enable / disable marking not empty table cells.
+		 * @type Boolean
+		 * @name REDIPS.table#mark_nonempty
+		 * @default true
+		 * @example
+		 * // allow marking only empty cells
+		 * REDIPS.table.mark_nonempty = false;
+		 */
+        mark_nonempty: mark_nonempty,
+        /* public methods are documented in main code */
+        onmousedown: onmousedown,
+        mark: mark,
+        merge: merge,
+        split: split,
+        row: row,
+        column: column,
+        cell_index: cell_index,
+        cell_ignore: cell_ignore
+    };
+}());
+// if REDIPS.event isn't already defined (from other REDIPS file) 
+if (!REDIPS.event) {
+    REDIPS.event = (function() {
+        var add, // add event listener
+            remove;
+        // remove event listener
+        // http://msdn.microsoft.com/en-us/scriptjunkie/ff728624
+        // http://www.javascriptrules.com/2009/07/22/cross-browser-event-listener-with-design-patterns/
+        // http://www.quirksmode.org/js/events_order.html
+        // add event listener
+        add = function(obj, eventName, handler) {
+            if (obj.addEventListener) {
+                // (false) register event in bubble phase (event propagates from from target element up to the DOM root)
+                obj.addEventListener(eventName, handler, false);
+            } else if (obj.attachEvent) {
+                obj.attachEvent('on' + eventName, handler);
+            } else {
+                obj['on' + eventName] = handler;
+            }
+        };
+        // remove event listener
+        remove = function(obj, eventName, handler) {
+            if (obj.removeEventListener) {
+                obj.removeEventListener(eventName, handler, false);
+            } else if (obj.detachEvent) {
+                obj.detachEvent('on' + eventName, handler);
+            } else {
+                obj['on' + eventName] = null;
+            }
+        };
+        return {
+            add: add,
+            remove: remove
+        };
+    }());
+}
+// end of public (return statement)	
 
