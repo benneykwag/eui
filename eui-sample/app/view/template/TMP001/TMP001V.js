@@ -1,4 +1,4 @@
-Ext.define('Eui.sample.view.template.TMP001.TMP001V',{
+Ext.define('Eui.sample.view.template.tmp001.TMP001V',{
     extend: 'Ext.container.Container',
     xtype: 'TMP001V',
     title: '운영기초관리',

@@ -82,9 +82,18 @@ Ext.define('Override.eui.Config', {
             "SWIDGET": "TMP001V",
             "TEXT": "TMP001V",
             "LEVEL": 2,
-            "SCLASS": "Eui.sample.view.template.TMP001.TMP001V",
+            "SCLASS": "Eui.sample.view.template.tmp001.TMP001V",
             "CODE": "TEMPLATE01",
             "PCODE": "TEMPLATE"
         },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "TMP002V",
+            "TEXT": "TMP002V",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.template.tmp002.TMP001V",
+            "CODE": "TEMPLATE02",
+            "PCODE": "TEMPLATE"
+        }
     ]
 });
