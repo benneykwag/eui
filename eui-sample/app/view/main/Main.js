@@ -16,7 +16,7 @@ Ext.define('Eui.sample.view.main.Main', {
         'Eui.sample.view.main.MainModel',
         'Eui.sample.view.frame.Header',
         'Eui.sample.view.frame.SideBar',
-        'Eui.sample.view.template.tmp005.TMP005V'
+        'Eui.sample.view.template.tmp010.TMP010V'
     ],
 
     controller: 'main',
@@ -48,7 +48,7 @@ Ext.define('Eui.sample.view.main.Main', {
                     items: [
                         {
                             title: 'HOME',
-                            xtype: 'TMP005V'
+                            xtype: 'TMP010V'
                         }
                     ]
                 }

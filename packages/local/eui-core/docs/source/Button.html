@@ -23,7 +23,9 @@
  *
  *     @example
  *     Ext.create(&#39;Ext.panel.Panel&#39;, {
+ *          title: &#39;Eui Button&#39;,
  *          requires: [&#39;eui.button.Button&#39;],
+ *          defaultListenerScope: true,
  *          items: [
  *              {
  *                  xtype: &#39;euibutton&#39;,
@@ -31,8 +33,11 @@
  *                  handler: &#39;onClickButton&#39;
  *              }
  *         ],
- *         height: 500,
- *         width: 800,
+ *         onClickButton: function(button){
+ *              Ext.Msg.alert(&#39;Status&#39;, button.getText() + &#39; Button Clicked.&#39;);
+ *         },
+ *         height: 200,
+ *         width: 300,
  *         renderTo: Ext.getBody()
  *     });
  *

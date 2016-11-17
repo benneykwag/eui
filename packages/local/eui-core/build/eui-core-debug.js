@@ -1275,7 +1275,9 @@ Ext.define('eui.Util', {
  *
  *     @example
  *     Ext.create('Ext.panel.Panel', {
+ *          title: 'Eui Button',
  *          requires: ['eui.button.Button'],
+ *          defaultListenerScope: true,
  *          items: [
  *              {
  *                  xtype: 'euibutton',
@@ -1283,8 +1285,11 @@ Ext.define('eui.Util', {
  *                  handler: 'onClickButton'
  *              }
  *         ],
- *         height: 500,
- *         width: 800,
+ *         onClickButton: function(button){
+ *              Ext.Msg.alert('Status', button.getText() + ' Button Clicked.');
+ *         },
+ *         height: 200,
+ *         width: 300,
  *         renderTo: Ext.getBody()
  *     });
  *
@@ -3737,7 +3742,7 @@ Ext.define('eui.form.field.Number', {
  */
 Ext.define('eui.form.field.PopupTrigger', {
     extend: 'Ext.form.field.Text',
-    alias: 'widget.sppopup',
+    alias: 'widget.euipopuptrigger',
     hideLabel: true,
     /***** Custom Config Start *****/
     config: {

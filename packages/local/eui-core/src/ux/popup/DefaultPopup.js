@@ -175,7 +175,7 @@ Ext.define('eui.ux.popup.DefaultPopup', {
                     hiddenCloseBtn: false,
                     hiddenHeader: true,
                     itemId: 'popup',
-                    xtype: 'spform',
+                    xtype: 'euiform',
                     hiddenSearchBtn: false,
                     listeners: {
                         scome: me,
@@ -183,7 +183,7 @@ Ext.define('eui.ux.popup.DefaultPopup', {
                     }
                 },
                 {
-                    xtype: 'spgrid',
+                    xtype: 'euigrid',
                     flex: 1,
                     usePagingToolbar: true,
                     bind: {

@@ -6,7 +6,9 @@
  *
  *     @example
  *     Ext.create('Ext.panel.Panel', {
+ *          title: 'Eui Button',
  *          requires: ['eui.button.Button'],
+ *          defaultListenerScope: true,
  *          items: [
  *              {
  *                  xtype: 'euibutton',
@@ -14,8 +16,11 @@
  *                  handler: 'onClickButton'
  *              }
  *         ],
- *         height: 500,
- *         width: 800,
+ *         onClickButton: function(button){
+ *              Ext.Msg.alert('Status', button.getText() + ' Button Clicked.');
+ *         },
+ *         height: 200,
+ *         width: 300,
  *         renderTo: Ext.getBody()
  *     });
  *

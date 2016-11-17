@@ -15,6 +15,16 @@ Ext.define('eui.Util', {
     webosShowWindowId: null,
     currentAjaxButtonId: null,  // 통신을 일으키는 버튼 아이디.
 
+    captureEvents: function (observable) {
+        Ext.util.Observable.capture(
+            observable,
+            function (eventName) {
+                console.info(Ext.Date.format(new Date(), 'Y년m월d일 A g시i분 s초 u'), observable.id, observable.xtype||observable.storeId,  'event :',eventName);
+            },
+            this
+        );
+    },
+
     /***
      * 통신중인 버튼을 disabled한다.
      * @param flag

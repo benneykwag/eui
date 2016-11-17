@@ -42,6 +42,16 @@ Ext.define('Eui.sample.view.form.Panel', {
             },
             items: [
                 {
+                    xtype: 'euipopuptrigger',
+                    fieldLabel: '검색팝업',
+                    popupConfig :{
+                        popupClass: 'Eui.sample.view.common.PopUp01',
+                        title: 'aa',
+                        width: 600,
+                        height : 500
+                    }
+                },
+                {
                     xtype: 'euiradiogroup',
                     allowBlank: false,
                     fieldLabel: '회원구분',
