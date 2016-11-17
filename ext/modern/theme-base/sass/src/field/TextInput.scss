@@ -1,0 +1,16 @@
+.#{$prefix}textinput {
+    overflow: hidden;
+    @include st-box;
+
+    .#{$prefix}input-el {
+        @include st-box-flex(1);
+        &::-ms-clear {
+            display: none;
+        }
+    }
+
+    .#{$prefix}before-el,
+    .#{$prefix}after-el {
+        @include st-box;
+    }
+}

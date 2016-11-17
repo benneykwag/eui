@@ -122,7 +122,7 @@ Ext.define('Ext.form.field.Time', {
      * The format text to be announced by screen readers when the field is focused.
      */
     /** @ignore */
-    formatText: 'Expected time format: HH:MM space am/pm',
+    formatText: 'Expected time format HH:MM space AM or PM',
     //</locale>
 
     /**

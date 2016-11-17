@@ -93,6 +93,8 @@ Ext.define('Ext.data.proxy.Memory', {
             len = recs.length;
             
         for (i; i < len; i++) {
+            // Because Memory proxy is synchronous, the commit must call store#afterErase
+            recs[i].dropped = !!operation.isDestroyOperation;
             recs[i].commit();
         }
         operation.setSuccessful(true);

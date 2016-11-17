@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect */
+
 describe("grid-view", function() {
     function createSuite(buffered) {
         describe(buffered ? "with buffered rendering" : "without buffered rendering", function() {
@@ -186,7 +188,7 @@ describe("grid-view", function() {
     }
     createSuite(false);
     createSuite(true);
-   
+    
     describe("drag and drop between grids", function() {
         var grid1,
             grid2;
@@ -194,7 +196,7 @@ describe("grid-view", function() {
         var Model = Ext.define(null, {
             extend: 'Ext.data.Model',
             fields: ['group', 'text']
-        })
+        });
 
         function findCell(grid, rowIdx, cellIdx) {
             return grid.getView().getCellInclusive({
@@ -220,23 +222,27 @@ describe("grid-view", function() {
 
             jasmine.fireMouseEvent(fromEl, 'mouseover', fromX, fromY);
             jasmine.fireMouseEvent(fromEl, 'mousedown', fromX, fromY);
-            jasmine.fireMouseEvent(fromEl, 'mousemove', fromX+dragThresh, fromY);
+            jasmine.fireMouseEvent(fromEl, 'mousemove', fromX + dragThresh, fromY);
 
             jasmine.fireMouseEvent(fromEl, 'mouseout', toX, toY);
             jasmine.fireMouseEvent(fromEl, 'mouseleave', toX, toY);
             jasmine.fireMouseEvent(toEl, 'mouseenter', toX, toY);
 
             jasmine.fireMouseEvent(toEl, 'mouseover', toX, toY);
-            jasmine.fireMouseEvent(toEl, 'mousemove', toX-dragThresh, toY);
+            jasmine.fireMouseEvent(toEl, 'mousemove', toX - dragThresh, toY);
             jasmine.fireMouseEvent(toEl, 'mousemove', toX, toY);
             jasmine.fireMouseEvent(toEl, 'mouseup', toX, toY);
+            jasmine.fireMouseEvent(toEl, 'mouseout', fromX, fromY);
+
+            // Mousemove outside triggers removal of overCls
+            jasmine.fireMouseEvent(fromEl, 'mousemove', fromX, fromY);
         }
 
         afterEach(function() {
             grid1 = grid2 = Ext.destroy(grid1, grid2);
         });
 
-        function makeGrid(dragGroup, dropGroup, data) {
+        function makeGrid(ddConfig, data) {
             return new Ext.grid.Panel({
                 renderTo: Ext.getBody(),
                 height: 200,
@@ -246,11 +252,9 @@ describe("grid-view", function() {
                     ftype: 'grouping'
                 }],
                 viewConfig: {
-                    plugins: {
-                        ptype: 'gridviewdragdrop',
-                        dragGroup: dragGroup,
-                        dropGroup: dropGroup
-                    }
+                    plugins: Ext.apply({
+                        ptype: 'gridviewdragdrop'
+                    }, ddConfig)
                 },
                 store: {
                     model: Model,
@@ -270,7 +274,10 @@ describe("grid-view", function() {
                     dragEl, dropEl, box,
                     startX, startY, endX, endY, old;
 
-                grid1 = makeGrid('group1', 'group2', [{
+                grid1 = makeGrid({
+                    dragGroup: 'group1',
+                    dropGroup: 'group2'
+                }, [{
                     group: 'Group1',
                     text: 'Item 1'
                 }, {
@@ -280,18 +287,24 @@ describe("grid-view", function() {
                     group: 'Group2',
                     text: 'Item 3'
                 }]);
-                grid2 = makeGrid('group2', 'group1');
-
+                grid2 = makeGrid({
+                    dragGroup: 'group2',
+                    dropGroup: 'group1',
+                    dropZone: {
+                        overClass: 'dropzone-over-class'
+                    }
+                });
                 dragEl = selectRow(grid1, 0);
                 box = Ext.get(dragEl).getBox();
-                selectRow(grid1, 2);
                 startX = box.left + 1;
                 startY = box.top + 1;
-                dropEl = grid2.body.dom.firstChild;
+                dropEl = grid2.getView().el;
                 box = Ext.get(dropEl).getBox();
                 endX = box.left + 20;
                 endY = box.top + 20;
 
+                // The class must be added, so call through
+                spyOn(dropEl, 'addCls').andCallThrough();
 
                 old = window.onerror;
                 window.onerror = spy.andCallFake(function() {
@@ -302,7 +315,18 @@ describe("grid-view", function() {
 
                 dragAndDrop(dragEl, startX, startY, dropEl, endX, endY);
                 expect(spy).not.toHaveBeenCalled();
+
+                window.onerror = old;
+
+                // overClass should have been added
+                expect(grid2.getView().el.addCls.calls[0].args[0]).toBe('dropzone-over-class');
+
+                // But removed
+                expect(grid2.getView().el.hasCls('dropzone-over-class')).toBe(false);
+
+                // A drag/drop must have happened
+                expect(grid2.store.getCount()).toBe(1);
             });
         });
     });
-});
+}); 

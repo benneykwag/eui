@@ -1608,6 +1608,19 @@ describe("Ext.selection.Model", function() {
                 expect(rec.get('name')).toBe('Bar');
                 expect(rec).toBe(store.getById(2));
             });
+
+            it("should be able to reload a store that had multiple items selected", function() {
+                select(range(1, 4));
+                expect(function(){
+                    store.loadData([{
+                        name: 'Foo'
+                    }, {
+                        name: 'Bar'
+                    }]);
+                }).not.toThrow();
+
+                expectNone();
+            });
         });
 
         describe("pruneRemoved: true", function() {
@@ -1961,7 +1974,7 @@ describe("Ext.selection.Model", function() {
                 select(old);
                 selModel.bindStore(makeOtherStore([{
                     id: 1,
-                    name: 'Foo'
+                   name: 'Foo'
                 }]));
                 var last = selModel.getLastSelected();
                 expect(last).not.toBe(old);
@@ -2071,5 +2084,5 @@ describe("Ext.selection.Model", function() {
                 expect(spy.callCount).toBe(1);
             });
         });
-    });
+    });    
 });

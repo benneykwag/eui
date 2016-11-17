@@ -38,7 +38,8 @@ Ext.define('Ext.util.Event', function() {
             observable = me.observable,
             eventName = me.name,
             listeners, listener, priority, isNegativePriority, highestNegativePriorityIndex,
-            hasNegativePriorityIndex, length, index, i, listenerPriority;
+            hasNegativePriorityIndex, length, index, i, listenerPriority,
+            managedListeners;
 
         //<debug>
         if (scope && !Ext._namedScopes[scope] && (typeof fn === 'string') && (typeof scope[fn] !== 'function')) {
@@ -112,6 +113,20 @@ Ext.define('Ext.util.Event', function() {
                     options.delegated !== false,
                     options.capture
                 );
+            }
+
+            // If the listener was passed with a manager, add it to the manager's list.
+            if (manager) {
+                // if scope is an observable, the listener will be automatically managed
+                // this eliminates the need to call mon() in a majority of cases
+                managedListeners = manager.managedListeners || (manager.managedListeners = []);
+                managedListeners.push({
+                    item: me.observable,
+                    ename: (options && options.managedName) || me.name,
+                    fn: fn,
+                    scope: scope,
+                    options: options
+                });
             }
 
             added = true;
@@ -411,6 +426,26 @@ Ext.define('Ext.util.Event', function() {
                 
                 // We don't want to keep closure and scope on the Event prototype!
                 fireInfo.fn = fireInfo.scope = null;
+                
+                // If the scope is already destroyed, we absolutely cannot deliver events to it.
+                // We also need to clean up the listener to avoid it hanging around forever
+                // like a zombie. Scope can be null/undefined, that's normal.
+                if (fireScope && fireScope.destroyed) {
+                    //<debug>
+                    // DON'T raise errors if the destroyed scope is an Ext.container.Monitor!
+                    // It is to be deprecated and removed shortly.
+                    if (fireScope.$className !== 'Ext.container.Monitor') {
+                        Ext.raise({
+                            msg: 'Attempting to fire "' + me.name + '" event on destroyed ' +
+                                  (fireScope.$className || 'object') + ' instance with id: ' +
+                                  (fireScope.id || 'unknown'),
+                            instance: fireScope
+                        });
+                    }
+                    //</debug>
+                    
+                    me.removeListener(fireFn, fireScope, i);
+                }
                 
                 if (fireFn.apply(fireScope, firingArgs) === false) {
                     Ext.EventObject = null;

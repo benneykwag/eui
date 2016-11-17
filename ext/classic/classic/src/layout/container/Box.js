@@ -381,8 +381,7 @@ Ext.define('Ext.layout.container.Box', {
             smp = owner.stretchMaxPartner,
             style = me.innerCt.dom.style,
             names = me.names,
-            overflowHandler = me.overflowHandler,
-            scrollPos;
+            overflowHandler = me.overflowHandler;
 
         ownerContext.boxNames = names;
 
@@ -547,7 +546,7 @@ Ext.define('Ext.layout.container.Box', {
                 }
                 // a %age width. Note that we are testing the value that is
                 // assigned to match.
-                else if (match = percentageRe.exec(child[names.width])) {
+                else if ((match = percentageRe.exec(child[names.width]))) {
                     childContext.percentageParallel = parseFloat(match[1]) / 100;
                     ++percentageWidths;
                 }
@@ -722,7 +721,7 @@ Ext.define('Ext.layout.container.Box', {
                 childContext = childItems[i];
                 if (childContext.percentageParallel) {
                     childWidth = Math.ceil(percentageSpace * childContext.percentageParallel);
-                    childWidth = childContext.setWidth(childWidth);
+                    childWidth = childContext[setWidthName](childWidth);
                     nonFlexWidth += childWidth;
                 }
             }
@@ -888,7 +887,7 @@ Ext.define('Ext.layout.container.Box', {
                         continue;
                     } else {
                         childHeight = percentagePerpendicular * availHeight - childMargins;
-                        childHeight = childContext[names.setHeight](childHeight);
+                        childHeight = childContext[setHeightName](childHeight);
                     }
                 }
                 
@@ -993,7 +992,7 @@ Ext.define('Ext.layout.container.Box', {
                 if (heightShrinkWrap && percentagePerpendicular) {
                     childMargins = childContext.marginInfo || childContext.getMarginInfo();
                     childHeight = percentagePerpendicular * height - childMargins[heightName];
-                    childHeight = childContext.setHeight(childHeight);
+                    childHeight = childContext[setHeightName](childHeight);
                 }
 
                 if (isCenter) {
@@ -1250,10 +1249,6 @@ Ext.define('Ext.layout.container.Box', {
         return items;
     },
 
-    getScrollerEl: function() {
-        return this.innerCt;
-    },
-
     /**
      * Inserts the splitter for a given region. A reference to the splitter is also stored
      * on the component as "splitter".
@@ -1342,8 +1337,8 @@ Ext.define('Ext.layout.container.Box', {
 
     onAdd: function (item, index) {
         var me = this,
-            // Buttons will gain a split param
-            split = me.enableSplitters && item.split && !item.isButton;
+            // Buttons have their own concept of "split" config
+            split = me.enableSplitters && !item.isButton && item.split;
 
         me.callParent([item, index]);
 

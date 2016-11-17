@@ -277,10 +277,9 @@ Ext.define('Ext.data.reader.Xml', {
      * Parses an XML document and returns a ResultSet containing the model instances.
      * @param {Object} doc Parsed XML document
      * @param {Object} [readOptions] See {@link #read} for details.
-     * @param internalReadOptions (private)
      * @return {Ext.data.ResultSet} The parsed result set
      */
-    readRecords: function(doc, readOptions, internalReadOptions) {
+    readRecords: function(doc, readOptions, /* private */ internalReadOptions) {
         // it's possible that we get passed an array here by associations.
         // Make sure we strip that out (see Ext.data.reader.Reader#readAssociated)
         if (Ext.isArray(doc)) {

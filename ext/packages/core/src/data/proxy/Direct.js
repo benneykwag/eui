@@ -15,15 +15,29 @@
  *          destroy: 'MyApp.destroyRecords'
  *      }
  *
+ * You can also use a `prefix` config to avoid duplicating full namespaces for Direct functions:
+ *
+ *      api: {
+ *          prefix: 'MyApp',
+ *          read: 'readRecords',
+ *          create: 'createRecords',
+ *          update: 'updateRecords',
+ *          destroy: 'destroyRecords'
+ *      }
+ *
  * The preferred way is to specify function names to allow late resolution, however you can
  * pass function references instead if desired:
  *
  *      api: {
- *          read: MyApp.readRecords, // Functions should be already defined
+ *          read: MyApp.readRecords,
  *          create: MyApp.createRecords,
  *          update: MyApp.updateRecords,
  *          destroy: MyApp.destroyRecords
  *      }
+ *
+ * This method of configuring API is not recommended because this way the Direct functions
+ * need to be created very early in the application lifecycle, long before {@link Ext.app.Application}
+ * instance is initialized.
  *
  * You can also use the {@link #directFn} configuration instead of {@link #api}. This will use
  * the same Direct function for all types of requests.
@@ -227,7 +241,7 @@ Ext.define('Ext.data.proxy.Direct', {
         /**
         * @cfg {Function/String} directFn
         * Function to call when executing a request. `directFn` is a simple alternative to defining
-        * the api configuration-parameter for Stores which will not implement a full CRUD api.
+        * the api configuration parameter for Stores which will not implement a full CRUD api.
         * The `directFn` may also be a string reference to the fully qualified name of the function,
         * for example: `'MyApp.company.GetProfile'`. This can be useful when using dynamic loading.
         * The string will be resolved before calling the function for the first time.
@@ -237,7 +251,24 @@ Ext.define('Ext.data.proxy.Direct', {
         /**
         * @cfg {Object} api
         * The same as {@link Ext.data.proxy.Server#api}, however instead of providing urls
-        * you should provide a Direct function for each CRUD method. See also {@link #directFn}.
+        * you should provide a Direct function name for each CRUD method.
+        *
+        * Instead of providing fully qualified names for each function, you can use `prefix`
+        * property to provide a common prefix for all functions:
+        *
+        *   api: {
+        *       prefix: 'MyApp',
+        *       read: 'readRecords',
+        *       create: 'createRecords',
+        *       update: 'updateRecords',
+        *       destroy: 'destroyRecords'
+        *   }
+        *
+        * This way function names will be resolved to `'MyApp.readRecords'`, `'MyApp.createRecords'`,
+        * etc. Note that using `prefix` and fully qualified function names is **not** supported,
+        * and prefix will be used for every function name when configured.
+        *
+        * See also {@link #directFn}.
         */
         api: undefined,
         
@@ -281,11 +312,10 @@ Ext.define('Ext.data.proxy.Direct', {
         var me = this,
             fn = me.getDirectFn(),
             api = me.getApi(),
-            Manager = Ext.direct.Manager,
             method;
         
         if (fn) {
-            me.setDirectFn(method = Manager.parseMethod(fn));
+            me.setDirectFn(method = Ext.direct.Manager.parseMethod(fn));
             
             if (!Ext.isFunction(method)) {
                 Ext.raise('Cannot resolve directFn ' + fn);
@@ -293,16 +323,8 @@ Ext.define('Ext.data.proxy.Direct', {
         }
         
         if (api) {
-            for (fn in api) {
-                if (api.hasOwnProperty(fn)) {
-                    method = api[fn];
-                    api[fn] = Manager.parseMethod(method);
-                    
-                    if (!Ext.isFunction(api[fn])) {
-                        Ext.raise('Cannot resolve Direct api ' + fn + ' method ' + method);
-                    }
-                }
-            }
+            api = Ext.direct.Manager.resolveApi(api, me);
+            me.setApi(api);
         }
         
         me.methodsResolved = true;
@@ -327,8 +349,19 @@ Ext.define('Ext.data.proxy.Direct', {
         fn = fn || me.getDirectFn();
         
         //<debug>
-        if (!fn) {
-            Ext.raise('No Ext Direct function specified for this proxy');
+        if (!fn || !fn.directCfg) {
+            Ext.raise({
+                msg: 'No Ext Direct function specified for Direct proxy "' + action + '" operation',
+                proxy: me
+            });
+        }
+        
+        // This might lead to exceptions so bail out early
+        if (!me.paramOrder && fn.directCfg.method.len > 1) {
+            Ext.raise({
+                msg: 'Incorrect parameters for Direct proxy "' + action + '" operation',
+                proxy: me
+            });
         }
         //</debug>
         
@@ -355,8 +388,10 @@ Ext.define('Ext.data.proxy.Direct', {
         
         args = fn.directCfg.method.getArgs({
             params: params,
+            allowSingle: writer.getAllowSingle(),
             paramOrder: me.getParamOrder(),
             paramsAsHash: me.getParamsAsHash(),
+            paramsAsArray: true,
             metadata: me.getMetadata(),
             callback: me.createRequestCallback(request, operation),
             scope: me
@@ -371,7 +406,7 @@ Ext.define('Ext.data.proxy.Direct', {
         
         // Store expects us to return something to indicate that the request
         // is pending; not doing so will make a buffered Store repeat the
-        // requests over and over. See https://sencha.jira.com/browse/EXTJSIV-11757
+        // requests over and over.
         return request;
     },
     
@@ -384,16 +419,14 @@ Ext.define('Ext.data.proxy.Direct', {
     abort: function(operation) {
         var id;
         
-        if (!operation) {
-            return;
+        // Assume this can be called with request instead of operation, a la Ajax proxy
+        if (operation && operation.isDataRequest) {
+            operation = operation.getOperation();
         }
         
-        if (operation.isOperation) {
+        // Check definedness again, the above could have returned null
+        if (operation && operation.isOperation) {
             id = operation.id;
-        }
-        // Assume this can be called with request instead of operation, a la Ajax proxy
-        else if (operation.operation.isOperation) {
-            id = operation.operation.id;
         }
         
         // We cannot abort a running request but we can ignore the data when it comes back.
@@ -401,7 +434,6 @@ Ext.define('Ext.data.proxy.Direct', {
             this.canceledOperations[id] = true;
         }
     },
-     
 
     /**
      * @method

@@ -32,7 +32,7 @@ Ext.define('Ext.draw.sprite.AttributeParser', {
     /**
      * Normalize angle to the [-180,180) interval.
      * @param n Angle in radians.
-     * @returns {Number/undefined} Normalized angle or undefined.
+     * @return {Number/undefined} Normalized angle or undefined.
      */
     angle: function (n) {
         if (Ext.isNumber(n)) {
@@ -59,12 +59,12 @@ Ext.define('Ext.draw.sprite.AttributeParser', {
     },
     
     color: function (n) {
-        if (n instanceof Ext.draw.Color) {
+        if (n && n.isColor) {
             return n.toString();
-        } else if (n instanceof Ext.draw.gradient.Gradient) {
+        } else if (n && n.isGradient) {
             return n;
         } else if (!n) {
-            return Ext.draw.Color.NONE;
+            return Ext.util.Color.NONE;
         } else if (Ext.isString(n)) {
             if (n.substr(0, 3) === 'url') {
                 n = Ext.draw.gradient.GradientDefinition.get(n);
@@ -72,7 +72,7 @@ Ext.define('Ext.draw.sprite.AttributeParser', {
                     return n;
                 }
             } else {
-                return Ext.draw.Color.fly(n).toString();
+                return Ext.util.Color.fly(n).toString();
             }
         }
         if (n.type === 'linear') {
@@ -82,7 +82,7 @@ Ext.define('Ext.draw.sprite.AttributeParser', {
         } else if (n.type === 'pattern') {
             return Ext.create('Ext.draw.gradient.Pattern', n);
         } else {
-            return Ext.draw.Color.NONE;
+            return Ext.util.Color.NONE;
         }
     },
 

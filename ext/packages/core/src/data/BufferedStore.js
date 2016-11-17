@@ -296,11 +296,11 @@ Ext.define('Ext.data.BufferedStore', {
                 endIdx = newCount - 1;
                 startIdx = Math.max(endIdx - oldRequestSize, 0);
             }
-            if (me.rangeCached(startIdx, Math.min(endIdx, me.totalCount))) {
+            if (me.rangeCached(startIdx, endIdx, false)) {
                 me.loadCount = (me.loadCount || 0) + 1;
                 me.loading = false;
                 data.un('pageadd', waitForReload);
-                records = data.getRange(startIdx, endIdx + 1);
+                records = data.getRange(startIdx, endIdx);
                 me.fireEvent('load', me, records, true);
                 me.fireEvent('refresh', me);
             }
@@ -428,19 +428,25 @@ Ext.define('Ext.data.BufferedStore', {
         // Sanity check end point to be within dataset range
         end = (end >= me.totalCount) ? maxIndex : end;
 
-        // We must wait for a slightly wider range to be cached.
+        // If this is being called in the default manner, to fetch data 
+        // for rendering, then we must wait for a slightly wider range to be cached.
         // This is to allow grouping features to peek at the two surrounding records
         // when rendering a *range* of records to see whether the start of the range
         // really is a group start and the end of the range really is a group end.
-        requiredStart = start === 0 ? 0 : start - 1;
-        requiredEnd = end === maxIndex ? end : end + 1;
+        if (options.forRender !== false) {
+            requiredStart = start === 0 ? 0 : start - 1;
+            requiredEnd = end === maxIndex ? end : end + 1;
+        } else {
+            requiredStart = start;
+            requiredEnd = end;
+        }
 
         // Keep track of range we are being asked for so we can track direction of movement through the dataset
         me.lastRequestStart = start;
         me.lastRequestEnd = end;
 
         // If data request can be satisfied from the page cache
-        if (me.rangeCached(start, end)) {
+        if (me.rangeCached(start, end, options.forRender)) {
             me.onRangeAvailable(options);
             result = data.getRange(start, end + 1);
         }
@@ -950,14 +956,22 @@ Ext.define('Ext.data.BufferedStore', {
      * @private
      * @param {Number} start The start index
      * @param {Number} end The end index in the range
+     * @param {Boolean} [forRender] (private) Passed by the BufferedRenderer to
+     * indicate that it's going to need extra rows to peek at to determine
+     * group start/end status for the rendered block.
      */
-    rangeCached: function(start, end) {
-        // We must wait for a slightly wider range to be cached.
+    rangeCached: function(start, end, forRender) {
+        var requiredStart = start,
+            requiredEnd = end;
+
+        // If this is for getting data to render, we must wait for a slightly wider range to be cached.
         // This is to allow grouping features to peek at the two surrounding records
         // when rendering a *range* of records to see whether the start of the range
         // really is a group start and the end of the range really is a group end.
-        var requiredStart = start === 0 ? 0 : start - 1,
+        if (forRender !== false) {
+            requiredStart = start === 0 ? 0 : start - 1,
             requiredEnd = end === this.totalCount - 1 ? end : end + 1;
+        }
 
         return this.getData().hasRange(requiredStart, requiredEnd);
     },

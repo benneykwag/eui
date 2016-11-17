@@ -1,8 +1,5 @@
 describe("Ext.util.Focusable", function() {
-    var focusAndWait = jasmine.focusAndWait,
-        waitAWhile = jasmine.waitAWhile,
-        expectFocused = jasmine.expectFocused,
-        c, container;
+    var c, container;
     
     function stdComponent(config) {
         return Ext.apply({
@@ -34,14 +31,6 @@ describe("Ext.util.Focusable", function() {
         }, config));
     }
     
-    function expectAria(attr, value) {
-        return jasmine.expectAriaAttr(c, attr, value);
-    }
-    
-    function expectNoAria(attr) {
-        return jasmine.expectNoAriaAttr(c, attr);
-    }
-    
     afterEach(function() {
         if (container) {
             container.destroy();
@@ -62,7 +51,7 @@ describe("Ext.util.Focusable", function() {
                     tabIndex: undefined
                 });
                 
-                expectNoAria('tabIndex');
+                expect(c).not.toHaveAttr('tabIndex');
             });
             
             it("should not render tabindex attribute when tabIndex property is defined", function() {
@@ -71,7 +60,7 @@ describe("Ext.util.Focusable", function() {
                     tabIndex: 0
                 });
                 
-                expectNoAria('tabIndex');
+                expect(c).not.toHaveAttr('tabIndex');
             });
         });
         
@@ -82,7 +71,7 @@ describe("Ext.util.Focusable", function() {
                     tabIndex: undefined
                 });
                 
-                expectNoAria('tabIndex');
+                expect(c).not.toHaveAttr('tabIndex');
             });
             
             it("should render tabindex attribute when tabIndex property is defined", function() {
@@ -91,7 +80,7 @@ describe("Ext.util.Focusable", function() {
                     tabIndex: 0
                 });
                 
-                expectAria('tabIndex', '0');
+                expect(c).toHaveAttr('tabIndex', '0');
             });
         });
     });
@@ -130,14 +119,6 @@ describe("Ext.util.Focusable", function() {
                         c.hide();
                         
                         expect(c.isFocusable()).toBe(false);
-                    });
-                    
-                    it("should return false when destroyed", function() {
-                        c.destroy();
-                        
-                        expect(c.isFocusable()).toBe(false);
-                        
-                        c = null;
                     });
                 });
                 
@@ -237,14 +218,6 @@ describe("Ext.util.Focusable", function() {
                             container.disable();
                             
                             expect(container.isFocusable()).toBe(false);
-                        });
-                        
-                        it("should return false when container is destroyed", function() {
-                            container.destroy();
-                            
-                            expect(container.isFocusable()).toBe(false);
-                            
-                            container = null;
                         });
                     });
                 });

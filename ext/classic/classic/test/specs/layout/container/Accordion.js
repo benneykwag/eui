@@ -1146,7 +1146,7 @@ describe("Ext.layout.container.Accordion", function() {
                     collapseSpy = expandSpy = null;
                 });
                 
-                describe("pointer interaction", function() {
+                describe("pointer", function() {
                     describe("title collapse", function() {
                         beforeEach(function() {
                             runs(function() {
@@ -1210,7 +1210,7 @@ describe("Ext.layout.container.Accordion", function() {
                     });
                 });
                 
-                describe("keyboard interaction", function() {
+                describe("keyboard", function() {
                     var fooTitle, barTitle;
                     
                     beforeEach(function() {
@@ -1235,6 +1235,14 @@ describe("Ext.layout.container.Accordion", function() {
                                 
                                 expectFocused(fooTitle);
                             });
+                            
+                            it("should not wrap over when accordionWrapOver == false", function() {
+                                bar.accordionWrapOver = false;
+                                
+                                asyncPressKey(barTitle, 'down');
+                                
+                                expectFocused(barTitle);
+                            });
                         });
 
                         describe("right arrow", function() {
@@ -1248,6 +1256,14 @@ describe("Ext.layout.container.Accordion", function() {
                                 asyncPressKey(barTitle, "right");
                                 
                                 expectFocused(fooTitle);
+                            });
+                            
+                            it("should not wrap over when accordionWrapOver == false", function() {
+                                bar.accordionWrapOver = false;
+                                
+                                asyncPressKey(barTitle, 'right');
+                                
+                                expectFocused(barTitle);
                             });
                         });
                         
@@ -1263,6 +1279,14 @@ describe("Ext.layout.container.Accordion", function() {
                                 
                                 expectFocused(barTitle);
                             });
+                            
+                            it("should not wrap over when accordionWrapOver == false", function() {
+                                foo.accordionWrapOver = false;
+                                
+                                asyncPressKey(fooTitle, 'up');
+                                
+                                expectFocused(fooTitle);
+                            });
                         });
 
                         describe("left arrow", function() {
@@ -1276,6 +1300,14 @@ describe("Ext.layout.container.Accordion", function() {
                                 asyncPressKey(fooTitle, 'left');
                                 
                                 expectFocused(barTitle);
+                            });
+                            
+                            it("should not wrap over when accordionWrapOver == false", function() {
+                                foo.accordionWrapOver = false;
+                                
+                                asyncPressKey(fooTitle, 'up');
+                                
+                                expectFocused(fooTitle);
                             });
                         });
                     });
@@ -1346,6 +1378,28 @@ describe("Ext.layout.container.Accordion", function() {
                                     expect(ct.items.length).toBe(1);
                                     expect(bar.destroyed).toBe(true);
                                 });
+                            });
+                        });
+                    });
+                    
+                    describe("within panel body", function() {
+                        describe("Ctrl-Up", function() {
+                            it("should go to foo title from foo input", function() {
+                                asyncPressKey(fooInnerInput, 'up', { ctrl: true });
+                                
+                                expectFocused(fooTitle);
+                            });
+                            
+                            it("should go to bar title from bar input", function() {
+                                runs(function() {
+                                    foo.collapse();
+                                });
+                                
+                                waitForSpy(collapseSpy);
+                                
+                                asyncPressKey(barInnerInput, 'up', { ctrl: true });
+                                
+                                expectFocused(barTitle);
                             });
                         });
                     });

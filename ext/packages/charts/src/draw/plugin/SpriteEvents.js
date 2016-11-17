@@ -30,9 +30,7 @@ Ext.define('Ext.draw.plugin.SpriteEvents', {
     alias: 'plugin.spriteevents',
 
     requires: [
-        'Ext.draw.PathUtil',
-        'Ext.draw.overrides.sprite.Instancing',
-        'Ext.draw.overrides.Surface'
+        'Ext.draw.overrides.hittest.All'
     ],
 
     /**

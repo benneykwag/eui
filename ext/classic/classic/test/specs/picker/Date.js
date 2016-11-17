@@ -5,7 +5,7 @@ describe("Ext.picker.Date", function() {
     
     beforeEach(function() {
         makeComponent = function(config) {
-            component = new Ext.picker.Date(Ext.applyIf({
+            component = new Ext.picker.Date(Ext.apply({
                 renderTo: Ext.getBody()
             }, config));
         };
@@ -49,6 +49,66 @@ describe("Ext.picker.Date", function() {
                     disabled: true
                 });
             }).not.toThrow();
+        });
+
+        // https://sencha.jira.com/browse/EXTJS-15718
+        describe("when rendered within a td element", function () {
+            function setupTable () {
+                Ext.DomHelper.append(Ext.getBody(), {
+                    tag: 'table',
+                    id: 'ownerTable',
+                    children: [{
+                        tag: 'tr',
+                        children: [{
+                            tag: 'td',
+                            children: [{
+                                tag: 'div',
+                                id: 'nestedDiv'
+                            }]
+                        }]
+                    }]
+                });
+            }
+
+            afterEach(function () {
+                component = Ext.destroy(component);
+                Ext.get('ownerTable').destroy();
+            });
+
+            it("should display the day header", function () {
+                var node;
+
+                setupTable();
+                makeComponent({
+                    renderTo: Ext.get('nestedDiv')
+                });
+
+                node = component.el.down('.x-datepicker-column-header');
+                // should have 42 text nodes (6 weeks x 7 days)
+                expect(component.textNodes.length).toBe(42);
+                // check first and last node in first row
+                expect(node.first().getHtml()).toBe('S');
+            });
+
+            it("should select the correct item", function () {
+                var node, value, pickerValue;
+
+                setupTable();
+                makeComponent({
+                    renderTo: Ext.get('nestedDiv')
+                });
+
+                node = Ext.fly(component.textNodes[17]);
+                // this is the raw value in the cell
+                value = node.getHtml();
+                // fire click to select
+                jasmine.fireMouseEvent(node.dom, 'click');
+                // get the value from the picker now that selection has occurred
+                pickerValue = component.getValue();
+
+                // pickerValue date should be the same as the raw value date
+                expect(pickerValue.getDate()).toBe(parseInt(value));
+            });
         });
     });
     

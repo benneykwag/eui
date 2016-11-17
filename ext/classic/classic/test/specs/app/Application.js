@@ -1,5 +1,7 @@
+/* global Ext, spyOn, expect */
+
 describe("Ext.app.Application", function() {
-    var Class, app, initCalled, launchCalled;
+    var Class, app, initCalled, launchCalled, required;
 
     beforeEach(function() {
         this.addMatchers({
@@ -35,10 +37,6 @@ describe("Ext.app.Application", function() {
             create: function() {}
         });
 
-        spyOn(Ext.Loader, 'require').andCallThrough();
-        spyOn(Ext.Loader, 'onLoadFailure').andReturn();
-        spyOn(Ext.Boot, 'load').andReturn();
-
         Class = Ext.define('TestApplication.Application', {
             extend: 'Ext.app.Application',
 
@@ -55,6 +53,11 @@ describe("Ext.app.Application", function() {
 
             autoCreateViewport: true,
 
+            __handleRequires: function(requires, callback) {
+                required = requires;
+                callback();
+            },
+
             init: function() {
                 initCalled = true;
             },
@@ -66,6 +69,7 @@ describe("Ext.app.Application", function() {
     });
     
     afterEach(function() {
+        required = null;
         Ext.app.clearNamespaces();
 
         if (Ext.isIE) {
@@ -95,15 +99,21 @@ describe("Ext.app.Application", function() {
     
     describe("resolves class names", function() {
         it("resolves Viewport when autoCreateViewport is true", function() {
-            var args = Ext.Loader.require.argsForCall[1][0];
-
-            expect(args).toEqual([
+            expect(required).toEqual([
                 'TestApplication.view.Viewport'
             ]);
         });
         
         describe("when appFolder is set", function() {
             beforeEach(function() {
+
+                // This class name is generated and required by an Application
+                // named "Foo" with autoCreateViewport: true
+                // So we must define it to prevent a failed load.
+                Ext.define('Foo.view.Viewport', {
+                    extend: 'Ext.container.Viewport'
+                });
+
                 Ext.define('TestApplication.AbstractApplication', {
                     extend: 'Ext.app.Application',
                 
@@ -115,13 +125,19 @@ describe("Ext.app.Application", function() {
                 
                     name: 'Foo',
                 
-                    autoCreateViewport: true
+                    autoCreateViewport: true,
+
+                    __handleRequires: function(requires, callback) {
+                        callback();
+                    }
                 });
             });
 
             afterEach(function() {
                 Ext.undefine('TestApplication.AbstractApplication');
                 Ext.undefine('TestApplication.Application2');
+                Ext.undefine('Foo.view.Viewport');
+                delete Ext.global.Foo;
             });
             
             it("resolves Viewport path", function() {

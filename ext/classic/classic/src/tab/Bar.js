@@ -98,10 +98,12 @@ Ext.define('Ext.tab.Bar', {
      * @private
      */
     renderTpl:
+        '<tpl if="hasTabGuard">{% this.renderTabGuard(out, values, \'before\'); %}</tpl>' +
         '<div id="{id}-body" data-ref="body" role="presentation" class="{baseBodyCls} {baseBodyCls}-{ui} ' +
             '{bodyCls} {bodyTargetCls}{childElCls}"<tpl if="bodyStyle"> style="{bodyStyle}"</tpl>>' +
             '{%this.renderContainer(out,values)%}' +
         '</div>' +
+        '<tpl if="hasTabGuard">{% this.renderTabGuard(out, values, \'after\'); %}</tpl>' +
         '<div id="{id}-strip" data-ref="strip" role="presentation" class="{stripCls} {stripCls}-{ui}{childElCls}"></div>',
 
     /**
@@ -512,6 +514,20 @@ Ext.define('Ext.tab.Bar', {
         // And then potentially activate another Tab. We should not layout for each of these operations.
         Ext.suspendLayouts();
 
+        // If we are closing the active tab, revert to the previously active tab
+        // (or the previous sibling or the next sibling)
+        if (toActivate) {
+            // Our owning TabPanel calls our setActiveTab method, so only call that
+            // if this Bar is being used
+            // in some other context (unlikely)
+            if (tabPanel) {
+                tabPanel.setActiveTab(toActivate.card);
+            } else {
+                me.setActiveTab(toActivate);
+            }
+            toActivate.focus();
+        }
+
         if (tabPanel && card) {
             // Remove the ownerCt so the tab doesn't get destroyed if the remove is successful
             // We need this so we can have the tab fire it's own close event.
@@ -523,7 +539,7 @@ Ext.define('Ext.tab.Bar', {
             tabPanel.remove(card);
             
             // Remove succeeded
-            if (!tabPanel.getComponent(card)) {
+            if (card.ownerCt !== tabPanel) {
                 /*
                  * Force the close event to fire. By the time this function returns,
                  * the tab is already destroyed and all listeners have been purged
@@ -539,17 +555,6 @@ Ext.define('Ext.tab.Bar', {
             }
         }
 
-        // If we are closing the active tab, revert to the previously active tab (or the previous sibling or the nnext sibling)
-        if (toActivate) {
-            // Our owning TabPanel calls our setActiveTab method, so only call that if this Bar is being used
-            // in some other context (unlikely)
-            if (tabPanel) {
-                tabPanel.setActiveTab(toActivate.card);
-            } else {
-                me.setActiveTab(toActivate);
-            }
-            toActivate.focus();
-        }
         Ext.resumeLayouts(true);
     },
 
@@ -700,7 +705,7 @@ Ext.define('Ext.tab.Bar', {
                 }
             }
         },
-        
+
         onOverflowMenuItemClick: function (menu, item, e, eOpts) {
             var tab = item && item.masterComponent,
                 overflowHandler = this.layout.overflowHandler;

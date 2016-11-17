@@ -256,6 +256,8 @@ Ext.define('Ext.picker.Picker', {
         }
     },
 
+    floated: true,
+
     initialize: function() {
         var me = this,
             clsPrefix = Ext.baseCSSPrefix,
@@ -571,11 +573,11 @@ Ext.define('Ext.picker.Picker', {
         return this.getValue();
     },
 
-    destroy: function() {
+    doDestroy: function() {
         var me = this;
 
-        me.callParent();
         me.mask = me.bar = Ext.destroy(me.mask, me.bar);
+        
+        me.callParent();
     }
 });
-

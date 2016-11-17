@@ -111,6 +111,7 @@ Ext.define('Ext.grid.feature.RowBody', {
 
             rowValues.rowBodyColspan = columns.length;
             rowValues.rowBodyCls = me.rowBodyCls;
+            rowValues.rowIdCls = me.rowIdCls;
             
             if (rowExpanderCol && rowExpanderCol.getView() === view) {
                 view.grid.removeCls(Ext.baseCSSPrefix + 'grid-hide-row-expander-spacer');
@@ -140,7 +141,7 @@ Ext.define('Ext.grid.feature.RowBody', {
             '}',
             'values.view.rowBodyFeature.setupRowData(values.record, values.recordIndex, values);',
         '%}',
-        '<tr class="' + Ext.baseCSSPrefix + 'grid-rowbody-tr {rowBodyCls}" {ariaRowAttr}>',
+        '<tr class="' + Ext.baseCSSPrefix + 'grid-rowbody-tr {rowBodyCls} {rowIdCls}" {ariaRowAttr}>',
             '<tpl if="addSpacerCell">',
                 '<td class="{spacerCellCls}"></td>',
             '</tpl>',

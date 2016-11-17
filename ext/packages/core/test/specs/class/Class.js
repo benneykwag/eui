@@ -100,7 +100,7 @@ describe("Ext.Class", function() {
     });
 
     afterEach(function() {
-        o = subClass, parentClass, mixinClass1, mixinClass2 = sub = cls = null;
+        o = subClass = parentClass = mixinClass1 = mixinClass2 = sub = cls = null;
     });
     
     describe("extend", function() {
@@ -161,7 +161,7 @@ describe("Ext.Class", function() {
                 extend: spec.Base
             });
             expect(cls.prototype.aFn).toBe(fn);
-        })
+        });
     });
     
     describe("config", function() {
@@ -294,6 +294,23 @@ describe("Ext.Class", function() {
                 o = new cls();
                 o.setFoo('1');
                 expect(count).toBe(2);
+            });
+
+            it("should allow defining a config named 'configurator'", function () {
+                cls = Ext.define(null, {
+                    config: {
+                        configurator: 1
+                    },
+                    constructor: defaultInitConfig,
+                    applyConfigurator: function(v) {
+                        return v+1;
+                    }
+                });
+
+                o = new cls();
+                expect(o.getConfigurator()).toBe(2);
+                o.setConfigurator(5);
+                expect(o.getConfigurator()).toBe(6);
             });
 
             describe("when getters are called by other configs' updaters", function() {
@@ -782,6 +799,23 @@ describe("Ext.Class", function() {
                 
             expect(m1).not.toBe(m2);
             expect(m1).toEqual(m2);    
+        });
+
+        it("should not clone dom nodes in an object", function() {
+            cls = Ext.define(null, {
+                constructor: defaultInitConfig,
+                config: {
+                    foo: null
+                }
+            });
+
+            var el = document.createElement('div');
+            var o = new cls({
+                foo: {
+                    bar: el
+                }
+            });
+            expect(o.getFoo().bar).toBe(el);
         });
         
         // Possibly need to revisit this, arrays are not cloned.
@@ -1819,6 +1853,25 @@ describe("Ext.Class", function() {
                         });
                     });
                 });
+
+                describe("misc", function() {
+                    it("should not affect subsequent configs", function() {
+                        cls = Ext.define(null, {
+                            constructor: defaultInitConfig,
+                            config: {
+                                foo: {
+                                    cached: true,
+                                    $value: 'bar'
+                                },
+                                bar: 'text'
+                            },
+                        });
+                        var cfg = cls.getConfigurator();
+                        expect(cfg.cachedConfigs).toEqual({
+                            foo: true
+                        });
+                    });
+                });
             });
 
             describe("lazy", function() {
@@ -2605,6 +2658,66 @@ describe("Ext.Class", function() {
             expect(sub.someName).toBe('someValue');
             expect(sub.someMethod).toBe(fn);
         });
+
+        it("should be able to skip a generation", function() {
+            cls = Ext.define(null, {
+                inheritableStatics: {
+                    foo: function() {
+                        return 1;
+                    }
+                }
+            });
+
+            var sub1 = Ext.define(null, {
+                extend: cls
+            });
+
+            var sub2 = Ext.define(null, {
+                extend: sub1,
+                inheritableStatics: {
+                    foo: function() {
+                        return this.callParent() + 1;
+                    },
+                    bar: function() {
+                        return 100;
+                    }
+                }
+            });
+
+            expect(cls.foo()).toBe(1);
+            expect(cls.bar).toBeUndefined();
+
+            expect(sub1.foo()).toBe(1);
+            expect(sub1.bar).toBeUndefined();
+
+            expect(sub2.foo()).toBe(2);
+            expect(sub2.bar()).toBe(100);
+        });
+
+        it("should be possible to override", function() {
+            cls = Ext.define(null, {
+                inheritableStatics: {
+                    foo: function() {
+                        return 100;
+                    }
+                }
+            });
+
+            Ext.define(null, {
+                override: cls,
+                inheritableStatics: {
+                    foo: function() {
+                        return this.callParent() + 1;
+                    },
+                    bar: function() {
+                        return 2;
+                    }
+                }
+            });
+
+            expect(cls.foo()).toBe(101);
+            expect(cls.bar()).toBe(2);
+        });
         
         it("should NOT inherit inheritable statics if the class already has it as a static", function() {
             cls = Ext.define(null, {
@@ -2650,6 +2763,47 @@ describe("Ext.Class", function() {
             expect(data).toEqual(['super', 'sub']);
         });
 
+        describe("not polluting the parent", function() {
+            function makeSubCls(val) {
+                return Ext.define(null, {
+                    extend: cls,
+                    inheritableStatics: {
+                        foo: function() {
+                            return val;
+                        }
+                    }
+                });
+            }
+
+            it("with no inheritableStatics on the parent", function() {
+                cls = Ext.define(null, {});
+
+                var sub1 = makeSubCls(1),
+                    sub2 = makeSubCls(2);
+
+                expect(sub1.foo()).toBe(1);
+                expect(sub2.foo()).toBe(2);
+            });
+
+            it("with inheritableStatics on the parent", function() {
+                cls = Ext.define(null, {
+                    inheritableStatics: {
+                        bar: function() {
+                            return 100;
+                        }
+                    }
+                });
+
+                var sub1 = makeSubCls(1),
+                    sub2 = makeSubCls(2);
+
+                expect(sub1.foo()).toBe(1);
+                expect(sub1.bar()).toBe(100);
+                expect(sub2.foo()).toBe(2);
+                expect(sub2.bar()).toBe(100);
+            });
+        });
+
         describe("with mixins", function() {
             var mixin;
 
@@ -2662,7 +2816,7 @@ describe("Ext.Class", function() {
                             return 'mixinfoo';
                         }
                     }
-                })
+                });
             });
 
             afterEach(function() {

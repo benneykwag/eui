@@ -171,39 +171,24 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
         });
     },
 
-    // Part names that are only visible when a pie slice is translucent
-    // (globalAlpha or fillOpacity attributes are less than 1).
-    // Note: this assumes that the sprite is used as a part of the series,
-    // where all the sprites that make up a slice receive the same
-    // alpha value. If, say, a standalone sprite is used, it won't be visible
-    // when completely opaque.
-    normallyInvisibleParts: {
-        bottom: true,
-        innerFront: true,
-        outerBack: true
-    },
-
     alphaUpdater: function (attr) {
         var me = this,
             opacity = attr.globalAlpha,
             fillOpacity = attr.fillOpacity,
             oldOpacity = me.oldOpacity,
-            oldFillOpacity = me.oldFillOpacity,
-            normallyInvisibleParts = me.normallyInvisibleParts;
+            oldFillOpacity = me.oldFillOpacity;
 
         // Update the path when the sprite becomes translucent or completely opaque.
         if ((opacity !== oldOpacity && (opacity === 1 || oldOpacity === 1)) ||
             (fillOpacity !== oldFillOpacity && (fillOpacity === 1 || oldFillOpacity === 1))) {
-            if (attr.part in normallyInvisibleParts) {
-                me.scheduleUpdater(attr, 'path', ['globalAlpha']);
-            }
+            me.scheduleUpdater(attr, 'path', ['globalAlpha']);
             me.oldOpacity = opacity;
             me.oldFillOpacity = fillOpacity;
         }
     },
 
     partColorUpdater: function (attr) {
-        var color = Ext.draw.Color.fly(attr.baseColor),
+        var color = Ext.util.Color.fly(attr.baseColor),
             colorString = color.toString(),
             colorSpread = attr.colorSpread,
             fillStyle;
@@ -324,7 +309,7 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
 
         switch (attr.part) {
             case 'top':
-                attr.zIndex = 5;
+                attr.zIndex = 6;
                 break;
             case 'outerFront':
                 startAngle = normalize(startAngle + rotation);
@@ -431,7 +416,7 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
         var me = this,
             attr = me.attr;
 
-        if (!attr.globalAlpha) {
+        if (!attr.globalAlpha || Ext.Number.isEqual(attr.startAngle, attr.endAngle, 1e-8)) {
             return;
         }
         me.callParent([surface, ctx]);
@@ -558,7 +543,7 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
 
     bottomRenderer: function (path) {
         var attr = this.attr,
-            none = Ext.draw.Color.RGBA_NONE;
+            none = Ext.util.Color.RGBA_NONE;
 
         if (attr.globalAlpha < 1 || attr.fillOpacity < 1 || attr.shadowColor !== none) {
             this.lidRenderer(path, attr.thickness);
@@ -574,6 +559,7 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
             baseRotation = attr.baseRotation,
             startAngle = attr.startAngle + baseRotation,
             endAngle = attr.endAngle + baseRotation,
+            isFullPie = (!attr.startAngle && Ext.Number.isEqual(Math.PI * 2, attr.endAngle, 0.0000001)),
             thickness = attr.thickness,
             startRho = attr.startRho,
             endRho = attr.endRho,
@@ -587,7 +573,7 @@ Ext.define('Ext.chart.series.sprite.Pie3DPart', {
                         isTranslucent,
             midAngle;
 
-        if (isVisible) {
+        if (isVisible && !isFullPie) {
             midAngle = (startAngle + endAngle) / 2;
             centerX += Math.cos(midAngle) * margin;
             centerY += Math.sin(midAngle) * margin * distortion;

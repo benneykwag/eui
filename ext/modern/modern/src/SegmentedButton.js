@@ -34,18 +34,15 @@ Ext.define('Ext.SegmentedButton', {
     alternateClassName: 'Ext.button.Segmented',
 
     requires: [
-        'Ext.Button'
+        'Ext.Button',
+        'Ext.layout.FlexBox'
     ],
 
     isSegmentedButton: true,
 
-    config: {
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        baseCls: Ext.baseCSSPrefix + 'segmentedbutton',
+    classCls: Ext.baseCSSPrefix + 'segmentedbutton',
 
+    config: {
         /**
          * @cfg {Boolean} allowMultiple
          * Allow multiple pressed buttons.
@@ -92,15 +89,6 @@ Ext.define('Ext.SegmentedButton', {
          * @cfg
          * @inheritdoc
          */
-        layout: {
-            type : 'hbox',
-            align: 'stretch'
-        },
-
-        /**
-         * @cfg
-         * @inheritdoc
-         */
         defaultType: 'button',
 
         /**
@@ -108,7 +96,7 @@ Ext.define('Ext.SegmentedButton', {
          * Default {@link Ext.Component#ui ui} to use for buttons in this segmented button.
          * Buttons can override this default by specifying their own UI
          */
-        defaultUI: null,
+        defaultUI: 'segmented',
 
         /**
          * @cfg {String/Number/String[]/Number[]}
@@ -169,8 +157,28 @@ Ext.define('Ext.SegmentedButton', {
          *
          * Note that value based setting and index based setting cannot be mixed.
          */
-        value: undefined
+        value: undefined,
+
+        /**
+         * @cfg {Boolean} vertical
+         * `true` to display the buttons vertically
+         */
+        vertical: false
     },
+
+    /**
+     * @cfg
+     * @inheritdoc
+     */
+    layout: {
+        type : 'box',
+        vertical: false,
+        align: 'stretch'
+    },
+
+    defaultBindProperty: 'value',
+
+    twoWayBindable: 'value',
 
     /**
      * @event toggle
@@ -372,6 +380,15 @@ Ext.define('Ext.SegmentedButton', {
         }
     },
 
+    updateVertical: function(vertical) {
+        var me = this,
+            vCls = Ext.baseCSSPrefix + 'vertical',
+            hCls = Ext.baseCSSPrefix + 'horizontal';
+
+        me.replaceCls(vertical ? hCls : vCls, vertical ? vCls : hCls);
+        me.getLayout().setVertical(vertical);
+    },
+
     onItemAdd: function(item, index) {
         var me = this,
             defaultUI = me.getDefaultUI(),
@@ -488,7 +505,7 @@ Ext.define('Ext.SegmentedButton', {
 
     },
 
-    destroy: function() {
+    doDestroy: function() {
         this.destroying = true;
         this.valueMap = null;
         this.callParent();        

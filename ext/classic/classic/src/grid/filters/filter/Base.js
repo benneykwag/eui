@@ -35,7 +35,16 @@ Ext.define('Ext.grid.filters.filter.Base', {
          * Number of milliseconds to wait after user interaction to fire an update. Only supported
          * by filters: 'list', 'numeric', and 'string'.
          */
-        updateBuffer: 500
+        updateBuffer: 500,
+
+        /**
+         * @cfg {Function} [serializer]
+         * A function to post-process any serialization. Accepts a filter state object
+         * containing `property`, `value` and `operator` properties, and may either
+         * mutate it, or return a completely new representation.
+         * @since 6.2.0
+         */
+        serializer: null    
     },
 
     /**
@@ -103,11 +112,16 @@ Ext.define('Ext.grid.filters.filter.Base', {
     constructor: function (config) {
         var me = this,
             column;
-
+        
+        // Calling Base constructor is very desirable for testing
+        //<debug>
+        me.callParent([config]);
+        //</debug>
+        
         me.initConfig(config);
 
         column = me.column;
-        column.on('destroy', me.destroy, me);
+        me.columnListeners = column.on('destroy', me.destroy, me, { destroyable: true });
         me.dataIndex = me.dataIndex || column.dataIndex;
 
         me.task = new Ext.util.DelayedTask(me.setValue, me);
@@ -117,32 +131,29 @@ Ext.define('Ext.grid.filters.filter.Base', {
      * Destroys this filter by purging any event listeners, and removing any menus.
      */
     destroy: function() {
-        this.grid = this.menu = Ext.destroy(this.menu);
-        this.callParent();
+        var me = this;
+        
+        if (me.task) {
+            me.task.cancel();
+            me.task = null;
+        }
+        
+        me.columnListeners = me.columnListeners.destroy();
+        me.grid = me.menu = Ext.destroy(me.menu);
+        
+        me.callParent();
     },
 
     addStoreFilter: function (filter) {
         var filters = this.getGridStore().getFilters(),
         idx = filters.indexOf(filter),
-        existing = idx !== -1 ? filters.getAt(idx) : null,
-        sameValue;
+        existing = idx !== -1 ? filters.getAt(idx) : null;
 
         // If the filter being added doesn't exist in the collection we should add it.
         // But if there is a filter with the same id (indexOf tests for the same id), we should
-        // check if the value and property are the same and if they are not, the filter should be
-        // added to replace the older one.
-        if (!existing) {
+        // check if the filter being added has the same properties as the existing one
+        if (!existing || !Ext.util.Filter.isEqual(existing, filter)) {
             filters.add(filter);
-        } else {
-            if (existing.getValue() === filter.getValue()) {
-                sameValue = true;
-            } else if (Ext.isArray(filter.getValue()) && Ext.Array.equals(existing.getValue(), filter.getValue())) {
-                sameValue = true;
-            }
-
-            if (!(sameValue && existing.getProperty() === filter.getProperty())) {
-                filters.add(filter);
-            }
         }
     },
 
@@ -168,6 +179,8 @@ Ext.define('Ext.grid.filters.filter.Base', {
         if (key) {
             config.id += '-' + key;
         }
+        
+        config.serializer = this.getSerializer();
         return config;
     },
 
@@ -217,7 +230,8 @@ Ext.define('Ext.grid.filters.filter.Base', {
     onValueChange: function (field, e) {
         var me = this,
             keyCode = e.getKey(),
-            updateBuffer = me.updateBuffer;
+            updateBuffer = me.updateBuffer,
+            value;
 
         // Don't process tabs!
         if (keyCode === e.TAB) {
@@ -236,10 +250,16 @@ Ext.define('Ext.grid.filters.filter.Base', {
                 return;
             }
 
+            value = me.getValue(field);
+
+            if (value === me.value) {
+                return;
+            }
+
             if (updateBuffer) {
-                me.task.delay(updateBuffer, null, null, [me.getValue(field)]);
+                me.task.delay(updateBuffer, null, null, [value]);
             } else {
-                me.setValue(me.getValue(field));
+                me.setValue(value);
             }
         }
     },

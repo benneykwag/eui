@@ -106,7 +106,8 @@ Ext.define('Ext.tab.Tab', {
     ariaRole: 'tab',
     tabIndex: -1,
     
-    keyHandlers: {
+    keyMap: {
+        scope: 'this',
         DELETE: 'onDeleteKey'
     },
 

@@ -1,8 +1,16 @@
+/* global Ext, expect, jasmine, spyOn */
+
 describe("Ext.grid.filters.filter.Number", function () {
     var grid, store, plugin, columnFilter, headerCt, menu, rootMenuItem,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function createGrid(listCfg, storeCfg, gridCfg) {
         synchronousLoad = false;
@@ -75,13 +83,7 @@ describe("Ext.grid.filters.filter.Number", function () {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
     });
 
     afterEach(function() {
@@ -355,7 +357,7 @@ describe("Ext.grid.filters.filter.Number", function () {
 
                     expect(fields.gt.inputEl.getValue()).toBe('10');
                     expect(fields.lt.inputEl.getValue()).toBe('20');
-                    expect(fields.eq.inputEl.getValue()).toBe(Ext.supports.Placeholder ? '' : 'Enter Number...');
+                    expect(fields.eq.inputEl.getValue()).toBe('');
                 });
 
                 describe("when a store filter is created", function () {
@@ -489,3 +491,4 @@ describe("Ext.grid.filters.filter.Number", function () {
         });
     });
 });
+

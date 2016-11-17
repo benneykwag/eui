@@ -682,6 +682,30 @@ Ext.Function = (function() {
                 return fn.apply(scope || this, arguments);
             });
         },
+        
+        interceptAfterOnce: function(object, methodName, fn, scope) {
+            var origMethod = object[methodName],
+                newMethod;
+            
+            newMethod = function() {
+                var ret;
+                
+                if (origMethod) {
+                    origMethod.apply(this, arguments);
+                }
+                
+                ret = fn.apply(scope || this, arguments);
+                
+                object[methodName] = origMethod;
+                object = methodName = fn = scope = origMethod = newMethod = null;
+                
+                return ret;
+            };
+            
+            object[methodName] = newMethod;
+            
+            return newMethod;
+        },
 
         makeCallback: function (callback, scope) {
             //<debug>

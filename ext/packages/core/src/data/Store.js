@@ -357,8 +357,6 @@ Ext.define('Ext.data.Store', {
 
         me.callParent([config]);
 
-        me.getData().addObserver(me);
-
         // See applyData for the details.
         data = me.inlineData;
         if (data) {
@@ -549,6 +547,15 @@ Ext.define('Ext.data.Store', {
         me.needsSync = me.needsSync || sync;
     },
 
+    onCollectionBeforeItemChange: function(collection, info) {
+        var record = info.item,
+            modifiedFieldNames = info.modified || null,
+            type = info.meta;
+
+        // This is currently intended to be private
+        this.fireEvent('beforeupdate', this, record, type, modifiedFieldNames, info);
+    },
+
     // If our source collection informs us that a filtered out item has changed, we must still fire the events...
     onCollectionFilteredItemChange: function() {
         this.onCollectionItemChange.apply(this, arguments);
@@ -568,10 +575,6 @@ Ext.define('Ext.data.Store', {
             me.fireEvent('update', me, record, type, modifiedFieldNames, info);
         }
     },
-
-    fireChangeEvent: function(record) {
-        return this.getDataSource().contains(record);
-     },
 
     afterChange: function(record, modifiedFieldNames, type) {
         this.getData().itemChanged(record, modifiedFieldNames || null, undefined, type);
@@ -758,8 +761,14 @@ Ext.define('Ext.data.Store', {
     },
 
     onFilterEndUpdate: function() {
-        this.callParent(arguments);
-        this.callObservers('Filter');
+        var me = this;
+        
+        if (me.destroying || me.destroyed) {
+            return;
+        }
+        
+        me.callParent(arguments);
+        me.callObservers('Filter');
     },
 
     /**
@@ -1016,8 +1025,15 @@ Ext.define('Ext.data.Store', {
 
         ++me.loadCount;
         me.complete = true;
-        me.fireEvent('datachanged', me);
-        me.fireEvent('refresh', me);
+        
+        if (me.hasListeners.datachanged) {
+            me.fireEvent('datachanged', me);
+        }
+        
+        if (me.hasListeners.refresh) {
+            me.fireEvent('refresh', me);
+        }
+        
         me.callObservers('AfterPopulate');
     },
 
@@ -1202,7 +1218,7 @@ Ext.define('Ext.data.Store', {
         Ext.resumeLayouts(true);
     },
 
-    onDestroy: function() {
+    doDestroy: function() {
         var me = this,
             task = me.loadTask,
             data = me.getData(),
@@ -1210,16 +1226,19 @@ Ext.define('Ext.data.Store', {
         
         // clearData ensures everything is unjoined
         me.clearData();
-        me.callParent();
         me.setSession(null);
         me.observers = null;
+        
         if (task) {
             task.cancel();
             me.loadTask = null;
         }
+        
         if (source) {
             source.destroy();
         }
+
+        me.callParent();
     },
 
     privates: {
@@ -1236,6 +1255,10 @@ Ext.define('Ext.data.Store', {
             this.setLoadOptions(options);
             var operation = this.createOperation('read', options);
             operation.execute();
+        },
+
+        fireChangeEvent: function(record) {
+            return this.getDataSource().contains(record);
         },
 
         onBeforeLoad: function(operation) {

@@ -118,10 +118,8 @@ Ext.define('Ext.util.ClickRepeater', {
 
     /**
      * Disables the repeater and stops events from firing.
-     *
-     * @param force (private)
      */
-    disable: function(force){
+    disable: function(/* private */ force){
         if(force || !this.disabled){
             clearTimeout(this.timer);
             if(this.pressedCls){

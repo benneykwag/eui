@@ -57,12 +57,6 @@ Ext.define('Ext.field.Select', {
 
     config: {
         /**
-         * @cfg
-         * @inheritdoc
-         */
-        ui: 'select',
-
-        /**
          * @cfg {Boolean} useClearIcon
          */
 
@@ -129,6 +123,8 @@ Ext.define('Ext.field.Select', {
         selection: null
     },
 
+    classCls: Ext.baseCSSPrefix + 'selectfield',
+
     twoWayBindable: {
         selection: 1
     },
@@ -150,6 +146,11 @@ Ext.define('Ext.field.Select', {
         me.getOptions();
 
         store = me.getStore();
+
+        if(!store && (value || value === 0)){
+            // the store might be updated later so we need to cache this value and apply it later
+            me.cachedValue = value;
+        }
 
         if ((value || value === 0) && !value.isModel && store) {
             index = store.find(me.getValueField(), value, null, null, null, true);
@@ -231,7 +232,7 @@ Ext.define('Ext.field.Select', {
 
         if (!phonePicker) {
             config = me.getDefaultPhonePickerConfig();
-            me.phonePicker = phonePicker = Ext.create('Ext.picker.Picker', Ext.apply({
+            me.phonePicker = phonePicker = Ext.create('Ext.picker.Picker', Ext.merge({
                 slots: [{
                     align: me.getPickerSlotAlign(),
                     name: me.getName(),
@@ -260,11 +261,11 @@ Ext.define('Ext.field.Select', {
 
         if (!tabletPicker) {
             config = me.getDefaultTabletPickerConfig();
-            me.tabletPicker = tabletPicker = Ext.create('Ext.Panel', Ext.apply({
-                left: 0,
-                top: 0,
+            me.tabletPicker = tabletPicker = Ext.create('Ext.Panel', Ext.merge({
+                floated: true,
                 modal: true,
-                cls: Ext.baseCSSPrefix + 'select-overlay',
+                anchor: true,
+                cls: Ext.baseCSSPrefix + 'selectfield-overlay',
                 layout: 'fit',
                 hideOnMaskTap: true,
                 width: Ext.os.is.Phone ? '14em' : '18em',
@@ -475,21 +476,25 @@ Ext.define('Ext.field.Select', {
      * Called when the internal {@link #store}'s data has changed.
      */
     onStoreDataChanged: function(store) {
-        var initialConfig = this.getInitialConfig(),
-            value = this.getValue();
+        var me = this,
+            initialConfig = me.getInitialConfig(),
+            value = me.getValue();
 
         if (value || value === 0) {
-            this.setValue(value);
+            me.setValue(value);
         }
 
-        if (this.getValue() === null) {
-            if (initialConfig.hasOwnProperty('value')) {
-                this.setValue(initialConfig.value);
+        if (me.getValue() === null) {
+            if(me.cachedValue || me.cachedValue === 0){
+                me.setValue(me.cachedValue);
+                me.cachedValue = null;
+            }else if (initialConfig.hasOwnProperty('value')) {
+                me.setValue(initialConfig.value);
             }
 
-            if (this.getValue() === null && this.getAutoSelect()) {
+            if (me.getValue() === null && me.getAutoSelect()) {
                 if (store.getCount() > 0) {
-                    this.setValue(store.getAt(0));
+                    me.setValue(store.getAt(0));
                 }
             }
         }
@@ -524,12 +529,15 @@ Ext.define('Ext.field.Select', {
         return me;
     },
 
-    destroy: function() {
+    doDestroy: function() {
         var store = this.getStore();
 
         if (store && store.getAutoDestroy()) {
             store.destroy();
         }
+        
+        Ext.destroy(this.phonePicker, this.tabletPicker);
+        
         this.callParent();
     }
 });

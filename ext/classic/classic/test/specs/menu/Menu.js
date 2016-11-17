@@ -1,4 +1,4 @@
-/* global expect, jasmine, Ext, spyOn, xdescribe, describe */
+/* global expect, jasmine, Ext, spyOn, xdescribe, describe, it */
 
 describe("Ext.menu.Menu", function() {
     var menu;
@@ -46,11 +46,12 @@ describe("Ext.menu.Menu", function() {
     }
 
     afterEach(function() {
-        if (menu) {
+        if (menu && !menu.destroyed) {
             menu.hide();
             Ext.destroy(menu);
-            menu = null;
         }
+
+        menu = null;
     });
 
     describe("defaultType", function() {
@@ -278,18 +279,23 @@ describe("Ext.menu.Menu", function() {
                         }
                     }]
                 });
-                
                 menu.show();
                 
                 var item = menu.down('[text="Menu Item 1"]');
 
                 // Expand the sub-menu
                 doItemMouseover(item);
+
+                waitsFor(function() {
+                    return item.menu.isVisible();
+                });
                 
-                jasmine.fireMouseEvent(item.el, 'click');
+                runs(function() {
+                    jasmine.fireMouseEvent(item.el, 'click');
                 
-                // Manager acts on global mousedown with no delays
-                expect(item.menu.isVisible()).toBe(true);
+                    // Manager acts on global mousedown with no delays
+                    expect(item.menu.isVisible()).toBe(true);
+                });
             });
         });
     });
@@ -821,6 +827,12 @@ describe("Ext.menu.Menu", function() {
                 menu.hide();
             });
             
+            describe("tabIndex", function() {
+                it("should be present on main el", function() {
+                    expect(menu.el).toHaveAttr('tabIndex', '-1');
+                });
+            });
+            
             describe("aria-expanded", function() {
                 it("should be false when hidden", function() {
                     expect(menu).toHaveAttr('aria-expanded', 'false');
@@ -844,6 +856,10 @@ describe("Ext.menu.Menu", function() {
             
             it("should not have aria-expanded attribute", function() {
                 expect(menu).not.toHaveAttr('aria-expanded');
+            });
+            
+            it("should not have tabIndex on main el", function() {
+                expect(menu.el).not.toHaveAttr('tabIndex');
             });
         });
     });
@@ -1134,7 +1150,7 @@ describe("Ext.menu.Menu", function() {
             // http://www.w3.org/TR/2013/WD-wai-aria-practices-20130307/#menu
             // "Disabled menu items receive focus but have no action when Enter or Left Arrow/Right Arrow is pressed. It is important that the state of the menu item be clearly communicated to the user."
             waitsFor(function() {
-                return menu3.isVisible() && menu3Item.hasFocus;
+                return menu3.isVisible() && menu3Item.hasFocus && menu3Item.activated && menu3Item.hasCls(menu3Item.activeCls);
             }, 'menu3Item to recieve focus');
 
             runs(function() {
@@ -1188,7 +1204,7 @@ describe("Ext.menu.Menu", function() {
             // http://www.w3.org/TR/2013/WD-wai-aria-practices-20130307/#menu
             // "Disabled menu items receive focus but have no action when Enter or Left Arrow/Right Arrow is pressed. It is important that the state of the menu item be clearly communicated to the user."
             waitsFor(function() {
-                return menu3.isVisible() && menu3Item.hasFocus;
+                return menu3.isVisible() && menu3Item.hasFocus && menu3Item.activated && menu3Item.hasCls(menu3Item.activeCls);
             }, 'menu3Item to recieve focus');
 
             runs(function() {
@@ -1231,7 +1247,7 @@ describe("Ext.menu.Menu", function() {
             // http://www.w3.org/TR/2013/WD-wai-aria-practices-20130307/#menu
             // "Disabled menu items receive focus but have no action when Enter or Left Arrow/Right Arrow is pressed. It is important that the state of the menu item be clearly communicated to the user."
             waitsFor(function() {
-                return menu3.isVisible() && menu3Item.hasFocus;
+                return menu3.isVisible() && menu3Item.hasFocus && menu3Item.activated && menu3Item.hasCls(menu3Item.activeCls);
             }, 'menu3Item to recieve focus');
 
             runs(function() {
@@ -1261,7 +1277,7 @@ describe("Ext.menu.Menu", function() {
     });
     
     describe("keyboard interaction", function() {
-        var item, submenu, subitem;
+        var item, submenu, subitem1, subitem2;
         
         beforeEach(function() {
             makeMenu({
@@ -1270,18 +1286,63 @@ describe("Ext.menu.Menu", function() {
                 }, {
                     text: 'submenu',
                     menu: [{
-                        text: 'subitem'
+                        text: 'subitem 1'
+                    }, {
+                        text: 'subitem 2'
                     }]
                 }]
             });
             
             item = menu.down('[text=item]');
             submenu = menu.down('[text=submenu]');
-            subitem = submenu.menu.down('[text=subitem]');
+            subitem1 = submenu.menu.down('[text="subitem 1"]');
+            subitem2 = submenu.menu.down('[text="subitem 2"]');
         });
         
         afterEach(function() {
-            item = submenu = subitem = null;
+            item = submenu = subitem1 = subitem2 = null;
+        });
+        
+        describe("opening", function() {
+            var submenuSpy;
+            
+            beforeEach(function() {
+                submenuSpy = jasmine.createSpy('submenu show');
+                
+                submenu.menu.on('show', submenuSpy);
+                
+                menu.show();
+            });
+            
+            afterEach(function() {
+                submenuSpy = null;
+            });
+            
+            it("should focus the first subitem", function() {
+                pressKey(submenu, 'right');
+                
+                runs(function() {
+                    expectFocused(subitem1, true);
+                });
+            });
+            
+            it("should focus the first subitem again", function() {
+                pressKey(submenu, 'right');
+                
+                waitForSpy(submenuSpy, 5000);
+                
+                runs(function() {
+                    expectFocused(subitem1, true);
+                    pressKey(subitem1, 'down');
+                    pressKey(subitem2, 'esc');
+                });
+                
+                pressKey(submenu, 'right');
+                
+                runs(function() {
+                    expectFocused(subitem1);
+                });
+            });
         });
         
         // Unfortunately we cannot test that the actual problem is solved,
@@ -1329,7 +1390,7 @@ describe("Ext.menu.Menu", function() {
                 pressKey(submenu, 'right');
                 
                 runs(function() {
-                    waitForFocus(subitem);
+                    waitForFocus(subitem1);
                 });
                 
                 runs(function() {
@@ -1344,7 +1405,7 @@ describe("Ext.menu.Menu", function() {
                     submenu.activated = true;
                     submenu.expandMenu(null, 0);
                     
-                    pressKey(subitem, 'left');
+                    pressKey(subitem1, 'left');
                 });
                 
                 waitForFocus(submenu);
@@ -1390,6 +1451,93 @@ describe("Ext.menu.Menu", function() {
                 expect(menu.isVisible()).toBe(true);
                 stretcher.destroy();
             });
+        });
+    });
+
+    // https://sencha.jira.com/browse/EXTJS-20962
+    describe("adding separator by shortcut to menu that has defaults", function () {
+        beforeEach(function () {
+            makeMenu({
+                defaults: {
+                    iconCls: 'x-fa fa-truck'
+                },
+                items: [{
+                    text: 'Item 1'
+                }, '-', {
+                    text: 'Item 2'
+                }]
+            });
+        });
+
+        it("should not apply defaults to separator", function () {
+            expect(menu.items.getAt(0).iconCls).toBe('x-fa fa-truck');
+            expect(menu.items.getAt(1).iconCls).toBeUndefined();
+            expect(menu.items.getAt(2).iconCls).toBe('x-fa fa-truck');
+        });
+
+        it("should successfully add an instance of Ext.menu.Separator", function () {
+            expect(menu.items.getAt(1).getXType()).toBe('menuseparator');
+        });
+    });
+
+    describe("static, inside an accordion layout", function() {
+        var oldOnError = window.onerror;
+        
+        afterEach(function() {
+            window.onerror = oldOnError;
+        });
+        it('should not throw an error on mousedown of the header', function() {
+            var header, onErrorSpy = jasmine.createSpy();
+
+            function getSampleMenuItems () {
+                return [
+                    { text: 'Menu Item 1' },
+                    { text: 'Menu Item 2' },
+                    { text: 'Menu Item 3' },
+                    { text: 'Menu Item 4' }
+                ];
+            }
+
+            menu = Ext.widget('panel', {
+                title: 'Accordion Panel',
+                width: 300,
+                height: 500,
+                renderTo: Ext.getBody(),
+                layout: 'accordion',
+                items: [{
+                    xtype: 'menu',
+                    floating: false,
+                    title: 'Menu 1 Title (Throws Exception)',
+                        items: getSampleMenuItems()
+                }, {
+                    xtype: 'menu',
+                    floating: false,
+                    title: 'Menu 2 Title (Throws Exception)',
+                        items: getSampleMenuItems()
+                }, {
+                    xtype: 'panel',
+                    title: 'Panel w/ Fit Menu (Works)',
+                    layout: 'fit',
+                    items: [{
+                        xtype: 'menu',
+                        floating: false,
+                        items: getSampleMenuItems()
+                    }]
+                }]
+            });
+
+            window.onerror = onErrorSpy.andCallFake(function() {
+                if (oldOnError) {
+                    oldOnError();
+                }
+            });
+
+            header = menu.down('menu').header;
+            header.titleCmp.focus();
+            jasmine.fireMouseEvent(header.el, 'mousedown');
+
+            // Must not have thrown an error
+            expect(onErrorSpy).not.toHaveBeenCalled();
         });
     });
 });

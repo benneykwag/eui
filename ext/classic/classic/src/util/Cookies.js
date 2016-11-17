@@ -12,14 +12,14 @@ Ext.define('Ext.util.Cookies', {
      * (for example: expiration, access restriction, SSL).
      * @param {String} name The name of the cookie to set.
      * @param {Object} value The value to set for the cookie.
-     * @param {Object} [value.expires] Specify an expiration date the cookie is to persist until. Note that the specified Date
+     * @param {Object} [expires] Specify an expiration date the cookie is to persist until. Note that the specified Date
      * object will be converted to Greenwich Mean Time (GMT).
-     * @param {String} [value.path] Setting a path on the cookie restricts access to pages that match that path. Defaults to all
+     * @param {String} [path] Setting a path on the cookie restricts access to pages that match that path. Defaults to all
      * pages ('/').
-     * @param {String} [value.domain] Setting a domain restricts access to pages on a given domain (typically used to allow
+     * @param {String} [domain] Setting a domain restricts access to pages on a given domain (typically used to allow
      * cookie access across subdomains). For example, "sencha.com" will create a cookie that can be accessed from any
      * subdomain of sencha.com, including www.sencha.com, support.sencha.com, etc.
-     * @param {Boolean} [value.secure] Specify true to indicate that the cookie should only be accessible via SSL on a page
+     * @param {Boolean} [secure] Specify true to indicate that the cookie should only be accessible via SSL on a page
      * using the HTTPS protocol. Defaults to false. Note that this will only work if the page calling this code uses the
      * HTTPS protocol, otherwise the cookie will be created with default options.
      */

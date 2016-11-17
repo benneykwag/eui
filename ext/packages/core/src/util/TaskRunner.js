@@ -181,6 +181,10 @@ Ext.define('Ext.util.TaskRunner', {
      * @param {Object[]} [task.args] An array of arguments to be passed to the function
      * specified by `run`. If not specified, the current invocation count is passed.
      *
+     * @param {Boolean} [task.addCountToArgs=false] True to add the current invocation count as 
+     * one of the arguments of args. 
+     * Note: This only takes effect when args is specified.
+     *
      * @param {Object} [task.scope] The scope (`this` reference) in which to execute the
      * `run` function. Defaults to the task config object.
      *
@@ -268,7 +272,7 @@ Ext.define('Ext.util.TaskRunner', {
             nextExpires = 1e99,
             len = tasks.length,
             globalEvents = Ext.GlobalEvents,
-            expires, newTasks, i, task, rt, remove;
+            expires, newTasks, i, task, rt, remove, args;
 
         me.timerId = null;
         me.firing = true; // ensure we don't startTimer during this loop...
@@ -293,15 +297,23 @@ Ext.define('Ext.util.TaskRunner', {
                         fireIdleEvent = me.fireIdleEvent;
                     }
                     
+                    task.taskRunCount++;
+
+                    if (task.args) {
+                        args = task.addCountToArgs ? task.args.concat([task.taskRunCount]) : task.args;
+                    } else {
+                        args = [task.taskRunCount];
+                    }
+
                     // We want the exceptions not to get caught while unit testing
                     //<debug>
                     if (me.disableTryCatch) {
-                        rt = task.run.apply(task.scope || task, task.args || [++task.taskRunCount]);
+                        rt = task.run.apply(task.scope || task, args);
                     }
                     else {
                     //</debug>
                         try {
-                            rt = task.run.apply(task.scope || task, task.args || [++task.taskRunCount]);
+                            rt = task.run.apply(task.scope || task, args);
                         }
                         catch (taskError) {
                             try {
@@ -325,7 +337,7 @@ Ext.define('Ext.util.TaskRunner', {
                     //</debug>
                     
                     task.taskRunTime = now;
-                    
+
                     if (rt === false || task.taskRunCount === task.repeat) {
                         me.stop(task);
                         remove = true;

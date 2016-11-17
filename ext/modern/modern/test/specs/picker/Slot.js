@@ -1,8 +1,8 @@
-describe('Ext.picker.Slot', function() {
+describe('Ext.picker.Slot', function () {
     var picker, viewport, slot;
 
     afterEach(function () {
-        viewport = picker = slot = Ext.destroy(slot, picker, viewport, Ext.Viewport);
+        Ext.Viewport = viewport = picker = slot = Ext.destroy(slot, picker, viewport, Ext.Viewport);
     });
 
     function makePicker (value, dataSize) {
@@ -24,7 +24,7 @@ describe('Ext.picker.Slot', function() {
         });
         slot = picker.getAt(0);
         viewport.add(picker);       
-    }
+    } 
 
     function getBarIndex (bar) {
         var y = slot.getScrollable().getPosition().y,

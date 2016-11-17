@@ -275,7 +275,10 @@ Ext.define('Ext.app.Application', {
          * The glyphFontFamily to use for this application.  Used as the default font-family
          * for all components that support a `glyph` config.
          */
-        glyphFontFamily:  null
+        glyphFontFamily:  null,
+
+        // Docs will go in subclasses
+        quickTips: true
     },
     
     onClassExtended: function(cls, data, hooks) {
@@ -318,6 +321,18 @@ Ext.define('Ext.app.Application', {
 
             hooks.onBeforeCreated = function(cls, data) {
                 var args = Ext.Array.clone(arguments);
+
+                //<debug>
+                // This hook is to allow unit tests to come in and control the
+                // requires so we don't have to get into the internals of the Loader.
+                // Not intended to be used for any other purpose.
+                if (data.__handleRequires) {
+                    data.__handleRequires.call(this, requires, Ext.bind(function() {
+                        return onBeforeClassCreated.apply(this, args);
+                    }, this));
+                    return;
+                }
+                //</debug>
                 
                 Ext.require(requires, function () {
                     return onBeforeClassCreated.apply(this, args);
@@ -541,7 +556,10 @@ Ext.define('Ext.app.Application', {
     applyMainView: function(value) {
         var view = this.getView(value);
 
-        return view.create();
+        // Ensure the full component stack is available immediately.
+        return view.create({
+            $initParent: this.viewport
+        });
     },
 
     /**
@@ -573,8 +591,8 @@ Ext.define('Ext.app.Application', {
      * @param {String} name The name or id of the controller you are trying to retrieve
      * @param {Boolean} preventCreate (private)
      */
-    getController: function(name, preventCreate) {
-        var me          = this,
+    getController: function(name, /* private */ preventCreate) {
+        var me = this,
             controllers = me.controllers,
             className, controller, len, i, c, all;
 
@@ -628,25 +646,36 @@ Ext.define('Ext.app.Application', {
         return this;
     },
     
-    destroy: function(destroyRefs){
+    destroy: function(destroyRefs) {
         var me = this,
             controllers = me.controllers,
             ns = Ext.namespace(me.getName()),
             appProp = me.getAppProperty();
+        
+        Ext.un('appupdate', me.onAppUpdate, me);
          
         Ext.destroy(me.viewport);
            
         if (controllers) {
-            controllers.each(function(controller){
+            controllers.each(function(controller) {
                 controller.destroy(destroyRefs, true);
             });
         }
+        
         me.controllers = null;
         me.callParent([destroyRefs, true]);
         
         // Clean up any app reference
         if (ns && ns[appProp] === me) {
             delete ns[appProp];
+        }
+
+        if (Ext.app.route.Router.application === me) {
+            Ext.app.route.Router.application = null;
+        }
+        
+        if (Ext.app.Application.instance === me) {
+            Ext.app.Application.instance = null;
         }
     },
 

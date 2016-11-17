@@ -16,6 +16,8 @@
             ".",
             "../../../../packages/charts/test/specs",
             "../../../../packages/charts/test/specs-classic",
+            "../../../../../packages/d3/test/specs",
+            "../../../../../packages/d3/test/specs-classic",
             "../../../../packages/ux/test/specs",
             "../../../../packages/ux/test/classic/specs",
             "../../../../../packages/pivot/test/specs",

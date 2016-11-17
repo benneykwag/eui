@@ -5,7 +5,8 @@
 function makeObservableSuite(isMixin) {
 
     describe(isMixin ? "Ext.mixin.Observable" : "Ext.util.Observable", function() {
-        var Boss,
+        var Observable = isMixin ? Ext.mixin.Observable : Ext.util.Observable,
+            Boss,
             boss,
             bossConfig,
             bossListeners,
@@ -26,8 +27,7 @@ function makeObservableSuite(isMixin) {
             employeeQuitListener,
             employeeQuitFn,
             events,
-            fakeScope,
-            Observable;
+            fakeScope;
 
         function makeDefaultListenerScope(o) {
             o.resolveListenerScope = function() {
@@ -45,7 +45,6 @@ function makeObservableSuite(isMixin) {
         }
 
         beforeEach(function() {
-            Observable = isMixin ? Ext.mixin.Observable : Ext.util.Observable;
             fakeScope = {};
             events = {
                 "fired": true,
@@ -1965,6 +1964,25 @@ function makeObservableSuite(isMixin) {
                     expect(boss.managedListeners[0].item).toBe(employee2);
                     expect(boss.managedListeners[0].fn).toBe(bossFired2Fn);
                 });
+
+                it('should not add duplicated listeners to the managed stack', function() {
+                    employee.clearListeners();
+                    boss.clearManagedListeners();
+
+                    // Check preconditions
+                    expect(employee.events).toBe(null);
+                    expect(boss.managedListeners.length).toBe(0);
+
+                    // Adding suplicate listeners should only result in one being added
+                    employee.addListener("fired", bossFiredFn, boss);
+                    employee.addListener("fired", bossFiredFn, boss);
+
+                    // The second listener was a dupe, and should not have been added.
+                    expect(employee.events.fired.listeners.length).toBe(1);
+
+                    // The second listener was a dupe, and should not have been added.
+                    expect(boss.managedListeners.length).toBe(1);
+                });
             });
 
             describe("use an object as first param without using fn to specify the function", function() {
@@ -3693,11 +3711,11 @@ function makeObservableSuite(isMixin) {
                     }),
                     foo = new Foo();
 
-                spyOn(Observable.prototype, 'clearListeners').andCallThrough();
+                var clearSpy = spyOn(foo, 'clearListeners').andCallThrough();
 
                 foo.destroy();
 
-                expect(Observable.prototype.clearListeners).toHaveBeenCalled();
+                expect(clearSpy).toHaveBeenCalled();
             });
         });
 

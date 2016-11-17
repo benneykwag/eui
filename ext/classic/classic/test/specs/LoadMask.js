@@ -867,4 +867,43 @@ describe("Ext.LoadMask", function(){
             expect(mask.isVisible()).toBe(false);
         });
     });
+    
+    describe("ARIA", function() {
+        beforeEach(function() {
+            createMask();
+        });
+        
+        it("should have progressbar role", function() {
+            expect(mask).toHaveAttr('role', 'progressbar');
+        });
+        
+        it("should not have aria-valuemin attribute", function() {
+            expect(mask).not.toHaveAttr('aria-valuemin');
+        });
+        
+        it("should not have aria-valuemax attribute", function() {
+            expect(mask).not.toHaveAttr('aria-valuemax');
+        });
+        
+        it("should not have aria-valuenow attribute", function() {
+            expect(mask).not.toHaveAttr('aria-valuenow');
+        });
+        
+        it("should not have aria-valuetext by default", function() {
+            expect(mask).not.toHaveAttr('aria-valuetext');
+        });
+        
+        it("should have aria-valuetext after show", function() {
+            mask.show();
+            
+            expect(mask).toHaveAttr('aria-valuetext', 'Loading...');
+        });
+        
+        it("should remove aria-valuetext if useMsg is false", function() {
+            mask.useMsg = false;
+            mask.show();
+            
+            expect(mask).not.toHaveAttr('aria-valuetext');
+        });
+    });
 });

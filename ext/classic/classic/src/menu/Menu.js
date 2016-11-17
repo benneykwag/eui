@@ -122,6 +122,15 @@ Ext.define('Ext.menu.Menu', {
     ignoreParentClicks: false,
 
     /**
+     * @cfg {Number} [mouseLeaveDelay]
+     * The delay in ms as to how long the framework should wait before firing a mouseleave event.
+     * This allows submenus not to be collapsed while hovering other menu items.
+     *
+     * Defaults to 100
+     */
+     mouseLeaveDelay: 100,
+
+    /**
      * @property {Boolean} isMenu
      * `true` in this class to identify an object as an instantiated Menu, or subclass thereof.
      */
@@ -167,14 +176,26 @@ Ext.define('Ext.menu.Menu', {
      * See also the {@link #showSeparator} config.
      */
     
+    /**
+     * @inheritdoc
+     */
     focusOnToFront: false,
+    
     bringParentToFront: false,
     alignOnScroll: false,
+    
+    // Menus are focusable
+    focusable: true,
+    tabIndex: -1,
 
-    defaultFocus: ':focusable',
     // When a Menu is used as a carrier to float some focusable Component such as a DatePicker or ColorPicker
     // This will be used to delegate focus to its focusable child.
     // In normal usage, a Menu is a FocusableContainer, and this will not be consulted.
+    defaultFocus: ':focusable',
+    
+    // We need to focus disabled menu items when arrowing as per WAI-ARIA:
+    // http://www.w3.org/TR/wai-aria-practices/#menu
+    allowFocusingDisabledChildren: true,
 
     /**
      * @private
@@ -269,12 +290,15 @@ Ext.define('Ext.menu.Menu', {
         Ext.override(me.getLayout(), {
             configureItem: me.configureItem
         });
+
+        me.itemOverTask = new Ext.util.DelayedTask(me.handleItemOver, me);
     },
 
     // Private implementation for Menus. They are a special case, in that in the vast majority
     // (nearly all?) of use cases they shouldn't be constrained to anything other than the viewport.
     // See EXTJS-13596.
     /**
+     * @method
      * @private
      */
     initFloatConstrain: Ext.emptyFn,
@@ -374,7 +398,7 @@ Ext.define('Ext.menu.Menu', {
             });
         }
 
-        me.mouseMonitor = me.el.monitorMouseLeave(100, me.onMouseLeave, me);
+        me.mouseMonitor = me.el.monitorMouseLeave(me.mouseLeaveDelay, me.onMouseLeave, me);
     },
 
     onFocusEnter: function(e) {
@@ -410,9 +434,26 @@ Ext.define('Ext.menu.Menu', {
         var me = this;
 
         me.callParent([e]);
+        
+        // We need to make sure that menus do not "remember" the last focused item
+        // so that the first menu item is always activated when the menu is shown.
+        // This is the expected behavior according to WAI-ARIA spec.
+        me.lastFocusedChild = null;
+        
         me.mixins.focusablecontainer.onFocusLeave.call(me, e);
+        
         if (me.floating) {
             me.hide();
+        }
+    },
+
+    handleItemOver: function(e, item) {
+        // Only focus non-menuitem on real mouseover events.
+        if (!item.containsFocus && (e.pointerType === 'mouse' || item.isMenuItem)) {
+            item.focus();
+        }
+        if (item.expandMenu) {
+            item.expandMenu(e);
         }
     },
 
@@ -459,7 +500,11 @@ Ext.define('Ext.menu.Menu', {
         var me = this;
 
         if (typeof cmp === 'string') {
-            cmp = me.lookupItemFromString(cmp);
+            if (cmp[0] === '@') {
+                cmp = this.callParent([cmp]);
+            } else {
+                cmp = me.lookupItemFromString(cmp);
+            }
         } else if (Ext.isObject(cmp)) {
             cmp = me.lookupItemFromObject(cmp);
         }
@@ -568,8 +613,14 @@ Ext.define('Ext.menu.Menu', {
         if (item && item.isMenuItem) {
             if (!item.menu || !me.ignoreParentClicks) {
                 clickResult = item.onClick(e);
-            } else {
+            }
+            else {
                 e.stopEvent();
+            }
+            
+            // Click handler on the item could have destroyed the menu
+            if (me.destroyed) {
+                return;
             }
 
             // SPACE and ENTER invokes the menu
@@ -581,10 +632,11 @@ Ext.define('Ext.menu.Menu', {
         if (!item || item.disabled) {
             item = undefined;
         }
+        
         me.fireEvent('click', me, item, e);
     },
 
-    onDestroy: function() {
+    doDestroy: function() {
         var me = this;
         
         if (me.escapeKeyNav) {
@@ -602,14 +654,17 @@ Ext.define('Ext.menu.Menu', {
         // we should notify the Manager
         Ext.menu.Manager.onHide(me);
         
-        me.callParent(arguments);
+        me.callParent();
     },
 
     onMouseLeave: function(e) {
-        if (this.disabled) {
+        var me = this;
+
+        me.itemOverTask.cancel();
+        if (me.disabled) {
             return;
         }
-        this.fireEvent('mouseleave', this, e);
+        me.fireEvent('mouseleave', me, e);
     },
 
     onMouseOver: function(e) {
@@ -624,6 +679,7 @@ Ext.define('Ext.menu.Menu', {
             parentMenu.setActiveItem(ownerCmp);
             ownerCmp.cancelDeferHide();
             parentMenu.mouseMonitor.mouseenter();
+            parentMenu.itemOverTask.cancel();
         }
 
         if (me.disabled) {
@@ -632,13 +688,9 @@ Ext.define('Ext.menu.Menu', {
 
         // Do not activate the item if the mouseover was within the item, and it's already active
         if (item) {
-            // Only focus non-menuitem on real mouseover events.
-            if (!item.containsFocus && (e.pointerType === 'mouse' || item.isMenuItem)) {
-                item.focus();
-            }
-            if (item.expandMenu) {
-                item.expandMenu(e);
-            }
+            // Activate the item in time specified by mouseLeaveDelay.
+            // If we mouseout, or move to another item this invocation will be canceled.
+            me.itemOverTask.delay(me.mouseLeaveDelay, null, null, [e, item]);
         }
         if (mouseEnter) {
             me.fireEvent('mouseenter', me, e);
@@ -693,59 +745,6 @@ Ext.define('Ext.menu.Menu', {
         }
     },
 
-    // Tabbing in a floating menu must hide, but not move focus.
-    // onHide takes care of moving focus back to an owner Component.
-    onFocusableContainerTabKey: function(e) {
-        var me = this;
-
-        if (me.floating) {
-            if (e.shiftKey) {
-                // We do not want TAB behaviour to proceed.
-                // SHIFT+TAB reverts "backwards" to the menu's invoker
-                // which is the automatic behaviour.
-                e.preventDefault();
-            } else {
-                // If we want to navigate forwards, we cannot allow the
-                // automatic focus reversion to go to the parent menu.
-                // It must behave as if it were the topmost menu in the
-                // floating stack, revert to there, and then TAB onwards.
-                me.focusEnterEvent = me.getInherited().topmostFocusEvent;
-            }
-            me.hide();
-        }
-    },
-
-    onFocusableContainerEnterKey: function(e) {
-        this.onClick(e);
-    },
-
-    onFocusableContainerSpaceKey: function(e) {
-        this.onClick(e);
-    },
-
-    onFocusableContainerLeftKey: function(e) {
-        // The default action is to scroll the nearest horizontally scrollable container
-        e.preventDefault();
-        
-        // If we are a submenu, then left arrow focuses the owning MenuItem
-        if (this.parentMenu) {
-            this.ownerCmp.focus();
-            this.hide();
-        }
-    },
-
-    onFocusableContainerRightKey: function(e) {
-        var me = this,
-            focusItem = me.lastFocusedChild;
-        
-        // See above
-        e.preventDefault();
-
-        if (focusItem && focusItem.expandMenu) {
-            focusItem.expandMenu(e, 0);
-        }
-    },
-
     onBeforeShow: function() {
         // Do not allow show immediately after a hide
         if (Ext.Date.getElapsed(this.lastHide) < this.menuClickBuffer) {
@@ -755,7 +754,7 @@ Ext.define('Ext.menu.Menu', {
 
     beforeShow: function() {
         var me = this,
-            parent, viewHeight;
+            parent;
 
         // Constrain the height to the containing element's viewable area
         if (me.floating) {
@@ -764,10 +763,6 @@ Ext.define('Ext.menu.Menu', {
             if (!parent && !me.allowOtherMenus) {
                 Ext.menu.Manager.hideAll();
             }
-
-            me.savedMaxHeight = me.maxHeight;
-            viewHeight = me.container.getViewSize().height;
-            me.maxHeight = Math.min(me.maxHeight || viewHeight, viewHeight);
         }
 
         me.callParent(arguments);
@@ -796,7 +791,7 @@ Ext.define('Ext.menu.Menu', {
     onHide: function(animateTarget, cb, scope) {
         var me = this,
             ariaDom = me.ariaEl.dom;
-        
+
         me.callParent([animateTarget, cb, scope]);
         me.lastHide = Ext.Date.now();
         Ext.menu.Manager.onHide(me);
@@ -821,6 +816,84 @@ Ext.define('Ext.menu.Menu', {
     },
 
     privates: {
+        /**
+         * @private
+         */
+        applyDefaults: function (config) {
+            if (!Ext.isString(config)) {
+                config = this.callParent(arguments);
+            }
+            return config;
+        },
+        
+        initFocusableElement: function() {
+            var me = this,
+                tabIndex = me.tabIndex,
+                el = me.el;
+            
+            // Floating menus always need to have focusable main el
+            // so that mouse clicks within the menu would not close it.
+            // We're not checking focusable property here, Component
+            // will do that before we can reach this method.
+            if (me.floating && tabIndex != null && el && el.dom) {
+                el.dom.setAttribute('tabIndex', tabIndex);
+                el.dom.setAttribute('data-componentid', me.id);
+            }
+        },
+        
+        // Tabbing in a floating menu must hide, but not move focus.
+        // onHide takes care of moving focus back to an owner Component.
+        onFocusableContainerTabKey: function(e) {
+            var me = this;
+    
+            if (me.floating) {
+                if (e.shiftKey) {
+                    // We do not want TAB behaviour to proceed.
+                    // SHIFT+TAB reverts "backwards" to the menu's invoker
+                    // which is the automatic behaviour.
+                    e.preventDefault();
+                } else {
+                    // If we want to navigate forwards, we cannot allow the
+                    // automatic focus reversion to go to the parent menu.
+                    // It must behave as if it were the topmost menu in the
+                    // floating stack, revert to there, and then TAB onwards.
+                    me.focusEnterEvent = me.getInherited().topmostFocusEvent;
+                }
+                me.hide();
+            }
+        },
+    
+        onFocusableContainerEnterKey: function(e) {
+            this.onClick(e);
+        },
+    
+        onFocusableContainerSpaceKey: function(e) {
+            this.onClick(e);
+        },
+    
+        onFocusableContainerLeftKey: function(e) {
+            // The default action is to scroll the nearest horizontally scrollable container
+            e.preventDefault();
+            
+            // If we are a submenu, then left arrow focuses the owning MenuItem
+            if (this.parentMenu) {
+                this.ownerCmp.focus();
+                this.hide();
+            }
+        },
+    
+        onFocusableContainerRightKey: function(e) {
+            var me = this,
+                focusItem = me.lastFocusedChild;
+            
+            // See above
+            e.preventDefault();
+    
+            if (focusItem && focusItem.expandMenu) {
+                focusItem.expandMenu(e, 0);
+            }
+        },
+
         hasFloatMenuParent: function() {
             return this.parentMenu || this.up('menu[floating=true]');
         },

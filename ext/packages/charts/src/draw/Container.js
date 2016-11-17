@@ -124,6 +124,8 @@ Ext.define('Ext.draw.Container', {
          * @cfg {Function} [resizeHandler]
          * The resize function that can be configured to have a behavior,
          * e.g. resize draw surfaces based on new draw container dimensions.
+         * The `resizeHandler` function takes a single parameter -
+         * the size object with `width` and `height` properties.
          *
          * __Note:__ since resize events trigger {@link #renderFrame} calls automatically,
          * return `false` from the resize function, if it also calls `renderFrame`,
@@ -279,6 +281,7 @@ Ext.define('Ext.draw.Container', {
             if (!(surface && surface.isSurface)) {
                 if (Ext.isString(surface)) {
                     surface = this.getSurface(surface);
+                    delete sprite.surface;
                 } else {
                     surface = this.getSurface('main');
                 }
@@ -293,6 +296,10 @@ Ext.define('Ext.draw.Container', {
     resizeDelay: 500, // in milliseconds
     resizeTimerId: 0,
 
+    /**
+     * Triggers the {@link #resizeHandler} with the size of the draw container
+     * element as the parameter.
+     */
     handleResize: function (size, instantly) {
         // See the following:
         // Classic: Ext.draw.ContainerBase.reattachToBody
@@ -336,6 +343,12 @@ Ext.define('Ext.draw.Container', {
 
     /**
      * Get a surface by the given id or create one if it doesn't exist.
+     * This will automatically call the {@link #resizeHandler}. Which
+     * means that, if no custom resize handler has been provided, the
+     * surface will be sized to match the container.
+     * If the {@link #add} method is used, it is the responsibility
+     * of the user to call the {@link #handleResize} method, to update
+     * the size of all added surfaces.
      * @param {String} [id="main"]
      * @return {Ext.draw.Surface}
      */
@@ -447,7 +460,7 @@ Ext.define('Ext.draw.Container', {
      * Downloads an image or PDF of the chart / drawing or opens it in a separate 
      * browser tab/window if the download can't be triggered. The exact behavior is 
      * platform and browser specific. For more consistent results on mobile devices use 
-     * the {@link #preview} method instead.
+     * the {@link #preview} method instead. This method doesn't work in IE8.
      *
      * @param {Object} [config] The following config options are supported:
      *
@@ -523,6 +536,10 @@ Ext.define('Ext.draw.Container', {
             inputs = [],
             markup, name, value;
 
+        if (Ext.isIE8) {
+            return false;
+        }
+
         config = Ext.apply({
             version: 2,
             data: me.getImage().data
@@ -587,9 +604,11 @@ Ext.define('Ext.draw.Container', {
      * Displays an image of a Ext.draw.Container on screen.
      * On mobile devices this lets users tap-and-hold to bring up the menu
      * with image saving options.
-     * Note: some browsers won't save the preview image if it's SVG based
-     * (i.e. generated from a draw container that uses 'Ext.draw.engine.Svg' engine).
-     * And some platforms may not have the means of viewing successfully saved SVG images.
+     * Notes:
+     * - some browsers won't save the preview image if it's SVG based
+     *   (i.e. generated from a draw container that uses 'Ext.draw.engine.Svg' engine);
+     * - some platforms may not have the means of viewing successfully saved SVG images;
+     * - this method does not work on IE8.
      */
 
     destroy: function () {

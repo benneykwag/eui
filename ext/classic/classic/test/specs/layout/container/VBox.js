@@ -624,6 +624,44 @@ describe("Ext.layout.container.VBox", function(){
                 expect(getHeight(1)).toBe(400);
             });
         });
+
+        describe("%age", function(){
+            it("should be able to use %age height", function(){
+                makeCt([{
+                    height: '50%'
+                }, {
+                    height: '50%'
+                }]);
+                expect(getHeight(0)).toBe(300);
+                expect(getHeight(1)).toBe(300);
+            });
+            
+            it("should work with fixed height", function(){
+                makeCt([{
+                    height: 100
+                }, {
+                    height: '20%'
+                }, {
+                    height: 380
+                }]);
+                expect(getHeight(0)).toBe(100);
+                expect(getHeight(1)).toBe(120);
+                expect(getHeight(2)).toBe(380);
+            });
+            
+            it("should work with flex", function(){
+                makeCt([{
+                    flex: 2
+                }, {
+                    height: '40%'
+                }, {
+                    flex: 1
+                }]);    
+                expect(getHeight(0)).toBe(240);
+                expect(getHeight(1)).toBe(240);
+                expect(getHeight(2)).toBe(120);
+            });
+        });
         
         describe("mixed", function(){
             it("should give any remaining space to a single flexed item", function(){
@@ -799,8 +837,37 @@ describe("Ext.layout.container.VBox", function(){
                 expect(c2.getHeight()).toBe(100);
                 expect(c3.getHeight()).toBe(100);
             });
+
+            describe("with %age", function() {
+                it("should respect min constraints", function() {
+                    document.documentElement.style.height = document.body.style.height = '100%';
+
+                    makeCt([{
+                        height: '10%',
+                        minHeight: 250
+                    },{
+                        flex: 1
+                    }]);
+                    expect(getHeight(0)).toBe(250);
+                    expect(getHeight(1)).toBe(350);
+
+                    document.documentElement.style.height = document.body.style.height = '';
+                });
+
+                it("should respect max constraints", function() {
+                    document.documentElement.style.height = document.body.style.height = '100%';
+                    makeCt([{
+                        height: '90%',
+                        maxHeight: 100
+                    },{
+                        flex: 1
+                    }]);
+                    expect(getHeight(0)).toBe(100);
+                    expect(getHeight(1)).toBe(500);
+                    document.documentElement.style.height = document.body.style.height = '';
+                });
+            });
         });
-        
     });
     
     // Taken from extjs/test/issues/issue.html?id=5497
@@ -1060,7 +1127,7 @@ describe("Ext.layout.container.VBox", function(){
                 return {
                     width: scrollSize,
                     height: scrollSize
-                }
+                };
             };
         });
 
@@ -1442,7 +1509,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([400, 180]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1498,7 +1565,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 300]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1553,7 +1620,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 380]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1603,7 +1670,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 300]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1657,7 +1724,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 380]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1728,7 +1795,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([400, 180]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1781,7 +1848,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 300]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1835,7 +1902,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 380]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1885,7 +1952,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 300]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {
@@ -1936,7 +2003,7 @@ describe("Ext.layout.container.VBox", function(){
                                     }]);
                                     expectScroll(false, true);
                                     expectHeights([200, 380]);
-                                    expectInnerCtHeight(defaultSize - scrollSize)
+                                    expectInnerCtHeight(defaultSize - scrollSize);
                                 });
 
                                 it("should account for the horizontal scrollbar when the minHeight causes an overflow", function() {

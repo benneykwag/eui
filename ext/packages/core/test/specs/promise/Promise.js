@@ -8,6 +8,7 @@
 describe('Ext.promise.Promise', function() {
     var Deferred = Ext.Deferred,
         ExtPromise = Ext.promise.Promise,
+        hasNativePromise = !!window.Promise,
         targetScope = {},
         deferred, promise, extLog;
 
@@ -216,6 +217,44 @@ describe('Ext.promise.Promise', function() {
         });
     });
 
+    describe('nesting promises', function() {
+        it('should resolve when returning a resolved deferred', function() {
+            promise = Deferred.resolved('initial').then(function(v) {
+                var other = new Deferred();
+                other.resolve(v + 'ok');
+                return other.promise;
+            });
+            eventuallyResolvesTo(promise, 'initialok');
+        });
+
+        if (hasNativePromise) {
+            it('should resolve when returning a resolved native', function() {
+                promise = Deferred.resolved('initial').then(function(v) {
+                    return Promise.resolve(v + 'ok');
+                });
+                eventuallyResolvesTo(promise, 'initialok');
+            });
+        }
+
+        it('should reject when returning a rejected deferred', function() {
+            promise = Deferred.resolved('initial').then(function(v) {
+                var other = new Deferred();
+                other.reject(v + 'ok');
+                return other.promise;
+            });
+            eventuallyRejectedWith(promise, 'initialok');
+        });
+
+        if (hasNativePromise) {
+            it('should resolve when returning a rejected native', function() {
+                promise = Deferred.resolved('initial').then(function(v) {
+                    return Promise.reject(v + 'ok');
+                });
+                eventuallyRejectedWith(promise, 'initialok');
+            });
+        }
+    });
+
     describe('Promise.is()', function() {
         describe('returns true for a Promise or then()-able', function() {
             it('Promise', function() {
@@ -230,6 +269,13 @@ describe('Ext.promise.Promise', function() {
 
                 expect(ExtPromise.is(promise)).toBe(true);
             });
+
+            if (hasNativePromise) {
+                it('returns true for a native Promise', function() {
+                    var p = new Promise(function() {});
+                    expect(ExtPromise.is(p)).toBe(true);
+                });
+            }
         });
 
         describe('returns false for non-promises', function() {

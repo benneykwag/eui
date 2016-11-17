@@ -69,6 +69,7 @@ Ext.define('Ext.util.Focusable', {
      */
     
     /**
+     * @method initFocusable
      * Template method to do any Focusable related initialization that
      * does not involve event listeners creation.
      * @protected
@@ -458,9 +459,8 @@ Ext.define('Ext.util.Focusable', {
      * is available, set tabIndex attribute on it, too.
      *
      * @param {Number} newTabIndex new tabIndex to set
-     * @param focusEl (private)
      */
-    setTabIndex: function(newTabIndex, focusEl) {
+    setTabIndex: function(newTabIndex, /* private */ focusEl) {
         var me = this,
             el;
         
@@ -504,6 +504,10 @@ Ext.define('Ext.util.Focusable', {
      */
     onFocusEnter: function(e) {
         var me = this;
+        
+        if (me.destroying || me.destroyed) {
+            return;
+        }
 
         // Focusing must being a floating component to the front.
         // Only bring to front if this component is not the manager's
@@ -532,6 +536,10 @@ Ext.define('Ext.util.Focusable', {
      */
     onFocusLeave: function(e) {
         var me = this;
+
+        if (me.destroying || me.destroyed) {
+            return;
+        }
 
         me.focusEnterEvent = null;
         me.containsFocus = false;
@@ -600,22 +608,23 @@ Ext.define('Ext.util.Focusable', {
         findFocusTarget: function() {
             var me = this,
                 owner,
-                focusTargets;
+                focusTargets,
+                focusIndex;
 
-            for (owner = me.up(':visible(true):not([disabled])'); owner; owner = owner.up(':visible(true):not([disabled])')) {
+            for (owner = me.up(':visible(true):not([disabled]):not([destroying])'); owner; owner = owner.up(':visible(true):not([disabled]):not([destroying])')) {
                 // Use CQ to find a target that is fully focusable (:canfocus, NOT the theoretical :focusable)
                 // Cannot use :focusable(true) because that consults findFocusTarget and would cause infinite recursion.
                 // Exclude the component which currently has focus.
                 // Cannot use owner.child() because the parent might not be a Container.
                 // Non-Container Components may still have ownership relationships with
                 // other Components. eg: BoundList with PagingToolbar
-                focusTargets = Ext.ComponentQuery.query(':canfocus():not([hasFocus])', owner);
+                focusTargets = Ext.ComponentQuery.query(':canfocus()', owner);
                 if (focusTargets.length) {
-                    // TODO: When https://sencha.jira.com/browse/EXTJS-19476 is fixed
-                    // and https://sencha.jira.com/browse/EXTJS-19718 is fixed...
-                    // if owner.enableFocusableContainer, return owner. It should
-                    // delegate its focus call appropriately rather than focusing item zero.
-                    return focusTargets[0];
+                    focusIndex = Ext.Array.indexOf(focusTargets, Ext.ComponentManager.getActiveComponent());
+
+                    // Return the next focusable, or the previous focusable, or the first focusable
+                    return focusTargets[focusIndex + 1] || focusTargets[focusIndex - 1]
+                        || focusTargets[0];
                 }
 
                 // We found no focusable siblings in our owner, but the owner may itself be focusable,
@@ -654,11 +663,6 @@ Ext.define('Ext.util.Focusable', {
                 // This attribute is a shortcut to look up a Component by its Elements
                 // It only makes sense on focusable elements, so we set it here
                 focusEl.dom.setAttribute('data-componentid', me.id);
-                
-                // Only focusable components can be keyboard-interactive
-                if (me.config.keyHandlers) {
-                    me.initKeyHandlers(focusEl);
-                }
             }
         },
 
@@ -821,6 +825,47 @@ Ext.define('Ext.util.Focusable', {
             
             if (el) {
                 el.restoreTabbableState();
+            }
+        },
+        
+        updateMaskState: function(state, mask) {
+            var me = this,
+                ariaEl = me.ariaEl.dom,
+                value;
+            
+            if (state) {
+                me.disableTabbing();
+                me.setMasked(true);
+                
+                if (ariaEl) {
+                    ariaEl.setAttribute('aria-busy', 'true');
+                    
+                    // It is possible that ariaEl already has aria-describedby attribute;
+                    // in that case we need to save it to restore later.
+                    value = ariaEl.getAttribute('aria-describedby');
+                    
+                    if (value) {
+                        me._savedAriaDescribedBy = value;
+                    }
+                    
+                    ariaEl.setAttribute('aria-describedby', mask.ariaEl.id);
+                }
+            }
+            else {
+                me.enableTabbing();
+                me.setMasked(false);
+                
+                if (ariaEl) {
+                    ariaEl.removeAttribute('aria-busy');
+                    
+                    value = ariaEl.getAttribute('aria-describedby');
+                    ariaEl.removeAttribute('aria-describedby');
+                    
+                    if (value === mask.ariaEl.id && me._savedAriaDescribedBy) {
+                        ariaEl.setAttribute('aria-describedby', me._savedAriaDescribedBy);
+                        delete me._savedAriaDescribedBy;
+                    }
+                }
             }
         }
     }

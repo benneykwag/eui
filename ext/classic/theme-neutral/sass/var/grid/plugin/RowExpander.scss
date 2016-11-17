@@ -62,7 +62,3 @@ $row-expander-expand-glyph: dynamic($fa-var-plus-square $row-expander-glyph-font
  * Glyph for the RowExpander's "collapse" icon when {@link Global_CSS#$enable-font-icons} is `true`.
  */
 $row-expander-collapse-glyph: dynamic($fa-var-minus-square $row-expander-glyph-font-size $font-icon-font-family);
-
-// Used internally
-$row-expander-collapse-uses-background-image: false;
-$row-expander-expand-uses-background-image: false;

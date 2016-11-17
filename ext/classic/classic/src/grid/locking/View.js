@@ -47,11 +47,6 @@ Ext.define('Ext.grid.locking.View', {
         config.normal.viewConfig.bindStore = me.subViewBindStore;
         config.normal.viewConfig.isNormalView = config.locked.viewConfig.isLockedView = true;
 
-        // Override the point at which first refresh is kicked off.
-        // The initial refresh of both sides must take place within a layout suspension
-        // to coalescse the resulting layouts into one.
-        config.locked.viewConfig.beforeLayout = config.normal.viewConfig.beforeLayout = me.beforeLayout;
-
         // Share the same NavigationModel
         config.locked.viewConfig.navigationModel = config.normal.viewConfig.navigationModel = me.navigationModel;
 
@@ -81,6 +76,11 @@ Ext.define('Ext.grid.locking.View', {
         me.normalGrid = me.ownerGrid.normalGrid = ext.ComponentManager.create(config.normal);
         lockedView.lockingPartner = normalView = me.normalView = me.normalGrid.getView();
         normalView.lockingPartner = lockedView;
+
+        // We need to examine locked grid state at this time to sync the normal grid.
+        Ext.override(me.normalGrid, {
+            beforeRender: me.beforeNormalGridRender
+        });
 
         me.loadMask = (config.loadMask !== undefined) ? config.loadMask : me.loadMask;
 
@@ -130,9 +130,10 @@ Ext.define('Ext.grid.locking.View', {
     // Subviews in a lockable asseembly do not bind to stores.
     subViewBindStore: function(store, initial) {
         var me = this,
+            grid = me.ownerGrid,
             selModel;
 
-        if (me.destroying || me.destroyed) {
+        if (me.destroying || me.destroyed || grid.destroying || grid.destroyed) {
             return;
         }
 
@@ -141,26 +142,18 @@ Ext.define('Ext.grid.locking.View', {
         selModel.bindComponent(me);
     },
 
-    // Called in the context of a child view when the first child view begins its layout run
-    beforeLayout: function() {
-        // Access the Lockable object
-        var me = this.ownerCt.ownerLockable.view,
-            lockedView = me.lockedGrid.view,
-            normalView = me.normalGrid.view;
+    beforeNormalGridRender: function() {
+        // This method is used in an Ext.override call, so the 'this' pointer will
+        // not be the normal reference
 
-        if (!me.relayingOperation) {
-
-            // Perform the first refresh just before the first layout
-            // Locked grid may be hidden if it began with no columns, so do not refresh it,
-            if (me.lockedGrid.isVisible()) {
-                if (lockedView.refreshNeeded) {
-                    lockedView.doFirstRefresh(lockedView.dataSource);
-                }
-            }
-            if (normalView.refreshNeeded) {
-                normalView.doFirstRefresh(normalView.dataSource);
-            }
+        // If the locked side has a header (for example it's collapsible, or has tools)
+        // and this has not been configured with a title, we need an &nbsp; title.
+        if (this.ownerGrid.lockedGrid.getHeader() && !this.title) {
+            this.title = '\u00a0';
         }
+
+        // @noOptimize.callParent
+        this.callParent();
     },
 
     onPanelRender: function() {
@@ -304,7 +297,7 @@ Ext.define('Ext.grid.locking.View', {
      * @param {Ext.data.Store} store The store to bind to this view
      * @since 3.4.0
      */
-    onBindStore : function(store) {
+    onBindStore : function(store, initial, propName) {
         var me = this,
             lockedView = me.lockedView,
             normalView = me.normalView;
@@ -388,7 +381,6 @@ Ext.define('Ext.grid.locking.View', {
     /**
      * Toggles ARIA actionable mode on/off
      * @param {Boolean} enabled
-     * @param {Boolean} position
      * @return {Boolean} Returns `false` if the request failed.
      * @private
      */
@@ -435,14 +427,43 @@ Ext.define('Ext.grid.locking.View', {
     },
 
     refresh: function() {
+        var lockedView = this.lockedView,
+            normalView = this.normalView;
+
         Ext.suspendLayouts();
-        this.relayFn('refresh', arguments);
+
+        // Clear both views first so that any widgets are cached first.
+        // Otherwise the second refresh's clear could remove widgets
+        // that are in the first view who's column has been moved.
+        lockedView.clearViewEl(true);
+        normalView.clearViewEl(true);
+
+        // Refresh locked view second, so that if it's refreshing from empty (can start with no locked columns),
+        // the buffered renderer can look to its partner to get the correct range to refresh.
+        normalView.refresh();
+        lockedView.refresh();
+
         Ext.resumeLayouts(true);
     },
 
     refreshView: function() {
+        var lockedView = this.lockedView,
+            normalView = this.normalView,
+            startIndex = normalView.all.startIndex;
+
         Ext.suspendLayouts();
-        this.relayFn('refreshView', arguments);
+
+        // Clear both views first so that any widgets are cached first.
+        // Otherwise the second refresh's clear could remove widgets
+        // that are in the first view who's column has been moved.
+        lockedView.clearViewEl(true);
+        normalView.clearViewEl(true);
+
+        // Refresh locked view second, so that if it's refreshing from empty (can start with no locked columns),
+        // the buffered renderer can look to its partner to get the correct range to refresh.
+        normalView.refreshView(startIndex);
+        lockedView.refreshView(startIndex);
+
         Ext.resumeLayouts(true);
     },
     
@@ -450,7 +471,7 @@ Ext.define('Ext.grid.locking.View', {
         Ext.suspendLayouts();
         this.lockedView.setScrollable(scrollable);
         if (scrollable.isScroller) {
-            scrollable = Ext.scroll.Scroller.create(scrollable.initialConfig);
+            scrollable = new Ext.scroll.Scroller(scrollable.initialConfig);
         }
         this.normalView.setScrollable(scrollable);
         Ext.resumeLayouts(true);
@@ -591,8 +612,8 @@ Ext.define('Ext.grid.locking.View', {
     },
     
     scrollBy: function(){
-        var normal = this.normalView;
-        normal.scrollBy.apply(normal, arguments);
+        var scroller = this.ownerGrid.getScrollable();
+        scroller.scrollBy.apply(scroller, arguments);
     },
 
     ensureVisible: function() {
@@ -632,17 +653,12 @@ Ext.define('Ext.grid.locking.View', {
         // Unbind from the dataSource we bound to in constructor
         me.bindStore(null, false, 'dataSource');
         
-        Ext.destroy(me.lockedViewEventRelayers, me.normalViewEventRelayers);
-        me.lockedViewEventRelayers = me.normalViewEventRelayers = null;
-
-        me.callParent();
-        
-        Ext.destroy(me.loadMask, me.navigationModel, me.selModel);
+        Ext.destroy(me.selModel, me.navigationModel, me.loadMask,
+                    me.lockedViewEventRelayers, me.normalViewEventRelayers);
         
         me.lockedView.lockingPartner = me.normalView.lockingPartner = null;
-        me.lockedGrid = me.lockedView = me.normalGrid = me.normalView = null;
-        me.loadMask = me.navigationModel = me.selModel = me.headerCt = null;
-        me.ownerGrid = me.storeListeners = null;
+        
+        me.callParent();
     }
 
 }, function() {

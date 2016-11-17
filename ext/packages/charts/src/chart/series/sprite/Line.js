@@ -146,6 +146,7 @@ Ext.define('Ext.chart.series.sprite.Line', {
         // and render the stroke on top of the fill.
         var strip = [];
 
+        ctx.beginPath();
         for (i = 3; i < ln; i += 3) {
             x0 = list[i - 3];
             y0 = list[i - 2];
@@ -185,6 +186,7 @@ Ext.define('Ext.chart.series.sprite.Line', {
                 lineConfig.x0 = x0;
                 lineConfig.y0 = y0;
                 params = [me, lineConfig, me.rendererData, start + i/3];
+                // callback(fn, scope, args, delay, caller)
                 rendererChanges = Ext.callback(renderer, null, params, 0, me.getSeries());
             }
 
@@ -213,7 +215,7 @@ Ext.define('Ext.chart.series.sprite.Line', {
             // Special case where we have an uninterrupted segment, followed
             // by a gap, then a valid point, then another gap. The uninterrupted
             // segment should be connenected with the dot situated between the gaps.
-            if (isConnect && lastValidPoint && isValidPoint && !isValidPoint1) {
+            if (isConnect && lastValidPoint && isValidPoint && !isValidPoint0) {
                 x0 = lastValidPoint[0];
                 y0 = lastValidPoint[1];
                 isValidPoint0 = true;

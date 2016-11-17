@@ -1,4 +1,4 @@
-describe('Ext.resizer.Splitter', function () {
+describe("Ext.resizer.Splitter", function () {
     var splitter, c;
 
     function makeContainer(splitterCfg) {
@@ -19,25 +19,23 @@ describe('Ext.resizer.Splitter', function () {
             renderTo: Ext.getBody()
         });
     }
-    
-    function expectAria(attr, value) {
-        jasmine.expectAriaAttr(splitter, attr, value);
-    }
 
     afterEach(function () {
-        c.destroy();
+        if (c) {
+            c.destroy();
+        }
         splitter = c = null;
     });
 
-    describe('init', function () {
-        describe('the tracker', function () {
-            it('should create a SplitterTracker by default', function () {
+    describe("init", function () {
+        describe("the tracker", function () {
+            it("should create a SplitterTracker by default", function () {
                 makeContainer();
 
                 expect(splitter.tracker instanceof Ext.resizer.SplitterTracker).toBe(true);
             });
 
-            it('should honor a custom tracker config', function () {
+            it("should honor a custom tracker config", function () {
                 makeContainer({
                     tracker: {
                         xclass: 'Ext.resizer.BorderSplitter',
@@ -95,6 +93,59 @@ describe('Ext.resizer.Splitter', function () {
         });
     });
     
+    describe("splitter with border layout and iframes", function() {
+        var iframe;
+        beforeEach(function() {
+            iframe = new Ext.Component({
+                autoEl: {
+                    tag: 'iframe',
+                    src: 'about:blank'
+                }
+            });
+            c = new Ext.panel.Panel({
+                width: 400,
+                height: 400,
+                layout: 'border',
+                renderTo: document.body,
+                items: [{
+                    xtype: 'panel',
+                    width: 200,
+                    region: 'west',
+                    split: true,
+                    collapsible: true,
+                }, iframe]
+            });
+            splitter = c.down('splitter');
+        });
+
+        afterEach(function() {
+            iframe.destroy();
+            iframe = null;
+        });
+
+        it("should mask the iframes while resizing and unmask it when done", function() {
+            var parentNode = Ext.fly(iframe.el.dom.parentNode);
+
+            jasmine.fireMouseEvent(splitter, 'mousedown');
+            expect(parentNode.isMasked()).toBe(true);
+
+            jasmine.fireMouseEvent(splitter, 'mouseup');
+            expect(parentNode.isMasked()).toBe(false);
+        });
+
+        it("should not mask iframes when clicking on the splitter collapseEl", function() {
+            jasmine.fireMouseEvent(splitter.el.query('[data-ref=collapseEl]')[0], 'click');
+            expect(c.down('panel').collapsed).toBe('left');
+            expect(Ext.fly(iframe.el.dom.parentNode).isMasked()).toBe(false);
+        });
+
+        it("should not mask iframes when clicking the splitter and the panel is collapsed", function() {
+            c.down('panel').collapse();
+            jasmine.fireMouseEvent(splitter, 'mousedown');
+            expect(Ext.fly(iframe.el.dom.parentNode).isMasked()).toBe(false);
+        });
+    });
+
     describe("ARIA", function() {
         beforeEach(function() {
             makeContainer();
@@ -105,11 +156,11 @@ describe('Ext.resizer.Splitter', function () {
         });
         
         it("should have separator role", function() {
-            expectAria('role', 'separator');
+            expect(splitter).toHaveAttr('role', 'separator');
         });
         
         it("should have aria-orientation", function() {
-            expectAria('aria-orientation', 'vertical');
+            expect(splitter).toHaveAttr('aria-orientation', 'vertical');
         });
     });
 });

@@ -377,5 +377,42 @@ describe("Ext.grid.column.Column", function() {
             colRef[0].setText('NewName');
             expect(colRef[0].textInnerEl.dom).hasHTML('NewName');
         });
+
+
+        describe("empty value", function() {
+            var emptyValues = ['', ' ', null, undefined, '&#160;'],
+                i;
+
+            for (i=0; i<emptyValues.length; i++) {
+                it("should remove the emtpy cls when initially hidden (" + emptyValues[i] + ")", function() {
+                    createGrid({}, {
+                        columns: [
+                            { text: emptyValues[i], dataIndex: 'phone', flex: 1}
+                        ]
+                    });
+                    
+                    expect(colRef[0].titleEl).toHaveCls(Ext.baseCSSPrefix + 'column-header-inner-empty');
+                    
+                    colRef[0].setText('Phone');
+
+                    expect(colRef[0].titleEl).not.toHaveCls(Ext.baseCSSPrefix + 'column-header-inner-empty');
+                });
+
+                it("should add the emtpy cls when setting text to an empty value (" + emptyValues[i] + ")", function() {
+                    createGrid({}, {
+                        columns: [
+                            { text: 'Foo', dataIndex: 'phone', flex: 1}
+                        ]
+                    });
+                    
+                    expect(colRef[0].titleEl).not.toHaveCls(Ext.baseCSSPrefix + 'column-header-inner-empty');
+                    
+                    colRef[0].setText(emptyValues[i]);
+
+                    expect(colRef[0].titleEl).toHaveCls(Ext.baseCSSPrefix + 'column-header-inner-empty');
+                });
+            }
+        });
     });
 });
+

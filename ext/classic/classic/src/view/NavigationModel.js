@@ -383,12 +383,9 @@ Ext.define('Ext.view.NavigationModel', {
     },
 
     destroy: function() {
-        var me = this;
+        this.setStore(null);
+        Ext.destroy(this.viewListeners, this.keyNav);
         
-        me.setStore(null);
-        Ext.destroy(me.viewListeners, me.keyNav);
-        me.keyNav = me.viewListeners = me.dataSource = me.lastFocused = null;
-        
-        me.callParent();
+        this.callParent();
     }
 });

@@ -4,7 +4,13 @@ describe("Ext.grid.column.Widget", function() {
     var webkitIt = Ext.isWebKit ? it : xit,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     var Model = Ext.define(null, {
         extend: 'Ext.data.Model',
@@ -75,13 +81,7 @@ describe("Ext.grid.column.Widget", function() {
     
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
     });
 
     afterEach(function() {
@@ -1189,6 +1189,8 @@ describe("Ext.grid.column.Widget", function() {
 
             describe("RadioGroup as a widget", function() {
                 it("should be able to update value from column's dataIndex", function() {
+                    var changed = false,
+                        widget;
                     createGrid([getColCfg({
                         xtype: 'radiogroup',
                         // The local config means child Radio names are scoped to this RadioGroup
@@ -1199,20 +1201,37 @@ describe("Ext.grid.column.Widget", function() {
                         }, {
                             name: 'value',
                             inputValue: '2'
-                        }],
-                        listeners: {
-                            change: function(radioGroup, newValue) {
-                                radioGroup.getWidgetRecord().set('a', newValue);
-                            }
-                        }
+                        }]
                     })], [{
                         a: {
                             value: '2'
                         }
                     }]);
 
-                    jasmine.fireMouseEvent(getWidget(0).items.first().inputEl, 'click');
-                    expect(store.first().get('a').value).toBe('1');
+                    widget = getWidget(0);
+                    widget.on({
+                        change: {
+                            fn: function(radioGroup, newValue) {
+                                radioGroup.getWidgetRecord().set('a', newValue);
+                                changed = true;
+                            }
+                        }
+                    });
+
+                    if (Ext.isIE9m) {
+                        // jasmine fireMouseEvent doesn't work properly to simulate clicks on a radion button on legacy browsers
+                        widget.items.first().setValue(true);
+                    } else {
+                        jasmine.fireMouseEvent(widget.items.first().inputEl.el, 'click');
+                    }
+
+                    waitsFor(function() {
+                        return changed;
+                    });
+
+                    runs(function() {
+                        expect(store.first().get('a').value).toBe('1');
+                    });
                 });
 
                 it("should be able to sort a column", function() {
@@ -1295,7 +1314,12 @@ describe("Ext.grid.column.Widget", function() {
                         row: 0,
                         column: 0
                     }), 'click');
-                    expect(grid.actionableMode).toBe(false);
+
+                    // Should focus the cell and exit actionable mode.
+                    // Some browsers fire async focus events, so wait for it.
+                    waitsFor(function() {
+                        return grid.actionableMode === false;
+                    });
                 });
             });
         });

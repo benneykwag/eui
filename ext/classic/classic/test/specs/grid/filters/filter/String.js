@@ -2,7 +2,13 @@ describe("Ext.grid.filters.filter.String", function () {
     var grid, store, plugin, columnFilter, menu,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function createGrid(listCfg, storeCfg, gridCfg) {
         synchronousLoad = false;
@@ -72,13 +78,7 @@ describe("Ext.grid.filters.filter.String", function () {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
     });
 
     function tearDown() {

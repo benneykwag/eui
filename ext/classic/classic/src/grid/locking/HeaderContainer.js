@@ -151,7 +151,7 @@ Ext.define('Ext.grid.locking.HeaderContainer', {
         for (i = 0; i < length; i++) {
             column = columns[i];
             colState = columnsState[column.getStateId()];
-            if (!column.locked) {
+            if (colState && !column.locked) {
                 colState.index -= lockedCount;
             }
         }

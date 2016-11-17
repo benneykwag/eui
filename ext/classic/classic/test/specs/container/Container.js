@@ -213,13 +213,13 @@ describe("Ext.container.Container", function() {
                         layout: 'anchor',
                         items: [{
                             height: 200,
-                            width: 200
+                            width: 100
                         }, {
                             height: 200,
-                            width: 200
+                            width: 100
                         }, {
                             height: 200,
-                            width: 200
+                            width: 100
                         }]
                     });
                     s.scrollTo(null, 150);
@@ -244,16 +244,20 @@ describe("Ext.container.Container", function() {
     });
 
     describe("Floating descendants",function() {
+
+        afterEach(function() {
+            ct.destroy();
+        });
+
         it("should find floating descentants using down(), not child()", function() {
-            ct = Ext.create('Ext.window.Window', {
-                bodyPadding: 5,
+            makeContainer({
+                renderTo: Ext.getBody(),
                 layout: 'fit',
                 title: 'Test',
                 height: 400,
                 width: 600,
                 items: {
                     xtype: 'fieldset',
-                    title: 'Test',
                     items: {
                         xtype: 'window',
                         title: 'Descendant',
@@ -261,8 +265,7 @@ describe("Ext.container.Container", function() {
                         width: 200,
                         constrain: true
                     }
-                },
-                autoShow: true
+                }
             });
             expect(ct.child('window')).toBeNull();
             expect(ct.down('window')).not.toBeNull();
@@ -270,27 +273,27 @@ describe("Ext.container.Container", function() {
 
         describe("layouts", function() {
             it("should allow floater layouts to run when the container has one queued", function() {
-                var w = new Ext.window.Window({
+                var p = new Ext.panel.Panel({
                     width: 200,
-                    height: 200
+                    height: 200,
+                    floating: true
                 });
 
-                var ct = new Ext.container.Container({
-                    renderTo: document.body,
+                makeContainer({
+                    renderTo: Ext.getBody(),
                     width: 400,
                     height: 400,
-                    items: w
+                    items: p
                 });
-                w.show();
+                p.show();
 
                 Ext.suspendLayouts();
                 ct.setSize(500, 500);
-                w.add({
+                p.add({
                     title: 'X'
                 });
                 Ext.resumeLayouts(true);
-                expect(w.items.first().rendered).toBe(true);
-                ct.destroy();
+                expect(p.items.first().rendered).toBe(true);
             });
         })
     });

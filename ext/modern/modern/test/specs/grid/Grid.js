@@ -101,9 +101,15 @@ describe("Ext.grid.Grid", function() {
             }];
         }
 
+        if (columns && !specOptions.preventColumns) {
+            columns.forEach(function(col, i) {
+                col.dataIndex = col.dataIndex || 'f' + (i + 1);
+            });
+        }
+
         grid = new TestGrid(Ext.apply({
             width: 600,
-            height: 400,
+            height: 1200,
             store: store,
             columns: columns
         }, gridOptions));
@@ -129,7 +135,7 @@ describe("Ext.grid.Grid", function() {
     }
 
     function resizeColumn(column, by) {
-        var el = column.resizer,
+        var el = column.resizerElement,
             colBox = column.el.getBox(),
             fromMx = colBox.x + colBox.width - 2,
             fromMy = colBox.y + colBox.height / 2;
@@ -158,17 +164,16 @@ describe("Ext.grid.Grid", function() {
         for (i = 0; i < len; ++i) {
             col = columns[i];
             cols.push(col);
-            colWidths.push(col.getComputedWidth());
+            colWidths.push(col.element.getWidth(false, true));
         }
 
         store.each(function(rec) {
-            var row = grid.getItem(rec),
-                widths = [];
+            var row = grid.getItem(rec);
 
-            cols.forEach(function(col) {
-                widths.push(row.getCellByColumn(col).getComputedWidth());
+            cols.forEach(function(col, idx) {
+                var w = row.getCellByColumn(col).element.getWidth(false, true);
+                expect(w).toBeApprox(colWidths[idx]);
             });
-            expect(widths).toEqual(colWidths);
         });
     }
 
@@ -391,9 +396,9 @@ describe("Ext.grid.Grid", function() {
                 }]);
                 renderWithRefresh();
 
-                expectAlignCls(colMap.colf1, 'x-grid-cell-align-left');
-                expectAlignCls(colMap.colf2, 'x-grid-cell-align-center');
-                expectAlignCls(colMap.colf3, 'x-grid-cell-align-right');
+                expectAlignCls(colMap.colf1, 'x-align-left');
+                expectAlignCls(colMap.colf2, 'x-align-center');
+                expectAlignCls(colMap.colf3, 'x-align-right');
             });
 
             it("should give precedence to the cell cfg", function() {
@@ -405,7 +410,7 @@ describe("Ext.grid.Grid", function() {
                     }
                 }]);
                 renderWithRefresh();
-                expectAlignCls(colMap.colf1, 'x-grid-cell-align-right');
+                expectAlignCls(colMap.colf1, 'x-align-right');
             });
         });
 
@@ -418,7 +423,7 @@ describe("Ext.grid.Grid", function() {
                     }]);
                     renderWithRefresh();
 
-                    expect(colMap.colf1.resizer.isVisible()).toBe(false);
+                    expect(colMap.colf1.resizerElement.isVisible()).toBe(false);
                 });
 
                 it("should not show the resizer with resizable: false", function() {
@@ -427,12 +432,12 @@ describe("Ext.grid.Grid", function() {
                         resizable: false
                     }], null, {
                         plugins: [{
-                            type: 'gridcolumnresizing'
+                            type: 'columnresizing'
                         }]
                     });
                     renderWithRefresh();
 
-                    expect(colMap.colf1.resizer.isVisible()).toBe(false);
+                    expect(colMap.colf1.resizerElement.isVisible()).toBe(false);
                 });
 
                 it("should show the resizer with resizable: true and the plugin", function() {
@@ -441,12 +446,12 @@ describe("Ext.grid.Grid", function() {
                         resizable: true
                     }], null, {
                         plugins: [{
-                            type: 'gridcolumnresizing'
+                            type: 'columnresizing'
                         }]
                     });
                     renderWithRefresh();
 
-                    expect(colMap.colf1.resizer.isVisible()).toBe(true);
+                    expect(colMap.colf1.resizerElement.isVisible()).toBe(true);
                 });
 
                 it("should be able to toggle the resizer on", function() {
@@ -455,16 +460,16 @@ describe("Ext.grid.Grid", function() {
                         resizable: false
                     }], null, {
                         plugins: [{
-                            type: 'gridcolumnresizing'
+                            type: 'columnresizing'
                         }]
                     });
                     renderWithRefresh();
 
                     var col = colMap.colf1;
 
-                    expect(col.resizer.isVisible()).toBe(false);
+                    expect(col.resizerElement.isVisible()).toBe(false);
                     col.setResizable(true);
-                    expect(col.resizer.isVisible()).toBe(true);
+                    expect(col.resizerElement.isVisible()).toBe(true);
                 });
 
                 it("should be able to toggle the resizer off", function() {
@@ -473,16 +478,16 @@ describe("Ext.grid.Grid", function() {
                         resizable: true
                     }], null, {
                         plugins: [{
-                            type: 'gridcolumnresizing'
+                            type: 'columnresizing'
                         }]
                     });
                     renderWithRefresh();
 
                     var col = colMap.colf1;
 
-                    expect(col.resizer.isVisible()).toBe(true);
+                    expect(col.resizerElement.isVisible()).toBe(true);
                     col.setResizable(false);
-                    expect(col.resizer.isVisible()).toBe(false);
+                    expect(col.resizerElement.isVisible()).toBe(false);
                 });
                 it('should not fire drag events on headercontainer during resize', function() {
                     makeGrid([{
@@ -491,7 +496,7 @@ describe("Ext.grid.Grid", function() {
                         width: 100
                     }], null, {
                         plugins: [{
-                            type: 'gridcolumnresizing'
+                            type: 'columnresizing'
                         }]
                     });
                     renderWithRefresh();
@@ -502,9 +507,27 @@ describe("Ext.grid.Grid", function() {
 
                     resizeColumn(col, 10);
                     runs(function() {
-                        expect(col.getWidth()).toBe(colWidth + 10);
                         expect(dragSpy).not.toHaveBeenCalled();
                     });
+                });
+
+                it("should work with a flexed column", function() {
+                    makeGrid([{
+                        itemId: 'colf1',
+                        flex: 1,
+                        resizable: true
+                    }], null, {
+                        plugins: [{
+                            type: 'columnresizing'
+                        }]
+                    });
+                    renderWithRefresh();
+
+                    var col = colMap.colf1;
+
+                    expect(col.resizerElement.isVisible()).toBe(true);
+                    col.setResizable(false);
+                    expect(col.resizerElement.isVisible()).toBe(false);
                 });
             });
         });
@@ -622,6 +645,77 @@ describe("Ext.grid.Grid", function() {
         });
 
         describe("column size", function() {
+            describe("default width", function() {
+                describe("subclassed column", function() {
+                    function defineIt(cfg) {
+                        Ext.define('spec.CustomColumn', Ext.apply(cfg, {
+                            extend: 'Ext.grid.column.Column',
+                            xtype: 'customcolumn'
+                        }));
+                    }
+
+                    afterEach(function() {
+                        Ext.undefine('spec.CustomColumn');
+                    });
+
+                    it("should not apply the defaultWidth if a width is specified", function() {
+                        defineIt({
+                            width: 200
+                        });
+                        makeGrid([{
+                            xtype: 'customcolumn',
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBe(200);
+                    });
+
+                    it("should not apply the defaultWidth if a flex is specified", function() {
+                        defineIt({
+                            flex: 1
+                        });
+                        makeGrid([{
+                            xtype: 'customcolumn',
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBeNull();
+                    });
+
+                    it("should apply the defaultWidth if there is no width/flex", function() {
+                        defineIt({});
+                        makeGrid([{
+                            xtype: 'customcolumn',
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBe(100);
+                    });
+                });
+
+                describe("instance column", function() {
+                    it("should not apply the defaultWidth if a width is specified", function() {
+                        makeGrid([{
+                            width: 200,
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBe(200);
+                    });
+
+                    it("should not apply the defaultWidth if a flex is specified", function() {
+                        makeGrid([{
+                            flex: 1,
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBeNull();
+                    });
+
+                    it("should apply the defaultWidth if there is no width/flex", function() {
+                        makeGrid([{
+                            itemId: 'colf1'
+                        }]);
+                        expect(colMap.colf1.getWidth()).toBe(100);
+                    });
+                });
+            });
+
             describe("cell sizing", function() {
                 describe("at construction", function() {
                     describe("widths", function() {
@@ -1600,6 +1694,7 @@ describe("Ext.grid.Grid", function() {
                                 colMap.colf1.setWidth(200);
                                 expect(colMap.colf1.getFlex()).toBeNull();
                                 expectSizes();
+                                expect(colMap.colf1.el.getWidth()).toBe(200);
                             });
 
                             describe("events", function() {
@@ -1620,6 +1715,7 @@ describe("Ext.grid.Grid", function() {
                                     expect(spy.mostRecentCall.args[0]).toBe(grid);
                                     expect(spy.mostRecentCall.args[1]).toBe(colMap.colf1);
                                     expect(spy.mostRecentCall.args[2]).toBe(colMap.colf1.getComputedWidth());
+                                expect(colMap.colf1.el.getWidth()).toBe(100);
                                 });
 
                                 it("should not fire an event if the width does not change", function() {
@@ -1655,6 +1751,7 @@ describe("Ext.grid.Grid", function() {
                                     colMap.colf1.setWidth(400);
                                     expectSizes();
                                     expect(spy.callCount).toBe(2);
+                                    expect(colMap.colf1.el.getWidth()).toBe(400);
 
                                     expect(spy.calls[0].args[0]).toBe(grid);
                                     expect(spy.calls[0].args[1]).toBe(colMap.colf1);
@@ -1910,19 +2007,6 @@ describe("Ext.grid.Grid", function() {
             Ext.destroy(grid, store);
         });
 
-        describe('Basic rendering', function() {
-            it('should render', function() {
-                createGrid();
-
-                // Must wait for content render
-                runs(function() {
-                    expect((grid.el.dom.textContent || grid.el.dom.innerText).replace(/[\s\n\r]/g, '')).toBe("SimpsonsNameEmailPhoneLisalisa@simpsons.com555-111-1224Bartbart@simpsons.com555-222-1234Homerhomer@simpsons.com555-222-1244Margemarge@simpsons.com555-222-1254");
-                    expect(rows.length).toBe(4);
-                    expect(cells.length).toBe(12);
-                });
-            });
-        });
-        
         describe('Grouped headers', function() {
             it('should render grouped', function() {
                 createGrid(null, {

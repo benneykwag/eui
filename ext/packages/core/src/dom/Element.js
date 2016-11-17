@@ -128,8 +128,11 @@
 Ext.define('Ext.dom.Element', function(Element) {
     var WIN = window,
         DOC = document,
-        windowId = 'ext-window',
-        documentId = 'ext-document',
+        docEl = DOC.documentElement,
+        TOP = WIN.top,
+        elementIdCounter,
+        windowId,
+        documentId,
         WIDTH = 'width',
         HEIGHT = 'height',
         MIN_WIDTH = 'min-width',
@@ -210,7 +213,6 @@ Ext.define('Ext.dom.Element', function(Element) {
         sizedCls = Ext.baseCSSPrefix + 'sized',
         unsizedCls = Ext.baseCSSPrefix + 'unsized',
         stretchedCls = Ext.baseCSSPrefix + 'stretched',
-        noTouchScrollCls = Ext.baseCSSPrefix + 'no-touch-scroll',
         CREATE_ATTRIBUTES = {
             style: 'style',
             className: 'className',
@@ -227,6 +229,18 @@ Ext.define('Ext.dom.Element', function(Element) {
         isVirtualKeyboardOpen = false,
         visFly, scrollFly, caFly;
 
+    // Cross-origin access might throw an exception
+    try {
+        elementIdCounter = TOP.__elementIdCounter__;
+    }
+    catch (e) {
+        TOP = WIN;
+    }
+
+    TOP.__elementIdCounter = elementIdCounter = (TOP.__elementIdCounter__ || 0) + 1;
+    windowId = 'ext-window-' + elementIdCounter;
+    documentId = 'ext-document-' + elementIdCounter;
+
     return {
         alternateClassName: [ 'Ext.Element' ],
 
@@ -234,7 +248,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             'Ext.util.Positionable',
             'Ext.mixin.Observable'
         ],
-        
+
         requires: [
             'Ext.dom.Shadow',
             'Ext.dom.Shim',
@@ -249,6 +263,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             'Ext.dom.Helper',
             'Ext.dom.CompositeElement',
             'Ext.dom.Fly',
+            'Ext.dom.TouchAction',
             'Ext.event.publisher.Focus'
         ],
 
@@ -257,7 +272,7 @@ Ext.define('Ext.dom.Element', function(Element) {
         isElement: true,
 
         skipGarbageCollection: true,
-        
+
         $applyConfigs: true,
 
         identifiablePrefix: 'ext-element-',
@@ -617,6 +632,8 @@ Ext.define('Ext.dom.Element', function(Element) {
 
             Ext.cache[id] = me;
 
+            me.longpressListenerCount = 0;
+
             me.mixins.observable.constructor.call(me);
         },
 
@@ -666,7 +683,7 @@ Ext.define('Ext.dom.Element', function(Element) {
              * @inheritable
              */
             OFFSETS: 3,
-            
+
             /**
              * @property {Number}
              * Visibility mode constant for use with {@link Ext.dom.Element#setVisibilityMode}.
@@ -766,17 +783,17 @@ Ext.define('Ext.dom.Element', function(Element) {
              * @private
              * Create method to add support for a DomHelper config. Creates
              * and appends elements/children using document.createElement/appendChild.
-             * This method is used by Sencha Touch for a significant performance gain
+             * This method is used by the modern toolkit for a significant performance gain
              * in webkit browsers as opposed to using DomQuery which generates HTML
              * markup and sets it as innerHTML.
              *
              * However, the createElement/appendChild
              * method of creating elements is significantly slower in all versions of IE
-             * at the time of this writing (6 - 11), so Ext JS should not use this method,
+             * at the time of this writing (6 - 11), so classic toolkit should not use this method,
              * but should instead use DomHelper methods, or Element methods that use
              * DomHelper under the hood (e.g. createChild).
              * see https:*fiddle.sencha.com/#fiddle/tj
-             * 
+             *
              * @static
              * @inheritable
              */
@@ -854,8 +871,10 @@ Ext.define('Ext.dom.Element', function(Element) {
                                 break;
 
                             case CREATE_ATTRIBUTES.children:
-                                for (i = 0,ln = value.length; i < ln; i++) {
-                                    element.appendChild(me.create(value[i], true));
+                                if (value != null) {
+                                    for (i = 0,ln = value.length; i < ln; i++) {
+                                        element.appendChild(me.create(value[i], true));
+                                    }
                                 }
                                 break;
 
@@ -903,15 +922,52 @@ Ext.define('Ext.dom.Element', function(Element) {
             },
 
             /**
-             * Returns the top Element that is located at the passed coordinates
+             * Returns the top Element that is located at the passed coordinates in the current viewport.
              * @static
              * @inheritable
              * @param {Number} x The x coordinate
              * @param {Number} y The y coordinate
-             * @return {String} The found Element
+             * @param {Boolean} [asDom=false] `true` to return a DOM element.
+             * @return {Ext.dom.Element/HTMLElement} The found element.
              */
-            fromPoint: function(x, y) {
-                return Ext.get(DOC.elementFromPoint(x, y));
+            fromPoint: (function() {
+                // IE has a weird bug where elementFromPoint can fail on the first call when inside an iframe.
+                // It seems to happen more consistently on older IE, but sometimes crops up even in IE11.
+                // This plays havoc especially while running tests.
+                var elementFromPointBug;
+                if (Ext.isIE) {
+                    try {
+                        elementFromPointBug = window.self !== window.top;
+                    } catch (e) {
+                        elementFromPointBug = true;
+                    }
+                }
+
+                return function(x, y, asDom) {
+                    var el = null;
+                    el = DOC.elementFromPoint(x, y);
+                    if (!el && elementFromPointBug) {
+                        el = DOC.elementFromPoint(x, y);
+                    }
+                    return asDom ? el : Ext.get(el);
+                };
+            })(),
+
+            /**
+             * Returns the top Element that is located at the passed coordinates taking into account
+             * the scroll position of the document.
+             * @static
+             * @inheritable
+             * @param {Number} x The x coordinate
+             * @param {Number} y The y coordinate
+             * @param {Boolean} [asDom=false] `true` to return a DOM element.
+             * @return {Ext.dom.Element/HTMLElement} The found element.
+             *
+             * @since 6.2.0
+             */
+            fromPagePoint: function(x, y, asDom) {
+                var scroll = Ext.getDoc().getScroll();
+                return Element.fromPoint(x - scroll.left, y - scroll.top, asDom);
             },
 
             /**
@@ -1070,7 +1126,7 @@ Ext.define('Ext.dom.Element', function(Element) {
              */
             getActiveElement: function(asElement) {
                 var active = DOC.activeElement;
-                
+
                 // The activeElement can be null, however there also appears to be a very odd
                 // and inconsistent bug in IE where the activeElement is simply an empty object
                 // literal. Test if the returned active element has focus, if not, we've hit the bug
@@ -1078,7 +1134,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                 if (!active || !active.focus) {
                     active = DOC.body;
                 }
-                
+
                 return asElement ? Ext.get(active) : active;
             },
 
@@ -1089,7 +1145,7 @@ Ext.define('Ext.dom.Element', function(Element) {
              * @return {Number} documentHeight
              */
             getDocumentHeight: function() {
-                return Math.max(!Ext.isStrict ? DOC.body.scrollHeight : DOC.documentElement.scrollHeight, this.getViewportHeight());
+                return Math.max(!Ext.isStrict ? DOC.body.scrollHeight : docEl.scrollHeight, this.getViewportHeight());
             },
 
             /**
@@ -1099,7 +1155,7 @@ Ext.define('Ext.dom.Element', function(Element) {
              * @return {Number} documentWidth
              */
             getDocumentWidth: function() {
-                return Math.max(!Ext.isStrict ? DOC.body.scrollWidth : DOC.documentElement.scrollWidth, this.getViewportWidth());
+                return Math.max(!Ext.isStrict ? DOC.body.scrollWidth : docEl.scrollWidth, this.getViewportWidth());
             },
 
             /**
@@ -1132,7 +1188,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                 }
                 //</feature>
 
-                return (viewportHeight != null) ? viewportHeight : WIN.innerHeight;
+                return (viewportHeight != null) ? viewportHeight : docEl.clientHeight;
             },
 
             /**
@@ -1150,7 +1206,59 @@ Ext.define('Ext.dom.Element', function(Element) {
                 }
                 //</feature>
 
-                return (viewportWidth != null) ? viewportWidth : WIN.innerWidth;
+                return (viewportWidth != null) ? viewportWidth : docEl.clientWidth;
+            },
+
+            /**
+             * Returns the current zoom level of the viewport as a ratio of page pixels to
+             * screen pixels.
+             * @private
+             * @static
+             * @return {Number}
+             */
+            getViewportScale: function() {
+                // on deskop devices, the devicePixel ratio gives us the level of zoom that
+                // the user specified using ctrl +/- and or by selecting a zoom level from
+                // the menu.
+                // On android/iOS devicePixel ratio is a fixed number that represents the
+                // screen pixel density (e.g. always "2" on apple retina devices)
+                var top = WIN.top;
+
+                return ((Ext.isiOS || Ext.isAndroid) ? 1 :
+                    (top.devicePixelRatio || // modern browsers
+                        top.screen.deviceXDPI / top.screen.logicalXDPI)) // IE10m
+                        * this.getViewportTouchScale();
+            },
+
+            /**
+             * On touch-screen devices there may be an additional level of zooming
+             * that occurs when the user performs a pinch or double-tap to zoom
+             * gesture.  This is separate from and in addition to the
+             * devicePixelRatio.  We can detect it by comparing the width
+             * of the documentElement to window.innerWidth
+             * @private
+             */
+            getViewportTouchScale: function(forceRead) {
+                var scale = 1,
+                    hidden = 'hidden',
+                    top = WIN.top,
+                    cachedScale;
+
+                if (!forceRead) {
+                    cachedScale = this._viewportTouchScale;
+
+                    if (cachedScale) {
+                        return cachedScale;
+                    }
+                }
+
+                if (Ext.isIE10p || Ext.isEdge || Ext.isiOS) {
+                    scale = docEl.offsetWidth / WIN.innerWidth;
+                } else if (Ext.isChromeMobile) {
+                    scale = top.outerWidth / top.innerWidth;
+                }
+
+                return scale;
             },
 
             /**
@@ -1164,6 +1272,21 @@ Ext.define('Ext.dom.Element', function(Element) {
                     width: Element.getViewportWidth(),
                     height: Element.getViewportHeight()
                 };
+            },
+
+            /**
+             * Mask iframes when shim is true. See {@link Ext.util.Floating#shim}.
+             * @private
+             */
+            maskIframes: function() {
+                var iframes = document.getElementsByTagName('iframe');
+
+                Ext.each(iframes, function(iframe) {
+                    var myMask;
+
+                    myMask = Ext.fly(iframe.parentNode).mask();
+                    myMask.setStyle('background-color','transparent');
+                });
             },
 
             /**
@@ -1205,17 +1328,17 @@ Ext.define('Ext.dom.Element', function(Element) {
              * @inheritable
              */
             _onWindowResize: function() {
-                var windowWidth = window.innerWidth,
-                    windowHeight = window.innerHeight,
+                var documentWidth = docEl.clientWidth,
+                    documentHeight = docEl.clientHeight,
                     now = new Date(),
                     threshold = 1000,
                     deltaX, deltaY;
 
-                deltaX = windowWidth - Element._windowWidth;
-                deltaY = windowHeight - Element._windowHeight;
+                deltaX = documentWidth - Element._documentWidth;
+                deltaY = documentHeight - Element._documentHeight;
 
-                Element._windowWidth = windowWidth;
-                Element._windowHeight = windowHeight;
+                Element._windowWidth = documentWidth;
+                Element._windowHeight = documentHeight;
 
                 // If the focus entered or left an editable element within a brief threshold
                 // of time, then this resize event MAY be due to a virtual keyboard being
@@ -1235,7 +1358,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                     isVirtualKeyboardOpen = false;
                     // when windows tablets are rotated while keyboard is open, the keyboard closes
                     // and then immediately reopens.  Track the timestamp of the last keyboard
-                    // close so that we can detect a succeessive resize event that might indicate
+                    // close so that we can detect a successive resize event that might indicate
                     // reopening
                     lastKeyboardClose = new Date();
                 }
@@ -1247,8 +1370,8 @@ Ext.define('Ext.dom.Element', function(Element) {
                 // These cached variables are used by getViewportWidth and getViewportHeight
                 // They do not get updated if we returned early due to detecting  that the
                 // resize event was triggered by virtual keyboard.
-                Element._viewportWidth = windowWidth;
-                Element._viewportHeight = windowHeight;
+                Element._viewportWidth = documentWidth;
+                Element._viewportHeight = documentHeight;
             },
 
             /**
@@ -1383,6 +1506,18 @@ Ext.define('Ext.dom.Element', function(Element) {
             },
 
             /**
+             * Unmask iframes when shim is true. See {@link Ext.util.Floating#shim}.
+             * @private
+             */
+            unmaskIframes: function() {
+                var iframes = document.getElementsByTagName('iframe');
+
+                Ext.each(iframes, function(iframe) {
+                    Ext.fly(iframe.parentNode).unmask();
+                });
+            },
+
+            /**
              * Serializes a DOM form into a url encoded string
              * @param {Object} form The form
              * @return {String} The url encoded form
@@ -1444,7 +1579,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                     }
                     // If Any of the nodes in in a detached state, have to use the document.body
                     else {
-                        caFly.attach(document.body);
+                        caFly.attach(DOC.body);
                         break;
                     }
                 }
@@ -1504,6 +1639,86 @@ Ext.define('Ext.dom.Element', function(Element) {
                 dom.className = classList.join(' ');
             }
 
+            return me;
+        },
+
+        /**
+         * Sets up event handlers to add and remove a css class when the mouse is down and then up on this element (a click effect)
+         * @param {String} className The class to add
+         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
+         * will be the Element instance. If this functions returns false, the class will not be added.
+         * @param {Object} [scope] The scope to execute the testFn in.
+         * @return {Ext.dom.Element} this
+         */
+        addClsOnClick: function(className, testFn, scope) {
+            var me = this,
+                dom = me.dom,
+                hasTest = Ext.isFunction(testFn);
+
+            me.on("mousedown", function() {
+                if (hasTest && testFn.call(scope || me, me) === false) {
+                    return false;
+                }
+                Ext.fly(dom).addCls(className);
+                var d = Ext.getDoc(),
+                    fn = function() {
+                        Ext.fly(dom).removeCls(className);
+                        d.removeListener("mouseup", fn);
+                    };
+                d.on("mouseup", fn);
+            });
+            return me;
+        },
+
+        /**
+         * Sets up event handlers to add and remove a css class when this element has the focus
+         * @param {String} className The class to add
+         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
+         * will be the Element instance. If this functions returns false, the class will not be added.
+         * @param {Object} [scope] The scope to execute the testFn in.
+         * @return {Ext.dom.Element} this
+         */
+        addClsOnFocus: function(className, testFn, scope) {
+            var me = this,
+                dom = me.dom,
+                hasTest = Ext.isFunction(testFn);
+
+            me.on("focus", function() {
+                if (hasTest && testFn.call(scope || me, me) === false) {
+                    return false;
+                }
+                Ext.fly(dom).addCls(className);
+            });
+            me.on("blur", function() {
+                Ext.fly(dom).removeCls(className);
+            });
+            return me;
+        },
+
+        /**
+         * Sets up event handlers to add and remove a css class when the mouse is over this element
+         * @param {String} className The class to add
+         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
+         * will be the Element instance. If this functions returns false, the class will not be added.
+         * @param {Object} [scope] The scope to execute the testFn in.
+         * @return {Ext.dom.Element} this
+         */
+        addClsOnOver: function(className, testFn, scope) {
+            var me = this,
+                dom = me.dom,
+                hasTest = Ext.isFunction(testFn);
+
+            me.hover(
+                function() {
+                    if (hasTest && testFn.call(scope || me, me) === false) {
+                        return;
+                    }
+                    Ext.fly(dom).addCls(className);
+                },
+                function() {
+                    Ext.fly(dom).removeCls(className);
+                }
+            );
             return me;
         },
 
@@ -1622,14 +1837,15 @@ Ext.define('Ext.dom.Element', function(Element) {
                 return !returnDom ? Ext.get(el) : el;
             } else if (el.length) {
                 // append all elements to a documentFragment
-                insertEl = Ext.fly(document.createDocumentFragment());
+                insertEl = Ext.fly(DOC.createDocumentFragment());
                 eLen = el.length;
 
                 for (e = 0; e < eLen; e++) {
                     insertEl.appendChild(el[e], returnDom);
                 }
+                el = Array.prototype.slice.call(insertEl.dom.childNodes, 0);
                 me.dom.appendChild(insertEl.dom);
-                return returnDom ? insertEl.dom : insertEl;
+                return returnDom ? el : new Ext.dom.CompositeElementLite(el);
             }
             else { // dh config
                 return me.createChild(el, null, returnDom);
@@ -1764,6 +1980,8 @@ Ext.define('Ext.dom.Element', function(Element) {
          * @param {String/HTMLElement/Ext.dom.Element} centerIn element in
          * which to center the element.
          * @return {Ext.dom.Element} This element
+         *
+         * @chainable
          */
         center: function(centerIn){
             return this.alignTo(centerIn || DOC, 'c-c');
@@ -1880,12 +2098,6 @@ Ext.define('Ext.dom.Element', function(Element) {
             }
 
             me.collect();
-
-            if (!me.isFly) {
-                // The parent destroy sets the destroy to emptyFn, which we don't
-                // want on a shared fly
-                me.callParent();
-            }
         },
 
         detach: function() {
@@ -1922,38 +2134,6 @@ Ext.define('Ext.dom.Element', function(Element) {
                 shim.hide();
                 shim.disabled = true;
             }
-        },
-
-        /**
-         * @private
-         */
-        disableTouchContextMenu: function() {
-            this._contextMenuListenerRemover = this.on({
-                MSHoldVisual: function(e) {
-                    // disables the visual indicator in IE that precedes contextmenu
-                    e.preventDefault();
-                },
-                destroyable: true,
-                delegated: false
-            });
-        },
-
-        /**
-         * Disables native scrolling of an overflowing element using touch-screen input
-         * @private
-         */
-        disableTouchScroll: function() {
-            // The x-no-touch-scroll cls disables touch scrolling on IE10+
-            this.addCls(noTouchScrollCls);
-            // Some browsers (e.g. Chrome on Win8 with touch-screen) don't yet support
-            // touch-action:none, and so require cancellation of touchmove to prevent
-            // the default scrolling action
-            this.on({
-                touchmove: function(e) {
-                    e.preventDefault();
-                },
-                translate: false
-            });
         },
 
         /**
@@ -2029,10 +2209,9 @@ Ext.define('Ext.dom.Element', function(Element) {
          *
          * @param {Boolean} [options.animate=false] `true` to animate the shadow while
          * the element is animating.  By default the shadow will be hidden during animation.
-         * @param isVisible (private)
          * @private
          */
-        enableShadow: function(options, isVisible) {
+        enableShadow: function(options, /* private */ isVisible) {
             var me = this,
                 shadow = me.shadow || (me.shadow = new Ext.dom.Shadow(Ext.apply({
                     target: me
@@ -2064,11 +2243,10 @@ Ext.define('Ext.dom.Element', function(Element) {
          * automatically synchronized as the position, size, and visibility of this
          * Element are changed.
          * @param {Object} [options] Configuration options for the shim
-         * @param isVisible (private)
-         * @return {Ext.dom.Element} The new shim element
+         * @return {Ext.dom.Shim} The new Shim
          * @private
          */
-        enableShim: function(options, isVisible) {
+        enableShim: function(options, /* private */ isVisible) {
             var me = this,
                 shim = me.shim || (me.shim = new Ext.dom.Shim(Ext.apply({
                     target: me
@@ -2092,6 +2270,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             }
 
             shim.disabled = false;
+            return shim;
         },
 
         /**
@@ -2107,7 +2286,7 @@ Ext.define('Ext.dom.Element', function(Element) {
         findParent: function(simpleSelector, limit, returnEl) {
             var me = this,
                 target = me.dom,
-                topmost = DOC.documentElement,
+                topmost = docEl,
                 depth = 0;
 
             if (limit || limit === 0) {
@@ -2161,10 +2340,10 @@ Ext.define('Ext.dom.Element', function(Element) {
          * if `defer` argument is specified.
          *
          * @param {Number} [defer] Milliseconds to defer the focus
-         * @param dom (private)
+         *
          * @return {Ext.dom.Element} this
          */
-        focus: function(defer, dom) {
+        focus: function(defer, /* private */ dom) {
             var me = this;
 
             dom = dom || me.dom;
@@ -2193,10 +2372,11 @@ Ext.define('Ext.dom.Element', function(Element) {
                 shadow = me.shadow,
                 shim = me.shim;
 
+            // The parent destroy sets the destroy to emptyFn, which we don't
+            // want on a shared fly
             if (!me.isFly) {
                 me.mixins.observable.destroy.call(me);
                 delete Ext.cache[me.id];
-                me.destroyed = true;
                 me.el = null;
             }
 
@@ -2341,6 +2521,7 @@ Ext.define('Ext.dom.Element', function(Element) {
          */
         getHeight: function(contentHeight, preciseHeight) {
             var me = this,
+                dom = me.dom,
                 hidden = me.isStyle('display', 'none'),
                 height,
                 floating;
@@ -2349,7 +2530,17 @@ Ext.define('Ext.dom.Element', function(Element) {
                 return 0;
             }
 
-            height = me.dom.offsetHeight;
+            // Use the viewport height if they are asking for body height
+            if (dom.nodeName === 'BODY') {
+                height = Element.getViewportHeight();
+            } else {
+                height = dom.offsetHeight;
+
+                // SVG nodes do not have offsetHeight, so use boundingClientRect instead.
+                if (height == null) {
+                    height = dom.getBoundingClientRect().height;
+                }
+            }
 
             // IE9/10 Direct2D dimension rounding bug
             if (Ext.supports.Direct2DBug) {
@@ -2539,9 +2730,9 @@ Ext.define('Ext.dom.Element', function(Element) {
         getScroll: function() {
             var me = this,
                 dom = me.dom,
-                docElement = DOC.documentElement,
+                docElement = docEl,
                 left, top,
-                body = document.body;
+                body = DOC.body;
 
             if (dom === DOC || dom === body) {
                 // the scrollLeft/scrollTop may be either on the body or documentElement,
@@ -2621,7 +2812,7 @@ Ext.define('Ext.dom.Element', function(Element) {
         getScrollLeft: function() {
             var dom = this.dom;
 
-            if (dom === DOC || dom === document.body) {
+            if (dom === DOC || dom === DOC.body) {
                 return this.getScroll().left;
             } else {
                 return dom.scrollLeft;
@@ -2635,7 +2826,7 @@ Ext.define('Ext.dom.Element', function(Element) {
         getScrollTop: function(){
             var dom = this.dom;
 
-            if (dom === DOC || dom === document.body) {
+            if (dom === DOC || dom === DOC.body) {
                 return this.getScroll().top;
             } else {
                 return dom.scrollTop;
@@ -2742,6 +2933,17 @@ Ext.define('Ext.dom.Element', function(Element) {
          */
         getTop: function(local) {
             return local ? this.getLocalY() : this.getY();
+        },
+
+        /**
+         * Returns this element's touch action.  (see {@link #setTouchAction})
+         *
+         * The returned object is shared and should not be mutated.
+         *
+         * @returns {Object}
+         */
+        getTouchAction: function() {
+            return Ext.dom.TouchAction.get(this.dom);
         },
 
         /**
@@ -2867,28 +3069,24 @@ Ext.define('Ext.dom.Element', function(Element) {
         getXY: function() {
             var round = Math.round,
                 dom = this.dom,
+                body = DOC.body,
                 x = 0,
                 y = 0,
-                box, scroll;
+                bodyRect, rect;
 
-            if(dom !== DOC && dom !== DOC.body){
+            if(dom !== DOC && dom !== body){
                 // IE (including IE10) throws an error when getBoundingClientRect
                 // is called on an element not attached to dom
                 try {
-                    box = dom.getBoundingClientRect();
-                } catch (ex) {
-                    box = { left: 0, top: 0 };
-                }
+                    bodyRect = body.getBoundingClientRect();
+                    rect = dom.getBoundingClientRect();
 
-                x = round(box.left);
-                y = round(box.top);
-
-                scroll = Ext.getDoc().getScroll();
-
-                x += scroll.left;
-                y += scroll.top;
+                    x = rect.left - bodyRect.left;
+                    y = rect.top - bodyRect.top;
+                } catch (ex) {}
             }
-            return [x, y];
+
+            return [round(x), round(y)];
         },
 
         /**
@@ -3009,7 +3207,7 @@ Ext.define('Ext.dom.Element', function(Element) {
 
             if (Ext.isIterable(el)) {
                 eLen = el.length;
-                insertEl = Ext.fly(document.createDocumentFragment());
+                insertEl = Ext.fly(DOC.createDocumentFragment());
 
                 // append all elements to a documentFragment               
                 if (Ext.isArray(el)) {
@@ -3064,7 +3262,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             if (!selector) {
                 // In Ext 4 is() called through to DomQuery methods, and would always
                 // return true if the selector was ''.  The new query() method in v5 uses
-                // querySelector/querySeletorAll() which consider '' to be an invalid
+                // querySelector/querySelectorAll() which consider '' to be an invalid
                 // selector and throw an error as a result.  To maintain compatibility
                 // with the various users of is() we have to return true if the selector
                 // is an empty string.  For example: el.up('') should return the element's
@@ -3182,21 +3380,6 @@ Ext.define('Ext.dom.Element', function(Element) {
         },
 
         /**
-        * Mask iframes when shim is true. See {@link Ext.util.Floating#shim}.
-        * @private
-        */
-        maskIframes: function() {
-            var iframes = document.getElementsByTagName('iframe');
-
-            Ext.each(iframes, function(iframe) {
-                var iframeParent = Ext.fly(iframe.parentNode),
-                    myMask = iframeParent.mask();
-                myMask.setStyle('background-color','transparent');
-            });
-
-        },
-
-        /**
          * @cfg listeners
          * @hide
          */
@@ -3216,6 +3399,47 @@ Ext.define('Ext.dom.Element', function(Element) {
                 n = n[dir];
             }
             return null;
+        },
+
+        /**
+         * Monitors this Element for the mouse leaving. Calls the function after the specified delay only if
+         * the mouse was not moved back into the Element within the delay. If the mouse *was* moved
+         * back in, the function is not called.
+         * @param {Number} delay The delay **in milliseconds** to wait for possible mouse re-entry before calling the handler function.
+         * @param {Function} handler The function to call if the mouse remains outside of this Element for the specified time.
+         * @param {Object} [scope] The scope (`this` reference) in which the handler function executes. Defaults to this Element.
+         * @return {Object} The listeners object which was added to this element so that monitoring can be stopped. Example usage:
+         *
+         *     // Hide the menu if the mouse moves out for 250ms or more
+         *     this.mouseLeaveMonitor = this.menuEl.monitorMouseLeave(250, this.hideMenu, this);
+         *
+         *     ...
+         *     // Remove mouseleave monitor on menu destroy
+         *     this.mouseLeaveMonitor.destroy();
+         *
+         */
+        monitorMouseLeave: function(delay, handler, scope) {
+            var me = this,
+                timer,
+                listeners = {
+                    mouseleave: function(e) {
+                        if (Ext.isIE9m) {
+                            e.enableIEAsync();
+                        }
+                        timer = Ext.defer(handler, delay, scope || me, [
+                            e
+                        ]);
+                    },
+                    mouseenter: function() {
+                        clearTimeout(timer);
+                    },
+                    destroy: function() {
+                        clearTimeout(timer);
+                        me.un(listeners);
+                    }
+                };
+            me.on(listeners);
+            return listeners;
         },
 
         /**
@@ -3341,12 +3565,11 @@ Ext.define('Ext.dom.Element', function(Element) {
          *
          * @param {String} selector The CSS selector.
          * @param {Boolean} [asDom=true] `false` to return an array of Ext.dom.Element
-         * @param single (private)
          * @return {HTMLElement[]/Ext.dom.Element[]} An Array of elements (
          * HTMLElement or Ext.dom.Element if _asDom_ is _false_) that match the selector.  
          * If there are no matches, an empty Array is returned.
          */
-        query: function(selector, asDom, single) {
+        query: function(selector, asDom, /* private */ single) {
             var dom = this.dom,
                 results, len, nlen, node, nodes, i, j;
 
@@ -4429,6 +4652,34 @@ Ext.define('Ext.dom.Element', function(Element) {
             return me;
         },
 
+        /**
+         * Sets the CSS {@link https://www.w3.org/TR/pointerevents/#the-touch-action-css-property touch-action}
+         * property on this element and emulates its behavior on browsers where touch-action
+         * is not supported.
+         *
+         * @param {Object} touchAction An object with touch-action names as the keys, and
+         * boolean values to enable or disable specific touch actions. Accepted keys are:
+         *
+         * - `panX`
+         * - `panY`
+         * - `pinchZoom`
+         * - `doubleTapZoom`
+         *
+         * All touch actions are enabled (`true`) by default, so it is usually only necessary
+         * to specify which touch actions to disable.  For example, the following disables
+         * only vertical scrolling and double-tap-zoom on an element
+         *
+         *     element.setTouchAction({
+         *         panY: false,
+         *         doubleTapZoom: false
+         *     });
+         *
+         * @return {Ext.dom.Element} this
+         */
+        setTouchAction: function(touchAction) {
+            Ext.dom.TouchAction.set(this.dom, touchAction);
+        },
+
         setUnderlaysVisible: function(visible) {
             var shadow = this.shadow,
                 shim = this.shim;
@@ -4742,24 +4993,14 @@ Ext.define('Ext.dom.Element', function(Element) {
             var transformStyleName = 'webkitTransform' in DOC.createElement('div').style ? 'webkitTransform' : 'transform';
 
             return function(x, y, z) {
+
+                x = Math.round(x);
+                y = Math.round(y);
+                z = Math.round(z);
                 this.dom.style[transformStyleName] = 'translate3d(' + (x || 0) + 'px, ' + (y || 0) + 'px, ' + (z || 0) + 'px)';
             };
         }(),
-		
-        /**
-         * Unmask iframes when shim is true. See {@link Ext.util.Floating#shim}.
-         * @private
-         */
-        unmaskIframes: function() {
-            var iframes = document.getElementsByTagName('iframe');
 
-            Ext.each(iframes, function(iframe) {
-                var iframeParent = Ext.fly(iframe.parentNode);
-                iframeParent.unmask();
-            });
-
-        },
-        
         /**
          * @private
          */
@@ -4804,7 +5045,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                 grandparentNode.removeChild(parentNode);
             }
             else {
-                grandparentNode = document.createDocumentFragment();
+                grandparentNode = DOC.createDocumentFragment();
                 grandparentNode.appendChild(dom);
             }
             
@@ -4930,7 +5171,11 @@ Ext.define('Ext.dom.Element', function(Element) {
         privates: {
             doAddListener: function(eventName, fn, scope, options, order, caller, manager) {
                 var me = this,
+                    gesturePublisher = Ext.$gesturePublisher,
                     originalName = eventName,
+                    supports = Ext.supports,
+                    supportsTouch = supports.TouchEvents,
+                    supportsPointer = supports.PointerEvents,
                     observableDoAddListener, additiveEventName,
                     translatedEventName;
 
@@ -4944,10 +5189,6 @@ Ext.define('Ext.dom.Element', function(Element) {
                 if (!me.blockedEvents[eventName]) {
                     observableDoAddListener = me.mixins.observable.doAddListener;
                     options = options || {};
-
-                    if (me.longpressEvents[eventName]) {
-                        me.disableTouchContextMenu();
-                    }
 
                     if (Element.useDelegatedEvents === false) {
                         options.delegated = options.delegated || false;
@@ -4978,7 +5219,11 @@ Ext.define('Ext.dom.Element', function(Element) {
                         }
                     }
 
-                    observableDoAddListener.call(me, eventName, fn, scope, options, order, caller, manager);
+                    if (observableDoAddListener.call(me, eventName, fn, scope, options, order, caller, manager)) {
+                        if (me.longpressEvents[eventName] && (++me.longpressListenerCount === 1)) {
+                            me.on('MSHoldVisual', 'preventMsHoldVisual', me);
+                        }
+                    }
 
                     if (manager && translatedEventName) {
                         delete options.managedName;
@@ -4994,20 +5239,22 @@ Ext.define('Ext.dom.Element', function(Element) {
 
             doRemoveListener: function(eventName, fn, scope) {
                 var me = this,
+                    gesturePublisher = Ext.$gesturePublisher,
+                    supports = Ext.supports,
+                    supportsTouch = supports.TouchEvents,
+                    supportsPointer = supports.PointerEvents,
                     observableDoRemoveListener, translatedEventName, additiveEventName,
-                    contextMenuListenerRemover;
+                    contextMenuListenerRemover, removed;
+
+                // Even though the superclass method does conversion to lowercase, we need
+                // to do it here because we need to use the lowercase name for lookup
+                // in the event translation map.
+                eventName = Ext.canonicalEventName(eventName);
 
                 // Blocked events (such as emulated mouseover in mobile webkit) are prevented
                 // from firing
                 if (!me.blockedEvents[eventName]) {
                     observableDoRemoveListener = me.mixins.observable.doRemoveListener;
-
-                    if (me.longpressEvents[eventName]) {
-                        contextMenuListenerRemover = this._contextMenuListenerRemover;
-                        if (contextMenuListenerRemover) {
-                            contextMenuListenerRemover.destroy();
-                        }
-                    }
 
                     // translate events where applicable.  This allows applications that
                     // were written for desktop to work on mobile devices and vice versa.
@@ -5023,12 +5270,18 @@ Ext.define('Ext.dom.Element', function(Element) {
 
                     translatedEventName = me.eventMap[eventName];
                     if (translatedEventName) {
-                        observableDoRemoveListener.call(me, translatedEventName, fn, scope);
+                        removed = observableDoRemoveListener.call(me, translatedEventName, fn, scope);
                     }
 
                     // no "else" here because we need to ensure that we remove translate:false
                     // listeners
-                    observableDoRemoveListener.call(me, eventName, fn, scope);
+                    removed = observableDoRemoveListener.call(me, eventName, fn, scope) || removed;
+
+                    if (removed) {
+                        if (me.longpressEvents[eventName] && !--me.longpressListenerCount) {
+                            me.un('MSHoldVisual', 'preventMsHoldVisual', me);
+                        }
+                    }
                 }
             },
 
@@ -5070,7 +5323,11 @@ Ext.define('Ext.dom.Element', function(Element) {
             isFocusSuspended: function() {
                 return !!this.getData().suspendFocusEvents;
             },
-            
+
+            preventMsHoldVisual: function(e) {
+                e.preventDefault();
+            },
+
             suspendFocusEvents: function() {
                 if (!this.isFly) {
                     this.suspendEvent('focus', 'blur');
@@ -5078,7 +5335,7 @@ Ext.define('Ext.dom.Element', function(Element) {
                 
                 this.getData().suspendFocusEvents = true;
             },
-            
+
             resumeFocusEvents: function() {
                 function resumeFn() {
                     var data;
@@ -5248,6 +5505,7 @@ Ext.define('Ext.dom.Element', function(Element) {
     };
 }, function(Element) {
     var DOC = document,
+        docEl = DOC.documentElement,
         prototype = Element.prototype,
         supports = Ext.supports,
         pointerdown = 'pointerdown',
@@ -5314,8 +5572,6 @@ Ext.define('Ext.dom.Element', function(Element) {
         eventMap[touchmove] = pointermove;
         eventMap[touchend] = pointerup;
         eventMap[touchcancel] = pointercancel;
-        eventMap[click] = tap;
-        eventMap[dblclick] = doubletap;
 
         // On devices that support pointer events we block pointerover, pointerout,
         // pointerenter, and pointerleave when triggered by touch input (see
@@ -5348,8 +5604,6 @@ Ext.define('Ext.dom.Element', function(Element) {
         eventMap[touchmove] = MSPointerMove;
         eventMap[touchend] = MSPointerUp;
         eventMap[touchcancel] = MSPointerCancel;
-        eventMap[click] = tap;
-        eventMap[dblclick] = doubletap;
 
         // translate mouseover/out so they can be prevented on touch screens.
         // (see above comment in the PointerEvents section)
@@ -5635,8 +5889,8 @@ Ext.define('Ext.dom.Element', function(Element) {
             // original size as the viewport size while the keyboard is open
             var win = Ext.getWin();
 
-            Element._windowWidth = Element._viewportWidth = window.innerWidth;
-            Element._windowHeight = Element._viewportHeight = window.innerHeight;
+            Element._documentWidth = Element._viewportWidth = docEl.clientWidth;
+            Element._documentHeight = Element._viewportHeight = docEl.clientHeight;
 
             win.on({
                 // Focus in/out listeners track the last focus change so we can detect

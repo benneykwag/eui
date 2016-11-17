@@ -60,7 +60,7 @@ Ext.define('Ext.rtl.util.Renderable', {
     privates: {
         getFrameTpl: function(table) {
             return (table && this.getInherited().rtl) ?
-                this.getTpl('rtlFrameTableTpl') : this.callParent(arguments);
+                this.lookupTpl('rtlFrameTableTpl') : this.callParent(arguments);
         },
 
         getFrameRenderData: function () {

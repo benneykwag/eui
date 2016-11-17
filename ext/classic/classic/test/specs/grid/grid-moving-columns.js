@@ -282,6 +282,38 @@ describe('grid-moving-columns', function () {
     });
 
     describe('destroying a component in the midst of a drag operation', function () {
+        function beginColumnDrag(from, to, onRight) {
+            var fromBox = from.el.getBox(),
+                fromMx = fromBox.x + fromBox.width/2,
+                fromMy = fromBox.y + fromBox.height/2,
+                toBox = to.el.getBox(),
+                toMx = toBox.x,
+                toMy = toBox.y + toBox.height/2,
+                offset = onRight ? toBox.width - 6 : 5,
+                moveOffset = toMx + offset,
+                dragThresh = onRight ? Ext.dd.DragDropManager.clickPixelThresh + 1 : -Ext.dd.DragDropManager.clickPixelThresh - 1;
+
+            // Mousedown on the header to drag
+            jasmine.fireMouseEvent(from.el.dom, 'mouseover', fromMx, fromMy);
+            jasmine.fireMouseEvent(from.titleEl.dom, 'mousedown', fromMx, fromMy);
+            from.el.focus();
+
+            // The initial move which tiggers the start of the drag
+            jasmine.fireMouseEvent(from.el.dom, 'mousemove', fromMx + dragThresh, fromMy);
+
+            if (locked) {
+                // Locked grids need an additional mousemove because the drop won't be valid if the target headerCt isn't the same as
+                // the target headerCt of the last mousemove event. So, we need to hack around this by firing an additional event so
+                // the two mouseevents can be seen as having the same target headerCt.
+                //
+                // Note: Do not change the value stored in the moveOffset var!
+                jasmine.fireMouseEvent(to.el.dom, 'mousemove', (onRight ? moveOffset + 1 : moveOffset - 1), toMy);
+            }
+
+            // The move to left of the centre of the target element
+            jasmine.fireMouseEvent(to.el.dom, 'mousemove', moveOffset, toMy);
+        }
+
         // The trick to reproducing this bug is to initiate a drag operation but not complete it.
         // Then, destroy the grid and recreate it. As soon as another drag operation is initiated,
         // the DragDropManager will attempt to complete the last drag, calling DragSource:onDragOut
@@ -291,20 +323,33 @@ describe('grid-moving-columns', function () {
         beforeEach(function () {
             // Create the grid, start the drag and destroy the grid before the drag operation is completed.
             makeGrid();
-            dragColumn(visibleColumns[3], visibleColumns[1], true);
+            beginColumnDrag(visibleColumns[3], visibleColumns[1], true);
             grid.destroy();
             Ext.data.Model.schema.clear();
         });
 
         it('should not try to complete the drag operation', function () {
-            var dragZone;
+            var dragZone,
+                errorSpy = jasmine.createSpy(),
+                old = window.onError;
 
             makeGrid();
             dragZone = grid.headerCt.reorderer.dragZone;
             spyOn(dragZone, 'onDragOut').andCallThrough();
-            dragColumn(visibleColumns[3], visibleColumns[1]);
 
-            expect(dragZone.onDragOut).not.toHaveBeenCalled();
+            window.onerror = errorSpy.andCallFake(function() {
+                if (old) {
+                    old();
+                }
+            });
+
+            dragColumn(visibleColumns[3], visibleColumns[1]);
+            
+            expect(errorSpy).not.toHaveBeenCalled();
+
+            window.onerror = old;
+
+            expect(dragZone.onDragOut).toHaveBeenCalled();
         });
 
         it('should not cache any references to the destroyed drop zone object in the DragDropManager', function () {
@@ -352,7 +397,10 @@ describe('grid-moving-columns', function () {
             testSpies([2, 2]);
             testUI('1,4,5,2');
 
-            grid.destroy();
+            // For devices we know deal with focus, test that focus is preserved.
+            if (Ext.os.deviceType === 'Desktop' && !Ext.supports.AsyncFocusEvents) {
+                expect(Ext.Element.getActiveElement()).toBe(visibleColumns[1].el.dom);
+            };
         });
 
         it('should move columns to the end of the header container', function () {
@@ -816,7 +864,7 @@ describe('grid-moving-columns', function () {
 
                 it('should remove the group header when the last subheader is removed', function () {
                     fn(function () {
-                        expect(groupHeader.rendered).toBe(null);
+                        expect(groupHeader.rendered).toBe(false);
                         expect(groupHeader.ownerCt).toBe(null);
                     });
                 });
@@ -1173,7 +1221,7 @@ describe('grid-moving-columns', function () {
             describe('dragging all subheaders out of the group', function () {
                 describe('when the targetHeader is the groupHeader', function () {
                     function additionalSpec() {
-                        expect(groupHeader.rendered).toBe(null);
+                        expect(groupHeader.rendered).toBe(false);
                         expect(groupHeader.ownerCt).toBe(null);
                     }
 
@@ -1388,7 +1436,7 @@ describe('grid-moving-columns', function () {
                     // (Remember that groupHeader will refer to the first sub group header!)
                     function additionalSpec() {
                         expect(subGroupHeader.ownerCt).toBe(null);
-                        expect(subGroupHeader.rendered).toBe(null);
+                        expect(subGroupHeader.rendered).toBe(false);
                     }
 
                     it('should work when the move position is before the target header', function () {
@@ -1777,7 +1825,7 @@ describe('grid-moving-columns', function () {
                     function additionalSpec() {
                         // Group1 has been removed.
                         expect(groupHeader.ownerCt).toBe(null);
-                        expect(groupHeader.rendered).toBe(null);
+                        expect(groupHeader.rendered).toBe(false);
 
                         // Group2 is still around.
                         expect(subGroupHeader.ownerCt).not.toBe(null);
@@ -2055,7 +2103,7 @@ describe('grid-moving-columns', function () {
                 describe('when the targetHeader is the Group3 groupHeader (so the drag is contiguous to Group3)', function () {
                     function additionalSpec() {
                         expect(subGroupHeader.ownerCt).toBe(null);
-                        expect(subGroupHeader.rendered).toBe(null);
+                        expect(subGroupHeader.rendered).toBe(false);
                     }
 
                     it('should work when the move position is before the target header', function () {
@@ -2120,7 +2168,7 @@ describe('grid-moving-columns', function () {
                 describe('when the Group3 subheaders are dragged into Group2 (targetHeader is not Group3)', function () {
                     function additionalSpec() {
                         expect(subGroupHeader.ownerCt).toBe(null);
-                        expect(subGroupHeader.rendered).toBe(null);
+                        expect(subGroupHeader.rendered).toBe(false);
                     }
 
                     it('should work when the move position is after the last subheader in Group2', function () {
@@ -2157,7 +2205,7 @@ describe('grid-moving-columns', function () {
                 describe('when the Group3 subheaders are dragged into Group1', function () {
                     function additionalSpec() {
                         expect(subGroupHeader.ownerCt).toBe(null);
-                        expect(subGroupHeader.rendered).toBe(null);
+                        expect(subGroupHeader.rendered).toBe(false);
                     }
 
                     it('should work when the move position is after the last subheader in Group1', function () {
@@ -2249,7 +2297,7 @@ describe('grid-moving-columns', function () {
                     // Note that also we're testing that Group2 has been removed after the last subheader has been
                     // dragged out.
                     function additionalSpec() {
-                        expect(subGroupHeader.rendered).toBe(null);
+                        expect(subGroupHeader.rendered).toBe(false);
                         expect(subGroupHeader.ownerCt).toBe(null);
                     }
 
@@ -2573,7 +2621,7 @@ describe('grid-moving-columns', function () {
                     function additionalSpec() {
                         // Group1 has been removed.
                         expect(groupHeader.ownerCt).toBe(null);
-                        expect(groupHeader.rendered).toBe(null);
+                        expect(groupHeader.rendered).toBe(false);
 
                         // Group2 is still around.
                         expect(subGroupHeader.ownerCt).not.toBe(null);
@@ -2582,7 +2630,7 @@ describe('grid-moving-columns', function () {
 
                     function nestedSpec() {
                         expect(groupHeader.ownerCt).toBe(null);
-                        expect(groupHeader.rendered).toBe(null);
+                        expect(groupHeader.rendered).toBe(false);
                         expect(headerCt.down('[text=Group1]')).toBe(null);
                     }
 
@@ -2727,7 +2775,7 @@ describe('grid-moving-columns', function () {
                             function test1() {
                                 // Expect that Group2 has been removed and that Group3 is still a child of Group1.
                                 expect(groupHeader.ownerCt).toBe(null);
-                                expect(groupHeader.rendered).toBe(null);
+                                expect(groupHeader.rendered).toBe(false);
                                 expect(subGroupHeader.ownerCt).toBe(headerCt.down('[text=Group1]'));
                             }
 
@@ -2868,7 +2916,7 @@ describe('grid-moving-columns', function () {
                             function test1() {
                                 // Expect that Group2 has been removed and that Group3 is still a child of Group1.
                                 expect(groupHeader.ownerCt).toBe(null);
-                                expect(groupHeader.rendered).toBe(null);
+                                expect(groupHeader.rendered).toBe(false);
                                 expect(subGroupHeader.ownerCt).toBe(headerCt.down('[text=Group1]'));
                             }
 
@@ -3003,7 +3051,7 @@ describe('grid-moving-columns', function () {
                 function additionalSpec() {
                     // Group1 has been removed.
                     expect(groupHeader.ownerCt).toBe(null);
-                    expect(groupHeader.rendered).toBe(null);
+                    expect(groupHeader.rendered).toBe(false);
 
                     // All the other groups are still around.
                     expect(subGroupHeader.rendered).toBe(true);
@@ -3014,7 +3062,7 @@ describe('grid-moving-columns', function () {
                 function nestedSpec() {
                     // Groups 1 and 2 have been removed.
                     expect(groupHeader.ownerCt).toBe(null);
-                    expect(groupHeader.rendered).toBe(null);
+                    expect(groupHeader.rendered).toBe(false);
                     expect(headerCt.down('[text=Group2]')).toBe(null);
 
                     // All the other groups are still around.
@@ -3025,7 +3073,7 @@ describe('grid-moving-columns', function () {
                 function nestedSpec2() {
                     // Groups 1, 2 and 3 have been removed.
                     expect(groupHeader.ownerCt).toBe(null);
-                    expect(groupHeader.rendered).toBe(null);
+                    expect(groupHeader.rendered).toBe(false);
                     expect(headerCt.down('[text=Group2]')).toBe(null);
                     expect(headerCt.down('[text=Group3]')).toBe(null);
 
@@ -3034,7 +3082,7 @@ describe('grid-moving-columns', function () {
 
                 function nestedSpec3() {
                     expect(groupHeader.ownerCt).toBe(null);
-                    expect(groupHeader.rendered).toBe(null);
+                    expect(groupHeader.rendered).toBe(false);
                     expect(headerCt.down('[text=Group2]')).toBe(null);
                     expect(headerCt.down('[text=Group3]').rendered).toBe(true);
 
@@ -3224,7 +3272,7 @@ describe('grid-moving-columns', function () {
 
                     describe('when Group3 is the targetHeader', function () {
                         function additionalSpec() {
-                            expect(groupHeader.rendered).toBe(null);
+                            expect(groupHeader.rendered).toBe(false);
                             expect(subGroupHeader.rendered).toBe(true);
                             expect(headerCt.down('[text=Group1]').rendered).toBe(true);
                             expect(headerCt.down('[text=Group2]').rendered).toBe(true);

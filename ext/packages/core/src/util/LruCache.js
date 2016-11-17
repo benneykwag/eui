@@ -116,7 +116,7 @@ Ext.define('Ext.util.LruCache', {
     /**
      * @inheritdoc
      */
-    clear: function(initial) {
+    clear: function(/* private */ initial) {
         this.first = this.last = null;
         return this.callParent([initial]);
     },
@@ -254,11 +254,6 @@ Ext.define('Ext.util.LruCache', {
                 me.removeAtKey(me.first.key);
             }
         }
-    },
-
-    destroy: function() {
-        this.first = this.last = null;
-        this.callParent();     
     }
 
   /**

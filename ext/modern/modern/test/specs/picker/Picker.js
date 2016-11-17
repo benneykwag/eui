@@ -1,5 +1,9 @@
 describe('Ext.picker.Picker', function() {
     var selectField, datePicker;
+    
+    afterEach(function() {
+        selectField = datePicker = Ext.destroy(selectField, datePicker);
+    });
 
     describe("mask", function() {
         it("should be inserted as the first child of the innerElement", function() {
@@ -24,9 +28,6 @@ describe('Ext.picker.Picker', function() {
 
             firstChild = datePicker.innerElement.first();
             expect(firstChild).toHaveCls(maskCls);
-            
-            selectField.destroy();
-            datePicker.destroy();
         });
     });
 });

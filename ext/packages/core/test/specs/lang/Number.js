@@ -302,6 +302,103 @@ describe("Ext.Number", function(){
             expect(snapInRange(-22, 10, -101, -1)).toBe(-21);
         });
     });
+
+    describe("roundToNearest", function() {
+        var rnd = EN.roundToNearest;
+        describe("edge cases", function() {
+            it("should handle value = 0", function() {
+                expect(rnd(0, 30)).toBe(0);
+            });
+
+            it("should handle interval = 0", function() {
+                expect(rnd(30, 0)).toBe(30);
+            });
+        });
+
+        describe("when value < interval", function() {
+            describe("positive numbers", function() {
+                it("should round down when below the half of the interval", function() {
+                    for (var i = 1; i < 15; ++i) {
+                        expect(rnd(i, 30)).toBe(0);
+                    }
+                });
+
+                it("should round up when in the middle", function() {
+                    expect(rnd(15, 30)).toBe(30);
+                });
+
+                it("should round up when above half the interval", function() {
+                    for (var i = 16; i < 30; ++i) {
+                        expect(rnd(i, 30)).toBe(30);
+                    }
+                });
+            });
+
+            describe("negative numbers", function() {
+                it("should round down when below the half of the interval", function() {
+                    for (var i = -29; i < -15; ++i) {
+                        expect(rnd(i, 30)).toBe(-30);
+                    }
+                });
+
+                it("should up when in the middle", function() {
+                    expect(rnd(-15, 30)).toBe(0);
+                });
+
+                it("should round up when above half the interval", function() {
+                    for (var i = -14; i < 0; ++i) {
+                        expect(rnd(i, 30)).toBe(0);
+                    }
+                });
+            });
+        });
+
+        describe("when value > interval", function() {
+            describe("positive numbers", function() {
+                it("should round down when below half the interval", function() {
+                    for (var i = 91; i < 105; ++i) {
+                        expect(rnd(i, 30)).toBe(90);
+                    }
+                });
+
+                it("should round up when in the middle", function() {
+                    expect(rnd(105, 30)).toBe(120);
+                });
+
+                it("should round up when above half the interval", function() {
+                    for (var i = 106; i < 120; ++i) {
+                        expect(rnd(i, 30)).toBe(120);
+                    }
+                });
+            });
+
+            describe("negative numbers", function() {
+                it("should round down when below the half of the interval", function() {
+                    for (var i = -119; i < -105; ++i) {
+                        expect(rnd(i, 30)).toBe(-120);
+                    }
+                });
+
+                it("should up when in the middle", function() {
+                    expect(rnd(-105, 30)).toBe(-90);
+                });
+
+                it("should round up when above half the interval", function() {
+                    for (var i = -104; i < -90; ++i) {
+                        expect(rnd(i, 30)).toBe(-90);
+                    }
+                });
+            });
+        });
+
+        describe("when value = interval", function() {
+            it("should return the same value", function() {
+                for (var i = 1; i <= 100; ++i) {
+                    expect(rnd(i, i)).toBe(i);
+                }
+            });
+        });
+    });
     
     describe("from", function() {
         var from = EN.from;

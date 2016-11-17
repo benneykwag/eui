@@ -3,6 +3,18 @@
  */
 
 /**
+ * @var {number}
+ * The height (in all orientations) of the anchor pointer in pixels
+ */
+$tip-anchor-height: dynamic(6px);
+
+/**
+ * @var {number}
+ * The width (in all orientations) of the anchor pointer in pixels
+ */
+$tip-anchor-width: dynamic($tip-anchor-height * 2);
+
+/**
  * @var {color}
  * The background-color of the Tip
  */

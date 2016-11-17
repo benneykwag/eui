@@ -23,7 +23,7 @@ Ext.define('Ext.rtl.view.Table', {
 
         me.callParent();
         if (me.getInherited().rtl) {
-            me.addCellTpl(me.getTpl('rtlCellTpl'));
+            me.addCellTpl(me.lookupTpl('rtlCellTpl'));
         }
     },
 

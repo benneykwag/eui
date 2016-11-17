@@ -1,12 +1,6 @@
-.#{$prefix}select-overlay {
+.#{$prefix}selectfield-overlay {
     .#{$prefix}list-label {
         @include ellipsis();
         display: block;
-    }
-}
-
-.#{$prefix}ie {
-    .#{$prefix}field-select .#{$prefix}field-mask {
-        z-index: 3;
     }
 }

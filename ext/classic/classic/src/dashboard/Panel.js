@@ -139,18 +139,14 @@ Ext.define('Ext.dashboard.Panel', {
         }
     },
 
-    /** 
-     * @private
-     */
+    /** @private */
     setBox: function (box) {
         // The resizer calls setBox which would set our left/top coordinates but
         // that is a BAD thing in a column layout which relies on flow!
         this.setSize(box.width, box.height);
     },
 
-    /**
-     * @private
-     */
+    /** @private */
     getState : function() {
         var me = this,
             state = me.callParent() || {};

@@ -1,3 +1,5 @@
+/* global expect, jasmine, Ext, MockAjaxManager, spyOn */
+
 describe("Ext.app.ViewModel", function() {
     
     var viewModel, scheduler, session, spy;
@@ -234,6 +236,22 @@ describe("Ext.app.ViewModel", function() {
                 var o = new Cls();
                 viewModel.set('obj', o);
                 expect(viewModel.getData().obj).toBe(o);
+            });
+
+            it('should be able to set a value to undefined even after an unbound stub has been purged', function() {
+                var child = new Ext.app.ViewModel({
+                    parent: viewModel,
+                    data: {
+                        frob: 2
+                    }
+                });
+
+                // Will delete stubs that have no bindings.
+                viewModel.doCollect();
+
+                expect(function() {
+                    child.set('frob');
+                }).not.toThrow();
             });
         });
 
@@ -824,7 +842,7 @@ describe("Ext.app.ViewModel", function() {
                             }, function() {
                                 viewModel.set({
                                     foo: null
-                                })
+                                });
                             });
                             notify();
                             setNotify('foo.bar.baz.xxx', 1);
@@ -1710,7 +1728,8 @@ describe("Ext.app.ViewModel", function() {
                             proxy: {
                                 type: 'ajax',
                                 url: 'foo'
-                            }
+                            },
+                            asynchronousLoad: false
                         });
                     });
 
@@ -1892,6 +1911,18 @@ describe("Ext.app.ViewModel", function() {
                     }
 
                     describe("the one", function() {
+                        it("should react when setting the inverse record", function() {
+                            makePost(1);
+                            bindNotify('{post.user.name}', spy);
+                            setNotify('post', post);
+                            post.setUser(new User({
+                                name: 'Foo'
+                            }, session));
+                            notify();
+                            expect(spy.callCount).toBe(1);
+                            expect(spy.mostRecentCall.args[0]).toBe('Foo');
+                        });
+
                         it("should not make a request there is no FK value", function() {
                             var proxySpy = spyOn(User.getProxy(), 'read');
                             makePost(1);
@@ -2201,6 +2232,18 @@ describe("Ext.app.ViewModel", function() {
                     }
 
                     describe("the key holder", function() {
+                        it("should react when setting the inverse record", function() {
+                            makeUser(1);
+                            bindNotify('{user.passport.key}', spy);
+                            setNotify('user', user);
+                            user.setPassport(new Passport({
+                                key: 'Foo'
+                            }, session));
+                            notify();
+                            expect(spy.callCount).toBe(1);
+                            expect(spy.mostRecentCall.args[0]).toBe('Foo');
+                        });
+
                         it("should not make a request there is no FK value", function() {
                             var proxySpy = spyOn(Passport.getProxy(), 'read');
                             makeUser(1);
@@ -2365,6 +2408,18 @@ describe("Ext.app.ViewModel", function() {
                     });
 
                     describe("the non-key holder", function() {
+                        it("should react when setting the inverse record", function() {
+                            makePassport(1);
+                            bindNotify('{passport.user.name}', spy);
+                            setNotify('passport', passport);
+                            passport.setUser(new User({
+                                name: 'Foo'
+                            }, session));
+                            notify();
+                            expect(spy.callCount).toBe(1);
+                            expect(spy.mostRecentCall.args[0]).toBe('Foo');
+                        });
+
                         // Non key holder can only ever exist if it's been set via nested loading
                         it("should not publish unless there is an instance set", function() {
                             makePassport(1);
@@ -3882,6 +3937,174 @@ describe("Ext.app.ViewModel", function() {
         });
     });
 
+    describe("negated binding", function() {
+        describe("coercion", function() {
+            function makeCoerceSuite(value, expected, label) {
+                label = label || value;
+
+                it("should coerce " + label + " to " + expected, function() {
+                    createViewModel();
+                    bindNotify('{!val}', spy);
+                    setNotify('val', value);
+                    expectArgs(expected);
+                    expect(viewModel.get('val')).toBe(value);
+                });
+            }
+
+            describe("falsy values", function() {
+                function makeFalseSuite(value, label) {
+                    makeCoerceSuite(value, true, label);
+                }
+
+                makeFalseSuite(false);
+                makeFalseSuite(0);
+                makeFalseSuite('', 'empty string');
+                makeFalseSuite(null, 'null');
+            });
+
+            describe("truthy values", function() {
+                function makeTrueSuite(value, label) {
+                    makeCoerceSuite(value, false, label);
+                }
+
+                makeTrueSuite(true);
+                makeTrueSuite(3, 'a number');
+                makeTrueSuite('foo', 'a string');
+                makeTrueSuite({}, 'an object');
+            });
+        });
+
+        it("should be readOnly", function() {
+            createViewModel();
+            var b = bindNotify('{!val}', spy);
+            expect(b.isReadOnly()).toBe(true);
+        });
+    });
+
+    describe("expression binding return types", function() {
+        beforeEach(function() {
+            createViewModel();
+        });
+
+        describe("single style expression", function() {
+            describe("binary operations", function() {
+                beforeEach(function() {
+                    setNotify('a', 1);
+                    setNotify('b', 2);
+                });
+
+                it("should return a numeric type for +", function() {
+                    bindNotify('{a + b}', spy);
+                    expectArgs(3);
+                });
+
+                it("should return a numeric type for -", function() {
+                    bindNotify('{a - b}', spy);
+                    expectArgs(-1);
+                });
+
+                it("should return a numeric type for *", function() {
+                    bindNotify('{a * b}', spy);
+                    expectArgs(2);
+                });
+
+                it("should return a numeric type for /", function() {
+                    bindNotify('{a / b}', spy);
+                    expectArgs(0.5);
+                });
+
+                it("should return a boolean for <", function() {
+                    bindNotify('{a < b}', spy);
+                    expectArgs(true);
+                });
+
+                it("should return a boolean for <=", function() {
+                    bindNotify('{a <= b}', spy);
+                    expectArgs(true);
+                });
+
+                it("should return a boolean for >", function() {
+                    bindNotify('{a > b}', spy);
+                    expectArgs(false);
+                });
+
+                it("should return a boolean for >=", function() {
+                    bindNotify('{a >= b}', spy);
+                    expectArgs(false);
+                });
+
+                it("should return a boolean for ===", function() {
+                    bindNotify('{a === b}', spy);
+                    expectArgs(false);
+                });
+
+                it("should return a boolean for ==", function() {
+                    setNotify('b', '1');
+                    bindNotify('{a == b}', spy);
+                    expectArgs(true);
+                });
+
+                it("should return a boolean for !==", function() {
+                    bindNotify('{a !== b}', spy);
+                    expectArgs(true);
+                });
+
+                it("should return a boolean for !=", function() {
+                    setNotify('b', '1');
+                    bindNotify('{a != b}', spy);
+                    expectArgs(false);
+                });
+
+                it("should return an appropriate type for &&", function() {
+                    bindNotify('{a && b}', spy);
+                    expectArgs(2);
+                });
+
+                it("should return an appropriate type for ||", function() {
+                    setNotify('a', 1);
+                    bindNotify('{a || b}', spy);
+                    expectArgs(1);
+                });
+            });
+
+            describe("ternary", function() {
+                it("should return the appropriate type from a ternary", function() {
+                    setNotify('a', 1);
+                    bindNotify('{a === 1 ? 100 : 200}');
+                    expectArgs(100);
+                });
+            });
+
+            describe("unary", function() {
+                it("should return a number from +", function() {
+                    setNotify('a', '100');
+                    bindNotify('{+a}');
+                    expectArgs(100);
+                });
+
+                it("should return a number from -", function() {
+                    setNotify('a', '100');
+                    bindNotify('{-a}');
+                    expectArgs(-100);
+                });
+
+                it("should return a boolean with negation", function() {
+                    setNotify('a', 1);
+                    bindNotify('{!a}');
+                    expectArgs(false);
+                });
+            });
+
+            describe("formatters", function() {
+                it("should return the type from the formatter", function() {
+                    setNotify('a', 1.234);
+                    bindNotify('{a:round}', spy);
+                    expectArgs(1);
+                });
+            });
+        });
+    });
+
     describe("stores", function() {
         var User;
         beforeEach(function() {
@@ -4583,6 +4806,76 @@ describe("Ext.app.ViewModel", function() {
                 expect(ctrl.someFn).toHaveBeenCalled();
 
                 Ext.destroy(ct);
+            });
+        });
+
+        describe("cleanup", function() {
+            it("should listen to destroy on the store and set the value to null", function() {
+                var store = new Ext.data.Store();
+
+                viewModel.set('foo', store);
+                bindNotify('{foo}', spy);
+                spy.reset();
+                store.destroy();
+                notify();
+                expectArgs(null, store);
+            });
+
+            it("should detach listeners on the store when the value is changed", function() {
+                var store = new Ext.data.Store(),
+                    load = store.hasListeners.load,
+                    destroy = store.hasListeners.destroy;
+
+                viewModel.set('foo', store);
+                bindNotify('{foo}', spy);
+                setNotify('foo', 'something');
+                expect(store.hasListeners.load).toBe(load);
+                expect(store.hasListeners.destroy).toBe(destroy);
+            });
+
+            it("should detach store listeners when the vm is destroyed", function() {
+                var store = new Ext.data.Store(),
+                    load = store.hasListeners.load,
+                    destroy = store.hasListeners.destroy;
+
+                viewModel.set('foo', store);
+                bindNotify('{foo}', spy);
+                spy.reset();
+                viewModel.destroy();
+                expect(spy).not.toHaveBeenCalled();
+                expect(store.hasListeners.load).toBe(load);
+                expect(store.hasListeners.destroy).toBe(destroy);
+            });
+
+            it("should detach store listeners when the stub is destroyed via collection", function() {
+                var store = new Ext.data.Store(),
+                    load = store.hasListeners.load,
+                    destroy = store.hasListeners.destroy;
+
+                viewModel.set('foo', store);
+                var b = bindNotify('{foo}', spy);
+                spy.reset();
+                b.destroy();
+                viewModel.collectTimeout = 0;
+                viewModel.collect();
+                expect(spy).not.toHaveBeenCalled();
+                expect(store.hasListeners.load).toBe(load);
+                expect(store.hasListeners.destroy).toBe(destroy);
+            });
+
+            it("should not trigger a bind when the store is destroyed with the VM", function() {
+                var store = new Ext.data.Store({
+                    autoDestroy: true
+                });
+
+                viewModel.setStores({
+                    foo: store
+                });
+
+                bindNotify('{foo}', spy);
+                spy.reset();
+                viewModel.destroy();
+                expect(spy).not.toHaveBeenCalled();
             });
         });
     });
@@ -5500,7 +5793,7 @@ describe("Ext.app.ViewModel", function() {
 
             var stub = vm.getRoot(),
                 parts = path.split('.'),
-                key
+                key;
 
             while (parts.length) {
                 key = parts.shift();

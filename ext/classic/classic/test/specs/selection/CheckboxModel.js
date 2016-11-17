@@ -1,12 +1,21 @@
+/* global Ext, expect, jasmine, xit, spyOn */
+
 describe('Ext.selection.CheckboxModel', function() {
     var grid, view, store, checkboxModel, data,
         donRec, evanRec, nigeRec,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function makeGrid(selectionCfg, cfg) {
         checkboxModel = new Ext.selection.CheckboxModel(selectionCfg);
+
         grid = new Ext.grid.Panel(Ext.apply({
             store: store,
             columns: [
@@ -23,13 +32,7 @@ describe('Ext.selection.CheckboxModel', function() {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         Ext.define('spec.CheckboxModel', {
             extend: 'Ext.data.Model',
@@ -76,7 +79,7 @@ describe('Ext.selection.CheckboxModel', function() {
     }
 
     function clickOnHeaderCheckbox() {
-        jasmine.fireMouseEvent(checkboxModel.column.el.dom, 'click', 10, 10);
+        jasmine.fireMouseEvent(checkboxModel.column, 'click', 10, 10);
     }
 
     function clickCheckbox(rowIdx) {
@@ -84,7 +87,6 @@ describe('Ext.selection.CheckboxModel', function() {
             row: rowIdx,
             column: 0
         });
-        view.focus();
         jasmine.fireMouseEvent(cell.down(checkboxModel.checkSelector), 'click');
     }
 
@@ -93,7 +95,6 @@ describe('Ext.selection.CheckboxModel', function() {
             row: rowIdx,
             column: colIdx
         });
-        view.focus();
         jasmine.fireMouseEvent(cell, 'click');
     }
 
@@ -105,6 +106,22 @@ describe('Ext.selection.CheckboxModel', function() {
         jasmine.fireKeyEvent(cell.down(checkboxModel.checkSelector), 'keydown', keyCode, shiftKey, ctrlKey, altKey);
     }
 
+    describe("grid reconfigure", function() {
+        it("should be able to change the columns without hiding the checkcolumn", function() {
+            var store2 = new Ext.data.Store({
+                fields: ['foo'],
+                data: [{
+                    foo: 'bar'
+                }]
+            });
+            makeGrid();
+
+            grid.reconfigure(store2, [{dataIndex: 'foo'}]);
+
+            expect(grid.view.body.el.down('.x-grid-checkcolumn')).not.toBeNull();
+        });
+    });
+
     describe("column insertion", function() {
         var cols;
 
@@ -112,7 +129,7 @@ describe('Ext.selection.CheckboxModel', function() {
             cols = null;
         });
 
-        it("should ignore any xtype defaults and insert a gridcolumn", function() {
+        it("should ignore any xtype defaults and insert a checkcolumn", function() {
             makeGrid(null, {
                 columns: {
                     defaults: {
@@ -127,8 +144,7 @@ describe('Ext.selection.CheckboxModel', function() {
                 }
             });
             var allCols = grid.getColumnManager().getColumns();
-            expect(allCols[0].$className).toBe('Ext.grid.column.Column');
-            expect(allCols[0].isCheckerHd).toBe(true);
+            expect(allCols[0].$className).toBe('Ext.grid.column.Check');
         });
 
         describe("without locking", function() {
@@ -139,7 +155,7 @@ describe('Ext.selection.CheckboxModel', function() {
                     dataIndex: 'name'
                 }, {
                     dataIndex: 'name'
-                }]
+                }];
             });
 
             it("should insert the column at the start by default", function() {
@@ -150,8 +166,8 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[0];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
                 expect(allCols.length).toBe(4);
             });
 
@@ -165,8 +181,8 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[0];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
                 expect(allCols.length).toBe(4);
             });
 
@@ -180,8 +196,8 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[3];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
                 expect(allCols.length).toBe(4);
             });
 
@@ -195,8 +211,8 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[1];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
                 expect(allCols.length).toBe(4);
             });
         });
@@ -272,9 +288,9 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[0];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
-                expect(grid.normalGrid.query('[isCheckerHd]').length).toBe(0);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
+                expect(grid.normalGrid.query('checkcolumn').length).toBe(0);
                 expect(allCols.length).toBe(7);
             });
 
@@ -309,9 +325,9 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[0];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
-                expect(grid.normalGrid.query('[isCheckerHd]').length).toBe(0);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
+                expect(grid.normalGrid.query('checkcolumn').length).toBe(0);
                 expect(allCols.length).toBe(7);
             });
 
@@ -325,9 +341,9 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[3];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
-                expect(grid.normalGrid.query('[isCheckerHd]').length).toBe(0);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
+                expect(grid.normalGrid.query('checkcolumn').length).toBe(0);
                 expect(allCols.length).toBe(7);
             });
 
@@ -341,9 +357,9 @@ describe('Ext.selection.CheckboxModel', function() {
                 var allCols = grid.getColumnManager().getColumns(),
                     col = allCols[1];
 
-                expect(col.isCheckerHd).toBe(true);
-                expect(grid.query('[isCheckerHd]').length).toBe(1);
-                expect(grid.normalGrid.query('[isCheckerHd]').length).toBe(0);
+                expect(col.isCheckColumn).toBe(true);
+                expect(grid.query('checkcolumn').length).toBe(1);
+                expect(grid.normalGrid.query('checkcolumn').length).toBe(0);
                 expect(allCols.length).toBe(7);
             });
         });
@@ -609,7 +625,7 @@ describe('Ext.selection.CheckboxModel', function() {
                         mode: 'SINGLE',
                         showHeaderCheckbox: true
                     });
-                }).toThrow('The header checkbox is not supported for SINGLE mode selection models.')
+                }).toThrow('The header checkbox is not supported for SINGLE mode selection models.');
             });
         });
 
@@ -919,7 +935,7 @@ describe('Ext.selection.CheckboxModel', function() {
                         makeSpies();
                         clickCheckbox(0);
                         expect(checkboxModel.isSelected(donRec)).toBe(false);
-                        expectChangeSpy([evanRec, nigeRec]);
+                        expectChangeSpy([nigeRec, evanRec]);
                         expectDeselectSpy(donRec);
                         expect(selectSpy).not.toHaveBeenCalled();
                     });
@@ -959,8 +975,7 @@ describe('Ext.selection.CheckboxModel', function() {
 
                 it("should deselect everything past & including the clicked item", function() {
                     checkboxModel.selectAll();
-                    var view = grid.getView(),
-                        cell;
+                    var view = grid.getView();
 
                     clickCell(0, 1);
                     spyOn(view, 'processUIEvent').andCallFake(function(e) {
@@ -991,6 +1006,13 @@ describe('Ext.selection.CheckboxModel', function() {
                 it("should select the record on click", function() {
                     clickCheckbox(0);
                     expect(checkboxModel.isSelected(donRec)).toBe(true);
+
+                    // Actionable mode must be set and the checkbox elememt must be focused
+                    expect(grid.actionableMode).toBe(true);
+                    expect(Ext.Element.getActiveElement()).toBe(view.getCellByPosition({
+                        row: 0,
+                        column: 0
+                    }).down(checkboxModel.checkSelector, true));
                 });
 
                 it("should deselect any selected records", function() {
@@ -998,6 +1020,13 @@ describe('Ext.selection.CheckboxModel', function() {
                     clickCheckbox(1);
                     expect(checkboxModel.isSelected(donRec)).toBe(false);
                     expect(checkboxModel.isSelected(evanRec)).toBe(true);
+
+                    // Actionable mode must be set and the checkbox elememt must be focused
+                    expect(grid.actionableMode).toBe(true);
+                    expect(Ext.Element.getActiveElement()).toBe(view.getCellByPosition({
+                        row: 1,
+                        column: 0
+                    }).down(checkboxModel.checkSelector, true));
                 });
             });
 

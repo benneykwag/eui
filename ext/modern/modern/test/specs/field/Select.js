@@ -30,7 +30,7 @@ describe('Ext.field.Select', function() {
         if (field) {
             field.destroy();
         }
-        viewport = Ext.destroy(viewport, Ext.Viewport);
+        viewport = Ext.Viewport = Ext.destroy(viewport, Ext.Viewport);
     });
 
     describe("configurations", function() {
@@ -244,6 +244,29 @@ describe('Ext.field.Select', function() {
                                 ]
                             });
                             expect(field.getValue()).toEqual(1);
+                            field.setValue(null);
+                            expect(field.getValue()).toEqual(null);
+                        });
+                    });
+
+                    describe("with value and late store", function(){
+                        beforeEach(function() {
+                            createField();
+                        });
+
+                        it("should wait to set value until store is set", function() {
+                            expect(field.getValue()).toEqual(null);
+                            field.setValue(2);
+                            expect(field.getValue()).toEqual(null);
+                            field.setStore({
+                                fields: ['text', 'value'],
+                                data: [
+                                    {text: 'One', value: 1},
+                                    {text: 'Two', value: 2},
+                                    {text: 'Three', value: 3}
+                                ]
+                            });
+                            expect(field.getValue()).toEqual(2);
                             field.setValue(null);
                             expect(field.getValue()).toEqual(null);
                         });

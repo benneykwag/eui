@@ -117,12 +117,15 @@ Ext.define('Ext.view.MultiSelector', {
     },
 
     addTools: function () {
-        this.addTool({
+        var me = this;
+
+        me.addTool({
             type: 'plus',
-            tooltip: this.addToolText,
+            tooltip: me.addToolText,
             callback: 'onShowSearch',
-            scope: this
+            scope: me
         });
+        me.searchTool = me.tools[me.tools.length - 1];
     },
 
     convertSearchRecord: Ext.identityFn,
@@ -133,7 +136,8 @@ Ext.define('Ext.view.MultiSelector', {
         var me = this;
 
         return {
-            width: 22,
+            width: 32,
+            align: 'center',
             menuDisabled: true,
             tdCls: Ext.baseCSSPrefix + 'multiselector-remove',
             processEvent: me.processRowEvent.bind(me),
@@ -160,7 +164,7 @@ Ext.define('Ext.view.MultiSelector', {
     },
 
     renderRemoveRow: function () {
-        return '<span data-qtip="'+ this.removeRowTip + '" role="button">' +
+        return '<span data-qtip="'+ this.removeRowTip + '" role="button" tabIndex="0">' +
             this.removeRowText + '</span>';
     },
 
@@ -183,8 +187,8 @@ Ext.define('Ext.view.MultiSelector', {
         popupAlign: 'tl-tr?',
 
         onGlobalScroll: function (scroller) {
-            // Collapse if the scroll is anywhere but inside the popup
-            if (!this.searchPopup.owns(scroller.getElement())) {
+            // Collapse if the scroll is anywhere but inside this selector or the popup
+            if (!this.owns(scroller.getElement())) {
                 this.onDismissSearch();
             }
         },
@@ -198,7 +202,7 @@ Ext.define('Ext.view.MultiSelector', {
             }
         },
 
-        onShowSearch: function (panel, tool) {
+        onShowSearch: function (panel, tool, event) {
             var me = this,
                 searchPopup = me.searchPopup,
                 store = me.getStore();
@@ -219,7 +223,15 @@ Ext.define('Ext.view.MultiSelector', {
                 }
             }
 
+            searchPopup.invocationEvent = event;
             searchPopup.showBy(me, me.popupAlign);
+
+            // It only autofocuses its defaultFocus target if it was hidden.
+            // If they're reactivating the show tool, they'll expect to focus the search.
+            if (!event || event.pointerType !== 'touch') {
+                searchPopup.lookupReference('searchField').focus();
+            }
+
             me.scrollListeners = Ext.on({
                 scroll: 'onGlobalScroll',
                 scope: me,

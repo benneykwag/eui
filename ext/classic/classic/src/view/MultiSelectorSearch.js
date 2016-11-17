@@ -67,10 +67,29 @@ Ext.define('Ext.view.MultiSelectorSearch', {
 
     floating: true,
     alignOnScroll: false,
-    resizable: true,
     minWidth: 200,
     minHeight: 200,
     border: true,
+    keyMap: {
+        scope: 'this',
+        ESC: 'hide'
+    },
+
+    platformConfig: {
+        desktop: {
+            resizable: true
+        },
+        'tablet && rtl': {
+            resizable: {
+                handles: 'sw'
+            }
+        },
+        'tablet && !rtl': {
+            resizable: {
+                handles: 'se'
+            }
+        }
+    },
 
     defaultListenerScope: true,
     referenceHolder: true,
@@ -157,13 +176,16 @@ Ext.define('Ext.view.MultiSelectorSearch', {
     },
 
     afterShow: function () {
-        var searchField = this.lookupReference('searchField');
-
         this.callParent(arguments);
 
-        if (searchField) {
-            searchField.focus();
+        // Do not focus if this was invoked by a touch gesture
+        if (!this.invocationEvent || this.invocationEvent.pointerType !== 'touch') {
+            var searchField = this.lookupReference('searchField');
+            if (searchField) {
+                searchField.focus();
+            }
         }
+        this.invocationEvent = null;
     },
 
     /**
@@ -205,7 +227,7 @@ Ext.define('Ext.view.MultiSelectorSearch', {
     onSpecialKey: function(field, event) {
         if (event.getKey() === event.TAB && event.shiftKey) {
             event.preventDefault();
-            this.hide();
+            this.owner.searchTool.focus();
         };
     },
 
@@ -245,7 +267,7 @@ Ext.define('Ext.view.MultiSelectorSearch', {
         var searchGrid = this.lookupReference('searchGrid');
         // match up passed records to the records in the search store so that the right internal ids are used
         records = this.getMatchingRecords(records);
-
+        
         return searchGrid.getSelectionModel().select(records);
     },
 

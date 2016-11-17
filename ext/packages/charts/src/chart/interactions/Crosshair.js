@@ -223,6 +223,8 @@ Ext.define('Ext.chart.interactions.Crosshair', {
             horizontalLineCfg, verticalLineCfg,
             i;
 
+        e.claimGesture();
+
         if (x > 0 && x < chartWidth && y > 0 && y < chartHeight) {
             me.lockEvents(me.getGesture());
             horizontalLineCfg = Ext.apply({

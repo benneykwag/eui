@@ -339,9 +339,7 @@ describe("Ext.util.Collection", function() {
             var spy, expectPos;
 
             beforeEach(function() {
-                collection.getSorters().add('id');
                 spy = jasmine.createSpy();
-                collection.on('sort', spy);
             });
 
             afterEach(function() {
@@ -351,6 +349,10 @@ describe("Ext.util.Collection", function() {
 
             describe("a single item", function() {
                 describe("with no items", function() {
+                    beforeEach(function() {
+                        collection.getSorters().add('id');
+                        collection.on('sort', spy);
+                    });
                     it("should add the item", function() {
                         expectPos = function() {
                             expect(collection.length).toBe(1);
@@ -362,25 +364,97 @@ describe("Ext.util.Collection", function() {
                         expectPos();
                     });
 
-                    describe("with items", function() {
-                        it("should put the item in the correct position", function() {
-                            collection.add(item1, item3);
-                            expectPos = function() {
-                                expect(collection.length).toBe(3);
-                                expect(collection.getAt(1)).toBe(item2);
-                                expect(collection.indexOfKey(1)).toBe(0);
-                                expect(collection.indexOfKey(2)).toBe(1);
-                                expect(collection.indexOfKey(3)).toBe(2);
-                            };
-                            collection.on('add', expectPos);
-                            collection.add(item2);
-                            expectPos();
+                    it("should be able to insert at index 0", function() {
+                        collection.insert(0, item1);
+                        expect(collection.getAt(0)).toBe(item1);
+                    });
+
+                    it("should truncate the position if it goes past range", function() {
+                        collection.insert(10, item1);
+                        expect(collection.getAt(0)).toBe(item1);
+                        expect(collection.length).toBe(1);
+                    });
+                });
+
+                describe("with items", function() {
+                    var items = (function() {
+                            var records = [];
+                        for (var i = 0; i < 30; i++) {
+                            records.push({
+                                id: i,
+                                order: i < 10 ? 'mac' : i < 20 ? 'and' : 'cheese'
+                            });
+                        }
+
+                        return records;
+
+                    })(), item1 = {id: 30, order: 'mac'}, item2 = {id: 31, order: 'and'}, item3 = {id: 32, order: 'cheese'};
+                    
+                    beforeEach(function() {
+                        collection.getSorters().add('order');
+                        collection.add(items);
+                        collection.on('sort', spy);
+                    });
+
+                    it("should put the item in the correct position", function() {
+                        collection.add(item1, item2);
+                        expectPos = function() {
+                            expect(collection.length).toBe(33);
+                            expect(collection.getAt(32)).toBe(item1);
+                            expect(collection.getAt(10)).toBe(item2);
+                            expect(collection.indexOfKey(30)).toBe(32);
+                            expect(collection.indexOfKey(31)).toBe(10);
+                            expect(collection.indexOfKey(32)).toBe(21);
+                        };
+                        collection.on('add', expectPos);
+                        collection.add(item3);
+                        expectPos();
+                    });
+
+                    describe("inserting at index", function() {
+                        it("should be able to insert as the first item", function() {
+                            collection.insert(0, item2);
+                            expect(collection.getAt(0)).toBe(item2);
+                        });
+
+                        it("should be able to insert as the last item", function() {
+                            collection.insert(30, item1);
+                            expect(collection.getAt(30)).toBe(item1);
+                        });
+
+                        it("should be able to insert directly after the first item", function() {
+                            collection.insert(1, item2);
+                            expect(collection.getAt(1)).toBe(item2);
+                        });
+
+                        it("should be able to insert directly before the last item", function() {
+                            collection.insert(29, item1);
+                            expect(collection.getAt(29)).toBe(item1);
+                            expect(collection.length).toBe(31);
+                        });
+
+                        it("should be able to insert in the middle of the collection", function() {
+                            collection.insert(14, item3);
+                            expect(collection.getAt(14)).toBe(item3);
+                        });
+
+                        it("should insert at last index of the appropriate sorting if index is out of range", function() {
+                            collection.insert(0, item1);
+                            collection.insert(14, item2);
+                            collection.insert(25, item3);
+                            expect(collection.getAt(10)).toBe(item2);
+                            expect(collection.getAt(21)).toBe(item3);
+                            expect(collection.getAt(32)).toBe(item1);
                         });
                     });
                 });
             });
 
             describe("multiple items", function() {
+                beforeEach(function() {
+                    collection.getSorters().add('id');
+                    collection.on('sort', spy);
+                });
                 describe("with no items", function() {
                     it("should insert the items", function() {
                         expectPos = function() {
@@ -2222,6 +2296,61 @@ describe("Ext.util.Collection", function() {
                     collection.add([new1, new2]);
                     expect(collection.indexOf(new1)).toBe(11);
                     expect(collection.indexOf(new2)).toBe(9);
+                });
+
+                describe("inserting at index", function() {
+                    var new1, new2, new3, groupRef = function(name) {
+                        return collection.getGroups().getByKey(name);
+                    };
+                    beforeEach(function() {
+                        new1 = { id: 'new1', group: 'A' }; 
+                        new2 = { id: 'new2', group: 'B' };
+                        new3 = { id: 'new3', group: 'D' };
+                        groupBy();
+                    });
+
+                    it("should be able to insert as the first item", function() {
+                        collection.insert(0, new1);
+                        expect(collection.getAt(0)).toBe(new1);
+                        expect(groupRef('A').first()).toBe(new1);
+                    });
+
+                    it("should be able to insert as the last item", function() {
+                        collection.insert(10, new3);
+                        expect(collection.getAt(10)).toBe(new3);
+                        expect(groupRef('D').last()).toBe(new3);
+                    });
+
+                    it("should be able to insert directly after the first item", function() {
+                        collection.insert(1, new1);
+                        expect(collection.getAt(1)).toBe(new1);
+                        expect(groupRef('A').getAt(1)).toBe(new1);
+                    });
+
+                    it("should be able to insert directly before the last item", function() {
+                        collection.insert(9, new3);
+                        expect(collection.getAt(9)).toBe(new3);
+                        expect(collection.length).toBe(11);
+                        expect(groupRef('D').first()).toBe(new3);
+                    });
+
+                    it("should be able to insert in the middle of the collection", function() {
+                        collection.insert(4, new2);
+                        expect(collection.getAt(4)).toBe(new2);
+                        expect(groupRef('B').getAt(1)).toBe(new2);
+                    });
+
+                    it("should insert at last index of the appropriate sorting if index is out of range", function() {
+                        collection.insert(4, new1);
+                        collection.insert(9, new2);
+                        collection.insert(0, new3);
+                        expect(collection.getAt(3)).toBe(new1);
+                        expect(collection.getAt(7)).toBe(new2);
+                        expect(collection.getAt(12)).toBe(new3);
+                        expect(groupRef('A').last()).toBe(new1);
+                        expect(groupRef('B').last()).toBe(new2);
+                        expect(groupRef('D').last()).toBe(new3);
+                    });
                 });
             });
             

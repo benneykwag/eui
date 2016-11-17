@@ -130,7 +130,7 @@ Ext.define('Ext.dataview.element.List', {
         item.addCls(this.headerItemClsShortCache);
     },
 
-    destroy: function() {
+    doDestroy: function() {
         this.doRemoveHeaders();
         this.callParent();
     }

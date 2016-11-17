@@ -17,6 +17,8 @@
             "../../../../packages/charts/test/specs-modern",
             "../../../../packages/ux/test/specs",
             "../../../../packages/ux/test/modern/specs",
+            "../../../../../packages/pivot/test/specs",
+            "../../../../../packages/pivot/test/modern/specs",
             "../../../../../packages/exporter/test/specs",
             "../../../../../packages/exporter/test/modern/specs"
         ]

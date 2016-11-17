@@ -2,7 +2,8 @@
 
 describe("Ext.util.Floating", function() {
     var component,
-        describeGoodBrowsers = Ext.isWebKit || Ext.isGecko || Ext.isChrome ? describe : xdescribe;
+        describeGoodBrowsers = Ext.isWebKit || Ext.isGecko || Ext.isChrome ? describe : xdescribe,
+        itNotTouch = Ext.supports.TouchEvents ? xit : it;
 
     function makeComponent(cfg){
         component = new Ext.Component(Ext.apply({
@@ -354,7 +355,7 @@ describe("Ext.util.Floating", function() {
     });
 
     describe("scroll alignment when rendered to body", function() {
-        var spy, c, floater, count;
+        var spy, c, scroller, floater, count;
 
         function makeTestComponent(alignToComponent) {
             spy = jasmine.createSpy();
@@ -383,7 +384,7 @@ describe("Ext.util.Floating", function() {
                     }
                 }];
             } else {
-                c.autoEl = {
+                c.html = Ext.DomHelper.createHtml({
                     children: [{
                         html: 'A',
                         style: {
@@ -400,9 +401,11 @@ describe("Ext.util.Floating", function() {
                             height: '200px'
                         }
                     }]
-                };
+                });
             }
             c = new (alignToComponent ? Ext.Container : Ext.Component)(c);
+            scroller = c.getScrollable();
+            scroller.refresh(true);
 
             floater = new Ext.Component({
                 autoShow: true,
@@ -431,7 +434,7 @@ describe("Ext.util.Floating", function() {
 
                 Ext.on('scroll', spy);
 
-                c.getScrollable().getElement().dom.scrollTop = 50;
+                scroller.scrollTo(null, 50);
 
                 waitsFor(function() {
                     return spy.callCount === 1;
@@ -440,7 +443,7 @@ describe("Ext.util.Floating", function() {
                 runs(function() {
                     // Should realign on scroll event
                     expect(floater.getEl().getTop()).toBe(150);
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 waitsFor(function() {
@@ -469,7 +472,7 @@ describe("Ext.util.Floating", function() {
                 Ext.on('scroll', spy);
 
                 runs(function() {
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 waitsFor(function() {
@@ -494,7 +497,7 @@ describe("Ext.util.Floating", function() {
 
                 Ext.on('scroll', spy);
 
-                c.getScrollable().getElement().dom.scrollTop = 50;
+                scroller.scrollTo(null, 50);
 
                 waitsFor(function() {
                     return spy.callCount === 1;
@@ -503,7 +506,7 @@ describe("Ext.util.Floating", function() {
                 runs(function() {
                     // Should realign on scroll event
                     expect(floater.getEl().getTop()).toBe(150);
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 waitsFor(function() {
@@ -532,7 +535,7 @@ describe("Ext.util.Floating", function() {
                 Ext.on('scroll', spy);
 
                 runs(function() {
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 waitsFor(function() {
@@ -547,7 +550,7 @@ describe("Ext.util.Floating", function() {
     });
 
     describe("scroll alignment when rendered into the scrolling element", function() {
-        var spy, c, floater, count;
+        var spy, c, scroller, floater, count;
 
         function makeTestComponent(alignToComponent) {
             spy = jasmine.createSpy();
@@ -576,7 +579,7 @@ describe("Ext.util.Floating", function() {
                     }
                 }];
             } else {
-                c.autoEl = {
+                c.html = Ext.DomHelper.createHtml({
                     children: [{
                         html: 'A',
                         style: {
@@ -593,9 +596,11 @@ describe("Ext.util.Floating", function() {
                             height: '200px'
                         }
                     }]
-                };
+                });
             }
             c = new (alignToComponent ? Ext.Container : Ext.Component)(c);
+            scroller = c.getScrollable();
+            scroller.refresh(true);
 
             // Render the floater into the scrolling element
             floater = new Ext.Component({
@@ -605,7 +610,7 @@ describe("Ext.util.Floating", function() {
                 width: 50,
                 height: 50,
                 style: 'border: 1px solid black',
-                renderTo: c.getContentTarget()
+                renderTo: scroller.getInnerElement ? scroller.getInnerElement() : c.getContentTarget()
             });
         }
 
@@ -633,7 +638,7 @@ describe("Ext.util.Floating", function() {
 
                 Ext.on('scroll', spy);
 
-                c.getScrollable().getElement().dom.scrollTop = 50;
+                scroller.scrollTo(null, 50);
 
                 // We expect nothing to happen on scroll so we cannot wait for anything.
                 // The floater is rendered into the element which scrolls, so
@@ -645,7 +650,7 @@ describe("Ext.util.Floating", function() {
                     expect(alignToSpy.callCount).toBe(1);
 
                     expect(floater.getEl().getTop()).toBe(150);
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 // We expect nothing to happen on scroll so we cannot wait for anything.
@@ -680,7 +685,7 @@ describe("Ext.util.Floating", function() {
 
                 Ext.on('scroll', spy);
 
-                c.getScrollable().getElement().dom.scrollTop = 50;
+                scroller.scrollTo(null, 50);
 
                 // We expect nothing to happen on scroll so we cannot wait for anything.
                 // The floater is rendered into the element which scrolls, so
@@ -692,7 +697,7 @@ describe("Ext.util.Floating", function() {
                     expect(alignToSpy.callCount).toBe(1);
 
                     expect(floater.getEl().getTop()).toBe(150);
-                    c.getScrollable().getElement().dom.scrollTop = 100;
+                    scroller.scrollTo(null, 100);
                 });
 
                 // We expect nothing to happen on scroll so we cannot wait for anything.
@@ -785,7 +790,7 @@ describe("Ext.util.Floating", function() {
             panel.destroy();
         });
 
-        it('should clip at the top when scrolling a floater outside the top boundary', function() {
+        itNotTouch('should clip at the top when scrolling a floater outside the top boundary', function() {
             var grid1 = panel.down('#grid1'),
                 col = grid1.down('gridcolumn'),
                 headerMenu,
@@ -829,7 +834,7 @@ describe("Ext.util.Floating", function() {
             });
         });
 
-        it('should not clip at the bottom when floater extends outside the bottom boundary and anchor is fully visible', function() {
+        itNotTouch('should not clip at the bottom when floater extends outside the bottom boundary and anchor is fully visible', function() {
             var grid9 = panel.down('#grid9'),
                 col = grid9.down('gridcolumn'),
                 headerMenu,
@@ -856,7 +861,7 @@ describe("Ext.util.Floating", function() {
 
         // If the flaoters overflow the scroll area, but we've reached the scroll end, and there's not enough scroll left
         // to bring them into view, then the floaters must be made available.
-        it("should clip at the bottom when scrolling a floater's anchor outside the bottom boundary", function() {
+        itNotTouch("should clip at the bottom when scrolling a floater's anchor outside the bottom boundary", function() {
             var grid10 = panel.down('#grid10'),
                 col = grid10.down('gridcolumn'),
                 headerMenu,
@@ -910,13 +915,10 @@ describe("Ext.util.Floating", function() {
                 return headerMenu.getY() === scrolledHeaderMenuY + 20 && columnsMenu.getY() === scrolledColumnsMenuY + 20;
             });
             runs(function() {
-                var hmOverflow = Math.max(0, panel.body.getConstrainRegion().bottom - headerMenu.el.getY()),
-                    cmOverflow = Math.max(0, panel.body.getConstrainRegion().bottom - columnsMenu.el.getY());
-
                 // The header trigger ell is clipped, so both menus should be clipped out of visibility.
                 // Note that some browsers return comma separated values for the clip rect.
-                expect(Ext.String.startsWith( headerMenu.el.dom.style.clip, 'rect(' + hmOverflow + 'px')).toBe(true);
-                expect(Ext.String.startsWith(columnsMenu.el.dom.style.clip, 'rect(' + cmOverflow + 'px')).toBe(true);
+                expect(headerMenu.el.dom.style.clip.replace(/,\s*/g, ' ')).toBe("rect(-10000px 10000px 0px -10000px)");
+                expect(headerMenu.el.dom.style.clip.replace(/,\s*/g, ' ')).toBe("rect(-10000px 10000px 0px -10000px)");
             });
         });
     });

@@ -17,6 +17,9 @@ describe("Ext.button.Segmented", function() {
     });
 
     describe("value", function() {
+        
+        // TODO change event
+
         describe("allowMultiple:false", function() {
             function makeButton(cfg) {
                 button = Ext.create(Ext.apply({
@@ -466,6 +469,9 @@ describe("Ext.button.Segmented", function() {
                         }
                     }
                 });
+                
+                // Listener will fire when button is created
+                oldValues.length = newValues.length = 0;
 
                 button.setValue([1, 2]);
 

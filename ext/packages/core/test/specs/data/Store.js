@@ -1,3 +1,5 @@
+/* global Ext, spyOn, expect, jasmine, MockAjaxManager */
+
 describe("Ext.data.Store", function() {
     var fakeScope = {},
         abeRaw, aaronRaw, edRaw, tommyRaw,
@@ -1655,7 +1657,7 @@ describe("Ext.data.Store", function() {
                     store.getSorters().add({
                         property: 'name',
                         direction: 'ASC'
-                    })
+                    });
                 });
 
                 it("should move the record to the correct position", function() {
@@ -5083,7 +5085,7 @@ describe("Ext.data.Store", function() {
                     expect(group.getAt(0).getId()).toBe('abe@sencha.com');
                     expect(group.getAt(1).getId()).toBe('aaron@sencha.com');
                 });
-            })
+            });
         });
         
         describe("events", function() {
@@ -5221,7 +5223,7 @@ describe("Ext.data.Store", function() {
                             var args = spy.mostRecentCall.args;
                             expect(args[0]).toBe(store);
                             expect(args[1]).toBeNull();
-                        })
+                        });
 
                         it("should trigger the refresh event", function() {
                             store.group('group');
@@ -5259,6 +5261,22 @@ describe("Ext.data.Store", function() {
                             }
                         });
                     });
+
+                    describe("during construction", function() {
+                        it("should not trigger a load when applying initial sorters", function() {
+                            var spy = spyOn(Ext.data.ProxyStore.prototype, 'load');
+                            createStore({
+                                remoteSort: true,
+                                sorters: [{
+                                    property: 'evilness',
+                                    operator: '>',
+                                    value: 50
+                                }]
+                            });
+                            expect(spy.callCount).toBe(0);
+                        });
+                    });
+
                     describe("adding", function() {
                         describe("with no sorters", function() {
                             it("should trigger the groupchange event and pass the store & grouper", function() {
@@ -5376,7 +5394,7 @@ describe("Ext.data.Store", function() {
                                 var args = spy.mostRecentCall.args;
                                 expect(args[0]).toBe(store);
                                 expect(args[1]).toBeNull();
-                            })
+                            });
 
                             it("should trigger the refresh event", function() {
                                 store.group('group');
@@ -5550,7 +5568,7 @@ describe("Ext.data.Store", function() {
                                 var args = spy.mostRecentCall.args;
                                 expect(args[0]).toBe(store);
                                 expect(args[1]).toBeNull();
-                            })
+                            });
 
                             it("should trigger the refresh event after the load completes", function() {
                                 store.on('refresh', spy);
@@ -6007,7 +6025,7 @@ describe("Ext.data.Store", function() {
                             value: 'code'
                         }]
                     });
-                    expect(spy).not.toHaveBeenCalled();
+                    expect(spy.callCount).toBe(0);
                 });
             });
             
@@ -7736,7 +7754,7 @@ describe("Ext.data.Store", function() {
 
                     store.destroy();
                     expect(spy).toHaveBeenCalled();
-                    expect(store.getProxy()).toBeNull();
+                    expect(store.proxy).toBeNull();
                 });
 
                 it("should destroy an object config proxy and clear it from the store", function() {
@@ -7750,7 +7768,7 @@ describe("Ext.data.Store", function() {
 
                     store.destroy();
                     expect(spy).toHaveBeenCalled();
-                    expect(store.getProxy()).toBeNull();
+                    expect(store.proxy).toBeNull();
                 });
             });
 
@@ -7764,7 +7782,7 @@ describe("Ext.data.Store", function() {
                     spy = spyOn(proxy, 'destroy').andCallThrough();
                     store.destroy();
                     expect(spy).not.toHaveBeenCalled();
-                    expect(store.getProxy()).toBeNull();
+                    expect(store.proxy).toBeNull();
                     expect(getKeys(proxy.hasListeners)).toEqual(hasListeners);
                 });
             });
@@ -7781,7 +7799,7 @@ describe("Ext.data.Store", function() {
                     spy = spyOn(proxy, 'destroy').andCallThrough();
                     store.destroy();
                     expect(spy).not.toHaveBeenCalled();
-                    expect(store.getProxy()).toBeNull();
+                    expect(store.proxy).toBeNull();
                     expect(getKeys(proxy.hasListeners)).toEqual(hasListeners);
                 });
             });
@@ -7792,7 +7810,7 @@ describe("Ext.data.Store", function() {
                 fields: ['foo', 'bar']
             });
             store.destroy();
-            expect(store.getModel()).toBeNull();
+            expect(store.model).toBeNull();
         });
     });
 
@@ -7844,7 +7862,7 @@ describe("Ext.data.Store", function() {
                 store.removeAll();
             });
         });
-    })
+    });
 
     /*
      * edRaw    = {name: 'Ed Spencer',   email: 'ed@sencha.com',    evilness: 100, group: 'code',  old: false, age: 25, valid: 'yes'};

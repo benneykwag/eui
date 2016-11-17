@@ -302,7 +302,7 @@ Ext.define('Ext.layout.container.boxOverflow.Menu', {
             destroyMenu: false,
             listeners: null
         });
-
+        
         config.text = component.overflowText || component.text;
         config.masterComponent = component;
 
@@ -471,15 +471,8 @@ Ext.define('Ext.layout.container.boxOverflow.Menu', {
     },
 
     destroy: function() {
-        var me = this,
-            trigger = me.menuTrigger;
-            
-        if (trigger && !me.layout.owner.items.contains(trigger)) {
-            // Ensure we delete the ownerCt if it's not in the items
-            // so we don't get spurious container remove warnings.
-            delete trigger.ownerCt;
-        }
-        me.menu = me.menuTrigger = Ext.destroy(me.menu, trigger);
-        me.callParent();
+        Ext.destroy(this.menu, this.menuTrigger);
+        
+        this.callParent();
     }
 });

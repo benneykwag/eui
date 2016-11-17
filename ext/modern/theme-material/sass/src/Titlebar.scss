@@ -1,0 +1,7 @@
+.#{$prefix}titlebar .#{$prefix}titlebar-left .#{$prefix}inner .#{$prefix}button:first-child {
+    padding-left: 0;
+}
+
+.#{$prefix}titlebar .#{$prefix}titlebar-right .#{$prefix}inner .#{$prefix}button:last-child {
+    padding-right: 0;
+}

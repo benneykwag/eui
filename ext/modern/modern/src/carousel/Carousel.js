@@ -148,6 +148,13 @@ Ext.define('Ext.carousel.Carousel', {
 
     activeIndex: -1,
 
+    touchAction: {
+        // This pevents the touchstart from being captured
+        // by the platform for scrolling.
+        panX: false,
+        panY: false
+    },
+
     beforeInitialize: function() {
         var me = this;
 
@@ -791,7 +798,7 @@ Ext.define('Ext.carousel.Carousel', {
         }
     },
 
-    destroy: function() {
+    doDestroy: function() {
         var me = this,
             carouselItems = me.carouselItems.slice();
 
@@ -800,6 +807,5 @@ Ext.define('Ext.carousel.Carousel', {
         Ext.destroy(carouselItems, me.getIndicator(), me.translatable);
 
         me.callParent();
-        delete me.carouselItems;
     }
 });

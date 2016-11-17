@@ -1,4 +1,4 @@
-/* global expect, Ext, spyOn, jasmine */
+/* global expect, Ext, jasmine, spyOn */
 
 describe("Ext.button.Button", function() {
     var proto = Ext.button.Button.prototype,
@@ -129,6 +129,55 @@ describe("Ext.button.Button", function() {
             expect(button.border).toBe(false);
 
             p.destroy();
+        });
+    });
+
+    describe("setUI", function() {
+        beforeEach(function() {
+            makeButton({
+                text: 'Foo'
+            });
+            button.render(Ext.getBody());
+            button.setUI('custom');
+        });
+        it("should remove x-btn-default-small class from main button element", function() {         
+            expect(button.el).not.toHaveCls('x-btn-default-small');
+        });
+
+        it("should add x-btn-custom-small class to main button element", function() {         
+            expect(button.el).toHaveCls('x-btn-custom-small');
+        });
+
+        it("should remove x-btn-wrap-default-small class from btnWrap", function() {        
+            expect(button.btnWrap).not.toHaveCls('x-btn-wrap-default-small');
+        });
+
+        it("should add x-btn-wrap-custom-small class to btnWrap", function() {        
+            expect(button.btnWrap).toHaveCls('x-btn-wrap-custom-small');
+        });
+
+        it("should remove x-btn-button-default-small class from btnEl", function() {          
+            expect(button.btnEl).not.toHaveCls('x-btn-button-default-small');
+        });
+
+        it("should add x-btn-button-custom-small class to btnEl", function() {          
+            expect(button.btnEl).toHaveCls('x-btn-button-custom-small');
+        });
+
+        it("should remove x-btn-icon-el-default-small class from btnIconEl", function() {
+            expect(button.btnIconEl).not.toHaveCls('x-btn-icon-el-default-small');
+        });
+
+        it("should add x-btn-icon-el-custom-small class to btnIconEl", function() {
+            expect(button.btnIconEl).toHaveCls('x-btn-icon-el-custom-small');
+        });
+
+        it("should remove x-btn-inner-default-small class from btnInnerEl", function() {
+            expect(button.btnInnerEl).not.toHaveCls('x-btn-inner-default-small');
+        });
+
+        it("should add x-btn-inner-custom-small class to btnInnerEl", function() {
+            expect(button.btnInnerEl).toHaveCls('x-btn-inner-custom-small');
         });
     });
 
@@ -365,6 +414,45 @@ describe("Ext.button.Button", function() {
             button.setIcon(fooIcon);
             expect(called).toBe(false);
         });
+
+        it("should switch from using glyph to icon", function() {
+            makeButton({
+                glyph: 'x48@FontAwesome',
+                renderTo: Ext.getBody()
+            });
+
+            // Hex 48 is "H". Must switch to using that with no background image
+            expect(button.btnIconEl.getStyle('font-family')).toBe('FontAwesome');
+            expect(button.btnIconEl.dom.innerHTML).toBe('H');
+
+            button.setIcon('resources/images/foo.gif');
+
+            // No glyph character
+            expect(button.btnIconEl.dom.innerHTML).toBe('');
+
+            // iconEl must use the image as the background image.
+            // Some browsers quote the url value, some don't. Remove quotes.
+            expect(Ext.String.endsWith(button.btnIconEl.getStyle('background-image').replace(/\"/g, ''), 'resources/images/foo.gif)')).toBe(true);
+        });
+
+        it("should switch from using iconCls to icon", function() {
+            makeButton({
+                iconCls: 'foo-icon-class',
+                renderTo: Ext.getBody()
+            });
+
+            // iconEl must use the specified icon class
+            expect(button.btnIconEl.hasCls('foo-icon-class')).toBe(true);
+
+            button.setIcon('resources/images/foo.gif');
+
+            // Icon class must be gone
+            expect(button.btnIconEl.hasCls('foo-icon-class')).toBe(false);
+
+            // iconEl must use the image as the background image
+            // Some browsers quote the url value, some don't. Remove quotes.
+            expect(Ext.String.endsWith(button.btnIconEl.getStyle('background-image').replace(/\"/g, ''), 'resources/images/foo.gif)')).toBe(true);
+        });
     });
 
     describe("setIconCls", function() {
@@ -436,6 +524,44 @@ describe("Ext.button.Button", function() {
             button.setIconCls('Foo');
             expect(called).toBe(false);
         });
+
+        it("should switch from using glyph to iconCls", function() {
+            makeButton({
+                glyph: 'x48@FontAwesome',
+                renderTo: Ext.getBody()
+            });
+
+            // Hex 48 is "H". Must switch to using that with no background image
+            expect(button.btnIconEl.getStyle('font-family')).toBe('FontAwesome');
+            expect(button.btnIconEl.dom.innerHTML).toBe('H');
+
+            button.setIconCls('foo-icon-class');
+
+            // No glyph character
+            expect(button.btnIconEl.dom.innerHTML).toBe('');
+
+            // iconEl must use the specified icon class
+            expect(button.btnIconEl.hasCls('foo-icon-class')).toBe(true);
+        });
+        it("should switch from using glyph to icon", function() {
+            makeButton({
+                glyph: 'x48@FontAwesome',
+                renderTo: Ext.getBody()
+            });
+
+            // Hex 48 is "H". Must switch to using that with no background image
+            expect(button.btnIconEl.getStyle('font-family')).toBe('FontAwesome');
+            expect(button.btnIconEl.dom.innerHTML).toBe('H');
+
+            button.setIcon('resources/images/foo.gif');
+
+            // No glyph character
+            expect(button.btnIconEl.dom.innerHTML).toBe('');
+
+            // iconEl must use the image as the background image
+            // Some browsers quote the url value, some don't. Remove quotes.
+            expect(Ext.String.endsWith(button.btnIconEl.getStyle('background-image').replace(/\"/g, ''), 'resources/images/foo.gif)')).toBe(true);
+        });
     });
 
     describe("setGlyph", function() {
@@ -493,6 +619,41 @@ describe("Ext.button.Button", function() {
             expect(btn).toBe(button);
             expect(old).toBe(65);
             expect(newGlyph).toBe(66);
+        });
+
+        it("should switch from using icon to glyph", function() {
+            makeButton({
+                renderTo: Ext.getBody(),
+                icon: 'resources/images/foo.gif',
+                text: ''
+            });
+
+            // iconEl must use the image as the background image
+            // Some browsers quote the url value, some don't. Remove quotes.
+            expect(Ext.String.endsWith(button.btnIconEl.getStyle('background-image').replace(/\"/g, ''), 'resources/images/foo.gif)')).toBe(true);
+
+            // Hex 48 is "H". Must switch to using that with no background image
+            button.setGlyph('x48@FontAwesome');
+            expect(button.btnIconEl.getStyle('background-image')).toBe('none');
+            expect(button.btnIconEl.getStyle('font-family')).toBe('FontAwesome');
+            expect(button.btnIconEl.dom.innerHTML).toBe('H');
+        });
+
+        it("should switch from using iconCls to glyph", function() {
+            makeButton({
+                renderTo: Ext.getBody(),
+                iconCls: 'foo-icon-class',
+                text: ''
+            });
+
+            // iconEl must use the image as the background image
+            expect(button.btnIconEl.hasCls('foo-icon-class')).toBe(true);
+
+            // Hex 48 is "H". Must switch to using that with no background image
+            button.setGlyph('x48@FontAwesome');
+            expect(button.btnIconEl.getStyle('background-image')).toBe('none');
+            expect(button.btnIconEl.getStyle('font-family')).toBe('FontAwesome');
+            expect(button.btnIconEl.dom.innerHTML).toBe('H');
         });
     });
 
@@ -840,7 +1001,7 @@ describe("Ext.button.Button", function() {
     });
 
     describe("menu", function() {
-        it('should not include menu descendant items in its CQ children if the ">" operator is used', function() {
+        it("should not include menu descendant items in its CQ children if the ">" operator is used", function() {
             var queryResult;
 
             makeButton({
@@ -921,7 +1082,7 @@ describe("Ext.button.Button", function() {
                 expect(menu.containsFocus).toBeFalsy();
 
                 // Mousedown outside the menu hides it
-                clickIt('mousedown');
+                clickIt("mousedown");
                 expect(menu.isVisible()).toBe(false);
             });
             
@@ -988,9 +1149,11 @@ describe("Ext.button.Button", function() {
                 }
             });
             expect(owner).toBe(button);
+            
+            Ext.undefine('spec.SubMenu');
         });
 
-        describe('Hiding on scroll', function () {
+        describe("Hiding on scroll", function () {
             // See EXTJS-14754.
             var ctn, menu;
 
@@ -1029,7 +1192,7 @@ describe("Ext.button.Button", function() {
                 ctn = null;
             });
 
-            it('should hide on scroll', function () {
+            it("should hide on scroll", function () {
                 // Let's make sure before we start that the menu is positioned correctly.
                 expect(menu.getY() - button.getHeight()).toBe(button.getY());
 
@@ -1043,7 +1206,7 @@ describe("Ext.button.Button", function() {
             });
         });
 
-        describe('when destroying its owner', function () {
+        describe("when destroying its owner", function () {
             var menu;
 
             beforeEach(function () {
@@ -1060,16 +1223,16 @@ describe("Ext.button.Button", function() {
                 menu = null;
             });
 
-            it('should work', function () {
+            it("should work", function () {
                 expect(menu.destroyed).toBe(true);
             });
 
-            it('should cleanup its menu reference', function () {
+            it("should cleanup its menu reference", function () {
                 expect(button.menu).toBe(null);
             });
         });
 
-        describe('setMenu', function() {
+        describe("setMenu", function() {
             // See EXTJSIV-11433, EXTJSIV-11837.
             var menuCfg = {
                     defaultAlign: 'c',
@@ -1101,26 +1264,26 @@ describe("Ext.button.Button", function() {
                 mainMenu = menuCmp = null;
             });
 
-            describe('setting a menu', function() {
-                it('should accept a menu component as an argument', function() {
+            describe("setting a menu", function() {
+                it("should accept a menu component as an argument", function() {
                     button.setMenu(menuCmp);
                     expect(button.menu.isMenu).toBe(true);
                     expect(button.menu).toBe(menuCmp);
                 });
 
-                it('should accept a menu config as an argument', function() {
+                it("should accept a menu config as an argument", function() {
                     button.setMenu(menuCfg);
                     expect(button.getMenu().isMenu).toBe(true);
                     expect(button.getMenu().defaultAlign).toBe('c');
                 });
 
-                it('should accept a menu id as an argument', function() {
+                it("should accept a menu id as an argument", function() {
                     // Pass `false` to not destroy the previous set menu when setting the new one.
                     button.setMenu('rupert', false);
                     expect(button.menu).toBe(menuCmp);
                 });
 
-                it('should poke the split classes onto the btnWrap element when the new menu is set', function() {
+                it("should poke the split classes onto the btnWrap element when the new menu is set", function() {
                     var btn = new Ext.button.Button({
                         renderTo: Ext.getBody()
                     });
@@ -1134,50 +1297,50 @@ describe("Ext.button.Button", function() {
                 });
             });
 
-            describe('unsetting a menu', function() {
+            describe("unsetting a menu", function() {
                 it("should null out the button's menu property", function() {
                     button.setMenu(null);
                     expect(button.menu).toBe(null);
                 });
 
-                it('should remove the split classes on the btnWrap element when the menu is unset', function() {
+                it("should remove the split classes on the btnWrap element when the menu is unset", function() {
                     button.setMenu(null);
                     expect(button.btnWrap).not.toHaveCls('x-btn-arrow');
                     expect(button.btnWrap).not.toHaveCls('x-btn-arrow-right');
                 });
             });
 
-            describe('destroying previous set menu', function() {
-                describe('when setting', function() {
-                    it('should destroy the previous set menu when setting the new one by default', function() {
+            describe("destroying previous set menu", function() {
+                describe("when setting", function() {
+                    it("should destroy the previous set menu when setting the new one by default", function() {
                         button.setMenu(menuCmp);
                         expect(mainMenu.destroyed).toBe(true);
                     });
 
-                    it('should not destroy the previous set menu when setting the new one when passing `false`', function() {
+                    it("should not destroy the previous set menu when setting the new one when passing `false`", function() {
                         button.setMenu(menuCmp, false);
                         expect(mainMenu.destroyed).toBeFalsy();
                     });
 
-                    it('should not destroy the previous set menu when destroyMenu instance property is `false`', function() {
+                    it("should not destroy the previous set menu when destroyMenu instance property is `false`", function() {
                         button.destroyMenu = false;
                         button.setMenu(menuCmp);
                         expect(mainMenu.destroyed).toBeFalsy();
                     });
                 });
 
-                describe('when unsetting', function() {
-                    it('should destroy the current menu', function() {
+                describe("when unsetting", function() {
+                    it("should destroy the current menu", function() {
                         button.setMenu(null);
                         expect(mainMenu.destroyed).toBe(true);
                     });
 
-                    it('should not destroy the current menu if passed `false`', function() {
+                    it("should not destroy the current menu if passed `false`", function() {
                         button.setMenu(null, false);
                         expect(mainMenu.destroyed).toBeFalsy();
                     });
 
-                    it('should not destroy the previous set menu when destroyMenu instance property is `false`', function() {
+                    it("should not destroy the previous set menu when destroyMenu instance property is `false`", function() {
                         button.destroyMenu = false;
                         button.setMenu(null);
                         expect(mainMenu.destroyed).toBeFalsy();
@@ -1214,7 +1377,7 @@ describe("Ext.button.Button", function() {
                 });
                 
                 it("should set attribute when menu is added", function() {
-                    button.setMenu(null);
+                    button.setMenu(null, false);
                     button.setMenu(menu);
                     
                     expect(button).toHaveAttr('aria-haspopup', 'true');
@@ -1239,7 +1402,7 @@ describe("Ext.button.Button", function() {
                 });
                 
                 it("should be set when menu is added", function() {
-                    button.setMenu(null);
+                    button.setMenu(null, false);
                     button.setMenu(menu);
                     
                     expect(button).toHaveAttr('aria-owns', menu.id);
@@ -1282,7 +1445,7 @@ describe("Ext.button.Button", function() {
                 it("should stop the keydown event", function() {
                     var args = enterSpy.mostRecentCall.args;
                     
-                    expect(args[0].isStopped).toBeTruthy();
+                    expect(args[0].stopped).toBeTruthy();
                 });
                 
                 it("should return false to stop Event propagation loop", function() {
@@ -1304,7 +1467,7 @@ describe("Ext.button.Button", function() {
                 it("should stop the keydown event", function() {
                     var args = enterSpy.mostRecentCall.args;
                     
-                    expect(args[0].isStopped).toBeTruthy();
+                    expect(args[0].stopped).toBeTruthy();
                 });
                 
                 it("should return false to stop Event propagation loop", function() {
@@ -1326,7 +1489,7 @@ describe("Ext.button.Button", function() {
                 it("should stop the keydown event", function() {
                     var args = downSpy.mostRecentCall.args;
                     
-                    expect(args[0].isStopped).toBeTruthy();
+                    expect(args[0].stopped).toBeTruthy();
                 });
                 
                 it("should return false to stop Event propagation loop", function() {
@@ -1480,17 +1643,15 @@ describe("Ext.button.Button", function() {
                 it("should unregister with the tip manager", function() {
                     var cfg = {
                         html: 'Foo'
-                    }, id;
+                    };
 
-                    spyOn(QTM, 'unregister').andCallFake(function(o) {
-                        id = o.id;
-                    });
+                    spyOn(QTM, 'unregister').andCallThrough();
                     makeButton({
                         tooltip: cfg,
                         renderTo: Ext.getBody()
                     });
                     button.setTooltip(null);
-                    expect(id).toEqual(button.id);
+                    expect(QTM.unregister.mostRecentCall.args[0].id).toEqual(button.id);
                 });
             });
 
@@ -1498,17 +1659,15 @@ describe("Ext.button.Button", function() {
                 it("should clear the tip", function() {
                     var cfg = {
                         html: 'Foo'
-                    }, id;
+                    };
 
-                    spyOn(QTM, 'unregister').andCallFake(function(o) {
-                        id = o.id;
-                    });
+                    spyOn(QTM, 'unregister').andCallThrough();
                     makeButton({
                         tooltip: cfg,
                         renderTo: Ext.getBody()
                     });
                     button.destroy();
-                    expect(id).toEqual(button.id);
+                    expect(QTM.unregister.mostRecentCall.args[0].id).toEqual(button.id);
                 });
             });
         });
@@ -1628,10 +1787,10 @@ describe("Ext.button.Button", function() {
         });
     });
     
-    describe('menuAlign config', function () {
+    describe("menuAlign config", function () {
         var pos = 'br-tl';
 
-        it('should use default menuAlign if none is given', function () {
+        it("should use default menuAlign if none is given", function () {
             makeButton({
                 floating: true,
                 menu: {
@@ -1647,7 +1806,7 @@ describe("Ext.button.Button", function() {
             expect(button.menuAlign).toBe(button.self.prototype.menuAlign);
         });
 
-        it('should use menuAlign config if given', function () {
+        it("should use menuAlign config if given", function () {
             makeButton({
                 floating: true,
                 menuAlign: pos,
@@ -1666,7 +1825,7 @@ describe("Ext.button.Button", function() {
             expect(button.self.prototype.menuAlign).not.toBe(pos);
         });
 
-        it('should call alignTo() to position itself', function () {
+        it("should call alignTo() to position itself", function () {
             var ctn, menu;
 
             makeButton({
@@ -1691,7 +1850,7 @@ describe("Ext.button.Button", function() {
             spyOn(menu, 'alignTo');
             clickIt();
 
-            expect(menu.alignTo).toHaveBeenCalledWith(button.el, pos, undefined);
+            expect(menu.alignTo).toHaveBeenCalledWith(button.el, pos, undefined, false, true);
 
             Ext.destroy(ctn);
             ctn = null;
@@ -1700,8 +1859,8 @@ describe("Ext.button.Button", function() {
 
     if (!Ext.supports.CSS3BorderRadius) {
         // see EXTJSIV-10376
-        describe('frame', function() {
-            it('should call the click listener on the wrapped table when the button is clicked', function() {
+        describe("frame", function() {
+            it("should call the click listener on the wrapped table when the button is clicked", function() {
                 makeButton({
                     frame: true,
                     href: '/foo',
@@ -1716,7 +1875,7 @@ describe("Ext.button.Button", function() {
                 expect(button.frameTableListener).toHaveBeenCalled();
             });
 
-            it('should call NOT the navigate method when a disabled button is clicked', function() {
+            it("should call NOT the navigate method when a disabled button is clicked", function() {
                 // see EXTJSIV-11276
                 makeButton({
                     frame: true,
@@ -1731,7 +1890,7 @@ describe("Ext.button.Button", function() {
                 expect(button.doNavigate).not.toHaveBeenCalled();
             });
 
-            it('should append any params to the url', function() {
+            it("should append any params to the url", function() {
                 spyOn(Ext.button.Button.prototype, 'getHref').andCallFake(function() {
                     return null;
                 });
@@ -5553,31 +5712,45 @@ describe("Ext.button.Button", function() {
         });
     }); // layout
 
-    describe('binding', function () {
-        it('should publish "pressed" state by default', function () {
-             makeButton();
+    describe("binding", function () {
+        it("should publish \"pressed\" state by default", function () {
+            makeButton({
+                viewModel : {
+                    data: {
+                        foo: false
+                    }
+                },
+                enableToggle: true,
+                bind: {
+                    pressed: '{foo}'
+                }
+            });
 
-             var publishes = button.getPublishes();
+            var vm = button.getViewModel();
 
-             destroyButton();
-             makeButton();
-
-             expect(publishes.disabled).toBeFalsy();
-             expect(publishes.pressed).toBeTruthy();
-             // should be a cachedConfig
-             expect(button.hasOwnProperty('publishes')).toBe(false);
+            button.setPressed(true);
+            vm.notify();
+            expect(vm.get('foo')).toBe(true);
+            button.setPressed(false);
+            vm.notify();
+            expect(vm.get('foo')).toBe(false);
         });
 
-        it('should merge publishes "disabled" state with defaults', function () {
-             makeButton({
-                 publishes: ['disabled']
-             });
+        it("should publish \"pressed\" state with reference", function () {
+            makeButton({
+                viewModel : true,
+                enableToggle: true,
+                reference: 'btn'
+            });
 
-             var publishes = button.getPublishes();
+            var vm = button.getViewModel();
 
-             expect(publishes.disabled).toBeTruthy();
-             expect(publishes.pressed).toBeTruthy();
-             expect(button.hasOwnProperty('publishes')).toBe(true);
+            button.setPressed(true);
+            vm.notify();
+            expect(vm.get('btn.pressed')).toBe(true);
+            button.setPressed(false);
+            vm.notify();
+            expect(vm.get('btn.pressed')).toBe(false);
         });
 
         describe("menu", function() {
@@ -5875,7 +6048,7 @@ describe("Ext.button.Button", function() {
             it("should stop the keydown event", function() {
                 var args = enterSpy.mostRecentCall.args;
                 
-                expect(args[0].isStopped).toBe(true);
+                expect(args[0].stopped).toBe(true);
             });
             
             it("should return false to stop Event propagation loop", function() {
@@ -5897,7 +6070,7 @@ describe("Ext.button.Button", function() {
             it("should stop the keydown event", function() {
                 var args = enterSpy.mostRecentCall.args;
                 
-                expect(args[0].isStopped).toBe(true);
+                expect(args[0].stopped).toBe(true);
             });
             
             it("should return false to stop Event propagation loop", function() {
@@ -5919,7 +6092,7 @@ describe("Ext.button.Button", function() {
             it("should NOT stop the keydown event", function() {
                 var args = downSpy.mostRecentCall.args;
                 
-                expect(args[0].isStopped).toBeFalsy();
+                expect(args[0].stopped).toBeFalsy();
             });
             
             it("should NOT return false to stop Event propagation loop", function() {

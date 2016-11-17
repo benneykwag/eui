@@ -1,4 +1,4 @@
-.#{$prefix}grid-column-resizer {
+.#{$prefix}gridcolumn .#{$prefix}resizer-el {
     content: '';
     position: absolute;
     right: -($grid-column-resizer-width/2);
@@ -8,8 +8,8 @@
     z-index: 1;
     cursor: col-resize;
     display: none;
+}
 
-    .#{$prefix}grid-with-column-resize &.#{$prefix}grid-column-resizable {
-        display: block;
-    }
+.#{$prefix}grid.#{$prefix}has-columnresizing .#{$prefix}gridcolumn.#{$prefix}resizable .#{$prefix}resizer-el {
+    display: block;
 }

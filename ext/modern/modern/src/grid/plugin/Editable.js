@@ -3,7 +3,7 @@
  *
  * The Editable plugin injects editing at a row level for Modern Toolkit's
  * Grid. Editing begins by double-tapping a row.  This can be set to any event, which we'll
- * discuss below. The editor consists of a small floating dialog that be shown on the right
+ * discuss below. The editor consists of a small positioned dialog that be shown on the right
  * side of your viewport.
  *
  * There is a button to save or cancel all changes for the edit in the toolbar, and the
@@ -47,7 +47,6 @@
  *
  *             defaultFormConfig: {
  *                 xtype: 'formpanel',
- *                 modal: true,
  *                 scrollable: true,
  *                 items: {
  *                     xtype: 'fieldset'
@@ -141,7 +140,6 @@ Ext.define('Ext.grid.plugin.Editable', {
          */
         defaultFormConfig: {
             xtype: 'formpanel',
-            modal: true,
             scrollable: true,
             items: {
                 xtype: 'fieldset'
@@ -206,7 +204,7 @@ Ext.define('Ext.grid.plugin.Editable', {
     },
 
     getRecordByTriggerEvent: function(e) {
-        var rowEl = e.getTarget('.' + Ext.baseCSSPrefix + 'grid-row'),
+        var rowEl = e.getTarget('.' + Ext.baseCSSPrefix + 'gridrow'),
             row;
 
         if (rowEl) {
@@ -266,6 +264,7 @@ Ext.define('Ext.grid.plugin.Editable', {
                 hideOnMaskTap: true,
                 enter: 'right',
                 exit: 'right',
+                centered: false,
                 right: 0,
                 width: 320,
                 layout: 'fit',

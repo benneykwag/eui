@@ -863,7 +863,8 @@ Ext.define('Ext.tab.Panel', {
             else if (item.tab && (toActivate = me.tabBar.items.indexOf(me.tabBar.findNextActivatable(item.tab))) !== -1) {
                 me.setActiveTab(toActivate);
             }
-            this.callParent(arguments);
+            
+            me.callParent([item, autoDestroy]);
 
             if (item.tab) {
                 // Remove the two references

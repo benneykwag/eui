@@ -114,7 +114,6 @@ Ext.define('Ext.mixin.ComponentDelegation', {
                             }
                         }
                     }
-
                     owner = owner.getRefOwner();
                 }
             }
@@ -142,6 +141,12 @@ Ext.define('Ext.mixin.ComponentDelegation', {
                         delete delegatedEvents[eventName];
                     }
                 }
+            }
+        },
+        
+        destroyComponentDelegation: function() {
+            if (this.clearPropertiesOnDestroy) {
+                this.$delegatedEvents = null;
             }
         }
     },

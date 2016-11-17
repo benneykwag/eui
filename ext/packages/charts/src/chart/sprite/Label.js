@@ -67,8 +67,8 @@ Ext.define('Ext.chart.sprite.Label', {
             },
 
             updaters: {
-                hidden: function (attrs) {
-                    attrs.hidden = attrs.display === 'none';
+                hidden: function (attr) {
+                    attr.hidden = (attr.display === 'none');
                 }
             }
         }
@@ -105,8 +105,8 @@ Ext.define('Ext.chart.sprite.Label', {
     prepareModifiers: function () {
         this.callParent(arguments);
         this.calloutModifier = new Ext.chart.modifier.Callout({sprite: this});
-        this.fx.setNext(this.calloutModifier);
-        this.calloutModifier.setNext(this.topModifier);
+        this.fx.setUpper(this.calloutModifier);
+        this.calloutModifier.setUpper(this.topModifier);
     },
 
     render: function (surface, ctx) {

@@ -2,7 +2,13 @@ describe('Ext.selection.RowModel', function () {
     var grid, view, selModel, navModel, store, columns, cell, rawData,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore,
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        },
         cellSelectedCls = Ext.view.Table.prototype.selectedCellCls,
         itemSelectedCls = Ext.view.Table.prototype.selectedItemCls;
 
@@ -45,13 +51,7 @@ describe('Ext.selection.RowModel', function () {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         rawData = [
             { id: 1, name: 'Phil' },

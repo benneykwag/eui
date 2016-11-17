@@ -54,29 +54,33 @@ Ext.define('Ext.layout.Box', {
          *
          * @accessor
          */
-        pack: 'start'
+        pack: 'start',
+
+        /**
+         * @cfg {Boolean} vertical
+         * `true` to layout items vertically, otherwise horizontally.
+         *
+         * @since 6.2.0
+         */
+        vertical: false
     },
 
     alias: 'layout.tablebox',
 
-    layoutBaseClass: 'x-layout-tablebox',
+    cls: Ext.baseCSSPrefix + 'layout-tablebox',
 
-    itemClass: 'x-layout-tablebox-item',
+    itemCls: Ext.baseCSSPrefix + 'layout-tablebox-item',
 
     setContainer: function(container) {
         this.callParent([container]);
-
-        container.innerElement.addCls(this.layoutBaseClass);
 
         container.on('flexchange', 'onItemFlexChange', this, {
             delegate: '> component'
         });
     },
 
-    onItemInnerStateChange: function(item, isInner) {
-        this.callParent(arguments);
-
-        item.toggleCls(this.itemClass, isInner);
+    updateVertical: function(vertical) {
+        this.setOrient(vertical ? 'vertical' : 'horizontal');
     },
 
     onItemFlexChange: Ext.emptyFn

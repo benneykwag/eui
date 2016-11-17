@@ -74,7 +74,10 @@ Ext.define('Ext.draw.ContainerBase', {
     },
 
     setSurfaceSize: function(width, height) {
-        this.resizeHandler({width:width, height:height});
+        this.resizeHandler({
+            width: width,
+            height: height
+        });
         this.renderFrame();
     },
 
@@ -91,6 +94,10 @@ Ext.define('Ext.draw.ContainerBase', {
     preview: function () {
         var image = this.getImage(),
             items;
+
+        if (Ext.isIE8) {
+            return false;
+        }
 
         if (image.type === 'svg-markup') {
             items = {

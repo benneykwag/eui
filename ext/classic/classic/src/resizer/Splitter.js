@@ -95,6 +95,8 @@ Ext.define('Ext.resizer.Splitter', {
     horizontal: false,
     vertical: false,
 
+    touchAction: undefined, // so applier/updater always run
+
     /**
      * @cfg {Number} size
      * The size of the splitter. This becomes the height for vertical splitters and 
@@ -113,6 +115,14 @@ Ext.define('Ext.resizer.Splitter', {
     focusable: true,
     
     tabIndex: 0,
+
+    applyTouchAction: function(touchAction, oldTouchAction) {
+        if (touchAction === undefined) {
+            touchAction = this.vertical ? { panX: false } : { panY: false };
+        }
+
+        return this.callParent([touchAction, oldTouchAction]);
+    },
 
     /**
      * Returns the config object (with an `xclass` property) for the splitter tracker. This
@@ -374,7 +384,7 @@ Ext.define('Ext.resizer.Splitter', {
             }
 
             if (toggle) {
-                if (cmp.collapsed) {
+                if (cmp.collapsed || cmp.floatedFromCollapse) {
                     cmp.expand();
                 } else if (cmp.collapseDirection) {
                     cmp.collapse();
@@ -396,8 +406,9 @@ Ext.define('Ext.resizer.Splitter', {
         }
     },
     
-    beforeDestroy: function(){
+    doDestroy: function() {
         Ext.destroy(this.tracker);
+        
         this.callParent();
     }
 });

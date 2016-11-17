@@ -806,12 +806,14 @@ Ext.define('Ext.data.amf.Packet', function() {
         },
 
         /**
+         * @method
          * Returns undefined.  Used for reading the undefined type
          * @private
          */
         readUndefined: Ext.emptyFn,
 
         /**
+         * @method
          * Returns undefined.  Used for reading the unsupported type
          * @private
          */

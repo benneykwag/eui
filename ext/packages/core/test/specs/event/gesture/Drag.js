@@ -31,6 +31,7 @@ describe("Ext.event.gesture.Drag", function() {
 
     beforeEach(function() {
         targetEl = Ext.getBody().createChild({
+            id: 'target',
             style: 'width: 200px; height: 200px; border: 1px solid red;'
         });
         dragstartHandler = jasmine.createSpy();
@@ -90,7 +91,8 @@ describe("Ext.event.gesture.Drag", function() {
                 absDeltaX: 1,
                 absDeltaY: minDistance,
                 previousDeltaX: 0,
-                previousDeltaY: 0
+                previousDeltaY: 0,
+                longpress: false
             });
 
             expectInfo(dragEvent, {
@@ -107,7 +109,8 @@ describe("Ext.event.gesture.Drag", function() {
                 absDeltaX: 1,
                 absDeltaY: minDistance,
                 previousDeltaX: 0,
-                previousDeltaY: 0
+                previousDeltaY: 0,
+                longpress: false
             });
 
             move({ id: 1, x: 97, y: 100 - minDistance });
@@ -132,7 +135,8 @@ describe("Ext.event.gesture.Drag", function() {
                 absDeltaX: 3,
                 absDeltaY: minDistance + 1,
                 previousDeltaX: -1,
-                previousDeltaY: -minDistance
+                previousDeltaY: -minDistance,
+                longpress: false
             });
 
             end({ id: 1, x: 96, y: 99 - minDistance });
@@ -157,7 +161,8 @@ describe("Ext.event.gesture.Drag", function() {
                 absDeltaX: 4,
                 absDeltaY: minDistance + 2,
                 previousDeltaX: -3,
-                previousDeltaY: -(minDistance + 1)
+                previousDeltaY: -(minDistance + 1),
+                longpress: false
             });
         });
     });
@@ -170,27 +175,6 @@ describe("Ext.event.gesture.Drag", function() {
         });
 
         waitsForAnimation();
-
-        runs(function() {
-            expect(dragstartHandler).not.toHaveBeenCalled();
-            expect(dragHandler).not.toHaveBeenCalled();
-            expect(dragendHandler).not.toHaveBeenCalled();
-        });
-    });
-
-    it("should not fire dragstart, drag, and dragend when the gesture is canceled at TouchStart by setting the cancelGesture property", function() {
-        runs(function() {
-            targetEl.on('touchstart', function(e) {
-                e.cancelGesture();
-            });
-            start({ id: 1, x: 100, y: 101 });
-            move({ id: 1, x: 99, y: 101 - minDistance });
-            end({ id: 1, x: 99, y: 101 - minDistance });
-        });
-
-        // We can't wait for anything. We are expecting nothing to happen
-        // So wait for any potential erroneous animations to end and fire events.
-        waits(100);
 
         runs(function() {
             expect(dragstartHandler).not.toHaveBeenCalled();
@@ -266,7 +250,55 @@ describe("Ext.event.gesture.Drag", function() {
                     absDeltaX: 4,
                     absDeltaY: minDistance + 2,
                     previousDeltaX: -3,
-                    previousDeltaY: -(minDistance + 1)
+                    previousDeltaY: -(minDistance + 1),
+                    longpress: false
+                });
+            });
+        });
+
+        it("should fire dragcancel when a second touch begins", function() {
+            runs(function() {
+                start({ id: 1, x: 100, y: 101 });
+                move({ id: 1, x: 99, y: 101 - minDistance });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragstartHandler).toHaveBeenCalled();
+                expect(dragHandler).toHaveBeenCalled();
+                move({ id: 1, x: 97, y: 100 - minDistance });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragHandler.callCount).toBe(2);
+                start({ id: 2, x: 200, y: 300 });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragendHandler).not.toHaveBeenCalled();
+                expect(dragcancelHandler).toHaveBeenCalled();
+
+                expectInfo(dragcancelEvent, {
+                    x: 97,
+                    y: 100 - minDistance,
+                    pageX: 97,
+                    pageY: 100 - minDistance,
+                    startX: 100,
+                    startY: 101,
+                    previousX: 99,
+                    previousY: 101 - minDistance,
+                    deltaX: -3,
+                    deltaY: -(minDistance + 1),
+                    absDeltaX: 3,
+                    absDeltaY: minDistance + 1,
+                    previousDeltaX: -1,
+                    previousDeltaY: -minDistance,
+                    longpress: false
                 });
             });
         });
@@ -286,6 +318,174 @@ describe("Ext.event.gesture.Drag", function() {
         });
 
         waitsForAnimation();
+    });
+
+    describe("longpress to drag", function() {
+        it("should not initiate drag with longpress by default", function() {
+            var longpressed = false;
+
+            targetEl.on('longpress', function() {
+                longpressed = true;
+            });
+
+            runs(function() {
+                start({ id: 1, x: 100, y: 101 });
+            });
+
+            waitsFor(function() {
+                return longpressed;
+            }, "longpress handler was never called", 3000);
+
+            runs(function() {
+                expect(dragstartHandler).not.toHaveBeenCalled();
+            });
+        });
+
+        it("should initiate drag with longpress when e.startDrag() is invoked", function() {
+            var longpressed = false;
+
+            targetEl.on('longpress', function(e) {
+                e.startDrag();
+                longpressed = true;
+            });
+
+            runs(function() {
+                start({ id: 1, x: 100, y: 101 });
+            });
+
+            waitsFor(function() {
+                return longpressed;
+            }, "longpress handler was never called", 3000);
+
+            runs(function() {
+                expect(dragstartHandler).toHaveBeenCalled();
+
+                expectInfo(dragstartEvent, {
+                    x: 100,
+                    y: 101,
+                    pageX: 100,
+                    pageY: 101,
+                    startX: 100,
+                    startY: 101,
+                    previousX: 100,
+                    previousY: 101,
+                    deltaX: 0,
+                    deltaY: 0,
+                    absDeltaX: 0,
+                    absDeltaY: 0,
+                    previousDeltaX: 0,
+                    previousDeltaY: 0,
+                    longpress: true
+                });
+            });
+
+            runs(function() {
+                move({ id: 1, x: 99, y: 97 });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragHandler).toHaveBeenCalled();
+
+                expectInfo(dragEvent, {
+                    x: 99,
+                    y: 97,
+                    pageX: 99,
+                    pageY: 97,
+                    startX: 100,
+                    startY: 101,
+                    previousX: 100,
+                    previousY: 101,
+                    deltaX: -1,
+                    deltaY: -4,
+                    absDeltaX: 1,
+                    absDeltaY: 4,
+                    previousDeltaX: 0,
+                    previousDeltaY: 0,
+                    longpress: true
+                });
+
+                move({ id: 1, x: 97, y: 100 - minDistance });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragHandler.callCount).toBe(2);
+
+                expectInfo(dragEvent, {
+                    x: 97,
+                    y: 100 - minDistance,
+                    pageX: 97,
+                    pageY: 100 - minDistance,
+                    startX: 100,
+                    startY: 101,
+                    previousX: 99,
+                    previousY: 97,
+                    deltaX: -3,
+                    deltaY: -(minDistance + 1),
+                    absDeltaX: 3,
+                    absDeltaY: minDistance + 1,
+                    previousDeltaX: -1,
+                    previousDeltaY: -4,
+                    longpress: true
+                });
+
+                end({ id: 1, x: 96, y: 99 - minDistance });
+            });
+
+            waitsForAnimation();
+
+            runs(function() {
+                expect(dragendHandler).toHaveBeenCalled();
+
+                expectInfo(dragendEvent, {
+                    x: 96,
+                    y: 99 - minDistance,
+                    pageX: 96,
+                    pageY: 99 - minDistance,
+                    startX: 100,
+                    startY: 101,
+                    previousX: 97,
+                    previousY: 100 - minDistance,
+                    deltaX: -4,
+                    deltaY: -(minDistance + 2),
+                    absDeltaX: 4,
+                    absDeltaY: minDistance + 2,
+                    previousDeltaX: -3,
+                    previousDeltaY: -(minDistance + 1),
+                    longpress: true
+                });
+            });
+        });
+
+        it("should claim the drag gesture when startDrag is called", function() {
+            var longpressHandled = false;
+
+            targetEl.on('longpress', function(e) {
+                e.startDrag();
+                longpressHandled = true;
+            });
+
+            helper.touchStart(targetEl, {id: 1, x: 10, y: 15});
+
+            waitsFor(function() {
+                return longpressHandled;
+            });
+
+            runs(function() {
+                expect(Ext.event.gesture.Drag.instance.isActive).toBe(true);
+
+                expect(Ext.event.gesture.DoubleTap.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.EdgeSwipe.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.LongPress.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.Pinch.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.Rotate.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.Swipe.instance.isActive).toBe(false);
+                expect(Ext.event.gesture.Tap.instance.isActive).toBe(false);
+            });
+        });
     });
 
     function makeRemoveSuite(useRemoveChild) {

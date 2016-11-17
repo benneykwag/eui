@@ -548,6 +548,14 @@ describe("Ext.data.Session", function() {
                 }).not.toThrow();
                 expect(rec.phantom).toBe(true);
             });
+            
+            it("should become dirty", function() {
+                rec = session.createRecord('User', {
+                    name: 'Foo'
+                });
+                
+                expect(session.isDirty()).toBe(true);
+            });
 
             describe("with a parent", function() {
                 beforeEach(function() {
@@ -1449,6 +1457,15 @@ describe("Ext.data.Session", function() {
                         }
                     });
                 });
+                
+                it("should become dirty with new phantom record", function() {
+                    var user = session.createRecord('User', {
+                        name: 'Foo',
+                        age: 34
+                    });
+                    
+                    expect(session.isDirty()).toBe(true);
+                });
 
                 it("should include the updated record state", function() {
                     var user = session.createRecord('User', {
@@ -1467,6 +1484,17 @@ describe("Ext.data.Session", function() {
                         }
                     });
                 });
+                
+                it("should still be dirty after updating record state", function() {
+                    var user = session.createRecord('User', {
+                        name: 'Foo',
+                        age: 34
+                    });
+                    user.set('name', 'Bar');
+                    user.set('age', 5000);
+                    
+                    expect(session.isDirty()).toBe(true);
+                });
 
                 it("should be able to create multiple records", function() {
                     var user1 = session.createRecord('User'),
@@ -1484,11 +1512,24 @@ describe("Ext.data.Session", function() {
                     var user = getAndComplete('User', 1);
                     expect(session.getChanges()).toBeNull();
                 });
+                
+                it("should not be dirty with non-phantoms", function() {
+                    var user = getAndComplete('User', 1);
+                    
+                    expect(session.isDirty()).toBeFalsy();
+                });
 
                 it("should not include phantom records that are dropped", function() {
                     var user = session.createRecord('User');
                     user.drop();
                     expect(session.getChanges()).toBeNull();
+                });
+                
+                it("should be dirty when phantoms were dropped", function() {
+                    var user = session.createRecord('User');
+                    user.drop();
+                    
+                    expect(session.isDirty()).toBe(true);
                 });
             });
 
@@ -1505,6 +1546,13 @@ describe("Ext.data.Session", function() {
                         }
                     });
                 });
+                
+                it("should become dirty after record is updated", function() {
+                    var user = getAndComplete('User', 1);
+                    user.set('name', 'Foo');
+                    
+                    expect(session.isDirty()).toBe(true);
+                });
 
                 it("should include the most recently updated state", function() {
                     var user = getAndComplete('User', 1);
@@ -1519,6 +1567,15 @@ describe("Ext.data.Session", function() {
                             }]
                         }
                     });
+                });
+                
+                it("should still be dirty after updating record multiple times", function() {
+                    var user = getAndComplete('User', 1);
+                    user.set('name', 'Foo');
+                    user.set('name', 'Bar');
+                    user.set('name', 'Baz');
+                    
+                    expect(session.isDirty()).toBe(true);
                 });
 
                 it("should be able to update many records", function() {
@@ -1552,12 +1609,28 @@ describe("Ext.data.Session", function() {
                     user.commit();
                     expect(session.getChanges()).toBeNull();
                 });
+                
+                it("should not be dirty after record was committed", function() {
+                    var user = getAndComplete('User', 1);
+                    user.set('name', 'Foo');
+                    user.commit();
+                    
+                    expect(session.isDirty()).toBe(false);
+                });
 
                 it("should not include a dropped record", function() {
                     var user = getAndComplete('User', 1);
                     user.set('name', 'Foo');
                     user.drop();
                     expect(session.getChanges().User.U).toBeUndefined();
+                });
+                
+                it("should be dirty when updated record was dropped", function() {
+                    var user = getAndComplete('User', 1);
+                    user.set('name', 'Foo');
+                    user.drop();
+                    
+                    expect(session.isDirty()).toBe(true);
                 });
 
                 it("should not include changes to phantoms", function() {
@@ -1577,6 +1650,13 @@ describe("Ext.data.Session", function() {
                         }
                     });
                 });
+                
+                it("should become dirty with record droppings", function() {
+                    var user = getAndComplete('User', 1);
+                    user.drop();
+                    
+                    expect(session.isDirty()).toBe(true);
+                });
 
                 it("should drop multiple records", function() {
                     var user1 = getAndComplete('User', 1),
@@ -1592,11 +1672,30 @@ describe("Ext.data.Session", function() {
                         }
                     });
                 });
+                
+                it("should get even dirtier with multiple record droppings", function() {
+                    var user1 = getAndComplete('User', 1),
+                        user2 = getAndComplete('User', 2),
+                        user3 = getAndComplete('User', 3);
+
+                    user1.drop();
+                    user2.drop();
+                    user3.drop();
+                    
+                    expect(session.isDirty()).toBe(true);
+                });
 
                 it("should not include phantom records", function() {
                     var user = session.createRecord('User');
                     user.drop();
                     expect(session.getChanges()).toBeNull();
+                });
+                
+                it("should be dirty when phantom was dropped", function() {
+                    var user = session.createRecord('User');
+                    user.drop();
+                    
+                    expect(session.isDirty()).toBe(true);
                 });
             });
         });

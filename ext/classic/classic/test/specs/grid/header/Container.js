@@ -362,10 +362,10 @@ describe('Ext.grid.header.Container', function () {
     });
     
     describe("reconfiguring parent grid", function() {
-        it("should enable tabIndex on its el after adding columns", function() {
+        it("should enable tabIndex on its tab guards after adding columns", function() {
             createGrid({}, { columns: [] });
             
-            jasmine.expectNoAriaAttr(grid.headerCt.el, 'tabIndex');
+            expect(grid.headerCt.el).not.toHaveAttr('tabIndex');
             
             grid.reconfigure(null, [
                 { header: 'Name',  dataIndex: 'name', width: 100 },
@@ -373,17 +373,63 @@ describe('Ext.grid.header.Container', function () {
                 { header: 'Phone', dataIndex: 'phone', flex: 1, hidden: true }
             ]);
             
-            jasmine.expectAriaAttr(grid.headerCt.el, 'tabIndex', '0');
+            expect(grid.headerCt.tabGuardBeforeEl).toHaveAttr('tabIndex', '0');
+            expect(grid.headerCt.tabGuardAfterEl).toHaveAttr('tabIndex', '0');
         });
         
-        it("should disable tabIndex on its el after removing all columns", function() {
+        it("should disable tabIndex on its tab guards after removing all columns", function() {
             createGrid();
             
-            jasmine.expectAriaAttr(grid.headerCt.el, 'tabIndex', '0');
+            expect(grid.headerCt.tabGuardBeforeEl).toHaveAttr('tabIndex', '0');
+            expect(grid.headerCt.tabGuardAfterEl).toHaveAttr('tabIndex', '0');
             
             grid.reconfigure(null, []);
             
-            jasmine.expectNoAriaAttr(grid.headerCt.el, 'tabIndex');
+            expect(grid.headerCt.tabGuardBeforeEl).not.toHaveAttr('tabIndex');
+            expect(grid.headerCt.tabGuardAfterEl).not.toHaveAttr('tabIndex');
+        });
+    });
+
+    describe('grid panel', function(){
+        it('should be notified when adding a column header', function(){
+            createGrid({}, { columns: [] });
+
+            grid.headerCt.insert(0, [
+                { header: 'Name',  dataIndex: 'name', width: 100 },
+                { header: 'Email', dataIndex: 'email', flex: 1 },
+                { header: 'Phone', dataIndex: 'phone', flex: 1 }
+            ]);
+
+            var view = grid.getView(),
+                c0_0 = view.getCellByPosition({row:0,column:0}, true),
+                c0_1 = view.getCellByPosition({row:0,column:1}, true),
+                c0_2 = view.getCellByPosition({row:0,column:2}, true);
+
+            expect(c0_0).not.toBe(false);
+            expect(c0_1).not.toBe(false);
+            expect(c0_2).not.toBe(false);
+
+        });
+
+        // EXTJS-21400
+        it('should be notified when adding a group header', function(){
+            createGrid({}, { columns: [] });
+
+            grid.headerCt.insert(0, {header: 'test', columns: [
+                { header: 'Name',  dataIndex: 'name', width: 100 },
+                { header: 'Email', dataIndex: 'email', flex: 1 },
+                { header: 'Phone', dataIndex: 'phone', flex: 1 }
+            ]});
+
+            var view = grid.getView(),
+                c0_0 = view.getCellByPosition({row:0,column:0}, true),
+                c0_1 = view.getCellByPosition({row:0,column:1}, true),
+                c0_2 = view.getCellByPosition({row:0,column:2}, true);
+
+            expect(c0_0).not.toBe(false);
+            expect(c0_1).not.toBe(false);
+            expect(c0_2).not.toBe(false);
+
         });
     });
 });

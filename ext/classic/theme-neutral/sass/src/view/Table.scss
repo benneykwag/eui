@@ -2,7 +2,8 @@
 // When using the buffered renderer plugin, the view rows are positioned by using CSS transforms.
 // However, b/c of the browser bug, the scrollbar will be covered by the itemcontainer when scrolled
 // to a point where the view is refreshed so we need to bump up its z-index. See EXTJS-15608.
-.#{$prefix}grid-view {
+.#{$prefix}grid-view,
+.#{$prefix}tree-view {
     z-index: 1;
 }
 

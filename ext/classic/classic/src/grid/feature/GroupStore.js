@@ -459,9 +459,10 @@ Ext.define('Ext.grid.feature.GroupStore', {
         var me = this;
 
         me.bindStore(null);
-        Ext.destroyMembers(me, 'data', 'groupingFeature');
+        Ext.destroy(me.data);
+        
+        me.groupingFeature = null;
 
         me.callParent();
     }
 });
-

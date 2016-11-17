@@ -526,12 +526,13 @@ Ext.define('Ext.picker.Date', {
      * @private
      */
     onRender: function(container, position) {
-        var me = this;
+        var me = this,
+            dateCellSelector = 'div.' + me.baseCls + '-date';
 
         me.callParent(arguments);
 
         me.cells = me.eventEl.select('tbody td');
-        me.textNodes = me.eventEl.query('tbody td div');
+        me.textNodes = me.eventEl.query(dateCellSelector);
         
         me.eventEl.set({ 'aria-labelledby': me.monthBtn.id });
 
@@ -540,7 +541,7 @@ Ext.define('Ext.picker.Date', {
             mousewheel: me.handleMouseWheel,
             click: {
                 fn: me.handleDateClick,
-                delegate: 'div.' + me.baseCls + '-date'
+                delegate: dateCellSelector
             }
         });
         
@@ -727,7 +728,7 @@ Ext.define('Ext.picker.Date', {
             me.setValue(new Date(t.dateValue));
             me.fireEvent('select', me, me.value);
             if (handler) {
-                handler.call(me.scope || me, me, me.value);
+                Ext.callback(handler, me.scope, [me, me.value], null, me, me);
             }
             me.onSelect();
         }
@@ -1155,7 +1156,7 @@ Ext.define('Ext.picker.Date', {
             me.fireEvent('select', me, me.value);
             
             if (handler) {
-                handler.call(me.scope || me, me, me.value);
+                Ext.callback(handler, me.scope, [me, me.value], null, me, me);
             }
             
             // event handling is turned off on hide
@@ -1189,7 +1190,7 @@ Ext.define('Ext.picker.Date', {
             me.setValue(Ext.Date.clearTime(new Date()));
             me.fireEvent('select', me, me.value);
             if (handler) {
-                handler.call(me.scope || me, me, me.value);
+                Ext.callback(handler, me.scope, [me, me.value], null, me, me);
             }
             me.onSelect();
         }
@@ -1401,11 +1402,7 @@ Ext.define('Ext.picker.Date', {
         return me;
     },
 
-    /**
-     * @private
-     * @inheritdoc
-     */
-    beforeDestroy: function() {
+    doDestroy: function() {
         var me = this;
 
         if (me.rendered) {
@@ -1418,9 +1415,8 @@ Ext.define('Ext.picker.Date', {
                 me.todayBtn,
                 me.todayElSpan
             );
-            delete me.textNodes;
-            delete me.cells.elements;
         }
+        
         me.callParent();
     },
 

@@ -86,7 +86,7 @@ describe("Ext.field.Checkbox", function() {
             }]
         });
         container.renderTo(Ext.getBody());
-    } 
+    }
 
     describe("binding", function() {
         afterEach(function() {

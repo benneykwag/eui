@@ -9,10 +9,6 @@ Ext.define('Ext.draw.engine.Svg', {
     requires: ['Ext.draw.engine.SvgContext'],
     isSVG: true,
 
-    statics: {
-        BBoxTextCache: {}
-    },
-
     config: {
         /**
          * Nothing needs to be done in high precision mode.
@@ -21,7 +17,6 @@ Ext.define('Ext.draw.engine.Svg', {
     },
 
     getElementConfig: function () {
-        //TODO:ps In the Ext world, use renderTpl to create the children
         return {
             reference: 'element',
             style: {

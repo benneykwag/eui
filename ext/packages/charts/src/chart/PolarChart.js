@@ -125,13 +125,20 @@ Ext.define('Ext.chart.PolarChart', {
                 inset = me.getInsetPadding(),
                 inner = me.getInnerPadding(),
                 shrinkBox = Ext.apply({}, inset),
-                width = Math.max(1, chartRect[2] - inset.left - inset.right),
-                height = Math.max(1, chartRect[3] - inset.top - inset.bottom),
-                mainRect = [inset.left, inset.top, width, height],
+                width = Math.max(1, chartRect[2] - chartRect[0] - inset.left - inset.right),
+                height = Math.max(1, chartRect[3] - chartRect[1] - inset.top - inset.bottom),
+                mainRect = [
+                    inset.left, inset.top,
+                    width + chartRect[0],
+                    height + chartRect[1]
+                ],
                 seriesList = me.getSeries(),
                 innerWidth = width - inner * 2,
                 innerHeight = height - inner * 2,
-                center = [innerWidth * 0.5 + inner, innerHeight * 0.5 + inner],
+                center = [
+                    chartRect[0] + innerWidth * 0.5 + inner,
+                    chartRect[1] + innerHeight * 0.5 + inner
+                ],
                 radius = Math.min(innerWidth, innerHeight) * 0.5,
                 axes = me.getAxes(),
                 angularAxes = [], 
@@ -140,7 +147,7 @@ Ext.define('Ext.chart.PolarChart', {
                 grid = me.surfaceMap.grid,
                 i, ln, shrinkRadius, floating, floatingValue,
                 gaugeSeries, gaugeRadius, side, series,
-                axis, thickness, halfLineWidth
+                axis, thickness, halfLineWidth;
 
             me.setMainRect(mainRect);
 

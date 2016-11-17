@@ -39,6 +39,20 @@
  *         }
  *     });
  *
+ * # Using {@link Ext.data.BufferedStore}s
+ * It is very important to remember that a {@link Ext.data.BufferedStore} does *not* contain the
+ * full dataset. The purpose of a BufferedStore is to only hold in the client, a range of
+ * pages from the dataset that corresponds with what is currently visible in the grid
+ * (plus a few pages above and below the visible range to allow fast scrolling).
+ *
+ * When using "select all" rows and a BufferedStore, an `allSelected` flag is set, and so all
+ * records which are read into the client side cache will thenceforth be selected, and will
+ * be rendered as selected in the grid.
+ *
+ * *But records which have not been read into the cache will obviously not be available
+ * when interrogating selected records. As you scroll through the dataset, and more
+ * pages are read from the server, they will become available to add to the selection.*
+ *
  * @since 5.1.0
  */
 Ext.define('Ext.grid.selection.SpreadsheetModel', {
@@ -115,16 +129,21 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
          * If set, then the bottom right corner of the contiguous selection will display a drag handle. By dragging this, an extension area
          * may be defined into which the selection is extended.
          *
-         * Upon the end of the drag, the {@link Ext.panel.Table#event-beforeselectionextend beforeselectionextend} event will be fired though the
+         * Upon the end of the drag, the {@link Ext.panel.Table#beforeselectionextend beforeselectionextend} event will be fired though the
          * encapsulating grid. Event handlers may manipulate the store data in any way.
          *
          * Possible values for this configuration are
          *
          *    - `"x"` Only allow extending the block to the left or right.
          *    - `"y"` Only allow extending the block above or below.
-         *    - `"xy"` Allow extebnding the block in both dimensions.
-         *    - `"both"` Allow extebnding the block in both dimensions.
-         *    - `true` Allow extebnding the block in both dimensions.
+         *    - `"xy"` Allow extending the block in both dimensions.
+         *    - `"both"` Allow extending the block in both dimensions.
+         *    - `true` Allow extending the block in both dimensions.
+         *    - `false` Disable the extensible feature
+         *    - `null` Disable the extensible feature
+         *
+         * It's importante to notice that setting this to `"both"`, `"xy"` or `true` will allow you to extend the selection in both
+         * directions, but only one direction at a time. It will NOT be possible to drag it diagonally. 
          */
         extensible: {
             $value: true,
@@ -135,6 +154,12 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
     /**
      * @event selectionchange
      * Fired *by the grid* after the selection changes. Return `false` to veto the selection extension.
+     *
+     * Note that the behavior of selectionchange is different in Ext 6.x vs. Ext 5.  In Ext 6.x, if rows
+     * are being selected, a block of records is passed as the second parameter.  In Ext 5, the selection
+     * object was passed.  
+     * 
+     *
      * @param {Ext.grid.Panel} grid The grid whose selection has changed.
      * @param {Ext.grid.selection.Selection} selection A subclass of
      * {@link Ext.grid.selection.Selection} describing the new selection.
@@ -163,6 +188,14 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
     showHeaderCheckbox: true,
 
     /**
+     * @cfg {String} [checkColumnHeaderText]
+     * Displays the configured text in the check column's header.
+     *
+     * if {@link #cfg-showHeaderCheckbox} is `true`, the text is shown *above* the checkbox.
+     * @since 6.0.1
+     */
+    checkColumnHeaderText: null,
+    /**
      * @cfg {Number/String} [checkboxHeaderWidth=24]
      * Width of checkbox column.
      */
@@ -177,18 +210,13 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
     columnSelectCls: Ext.baseCSSPrefix + 'ssm-column-select',
     rowNumbererHeaderCls: Ext.baseCSSPrefix + 'ssm-row-numberer-hd',
 
-    /**
-     * @private
-     */
-    checkerOnCls: Ext.baseCSSPrefix + 'grid-hd-checker-on',
-
-    tdCls: Ext.baseCSSPrefix + 'grid-cell-special ' + Ext.baseCSSPrefix + 'grid-cell-row-checker',
+    tdCls: Ext.baseCSSPrefix + 'grid-cell-special ' + Ext.baseCSSPrefix + 'selmodel-column',
 
     /**
      * @method getCount
      * This method is not supported by SpreadsheetModel.
      *
-     * To interrogate the selection use {@link #method-getSelected} which will return an instance of one
+     * To interrogate the selection use {@link #getSelected} which will return an instance of one
      * of the three selection types, or `null` if no selection.
      *
      * The three selection types are:
@@ -233,13 +261,11 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      */
 
     /**
-     * @member Ext.panel.Table
-     * @event beforeselectionextend
-     *
-     * An event fired when an extension block is extended using a drag gesture. Only fired when the
-     * SpreadsheetSelectionModel is used and configured with the
+     * @member Ext.panel.Table.
+     * @event beforeselectionextend An event fired when an extension block is extended 
+     * using a drag gesture.  Only fired when the SpreadsheetSelectionModel is used and 
+     * configured with the 
      * {@link Ext.grid.selection.SpreadsheetModel#extensible extensible} config.
-     *
      * @param {Ext.panel.Table} grid The owning grid.
      * @param {Ext.grid.selection.Selection} An object which encapsulates a contiguous selection block.
      * @param {Object} extension An object describing the type and size of extension.
@@ -251,13 +277,11 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      */
 
     /**
-     * @member Ext.panel.Table
-     * @event selectionextenderdrag
-     *
-     * An event fired when an extension block is dragged to encompass a new range.  Only fired when the
-     * SpreadsheetSelectionModel is used and configured with the
+     * @member Ext.panel.Table.
+     * @event selectionextenderdrag An event fired when an extension block is dragged to 
+     * encompass a new range.  Only fired when the SpreadsheetSelectionModel is used and 
+     * configured with the 
      * {@link Ext.grid.selection.SpreadsheetModel#extensible extensible} config.
-     *
      * @param {Ext.panel.Table} grid The owning grid.
      * @param {Ext.grid.selection.Selection} An object which encapsulates a contiguous selection block.
      * @param {Object} extension An object describing the type and size of extension.
@@ -275,6 +299,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
     bindComponent: function(view) {
         var me = this,
             viewListeners,
+            storeListeners,
             lockedGrid;
 
         if (me.view !== view) {
@@ -308,6 +333,10 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     destroyable: true
                 });
 
+                storeListeners = me.getStoreListeners();
+                storeListeners.scope = me;
+                storeListeners.destroyable = true;
+                me.storeListeners = me.store.on(storeListeners);
                 viewListeners = me.getViewListeners();
                 viewListeners.scope = me;
                 viewListeners.destroyable = true;
@@ -323,7 +352,6 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                 if (me.getColumnSelect()) {
                     view.ownerGrid.addCls(me.columnSelectCls);
                 }
-
                 me.updateHeaderState();
             }
         }
@@ -339,9 +367,11 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             showCheck = me.showHeaderCheckbox !== false;
 
         return {
+            xtype: 'checkcolumn',
+            isCheckerHd: showCheck, // historically used as a dicriminator property before isCheckColumn
+            headerCheckbox: showCheck,
             ignoreExport: true,
-            isCheckerHd: showCheck,
-            text : '&#160;',
+            text : me.checkColumnHeaderText,
             clickTargetName: 'el',
             width: me.checkboxHeaderWidth,
             sortable: false,
@@ -349,24 +379,41 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             resizable: false,
             hideable: false,
             menuDisabled: true,
-            dataIndex: '',
             tdCls: me.tdCls,
-            cls: showCheck ? Ext.baseCSSPrefix + 'column-header-checkbox ' : '',
-            defaultRenderer: me.checkboxRenderer.bind(me),
-            editRenderer:  '&#160;',
-            locked: me.hasLockedHeader
+            cls: Ext.baseCSSPrefix + 'selmodel-column',
+            stopSelection: false,
+            editRenderer:  me.editRenderer || me.renderEmpty,
+            locked: me.hasLockedHeader,
+            updateHeaderState: me.updateHeaderState.bind(me),
+
+            // It must not attempt to set anything in the records on toggle.
+            // We handle that in onHeaderClick.
+            toggleAll: Ext.emptyFn,
+
+            // The selection model listens to the navigation model to select/deselect
+            setRecordCheck: Ext.emptyFn,
+            
+            // It uses our isRowSelected to test whether a row is checked
+            isRecordChecked: Ext.emptyFn
         };
     },
 
+    renderEmpty: function() {
+        return '&#160;';
+    },
+
     /**
-     * Generates the HTML to be rendered in the injected checkbox column for each row.
-     * Creates the standard checkbox markup by default; can be overridden to provide custom rendering.
-     * See {@link Ext.grid.column.Column#renderer} for description of allowed parameters.
      * @private
      */
-    checkboxRenderer: function () {
-        return '<div class="' + Ext.baseCSSPrefix + 'grid-row-checker" role="presentation">&#160;</div>';
-    },
+    getStoreListeners: function() {
+        var me = this,
+            r = me.callParent();
+
+        r.priority = 2000;
+        r.refresh = me.onStoreChanged;
+        r.clear = me.onStoreChanged;
+        return r;
+	},
 
     /**
      * @private
@@ -392,7 +439,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
         } else if (me.columnSelect) {
             if (e.shiftKey && sel && sel.lastColumnSelected) {
                 sel.clear();
-                cm = this.view.ownerGrid.getVisibleColumnManager();
+                cm = me.view.ownerGrid.getVisibleColumnManager();
                 range = Ext.Array.sort([cm.indexOf(sel.lastColumnSelected), cm.indexOf(header)], Ext.Array.numericSortFn);
                 for (i = range[0]; i <= range[1]; i++) {
                     me.selectColumn(cm.getHeaderAtIndex(i), true);
@@ -418,23 +465,22 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             store = me.view.dataSource,
             views = me.views,
             sel = me.selected,
-            checkHd = me.checkColumn,
-            cls = me.checkerOnCls,
             isChecked = false,
+            checkHd = me.checkColumn,
             storeCount;
 
-        if (store) {
+        if (store && sel && sel.isRows) {
             storeCount = store.getCount();
-            isChecked = sel && sel.isRows && !store.isBufferedStore && storeCount > 0 && (storeCount === sel.getCount());
+            if (store.isBufferedStore) {
+                isChecked = sel.allSelected;
+            } else {
+                isChecked = storeCount > 0 && (storeCount === sel.getCount());
+            }
         }
 
         if (views && views.length) {
             if (checkHd) {
-                if (isChecked) {
-                    checkHd.addCls(cls);
-                } else {
-                    checkHd.removeCls(cls);
-                }
+                checkHd.setHeaderStatus(isChecked);
             }
         }
     },
@@ -453,7 +499,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      * @param {Object[]} columns
      * @private
      */
-    onBeforeReconfigure: function(grid, store, columns) {
+    onBeforeReconfigure: function(grid, store, columns, oldStore, oldColumns) {
         var me = this,
             checkboxColumnIndex = me.checkboxColumnIndex;
 
@@ -693,9 +739,13 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             doSelect = true;
         }
 
+        if (sel) {
+            sel.allSelected = true;
+        }
+
         if (doSelect) {
-            sel.selectAll();
             me.updateHeaderState();
+            sel.selectAll(); //this populates the selection with the records
             if (!suppressEvent) {
                 me.fireSelectionChange();
             }
@@ -708,12 +758,15 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      * `{@link #selectionchange}` event.
      */
     deselectAll: function (suppressEvent) {
-        var sel = this.selected;
+        var me = this,
+            sel = me.selected;
         
         if (sel && sel.getCount()) {
             sel.clear();
+            sel.allSelected = false;
+            me.updateHeaderState();
             if (!suppressEvent) {
-                this.fireSelectionChange();
+                me.fireSelectionChange();
             }
         }
     },
@@ -850,7 +903,6 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
          */
         getViewListeners: function() {
             return {
-                beforerefresh: this.onBeforeViewRefresh,
                 refresh: this.onViewRefresh,
                 keyup: {
                     element: 'el',
@@ -870,6 +922,29 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             if (e.keyCode === e.SHIFT && sel && sel.isRows && sel.getRangeSize()) {
                 // Copy the drag range into the selected records collection
                 sel.addRange();
+            }
+        },
+
+        /**
+         * @private
+         */
+        onStoreChanged: function() {
+            var me = this,
+                view = me.view,
+                selData = me.selected;
+
+            if (selData) {
+                if (selData.isCells) {
+                    me.resetSelection();
+                }
+                else if (selData.isRows) {
+                    if (me.pruneRemoved === false && selData.selectedRecords.length) {
+                        me.refresh();
+                    }
+                    else {
+                        me.resetSelection();
+                    }
+                }
             }
         },
 
@@ -932,23 +1007,9 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
         /**
          * @private
          */
-        onBeforeViewRefresh: function(view) {
-            var selData = this.selected;
-
-            // Allow cell preselection to survive, but not cell selection from a prior refresh
-            if (view.refreshCounter) {
-                if (selData && selData.isCells) {
-                    this.resetSelection();
-                }
-            }
-        },
-
-        /**
-         * @private
-         */
         onViewRefresh: function(view) {
             var me = this,
-                sel = this.selected,
+                sel = me.selected,
                 store = me.view.store,
                 changed = false;
 
@@ -961,10 +1022,9 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     }
                 });
             }
-
             // The selection may have acquired or lost contiguity, so the replicator may need enabling or disabling
             // NB: fireSelectionChange calls updateSelectionExtender after firing its event.
-            this[changed ? 'fireSelectionChange' : 'updateSelectionExtender']();
+            me[changed ? 'fireSelectionChange' : 'updateSelectionExtender']();
         },
 
         /**
@@ -1069,6 +1129,10 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
 
                 isCheckClick = header === me.checkColumn;
 
+                if (isCheckClick) {
+                    me.checkCellClicked = e.position.getCell(true);
+                }
+
                 // Differentiate between row and cell selections.
                 if (header === me.numbererColumn || isCheckClick || !me.cellSelect) {
                     // Enforce rowSelect setting
@@ -1124,7 +1188,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
         /**
          * Selects range based on mouse movements
          * @param e
-         * @param target
+         * @param cell
          * @param opts
          * @private
          */
@@ -1140,9 +1204,23 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                 recChange,
                 colChange;
 
-            // Clicking and dragging inside a checkbox shouldn't be handled here, see: EXTJS-20241
-            if (e.getTarget(null, null, true).hasCls(Ext.baseCSSPrefix + 'grid-row-checker')) {
-                return;
+            // when the mousedown happenes in a checkcolumn, we need to verify is the mouse pointer has moved out of the initial clicked cell.
+            // if it has, then we select the initial row and mark it as the range start, otherwise assing the lastOverRecord and return as 
+            // we don't want to select the record while moving the pointer around the initial cell.
+            if (me.checkCellClicked) {
+                // We are dragging within the check cell...
+                if (cell === me.checkCellClicked) {
+                    if (!me.lastOverRecord) {
+                        me.lastOverRecord = view.getRecord(cell.parentNode);
+                    }
+                    return;
+                } else {
+                    me.checkCellClicked = null;
+                    if (me.lastOverRecord) {
+                        me.select(me.lastOverRecord);
+                        selData.setRangeStart(me.store.indexOf(me.lastOverRecord));
+                    }
+                }
             }
 
             // Disable until a valid new selection is announced in fireSelectionChange
@@ -1217,6 +1295,8 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             var me = this,
                 view = opts.view,
                 cell, record;
+
+            me.checkCellClicked = null;
 
             if (view && !view.destroyed) {
                 // If we catch the event before the View sees it and stamps a position in, we need to know where they mouseupped.
@@ -1309,7 +1389,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             }
 
             // Click is the mouseup at the end of a multi-cell/multi-column select swipe; reject.
-            if (sel && (sel.isCells || (sel.isColumns && !(ctrlKey || shiftKey))) && sel.getCount() > 1 && keyEvent.type === 'click') {
+            if (sel && (sel.isCells || (sel.isColumns && !(ctrlKey || shiftKey))) && sel.getCount() > 1 && !keyEvent.shiftKey && keyEvent.type === 'click') {
                 return;
             }
 
@@ -1376,30 +1456,30 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     }
                 }
             } else {
-                // If the event is in one of the row selecting cells, or cell selecting is turned off
-                if (pos.column === me.numbererColumn || pos.column === me.checkColumn || !(me.cellSelect || me.columnSelect)) {
-                    if (me.rowSelect) {
-                        // Ensure selection object is of the correct type
-                        if (!sel || !sel.isRows || sel.view !== view) {
-                            me.resetSelection(true);
-                            sel = me.selected = new Ext.grid.selection.Rows(view);
-                        }
+                // If the event is in one of the row selecting cells, or we have enabled row selection but not column selection
+                // so prioritize selecting rows
+                if (pos.column === me.numbererColumn || pos.column === me.checkColumn || (me.rowSelect && !me.cellSelect)) {
+                    // Ensure selection object is of the correct type
+                    if (!sel || !sel.isRows || sel.view !== view) {
+                        me.resetSelection(true);
+                        sel = me.selected = new Ext.grid.selection.Rows(view);
+                    }
 
-                        if (ctrlKey ||  pos.column === me.checkColumn) {
-                            if (sel.contains(record)) {
-                                sel.remove(record);
-                            } else {
-                                sel.add(record);
-                            }
+                    if (ctrlKey ||  pos.column === me.checkColumn) {
+                        if (sel.contains(record)) {
+                            sel.remove(record);
                         } else {
-                            sel.clear();
                             sel.add(record);
                         }
-                        selectionChanged = true;
+                    } else {
+                        sel.clear();
+                        sel.add(record);
                     }
+                    selectionChanged = true;
                 }
                 // Navigate event in a normal cell
                 else {
+                    // Prioritize cell selection over column selection
                     if (me.cellSelect) {
                         // Ensure selection object is of the correct type
                         if (!sel || !sel.isCells || sel.view !== view) {
@@ -1686,8 +1766,11 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
          */
         fireSelectionChange: function () {
             var me = this,
-                grid = me.view.ownerGrid,
-                sel = me.selected;
+                sel = me.selected,
+                view = sel.view,
+                grid = view.ownerGrid,
+                store = view.dataSource,
+                records, count;
 
             // Inform selection object that we're done
             me.updateSelectionExtender();
@@ -1695,9 +1778,14 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             // We must still fire a selectionchange event through the SelectionModel because Ext.panel.Table listens for this event
             // to update its bound selection.
             if (sel.isRows) {
-                me.fireEvent('selectionchange', me, sel.getRecords());
+                records = sel.getRecords();
+                count = store.getTotalCount() || store.getCount();
+                // When there is a BufferedStore the allSelected flag cannot be set in a manual selection
+                me.selected.allSelected = !!(store.isBufferedStore ? me.selected.allSelected : count && records.length && (count === records.length));
+                me.fireEvent('selectionchange', me, records);
             } else if (sel.isCells) {
-                me.fireEvent('selectionchange', me, me.store.getRange.apply(sel.view.dataSource, sel.getRowRange()));
+                me.selected.allSelected = false;
+                me.fireEvent( 'selectionchange', me, sel.getCount() ? me.store.getRange.apply( sel.view.dataSource, sel.getRowRange()) : []);
             }
             grid.fireEvent('selectionchange', grid, sel);
         },
@@ -1746,6 +1834,11 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
         applyExtensible: function(extensible) {
             var me = this;
 
+            // if extensible is false/null we should return undefined so the value
+            // does not get set and we don't call updateExtensible
+            if (!extensible) {
+                return undefined;
+            }
             if (extensible === true || typeof extensible === 'string') {
                 extensible = {
                     axes: me.axesConfigs[extensible]
@@ -1811,6 +1904,9 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     if (selected.get(record.id)) {
                         selected.replace(record);
                     }
+                    else if (sel.allSelected) {
+                        selected.add(record);
+                    }
                 }
             }
         },
@@ -1874,6 +1970,19 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             }
             if (this.view) {
                 this.updateHeaderState();
+            }
+        },
+
+        /**
+         * @private
+         */
+        onPageRemove: function(pageMap, pageNumber, records) {
+            var sel = this.selected;
+
+            // On page purge from a buffered store, do not react if
+            // we have selected all. All are still selected!
+            if (!(sel && sel.allSelected)) {
+                this.onStoreRemove(this.store, records);
             }
         },
 

@@ -847,10 +847,11 @@ Ext.define('Ext.layout.Context', {
      * the {@link Ext.layout.ContextItem} class.
      *
      * @param {Ext.layout.ContextItem} item
+     * @param {Boolean} [replace=false] If an item by that ID is already queued, replace it.
      * @private
      */
-    queueFlush: function (item) {
-        this.flushQueue.add(item);
+    queueFlush: function (item, replace) {
+        this.flushQueue.add(item, replace);
     },
 
     chainFns: function (oldOptions, newOptions, funcName) {

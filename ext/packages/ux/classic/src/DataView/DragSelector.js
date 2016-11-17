@@ -8,6 +8,16 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * Initializes the plugin by setting up the drag tracker
      */
     init: function(dataview) {
+        var scroller = dataview.getScrollable();
+
+        // If the client dataview is scrollable, and this is a PointerEvents device
+        // we cannot intercept the pointer to inplement dragselect.
+        if (scroller && (scroller.getX() || scroller.getY()) && (Ext.supports.PointerEvents || Ext.supports.MSPointerEvents)) {
+            //<debug>
+            Ext.log.warn('DragSelector not available on PointerEvent devices')
+            //</debug>
+            return;
+        }
         /**
          * @property dataview
          * @type Ext.view.View
@@ -62,7 +72,7 @@ Ext.define('Ext.ux.DataView.DragSelector', {
      * DataView's el
      */
     onBeforeStart: function(e) {
-        return e.target == this.dataview.getEl().dom;
+        return e.target === this.dataview.getEl().dom;
     },
 
     /**

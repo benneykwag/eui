@@ -7,8 +7,14 @@ describe("Ext.grid.filters.filter.List", function () {
         }),
         grid, store, filterCol, filterItem, listFilter,
         synchronousLoad = true,
-        storeLoad = Ext.data.Store.prototype.load,
-        loadStore;
+        storeLoad = Ext.data.ProxyStore.prototype.load,
+        loadStore = function() {
+            storeLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function createGrid(listCfg, storeCfg, gridCfg) {
         synchronousLoad = false;
@@ -98,20 +104,14 @@ describe("Ext.grid.filters.filter.List", function () {
 
     function setup() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.Store.prototype.load = function() {
-            storeLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         MockAjaxManager.addMethods();
     }
 
     function tearDown() {
         // Undo the overrides.
-        Ext.data.Store.prototype.load = storeLoad;
+        Ext.data.ProxyStore.prototype.load = storeLoad;
         
         Ext.destroy(store, grid);
         filterCol = filterItem = listFilter = grid = store = null;
@@ -141,18 +141,7 @@ describe("Ext.grid.filters.filter.List", function () {
     });
 
     describe("binding the grid store listeners", function () {
-        Ext.grid.filters.filter.List.prototype.getGridStoreListeners =  function () {
-            var me = this;
-
-            return (me.gridStoreListeners = {
-                scope: me,
-                add: me.onDataChanged,
-                refresh: me.onDataChanged,
-                remove: me.onDataChanged,
-                update: me.onDataChanged,
-                'extjs-18225': Ext.emptyFn
-            });
-        };
+        var oldGridStoreListenersCfg;
 
         function getGridCfg(cfg) {
             var gridCfg = {
@@ -172,6 +161,22 @@ describe("Ext.grid.filters.filter.List", function () {
 
             return Ext.apply(gridCfg, cfg);
         }
+
+        beforeEach(function() {
+            oldGridStoreListenersCfg = Ext.grid.filters.filter.List.prototype.gridStoreListenersCfg;
+            Ext.grid.filters.filter.List.prototype.gridStoreListenersCfg = {
+                add: 'onDataChanged',
+                refresh: 'onDataChanged',
+                remove: 'onDataChanged',
+                update: 'onDataChanged',
+                'extjs-18225': Ext.emptyFn
+            };
+        });
+        
+        afterEach(function() {
+            Ext.grid.filters.filter.List.prototype.gridStoreListenersCfg = oldGridStoreListenersCfg;
+            oldGridStoreListenersCfg = null;
+        });
 
         describe("when inferring its list options from the grid store", function () {
             describe("on construction", function () {
@@ -713,9 +718,13 @@ describe("Ext.grid.filters.filter.List", function () {
                             id: 't2',
                             text: 'Type 2'
                         }]);
-                        expect(menu.items.getCount()).toBe(2);
-                        expect(menu.items.getAt(0).text).toBe('Type 1');
-                        expect(menu.items.getAt(1).text).toBe('Type 2');
+                        waitsFor(function() {
+                            return menu.items.getCount() === 2;
+                        });
+                        runs(function() {
+                            expect(menu.items.getAt(0).text).toBe('Type 1');
+                            expect(menu.items.getAt(1).text).toBe('Type 2');
+                        });
                     });
                 });
 
@@ -815,10 +824,14 @@ describe("Ext.grid.filters.filter.List", function () {
                             text: 'Type 3'
                         }]);
                         var menu = getMenu();
-                        expect(menu.items.getCount()).toBe(3);
-                        expect(menu.items.getAt(0).text).toBe('Type 1');
-                        expect(menu.items.getAt(1).text).toBe('Type 2');
-                        expect(menu.items.getAt(2).text).toBe('Type 3');
+                        waitsFor(function() {
+                            return menu.items.getCount() === 3;
+                        });
+                        runs(function() {
+                            expect(menu.items.getAt(0).text).toBe('Type 1');
+                            expect(menu.items.getAt(1).text).toBe('Type 2');
+                            expect(menu.items.getAt(2).text).toBe('Type 3');
+                        });
                     });
 
                     it("should use the field with the idField as the filter value", function() {
@@ -839,11 +852,17 @@ describe("Ext.grid.filters.filter.List", function () {
                             id: 't3',
                             text: 'Type 3'
                         }]);
-                        clickItem(1);
-                        var filter = store.getFilters().first();
-                        expect(filter.getProperty()).toBe('text');
-                        expect(filter.getOperator()).toBe('in');
-                        expect(filter.getValue()).toEqual(['t2']);
+                        var menu = getMenu();
+                        waitsFor(function() {
+                            return menu.items.getCount() > 0;
+                        });
+                        runs(function() {
+                            clickItem(1);
+                            var filter = store.getFilters().first();
+                            expect(filter.getProperty()).toBe('text');
+                            expect(filter.getOperator()).toBe('in');
+                            expect(filter.getValue()).toEqual(['t2']);
+                        });
                     });
                 });
 
@@ -1117,20 +1136,30 @@ describe("Ext.grid.filters.filter.List", function () {
                 it("should use the unique dataIndex values as the menu text and exclude nulls", function() {
                     showMenu();
                     var menu = getMenu();
-                    expect(menu.items.getCount()).toBe(4);
-                    expect(menu.items.getAt(0).text).toBe('t1');
-                    expect(menu.items.getAt(1).text).toBe('t2');
-                    expect(menu.items.getAt(2).text).toBe('t3');
-                    expect(menu.items.getAt(3).text).toBe('t4');
+                    waitsFor(function() {
+                        return menu.items.getCount() === 4;
+                    });
+                    runs(function() {
+                        expect(menu.items.getAt(0).text).toBe('t1');
+                        expect(menu.items.getAt(1).text).toBe('t2');
+                        expect(menu.items.getAt(2).text).toBe('t3');
+                        expect(menu.items.getAt(3).text).toBe('t4');
+                    });
                 });
 
                 it("should use the dataIndex as the filter value", function() {
                     showMenu();
-                    clickItem(1);
-                    var filter = store.getFilters().first();
-                    expect(filter.getProperty()).toBe('text');
-                    expect(filter.getOperator()).toBe('in');
-                    expect(filter.getValue()).toEqual(['t2']);
+                    var menu = getMenu();
+                    waitsFor(function() {
+                        return menu.items.getCount() > 0;
+                    });
+                    runs(function() {
+                        clickItem(1);
+                        var filter = store.getFilters().first();
+                        expect(filter.getProperty()).toBe('text');
+                        expect(filter.getOperator()).toBe('in');
+                        expect(filter.getValue()).toEqual(['t2']);
+                    });
                 });
 
                 describe("cleanup", function() {
@@ -1184,11 +1213,16 @@ describe("Ext.grid.filters.filter.List", function () {
                     showMenu();
                     var menu = getMenu();
                     completeRequest(loadData);
-                    expect(menu.items.getCount()).toBe(4);
-                    expect(menu.items.getAt(0).text).toBe('t1');
-                    expect(menu.items.getAt(1).text).toBe('t2');
-                    expect(menu.items.getAt(2).text).toBe('t3');
-                    expect(menu.items.getAt(3).text).toBe('t4');
+                    waitsFor(function() {
+                        return menu.items.getCount() === 4;
+                    });
+                    runs(function() {
+                        expect(menu.items.getCount()).toBe(4);
+                        expect(menu.items.getAt(0).text).toBe('t1');
+                        expect(menu.items.getAt(1).text).toBe('t2');
+                        expect(menu.items.getAt(2).text).toBe('t3');
+                        expect(menu.items.getAt(3).text).toBe('t4');
+                    });
                 });
 
                 it("should use the dataIndex as the filter value when the store loads", function() {
@@ -1247,12 +1281,16 @@ describe("Ext.grid.filters.filter.List", function () {
 
                             showMenu();
                             menu = listFilter.menu;
-
-                            expect(menu.query('[checked]').length).toBe(2);
-                            expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                            expect(menu.down('[text="Item 2"]').checked).toBe(true);
-                            expect(menu.down('[text="Item 3"]').checked).toBe(true);
-                            expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                            waitsFor(function() {
+                                return menu.items.getCount() === 12;
+                            });
+                            runs(function() {
+                                expect(menu.query('[checked]').length).toBe(2);
+                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                expect(menu.down('[text="Item 2"]').checked).toBe(true);
+                                expect(menu.down('[text="Item 3"]').checked).toBe(true);
+                                expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                            });
                         });
 
                         it("should create a store filter with the values in the value config", function () {
@@ -1704,14 +1742,17 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in that is in the value config", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(2);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(true);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(true);
-                                expect(menu.down('[text="Item 5"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 6;
+                                });
+                                runs(function() {
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(true);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(true);
+                                    expect(menu.down('[text="Item 5"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                });
                             });
                         });
                     });
@@ -1751,14 +1792,18 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in that is in the value config", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(0);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 5"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 6;
+                                });
+                                runs(function() {
+                                    expect(menu.query('[checked]').length).toBe(0);
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 5"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                });
                             });
                         });
                     });
@@ -1797,14 +1842,18 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in that is in the value config", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(0);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 5"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 6;
+                                });
+                                runs(function() {
+                                    expect(menu.query('[checked]').length).toBe(0);
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 5"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 6"]').checked).toBe(false);
+                                });
                             });
                         });
                     });
@@ -1900,12 +1949,16 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in the Filters menu", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(2);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(true);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(true);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 4;
+                                });
+                                runs(function() {
+                                    expect(menu.query('[checked]').length).toBe(2);
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(true);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(true);
+                                });
                             });
                         });
                     });
@@ -1942,12 +1995,16 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in the Filters menu", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(0);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 4;
+                                });
+                                runs(function() {
+                                    expect(menu.query('[checked]').length).toBe(0);
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                });
                             });
                         });
                     });
@@ -1983,12 +2040,16 @@ describe("Ext.grid.filters.filter.List", function () {
                             it("should check each menu item in the Filters menu", function () {
                                 showMenu();
                                 menu = listFilter.menu;
-
-                                expect(menu.query('[checked]').length).toBe(0);
-                                expect(menu.down('[text="Item 1"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 2"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 3"]').checked).toBe(false);
-                                expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                waitsFor(function() {
+                                    return menu.items.getCount() === 4;
+                                });
+                                runs(function() {
+                                    expect(menu.query('[checked]').length).toBe(0);
+                                    expect(menu.down('[text="Item 1"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 2"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 3"]').checked).toBe(false);
+                                    expect(menu.down('[text="Item 4"]').checked).toBe(false);
+                                });
                             });
                         });
                     });

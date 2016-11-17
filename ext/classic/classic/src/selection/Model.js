@@ -11,11 +11,16 @@
 Ext.define('Ext.selection.Model', {
     extend: 'Ext.mixin.Observable',
     alternateClassName: 'Ext.AbstractSelectionModel',
+    alias: 'selection.abstract',
+    
+    requires: [
+        'Ext.util.Bag'
+    ],
+    
     mixins: [
         'Ext.util.StoreHolder',
         'Ext.mixin.Factoryable'
     ],
-    alias: 'selection.abstract',
 
     factoryConfig: {
         // Need to override the defaultType, otherwise this class would be the default, and it is an abstract base.
@@ -36,7 +41,7 @@ Ext.define('Ext.selection.Model', {
 
         /**
          * @private
-         * The {@link Ext.util.Collection} to use as the collection of selected records.
+         * The {@link Ext.util.Bag/Ext.util.Collection} to use as the collection of selected records.
          */
         selected: {}
     },
@@ -76,10 +81,19 @@ Ext.define('Ext.selection.Model', {
     toggleOnClick: true,
 
     /**
+     * @cfg {Boolean} ordered
+     * If this is set to `true`, the selected items will be tracked in an instance of
+     * {Ext.util.Collection} instead of {Ext.util.Bag} to maintain insertion order.
      * @private
-     * @property {Ext.util.Collection} selected
-     * A MixedCollection that maintains all of the currently selected records.
+     */
+     ordered: false,
+
+    /**
+     * @property {Ext.util.Bag/Ext.util.Collection} selected
+     * A collection that maintains all of the currently selected records. The type
+     * of collection class depends on the `ordered` config.
      * @readonly
+     * @private
      */
     selected: null,
 
@@ -137,8 +151,8 @@ Ext.define('Ext.selection.Model', {
 
         // sets this.selectionMode
         me.setSelectionMode(me.mode);
-        if (me.selectionMode !== 'SINGLE') {		
-            me.allowDeselect = true;		
+        if (me.selectionMode !== 'SINGLE') {
+            me.allowDeselect = true;
         }
     },
 
@@ -147,8 +161,8 @@ Ext.define('Ext.selection.Model', {
     },
 
     applySelected: function(selected) {
-        if (!selected.isCollection) {
-            selected = new Ext.util.Collection(Ext.apply({
+        if (!selected.isBag && !selected.isCollection) {
+            selected = new Ext.util[this.ordered ? 'Collection' : 'Bag'](Ext.apply({
                 rootProperty: 'data'
             }, selected));
         }
@@ -178,11 +192,11 @@ Ext.define('Ext.selection.Model', {
         }
     },
 
-    suspendChanges: function(){
+    suspendChanges: function() {
         ++this.suspendChange;
     },
 
-    resumeChanges: function(){
+    resumeChanges: function() {
         if (this.suspendChange) {
             --this.suspendChange;
         }
@@ -199,10 +213,14 @@ Ext.define('Ext.selection.Model', {
 
         me.suspendChanges();
         me.doSelect(selections, true, suppressEvent);
-        me.resumeChanges();
-        // fire selection change only if the number of selections differs
-        if (!suppressEvent && !me.destroyed) {
-            me.maybeFireSelectionChange(me.getSelection().length !== start);
+        
+        if (!me.destroyed) {
+            me.resumeChanges();
+            
+            // fire selection change only if the number of selections differs
+            if (!suppressEvent) {
+                me.maybeFireSelectionChange(me.getSelection().length !== start);
+            }
         }
     },
 
@@ -242,10 +260,14 @@ Ext.define('Ext.selection.Model', {
         
         me.suspendChanges();
         me.doDeselect(selections, suppressEvent);
-        me.resumeChanges();
-        // fire selection change only if the number of selections differs
-        if (!suppressEvent && !me.destroyed) {
-            me.maybeFireSelectionChange(me.getSelection().length !== start);
+        
+        if (!me.destroyed) {
+            me.resumeChanges();
+            
+            // fire selection change only if the number of selections differs
+            if (!suppressEvent) {
+                me.maybeFireSelectionChange(me.getSelection().length !== start);
+            }
         }
     },
 
@@ -275,6 +297,11 @@ Ext.define('Ext.selection.Model', {
             case 'SINGLE':
                 me.selectWithEventSingle(record, e, isSelected);
                 break;
+        }
+        
+        // Event handlers could have destroyed the selection model
+        if (me.destroyed) {
+            return;
         }
 
         // selectionStart is a start point for shift/mousedown to create a range from.
@@ -474,8 +501,17 @@ Ext.define('Ext.selection.Model', {
             
             for (i = 0, len = toDeselect.length; i < len; ++i) {
                 me.doDeselect(toDeselect[i]);
+                
+                // We could have brought destruction upon ourselves via handlers;
+                // no point in continuing if that happened
+                if (me.destroyed) {
+                    break;
+                }
             }
-            me.resumeChanges();
+            
+            if (!me.destroyed) {
+                me.resumeChanges();
+            }
         }
         
         if (!me.destroyed) {
@@ -643,7 +679,7 @@ Ext.define('Ext.selection.Model', {
                 return;
             }
         }
-        
+
         me.lastSelected = record;
 
         if (suppressEvent) {
@@ -680,8 +716,12 @@ Ext.define('Ext.selection.Model', {
                 break;
             }
         }
+        
         me.deselectingDuringSelect = false;
-        me.resumeChanges();
+        
+        if (!me.destroyed) {
+            me.resumeChanges();
+        }
         
         return [failed, changed];
     },
@@ -905,7 +945,7 @@ Ext.define('Ext.selection.Model', {
             change, d, storeData, selection, rec, i;
 
         // Not been bound yet, or we have never selected anything.
-        if (!store || !(selected.isCollection || selected.isRows) || !selected.getCount()) {
+        if (!store || !(selected.isCollection || selected.isBag || selected.isRows) || !selected.getCount()) {
             return;
         }
 
@@ -1107,7 +1147,7 @@ Ext.define('Ext.selection.Model', {
      * Selected records which are no longer present in the store are removed if {@link #pruneRemoved} is `true`.
      * 
      * Selected records which are still present have their instances in the passed collection updated.
-     * @param {Ext.util.Collection} selected A Collection representing the currently selected records.
+     * @param {Ext.util.Collection/Ext.util.Bag} selected A Collection representing the currently selected records.
      */
     updateSelectedInstances: function(selected) {
         var me = this,
@@ -1143,7 +1183,7 @@ Ext.define('Ext.selection.Model', {
                 if (rec) {
                     if (rec !== selectedRec) {
                         // Silently replace the stale record instance with the new record by the same ID
-                        selected.replace(rec);
+                        selected.add(rec);
                     }
                 }
                 // No, remove it from the selection if we are configured to prune removed records
@@ -1190,7 +1230,8 @@ Ext.define('Ext.selection.Model', {
         if ((suppressEvent || me.fireEvent('before' + eventName, me, record)) !== false &&
            commitFn() !== false) {
 
-            if (!suppressEvent) {
+            // Could be destroyed in the handler
+            if (!suppressEvent && !me.destroyed) {
                 me.fireEvent(eventName, me, record);
             }
         }   

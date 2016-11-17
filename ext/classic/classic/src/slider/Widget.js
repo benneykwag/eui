@@ -177,6 +177,33 @@ Ext.define('Ext.slider.Widget', {
         }
     },
 
+    updateMaxValue: function (maxValue) {
+        this.onRangeAdjustment(maxValue, 'min');
+    },
+
+    updateMinValue: function (minValue) {
+        this.onRangeAdjustment(minValue, 'max');
+    },
+
+    /**
+     * @private
+     * Conditionally updates value of slider when minValue or maxValue are updated
+     * @param {Number} rangeValue The new min or max value
+     * @param {String} compareType The comparison type (e.g., min/max)
+     */
+    onRangeAdjustment: function (rangeValue, compareType) {
+        var value = this._value,
+            newValue;
+
+        if (!isNaN(value)) {
+            newValue = Math[compareType](value, rangeValue);
+        }
+        
+        if (newValue !== undefined) {
+            this.setValue(newValue);
+        }
+    },
+
     onMouseDown: function(e) {
         var me = this,
             thumb,

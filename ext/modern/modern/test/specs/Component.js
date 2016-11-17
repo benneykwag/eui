@@ -1,3 +1,5 @@
+/* global Ext, expect */
+
 describe('Ext.Component', function() {
     var component;
 
@@ -23,6 +25,45 @@ describe('Ext.Component', function() {
 
     afterEach(function() {
         component = Ext.destroy(component);
+    });
+
+    describe('configuration', function() {
+        it('should not fire show/hide events during configuration', function() {
+            var beforeShowCalled = false,
+                showCalled = false,
+                beforeHideCalled = false,
+                hideCalled = false,
+                InstrumentedComponent = Ext.define(null, {
+                    extend: 'Ext.Component',
+
+                    fireEvent: function(eventName) {
+                        if (eventName === 'beforeshow') {
+                            beforeShowCalled = true;
+                        }
+                        if (eventName === 'show') {
+                            showCalled = true;
+                        }
+                        if (eventName === 'beforehide') {
+                            beforeHideCalled = true;
+                        }
+                        if (eventName === 'hide') {
+                            hideCalled = true;
+                        }
+                        this.callParent(arguments);
+                    }
+                });
+
+            component = new InstrumentedComponent();
+            Ext.destroy(component);
+            // "hide" is fired during destroy
+            hideCalled = false;
+            component = new InstrumentedComponent({hidden: true});
+
+            expect(beforeShowCalled).toBe(false);
+            expect(showCalled).toBe(false);
+            expect(beforeHideCalled).toBe(false);
+            expect(hideCalled).toBe(false);
+        });
     });
 
     describe("bind", function() {
@@ -1602,6 +1643,28 @@ describe('Ext.Component', function() {
         });
     });
 
+    describe('modal positioned', function() {
+        var ct;
+        afterEach(function() {
+            Ext.destroy(ct);
+        });
+
+        it("should set the mask's zIndex one less that its own zIndex", function() {
+            makeComponent({
+                centered: true,
+                modal: true
+            });
+            ct = new Ext.Container({
+                items: component,
+                renderTo: document.body
+            });
+            component.show();
+
+            // Mask must be below component
+            expect(Number(component.getModal().el.dom.style.zIndex)).toBe(Number(component.el.dom.style.zIndex) - 1);
+        });
+    });
+
     describe('setData call', function() {
         it("should convert a string into an array", function () {
             makeComponent({
@@ -1627,6 +1690,37 @@ describe('Ext.Component', function() {
             cmp.destroy();
 
             expect(isFired).toBe(true);
+        });
+
+        it("should destroy the animations when destroying the component", function() {
+            var cmp = makeComponent({
+                renderTo: Ext.getBody(),
+                showAnimation: {
+                    type: 'slideIn',
+                    duration: 250,
+                    easing: 'ease-out'
+                },
+
+                hideAnimation: {
+                    type: 'slideOut',
+                    duration: 250,
+                    easing: 'ease-in'
+                },
+                modal: true,
+                floated: true,
+                html: 'Test'
+            }),
+            showAnim = cmp.getShowAnimation(),
+            hideAnim = cmp.getHideAnimation();
+
+            cmp.show();
+            cmp.hide();
+
+            spyOn(showAnim, 'destroy');
+            spyOn(hideAnim, 'destroy');
+            cmp.destroy();
+            expect(showAnim.destroy).toHaveBeenCalled();
+            expect(hideAnim.destroy).toHaveBeenCalled();
         });
     });
 

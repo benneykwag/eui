@@ -329,8 +329,8 @@ Ext.define('Ext.util.Animate', {
      * that haven't started yet.
      * @return {Ext.dom.Element} The Element
      */
-    stopAnimation: function() {
-        Ext.fx.Manager.stopAnimation(this.id);
+    stopAnimation: function(/* private */ suppressEvent) {
+        Ext.fx.Manager.stopAnimation(this.id, suppressEvent);
         return this;
     },
 

@@ -3,9 +3,7 @@
 // TODO: Add specs for addFilter(), making sure that only one filter store is ever created per dataIndex.
 describe("Ext.grid.filters.Filters", function () {
     var grid, tree, store, filtersPlugin, data,
-        synchronousLoad = false,
-        storeFlushLoad,
-        storeLoad;
+        synchronousLoad = false;
 
     function completeWithData(theData) {
         Ext.Ajax.mockComplete({
@@ -29,6 +27,22 @@ describe("Ext.grid.filters.Filters", function () {
             fields: ['name', 'email', 'phone', 'age', 'dob'],
             data: data
         }, storeCfg));
+        Ext.override(store, {
+            load: function() {
+                this.callParent(arguments);
+                if (synchronousLoad) {
+                    this.flushLoad.apply(this, arguments);
+                }
+                return this;
+            },
+
+            flushLoad: function() {
+                if (!this.destroyed) {
+                    this.flushCallCount = (this.flushCallCount || 0) + 1;
+                    this.callParent();
+                }
+            }
+        });
 
         // Note: lower the updateBuffer (defaults to 500ms) which is what determines the delay between onStateChange
         // being called and reload, which removes/adds store filters and sends a request for remote filtering.
@@ -84,6 +98,22 @@ describe("Ext.grid.filters.Filters", function () {
                 }]
             }
         }, storeCfg));
+        Ext.override(store, {
+            load: function() {
+                this.callParent(arguments);
+                if (synchronousLoad) {
+                    this.flushLoad.apply(this, arguments);
+                }
+                return this;
+            },
+
+            flushLoad: function() {
+                if (!this.destroyed) {
+                    this.flushCallCount = (this.flushCallCount || 0) + 1;
+                    this.callParent();
+                }
+            }
+        });
 
         tree = new Ext.tree.Panel(Ext.apply({
             columns: [{
@@ -107,25 +137,6 @@ describe("Ext.grid.filters.Filters", function () {
     }
 
     beforeEach(function() {
-        storeFlushLoad = Ext.data.Store.prototype.flushLoad;
-        storeLoad = Ext.data.Store.prototype.load;
-        Ext.data.Store.override({
-            load: function() {
-                this.callParent(arguments);
-                if (synchronousLoad) {
-                    this.flushLoad.apply(this, arguments);
-                }
-                return this;
-            },
-
-            flushLoad: function() {
-                if (!this.destroyed) {
-                    this.flushCallCount = (this.flushCallCount || 0) + 1;
-                    this.callParent();
-                }
-            }
-        });
-
         MockAjaxManager.addMethods();
         data = [
             { name: 'Jimmy Page', email: 'jimmy@page.com', phone: '555-111-1224', age: 69, dob: new Date('1/22/1944')},
@@ -140,10 +151,6 @@ describe("Ext.grid.filters.Filters", function () {
     });
 
     afterEach(function () {
-        // Undo the overrides.
-        Ext.data.Store.prototype.load = storeLoad;
-        Ext.data.Store.prototype.flushLoad = storeFlushLoad;
-
         MockAjaxManager.removeMethods();
         grid = tree = filtersPlugin = Ext.destroy(grid, tree);
         store = Ext.destroy(store);
@@ -1061,7 +1068,9 @@ describe("Ext.grid.filters.Filters", function () {
                 // to load at the next tick. The autoLoad, and the addition
                 // of the filter both required a load be scheduled.
                 expect(store.hasPendingLoad()).toBe(true);
-                expect(proto.flushLoad).not.toHaveBeenCalled();
+
+                // The createGrid function explicitly flushes an loads.
+                expect(proto.flushLoad.callCount).toBe(1);
             });
             // Note that for all specs it ignores the store config in favor of the default panel config.
             it("should not send multiple requests", function () {
@@ -3224,7 +3233,7 @@ describe("Ext.grid.filters.Filters", function () {
                         createGrid(null, {
                             columns: columns
                         });
-
+                        
                         grid.reconfigure(store, columns);
 
                         column = grid.getColumnManager().getColumns()[1];
@@ -3355,6 +3364,7 @@ describe("Ext.grid.filters.Filters", function () {
                 });
             });
         });
+
 
         describe("columns", function () {
             function runSpecs(locked) {

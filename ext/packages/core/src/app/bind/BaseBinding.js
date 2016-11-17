@@ -47,10 +47,12 @@ Ext.define('Ext.app.bind.BaseBinding', {
         var me = this,
             owner = me.owner;
 
-        me.callParent();
         if (owner) {
             owner.onBindDestroy(me);
         }
+
+        me.callParent();
+        
         me.scope = me.callback = me.owner = null;
     },
 

@@ -18,6 +18,9 @@ Ext.Number = (new function() { // jshint ignore:line
         };
 
     Ext.apply(ExtNumber, {
+        MIN_SAFE_INTEGER: Number.MIN_SAFE_INTEGER || -(math.pow(2, 53) - 1),
+        MAX_SAFE_INTEGER: Number.MAX_SAFE_INTEGER || math.pow(2, 53) - 1,
+
         Clip: {
             DEFAULT: ClipDefault,
 
@@ -237,13 +240,27 @@ Ext.Number = (new function() { // jshint ignore:line
         },
 
         /**
+         * Round a number to the nearest interval.
+         * @param {Number} value The value to round.
+         * @param {Number} interval The interval to round to.
+         * @return {Number} The rounded value.
+         *
+         * @since 6.2.0
+         */
+        roundToNearest: function(value, interval) {
+            interval = interval || 1;
+            return interval * math.round(value / interval);
+        },
+
+        /**
          * Returns the sign of the given number. See also MDN for Math.sign documentation
          * for the standard method this method emulates.
          * @param {Number} x The number.
          * @return {Number} The sign of the number `x`, indicating whether the number is
          * positive (1), negative (-1) or zero (0).
+         * @method sign
          */
-        sign: function (x) {
+        sign: math.sign || function (x) {
             x = +x; // force to a Number
 
             if (x === 0 || isNaN(x)) {
@@ -260,8 +277,8 @@ Ext.Number = (new function() { // jshint ignore:line
          * @return {Number} Base 10 logarithm of the number 'x'.
          * @method log10
          */
-        log10: Math.log10 || function (x) {
-            return Math.log(x) * Math.LOG10E;
+        log10: math.log10 || function (x) {
+            return math.log(x) * math.LOG10E;
         },
 
         /**
@@ -278,7 +295,19 @@ Ext.Number = (new function() { // jshint ignore:line
                 Ext.raise("All parameters should be valid numbers.");
             }
             //</debug>
-            return Math.abs(n1 - n2) < epsilon;
+            return math.abs(n1 - n2) < epsilon;
+        },
+
+        /**
+         * Determines if the value passed is a number and also finite.
+         * This a Polyfill version of Number.isFinite(),differently than 
+         * the isFinite() function, this method doesn't convert the parameter to a number.
+         * @param {Number} value Number to be tested.
+         * @returns {Boolean} `true`, if the parameter is a number and finite, `false` otherwise.
+         * @since 6.2
+         */
+        isFinite: Number.isFinite || function (value) {
+            return typeof value === 'number' && isFinite(value);
         },
 
         /**

@@ -5,6 +5,14 @@ describe("Ext.tab.Bar", function() {
         tabBar = new Ext.tab.Bar(Ext.apply({}, config));
     }
     
+    function makeBar(config) {
+        config = Ext.apply({
+            renderTo: document.body
+        }, config);
+        
+        tabBar = new Ext.tab.Bar(config);
+    }
+    
     function doClick(targetId, tab) {
         tabBar.onClick({
             // mock event object can go here if needed
@@ -631,6 +639,83 @@ describe("Ext.tab.Bar", function() {
             expect(tabBar.getComponent(0).text).toBe('Tab 2');
             expect(tabBar.getComponent(1).text).toBe('Tab 3');
             expect(tabBar.getComponent(2).text).toBe('Tab 1');
+        });
+    });
+    
+    describe("tabGuards", function() {
+        describe("no tabs", function() {
+            beforeEach(function() {
+                makeBar();
+            });
+            
+            it("should have non-focusable before tab guard", function() {
+                expect(tabBar.tabGuardBeforeEl.isFocusable()).toBe(false);
+            });
+            
+            it("should have non-focusable after tab guard", function() {
+                expect(tabBar.tabGuardAfterEl.isFocusable()).toBe(false);
+            });
+        });
+        
+        describe("with tabs", function() {
+            beforeEach(function() {
+                makeBar({
+                    items: [{
+                        xtype: 'tab',
+                        text: 'foo'
+                    }]
+                });
+            });
+            
+            it("should have tabbable before tab guard", function() {
+                expect(tabBar.tabGuardBeforeEl).toHaveAttr('tabIndex', '0');
+            });
+            
+            it("should have tabbable after tab guard", function() {
+                expect(tabBar.tabGuardAfterEl).toHaveAttr('tabIndex', '0');
+            });
+        });
+        
+        describe("adding tabs", function() {
+            beforeEach(function() {
+                makeBar();
+                
+                tabBar.add({
+                    items: [{
+                        xtype: 'tab',
+                        text: 'bar'
+                    }]
+                });
+            });
+            
+            it("should have tabbable before tab guard", function() {
+                expect(tabBar.tabGuardBeforeEl).toHaveAttr('tabIndex', '0');
+            });
+            
+            it("should have tabbable after tab guard", function() {
+                expect(tabBar.tabGuardAfterEl).toHaveAttr('tabIndex', '0');
+            });
+        });
+        
+        describe("removing tabs", function() {
+            beforeEach(function() {
+                makeBar({
+                    items: [{
+                        xtype: 'tab',
+                        text: 'foo'
+                    }]
+                });
+                
+                tabBar.remove(0);
+            });
+            
+            it("should have non-focusable before tab guard", function() {
+                expect(tabBar.tabGuardBeforeEl.isFocusable()).toBe(false);
+            });
+            
+            it("should have non-focusable after tab guard", function() {
+                expect(tabBar.tabGuardAfterEl.isFocusable()).toBe(false);
+            });
         });
     });
 });

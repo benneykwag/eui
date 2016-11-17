@@ -96,18 +96,17 @@
  */
 Ext.define('Ext.grid.filters.Filters', {
     extend: 'Ext.plugin.Abstract',
-
-    requires: [
-        'Ext.grid.filters.filter.*'
-    ],
+    alias: 'plugin.gridfilters',
 
     mixins: [
         'Ext.util.StoreHolder'
     ],
 
-    alias: 'plugin.gridfilters',
+    requires: [
+        'Ext.grid.filters.filter.*'
+    ],
 
-    pluginId: 'gridfilters',
+    id: 'gridfilters',
 
     /**
      * @property {Object} defaultFilterTypes
@@ -168,15 +167,16 @@ Ext.define('Ext.grid.filters.Filters', {
         store = grid.store;
         headerCt = grid.headerCt;
 
-        headerCt.on({
+        me.headerCtListeners = headerCt.on({
+            destroyable: true,
             scope: me,
             add: me.onAdd,
             menucreate: me.onMenuCreate
         });
 
-        grid.on({
+        me.gridListeners = grid.on({
+            destroyable: true,
             scope: me,
-            destroy: me.onGridDestroy,
             reconfigure: me.onReconfigure
         });
 
@@ -338,13 +338,12 @@ Ext.define('Ext.grid.filters.Filters', {
         return (me.filterMenuItem[parentTableId] = item);
     },
 
-    /**
-     * Handler called by the grid 'beforedestroy' event
-     */
-    onGridDestroy: function () {
+    destroy: function() {
         var me = this,
             filterMenuItem = me.filterMenuItem,
             item;
+
+        Ext.destroy(me.headerCtListeners, me.gridListeners);
 
         me.bindStore(null);
         me.sep = Ext.destroy(me.sep);
@@ -352,12 +351,14 @@ Ext.define('Ext.grid.filters.Filters', {
         for (item in filterMenuItem) {
             filterMenuItem[item].destroy();
         }
-
-        me.grid = null;
+        
+        this.callParent();
     },
 
     onUnbindStore: function(store) {
-        store.getFilters().un('remove', this.onFilterRemove, this);
+        if (store && !store.destroyed) {
+            store.getFilters().un('remove', this.onFilterRemove, this);
+        }
     },
 
     onBindStore: function(store, initial, propName) {
@@ -533,7 +534,7 @@ Ext.define('Ext.grid.filters.Filters', {
 
     onReconfigure: function(grid, store, columns, oldStore) {
         var me = this,
-            filterMenuItem = this.filterMenuItem,
+            filterMenuItem = me.filterMenuItem,
             changed = oldStore !== store,
             key;
 
@@ -555,7 +556,6 @@ Ext.define('Ext.grid.filters.Filters', {
                 me.applyFilters(store);
             }
         }
-
         me.initColumns();
     },
 
@@ -608,6 +608,7 @@ Ext.define('Ext.grid.filters.Filters', {
                     filters.endUpdate();
                 }
             }
+
         }
     }
 });

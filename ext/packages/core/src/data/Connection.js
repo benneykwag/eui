@@ -488,7 +488,7 @@ Ext.define('Ext.data.Connection', {
         //</debug>
 
         // check for xml or json data, and make sure json data is encoded
-        data = options.formData || options.rawData || options.binaryData || options.xmlData || jsonData || null;
+        data = options.rawData || options.binaryData || options.xmlData || jsonData || null;
         if (jsonData && !Ext.isPrimitive(jsonData)) {
             data = Ext.encode(data);
         }

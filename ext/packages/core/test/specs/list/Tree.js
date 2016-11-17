@@ -287,7 +287,7 @@ describe("Ext.list.Tree", function() {
             it("should set the store to null", function() {
                 makeList();
                 list.destroy();
-                expect(list.getStore()).toBeNull();
+                expect(list._store).toBeNull();
             });
 
             it("should unbind any listeners", function() {
@@ -348,10 +348,14 @@ describe("Ext.list.Tree", function() {
                     xtype: 'spec_treelist_customitem',
 
                     config: {
-                        testConfig: null
+                        testConfig: null,
+                        floated: false
                     },
 
                     constructor: function(config) {
+                        this.$noClearOnDestroy = (this.$noClearOnDestroy || {});
+                        this.$noClearOnDestroy.logs = true;
+                        
                         this.logs = {
                             expandable: [],
                             expanded: [],
@@ -1231,6 +1235,96 @@ describe("Ext.list.Tree", function() {
         });
 
         describe("dynamic store modifications", function() {
+            describe("filtering", function() {
+                it("should react to the store being filtered", function() {
+                    makeList();
+                    store.filterer = 'bottomup';
+                    store.filterBy(function(rec) {
+                        var s = rec.data.text;
+                        return s === 'Item 1.1' || s === 'Item 4.2';
+                    });
+                    byId('i1').expand();
+
+                    expect(getItem('i1')).not.toBeNull();
+                    expect(getItem('i11')).not.toBeNull();
+                    expect(getItem('i12')).toBeNull();
+
+                    expect(getItem('i2')).toBeNull();
+
+                    expect(getItem('i3')).toBeNull();
+
+                    expect(getItem('i4')).not.toBeNull();
+                    expect(getItem('i41')).toBeNull();
+                    expect(getItem('i42')).not.toBeNull();
+                    expect(getItem('i43')).toBeNull();
+                });
+
+                it("should react to filters being cleared", function() {
+                    makeList();
+                    store.filterer = 'bottomup';
+                    byId('i1').expand();
+                    store.filterBy(function(rec) {
+                        var s = rec.data.text;
+                        return s === 'Item 1.1' || s === 'Item 4.2';
+                    });
+                    store.getFilters().removeAll();
+
+                    expect(getItem('i1')).not.toBeNull();
+                    expect(getItem('i11')).not.toBeNull();
+                    expect(getItem('i12')).not.toBeNull();
+
+                    expect(getItem('i2')).not.toBeNull();
+
+                    expect(getItem('i3')).not.toBeNull();
+
+                    expect(getItem('i4')).not.toBeNull();
+                    expect(getItem('i41')).not.toBeNull();
+                    expect(getItem('i42')).not.toBeNull();
+                    expect(getItem('i43')).not.toBeNull();
+                });
+
+                describe("events", function() {
+                    it("should fire the refresh event after filtering/clearing", function() {
+                        var spy = jasmine.createSpy();
+
+                        makeList({
+                            listeners: {
+                                refresh: spy
+                            }
+                        });
+                        store.filterer = 'bottomup';
+                        byId('i1').expand();
+                        store.filterBy(function(rec) {
+                            var s = rec.data.text;
+                            return s === 'Item 1.1' || s === 'Item 4.2';
+                        });
+                        expect(spy.callCount).toBe(1);
+                        store.getFilters().removeAll();
+                        expect(spy.callCount).toBe(2);
+                    });
+
+                    it("should not fire iteminsert/itemremove events", function() {
+                        var spy = jasmine.createSpy();
+
+                        makeList({
+                            listeners: {
+                                iteminsert: spy,
+                                itemremove: spy
+                            }
+                        });
+                        store.filterer = 'bottomup';
+                        store.filterBy(function(rec) {
+                            var s = rec.data.text;
+                            return s === 'Item 1.1' || s === 'Item 4.2';
+                        });
+                        expect(spy).not.toHaveBeenCalled();
+                        byId('i1').expand();
+                        store.getFilters().removeAll();
+                        expect(spy).not.toHaveBeenCalled();
+                    });
+                });
+            });
+
             describe("adding nodes", function() {
                 describe("via insert", function() {
                     describe("to the root", function() {
@@ -3879,6 +3973,22 @@ describe("Ext.list.Tree", function() {
                 it("should have the toolsElement be visible", function() {
                     expect(list.toolsElement.isVisible()).toBe(true);
                 });
+
+                // https://sencha.jira.com/browse/EXTJS-20210
+                if (!Ext.supports.Touch) {
+                    it('should hide the icon on float', function() {
+                        var rec0 = store.getAt(0),
+                            item0 = list.getItem(rec0);
+
+                        // Icon element begins visible
+                        expect(item0.iconElement.isVisible()).toBe(true);
+
+                        jasmine.fireMouseEvent(item0.toolElement, 'mouseover');
+
+                        // When floated, it should be hidden
+                        expect(item0.iconElement.isVisible()).toBe(false);
+                    });
+                }
             });
 
             describe("starting micro: false", function() {
@@ -4378,7 +4488,7 @@ describe("Ext.list.Tree", function() {
 
         it("should unbind the store", function() {
             list.destroy();
-            expect(list.getStore()).toBeNull();
+            expect(list._store).toBeNull();
         });
     });
 

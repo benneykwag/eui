@@ -927,7 +927,7 @@ Ext.define('Ext.draw.Matrix', {
      *
      * __Note:__ The given transform will come before the current one.
      *
-     * @method multiply
+     * @method
      * @param {Ext.draw.Matrix} matrix
      * @return {Ext.draw.Matrix} this
      */

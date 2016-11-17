@@ -295,6 +295,7 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             record = position.record,
             column = position.column,
             context,
+            contextGeneration,
             cell,
             editor,
             prevEditor = me.getActiveEditor(),
@@ -305,7 +306,7 @@ Ext.define('Ext.grid.plugin.CellEditing', {
         if (!context || !column.getEditor(record)) {
             return;
         }
-
+        
         // Activating a new cell while editing.
         // Complete the edit, and cache the editor in the detached body.
         if (prevEditor && prevEditor.editing) {
@@ -313,15 +314,29 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             // and view refreshing which would attempt to restore actionable mode
             me.view.actionPosition = null;
 
-            if(prevEditor.completeEdit() === false) {
+            contextGeneration = context.generation;
+            if (prevEditor.completeEdit() === false) {
                 return;
+            }
+
+            // Complete edit could cause a sort or column movement.
+            // Reposition context unless user code has modified it for its own purposes.
+            if (context.generation === contextGeneration) {
+                context.refresh();
             }
         }
 
         if (!skipBeforeCheck) {
             // Allow vetoing, or setting a new editor *before* we call getEditor
+            contextGeneration = context.generation;
             if (me.beforeEdit(context) === false || me.fireEvent('beforeedit', me, context) === false || context.cancel) {
                 return;
+            }
+
+            // beforeedit edit could cause sort or column movement
+            // Reposition context unless user code has modified it for its own purposes.
+            if (context.generation === contextGeneration) {
+                context.refresh();
             }
         }
 
@@ -397,12 +412,21 @@ Ext.define('Ext.grid.plugin.CellEditing', {
      */
     deactivate: function() {
         var me = this,
+            context = me.context,
             editors = me.editors.items,
             len = editors.length,
-            i;
+            editor, i;
 
         for (i = 0; i < len; i++) {
-            editors[i].cacheElement();
+            editor = editors[i];
+            // if we are deactivating the editor because it was de-rendered by a bufferedRenderer
+            // cycle (scroll while editing), we should cancel this active editing before caching
+            if (context.view.renderingRows) {
+                if (editor.editing) {
+                    me.cancelEdit();
+                }
+                editor.cacheElement();
+            }
         }
     },
 
@@ -596,8 +620,6 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             context.rowIdx = view.indexOf(record);
         }
 
-        me.fireEvent('edit', me, context);
-
         // We clear down our context here in response to the CellEditor completing.
         // We only do this if we have not already started editing a new context.
         if (me.context === context) {
@@ -606,6 +628,8 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             me.setActiveRecord(null);
             me.editing = false;
         }
+
+        me.fireEvent('edit', me, context);
     },
 
     /**

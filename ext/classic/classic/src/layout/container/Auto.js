@@ -759,10 +759,6 @@ Ext.define('Ext.layout.container.Auto', {
 
     getContentTarget: function(){
         return this.innerCt;
-    },
-
-    getScrollerEl: function() {
-        return this.outerCt;
     }
 
 }, function(Cls) {

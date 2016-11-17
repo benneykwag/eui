@@ -31,12 +31,21 @@
  * 
  * See {@link Ext.data.reader.Reader#rootProperty rootProperty} for more information.
  *
+ * #Filtering#
  * Filtering of nodes in a TreeStore is hierarchically top down by default. This means that if a non-leaf node does not
  * pass the filter, then it, and all its descendants are filtered *out* of the store.
  *
  * To reverse this, so that any node which passes the filter causes all its ancestors to be visible, configure
  * the `TreeStore` with '{@link #cfg-filterer filterer: 'bottomup'}`
- * 
+ *
+ * You may also programatically filter individual tree nodes by setting their `'visible'` field.
+ *
+ * Setting this to `false` filters the node out so that it will not appear in the UI. Setting it to `true`
+ * filters the node in.
+ *
+ * Note that if performing several filter operations, it is best to {@link #method-suspendEvents}
+ * on the store first, and when all nodes have been modified, {@link #method-resumeEvents} and fire the
+ * {@link #event-refresh} event on the store.
  */
 Ext.define('Ext.data.TreeStore', {
     extend: 'Ext.data.Store',
@@ -185,6 +194,7 @@ Ext.define('Ext.data.TreeStore', {
 
     fillCount: 0,
     bulkUpdate: 0,
+    nodesToUnregister: 0,
 
     /**
      * @cfg {Object[]/String[]} fields
@@ -374,13 +384,49 @@ Ext.define('Ext.data.TreeStore', {
     },
 
     afterEdit: function(node, modifiedFieldNames) {
-        var me = this;
+        var me = this,
+            parentNode = node.parentNode,
+            rootVisible = me.getRootVisible(),
+            isHiddenRoot = !parentNode && !rootVisible,
+            prevVisibleNodeIndex,
+            isVisible = node.get('visible'),
+            toAdd,
+            removeStart;
 
-        // Data modification must lead to node filtering which must lead
-        // to update of the flat store though onFilterEndUpdate.
+        // If the node visibility flag is not matched by the Store state, correct it.
+        // The hidden root node is a special case. That never appears in the flat store
+        // so skip processing for that.
+        if (!isHiddenRoot && isVisible !== me.contains(node)) {
+
+            // If we are restoring the node to visibility, then insert
+            // at the correct point if this TreeStore considers the node visible
+            // (visible flag set, and all ancestors expanded and visible)
+            if (isVisible) {
+                if (!parentNode || me.isVisible(node)) {
+                    toAdd = [node];
+
+                    // Collect visible descendants. Same operation as expanding
+                    if (node.isExpanded()) {
+                        me.handleNodeExpand(node, node.childNodes, toAdd);
+                    }
+
+                    prevVisibleNodeIndex = node.previousSibling ?
+                        me.indexOfPreviousVisibleNode(node.previousSibling) :
+                        (parentNode ? me.indexOf(parentNode) : -1);
+                    me.insert(prevVisibleNodeIndex + 1, toAdd);
+                }
+            }
+            // If we are hiding the node, remove it and all its descendants.
+            else {
+                removeStart = me.indexOf(node);
+                me.removeAt(removeStart, me.indexOfNextVisibleNode(node) - removeStart);
+            }
+        }
+        // Modification of other fields must lead to node filtering if we are
+        // local filtering. Update the flat store though onFilterEndUpdate.
         // Data modification takes place during initial setup of root node
         // so ignore that.
-        if (me.getRoot() && me.needsLocalFilter()) {
+        else if (me.getRoot() && me.needsLocalFilter()) {
             me.onFilterEndUpdate(me.getFilters());
         }
         me.callParent([node, modifiedFieldNames]);
@@ -408,10 +454,6 @@ Ext.define('Ext.data.TreeStore', {
             me.onUpdate(record, Ext.data.Model.COMMIT, modifiedFieldNames);
             me.fireEvent('update', me, record, Ext.data.Model.COMMIT, modifiedFieldNames);
         }
-    },
-
-    fireChangeEvent: function(record) {
-        return !!this.byIdMap[record.id];
     },
 
     updateRootVisible: function(rootVisible) {
@@ -479,6 +521,10 @@ Ext.define('Ext.data.TreeStore', {
         }
     },
 
+    onCollectionFilter: Ext.emptyFn,
+    // We add listeners to the FilterCollection and do the filtering in a hierarchical
+    // way. We are not interested in notifications as an observer on the data collection.
+
     onFilterEndUpdate: function(filters) {
         var me = this,
             length = filters.length,
@@ -490,7 +536,7 @@ Ext.define('Ext.data.TreeStore', {
             if (length) {
                 me.doFilter(root);
             } else {
-                root.cascadeBy({
+                root.cascade({
                     after: function(node) {
                         // Set visible field silently: do not fire update events to views.
                         // Views will receive refresh event from onNodeFilter.
@@ -512,7 +558,6 @@ Ext.define('Ext.data.TreeStore', {
             }
             me.onNodeFilter(root, filteredNodes);
             root.fireEvent('filterchange', root, filteredNodes);
-            me.fireEvent('filterchange', me, filters);
 
             // Inhibit AbstractStore's implementation from firing the refresh event.
             // We fire it in the onNodeFilter.
@@ -734,7 +779,7 @@ Ext.define('Ext.data.TreeStore', {
         // Collapsing an ancestor node *immediately removes from the view, ALL its descendant nodes at all levels*.
         // But if the collapse was recursive, all descendant root nodes will still fire their
         // events. But we must ignore those events here - we have nothing to do.
-        if (records.length && me.data.contains(records[0])) {
+        if (records.length && me.isVisible(parent)) {
 
             // Calculate the index *one beyond* the last node we are going to remove.
             lastNodeIndexPlus = me.indexOfNextVisibleNode(parent);
@@ -826,13 +871,13 @@ Ext.define('Ext.data.TreeStore', {
         // If found, and there are child nodes, do the same operation on the last child
         if (result) {
             if (result.isExpanded() && result.lastChild) {
-                return this.indexOfPreviousVisibleNode(result.lastChild)
+                return this.indexOfPreviousVisibleNode(result.lastChild);
             }
         }
         // If there is no previous visible sibling, we use the parent node.
         // We only even ATTEMPT to insert into the flat store children of visible nodes.
         else {
-            result = node.parentNode
+            result = node.parentNode;
         }
 
         return this.indexOf(result);
@@ -862,6 +907,10 @@ Ext.define('Ext.data.TreeStore', {
         return Ext.Array.filter(Ext.Object.getValues(this.byIdMap), this.filterNew, this);
     },
 
+    getRejectRecords: function() {
+        return Ext.Array.filter(Ext.Object.getValues(this.byIdMap), this.filterRejects, this);
+    },
+
     getUpdatedRecords: function() {
         return Ext.Array.filter(Ext.Object.getValues(this.byIdMap), this.filterUpdated);
     },
@@ -885,12 +934,19 @@ Ext.define('Ext.data.TreeStore', {
     //
     // If there are expanded nodes, descendants will be in this store and need removing too.
     // These values are used in onNodeRemove below, after the node has been unhooked from its siblings and parent.
-    beforeNodeRemove: function(parentNode, childNodes) {
+    // The [start, length] range parameter list for the flat store removeAt call is calculated and returned
+    // before the calling NodeInterface method removes child nodes.
+    beforeNodeRemove: function(parentNode, childNodes, isMove, removeRange) {
         if (!Ext.isArray(childNodes)) {
             childNodes = [ childNodes ];
         }
         var me = this,
             len = childNodes.length,
+            // Must use class-specific removedNodes property.
+            // Regular Stores add to the "removed" property on CollectionRemove.
+            // TreeStores are having records removed all the time; node collapse removes.
+            // TreeStores add to the "removedNodes" property onNodeRemove
+            removed = me.removedNodes,
             i,
             startNode;
 
@@ -902,53 +958,19 @@ Ext.define('Ext.data.TreeStore', {
         }
 
         // Calculate the range of contiguous *VISIBLE* nodes that the childNodes array represents.
+        // This is used by the calling code AFTER it has detached the tree structure.
         if (startNode) {
-            me.startRemoveIndex = me.indexOf(childNodes[0]);
-            me.lastRemoveIndexPlusOne = me.indexOfNextVisibleNode(childNodes[childNodes.length - 1]);
+            removeRange[0] = me.indexOf(childNodes[0]);
+            removeRange[1] = me.indexOfNextVisibleNode(childNodes[childNodes.length - 1]) - removeRange[0];
         } else {
-            me.startRemoveIndex = -1;
-            me.lastRemoveIndexPlusOne = 0;
-        }
-    },
-
-    // The drop operation of a Model calls afterDrop on attached stores which removes that model from
-    // the store's collection, and the store reacts to that.
-    // The drop operation on a tree NodeInterface object must not affect the Store. It must calllParent
-    // to ensure associations are dropped too, but presence in a TreeStore is handled between the
-    // NodeInterface object and the TreeStore persona of the store, NOT its Store persona.
-    afterDrop: Ext.emptyFn,
-
-    // Called from a node's removeChild & removeAll methods *after* the node is unhooked from siblings and parent.
-    // Remove the visible descendant nodes that we calculated in beforeRemoveNode above.
-    onNodeRemove: function(parentNode, childNodes, isMove) {
-        var me = this,
-            // Must use class-specific removedNodes property.
-            // Regular Stores add to the "removed" property on CollectionRemove.
-            // TreeStores are having records removed all the time; node collapse removes.
-            // TreeStores add to the "removedNodes" property onNodeRemove
-            removed = me.removedNodes,
-            len = childNodes.length,
-            startRemoveIndex = me.startRemoveIndex,
-            lastRemoveIndexPlusOne = me.lastRemoveIndexPlusOne,
-            i;
-
-        // Prevent the me.removeAt call which removes *VISIBLE* nodes when this store has a UI attached
-        // from syncing. We sync at the end.
-        me.suspendAutoSync();
-
-        // Remove all visible descendants from store.
-        // Only visible nodes are present in the store.
-        // Superclass's onCollectionRemove will handle unjoining.
-        // That will not add to removed list. TreeStores keep a different list and we add to it below.
-        // Set removeIsMove flag correctly for onCollectionRemove to do the right thing.
-        if (startRemoveIndex !== -1) {
-            me.removeIsMove = isMove;
-            me.removeAt(startRemoveIndex, lastRemoveIndexPlusOne - startRemoveIndex);
-            me.removeIsMove = false;
+            removeRange[0] = -1;
+            removeRange[1] = 0;
         }
 
-        // The code above removes from the Store collection any nodes that are below expanded parents and not filtered out.
-        // We have to walk the descendant tree for nodes which were not in the Store due to not being visible.
+        // The code above calculated the range of nodes that are below expanded parents and not filtered out.
+        // That will be used to removed the block from the flat store, thereby updating any dependent UIs.
+        // 
+        // We now have to walk the descendant tree for nodes which were not in the Store due to not being visible.
         // This means either below a collapsed parent, or filtered out (visible property false)
         //
         // For example, in the tree below, imagine "bletch" is being removed, "zarg" is filtered out of visibility
@@ -966,12 +988,12 @@ Ext.define('Ext.data.TreeStore', {
         //  ├ belch
         //  apresfoo
         //
-        // beforeNodeRemove would only collect "bletch" and "blivit", and the code above would remove those two.
-        // We now have to collect zarg, uk, screeble, raz and poot.
+        // the above code would only collect "bletch" and "blivit".
+        // We now have to collect bletch, zarg, blivit, uk, screeble, raz and poot.
         for (i = 0; i < len; i++) {
-            childNodes[i].cascadeBy(function(node) {
+            childNodes[i].cascade(function(node) {
                 // We have to unregister all descendant nodes.
-                me.unregisterNode(node);
+                me.unregisterNode(node, true);
 
                 // We also have to ensure that all descendant nodes that were NOT removed above (ones that were not in
                 // the store collection due to invisibility are added to the remove tracking array...
@@ -992,6 +1014,35 @@ Ext.define('Ext.data.TreeStore', {
                 }
             });
         }
+    },
+
+    // The drop operation of a Model calls afterDrop on attached stores which removes that model from
+    // the store's collection, and the store reacts to that.
+    // The drop operation on a tree NodeInterface object must not affect the Store. It must calllParent
+    // to ensure associations are dropped too, but presence in a TreeStore is handled between the
+    // NodeInterface object and the TreeStore persona of the store, NOT its Store persona.
+    afterDrop: Ext.emptyFn,
+
+    // Called from a node's removeChild & removeAll methods *after* the node is unhooked from siblings and parent.
+    // Remove the visible descendant nodes that we calculated in beforeRemoveNode above.
+    onNodeRemove: function(parentNode, childNodes, isMove, removeRange) {
+        var me = this;
+
+        // Prevent the me.removeAt call which removes *VISIBLE* nodes when this store has a UI attached
+        // from syncing. We sync at the end.
+        me.suspendAutoSync();
+
+        // Remove all visible descendants from store.
+        // Only visible nodes are present in the store.
+        // Superclass's onCollectionRemove will handle unjoining.
+        // That will not add to removed list. TreeStores keep a different list and we add to it below.
+        // Set removeIsMove flag correctly for onCollectionRemove to do the right thing.
+        if (removeRange[0] !== -1) {
+            me.removeIsMove = isMove;
+            me.removeAt.apply(me, removeRange);
+            me.removeIsMove = false;
+        }
+
         me.resumeAutoSync();
     },
 
@@ -1097,10 +1148,25 @@ Ext.define('Ext.data.TreeStore', {
      */
     registerNode: function(node, includeChildren) {
         var me = this,
+            was = me.byIdMap[node.id],
             children, length, i;
 
         // Key the node hash by the node's IDs
         me.byIdMap[node.id] = node;
+
+        // If the node requires to be informed upon register, and is not already
+        // registered, keep it informed.
+        if (node.onRegisterTreeNode && node !== was) {
+            node.onRegisterTreeNode(me)
+        }
+
+        // Keep a count of nodes which require to be informed upon unregister.
+        // If we are destroyed, or change root nodes, a cascade will be
+        // necessary if this is non-zero.
+        if (node.onUnregisterTreeNode) {
+            me.nodesToUnregister++;
+        }
+
         if (includeChildren === true) {
             children = node.childNodes;
             length = children.length;
@@ -1118,6 +1184,7 @@ Ext.define('Ext.data.TreeStore', {
      */
     unregisterNode: function(node, includeChildren) {
         var me = this,
+            was = me.byIdMap[node.id],
             children, length, i;
 
         delete me.byIdMap[node.id];
@@ -1127,6 +1194,13 @@ Ext.define('Ext.data.TreeStore', {
             for (i = 0; i < length; i++) {
                 me.unregisterNode(children[i], true);
             }
+        }
+
+        // If the node requires to be informed upon unregster, and it was
+        // registered, keep it informed.
+        if (node.onUnregisterTreeNode && node === was) {
+            node.onUnregisterTreeNode(me);
+            me.nodesToUnregister--;
         }
     },
 
@@ -1188,10 +1262,8 @@ Ext.define('Ext.data.TreeStore', {
         var me = this,
             oldOwner,
             initial = !oldRoot,
-            toRemove;
-
-        // Drop all registered nodes
-        me.byIdMap = {};
+            toRemove,
+            removeRange = [];
 
         // Ensure that the removedNodes array is correct, and that the base class's removed array is null
         me.getTrackRemoved();
@@ -1209,13 +1281,18 @@ Ext.define('Ext.data.TreeStore', {
             } else {
                 toRemove = oldRoot.childNodes;
             }
-            me.beforeNodeRemove(null, toRemove);
+            me.beforeNodeRemove(null, toRemove, false, removeRange);
             oldRoot.set('root', false);
-            me.onNodeRemove(null, toRemove);
+            me.onNodeRemove(null, toRemove, false, removeRange);
             oldRoot.fireEvent('remove', null, oldRoot, false);
             oldRoot.fireEvent('rootchange', null);
             oldRoot.clearListeners();
             oldRoot.store = oldRoot.treeStore = null;
+
+            // If rootVisible is false, the root will not have been unregistered by
+            // the beforeNodeRemove call which calls a recursive unregister on all
+            // *visible* nodes being removed from the flat store.
+            me.unregisterNode(oldRoot);
         }
 
         me.getData().clear();
@@ -1313,6 +1390,24 @@ Ext.define('Ext.data.TreeStore', {
         me.resumeEvent('add', 'remove');
     },
 
+    doDestroy: function () {
+        var me = this,
+            root = me.getRoot();
+
+        // If we contain some nodes which require to be informed upon unregister
+        // then we must cascade the whole tree and inform any that require it.
+        // The cascade method calls the passed function on the topmost node.
+        if (root && me.nodesToUnregister) {
+            root.cascade(function(node) {
+                if (node.onUnregisterTreeNode) {
+                    node.onUnregisterTreeNode(me);
+                }
+            });
+        }
+
+        me.callParent();
+    },
+
     /**
      * @method getById
      * @inheritdoc Ext.data.LocalStore
@@ -1350,7 +1445,7 @@ Ext.define('Ext.data.TreeStore', {
         }
 
         if (includeCollapsed) {
-            this.getRoot().cascadeBy(function(node) {
+            this.getRoot().cascade(function(node) {
                 if (bypassFilters === true || node.get('visible')) {
                     return fn.call(scope || node, node, i++);
                 }
@@ -1365,9 +1460,9 @@ Ext.define('Ext.data.TreeStore', {
      *
      * @param {String} dataIndex The property to collect
      * @param {Object} [options] An object which contains options which modify how the store is traversed.
-     * @param {Boolean} [includeOptions.allowNull] Pass true to allow null, undefined or empty string values.
-     * @param {Boolean} [includeOptions.filtered] Pass `true` to collect from all records, even ones which are filtered.
-     * @param {Boolean} [includeOptions.collapsed] Pass `true` to include nodes which are descendants of collapsed nodes.
+     * @param {Boolean} [options.allowNull] Pass true to allow null, undefined or empty string values.
+     * @param {Boolean} [options.filtered] Pass `true` to collect from all records, even ones which are filtered.
+     * @param {Boolean} [options.collapsed] Pass `true` to include nodes which are descendants of collapsed nodes.
      *
      * Note that the `filtered` option can also be passed as a separate parameter for
      * compatibility with previous versions.
@@ -1387,7 +1482,7 @@ Ext.define('Ext.data.TreeStore', {
         }
 
         if (includeCollapsed || bypassFilters) {
-            this.getRoot().cascadeBy(function(node) {
+            this.getRoot().cascade(function(node) {
                 if (bypassFilters === true || node.get('visible')) {
                     value = node.get(dataIndex);
                     strValue = String(value);
@@ -1441,7 +1536,7 @@ Ext.define('Ext.data.TreeStore', {
         }
 
         // If they are looking up by the idProperty, do it the fast way.
-        if (value === this.model.idProperty && arguments.length < 3) {
+        if (property === this.model.idProperty && arguments.length < 3) {
             return this.byIdMap[value];
         }
         var regex = Ext.String.createRegex(value, startsWith, endsWith, ignoreCase),
@@ -1762,7 +1857,9 @@ Ext.define('Ext.data.TreeStore', {
             newNodeCount = newNodes ? newNodes.length : 0;
 
         // If we're filling, increment the counter so nodes can react without doing expensive operations
-        ++me.bulkUpdate;
+        if (++me.bulkUpdate === 1) {
+            me.suspendEvent('datachanged');
+        };
         if (newNodeCount) {
             me.setupNodes(newNodes);
         }
@@ -1776,10 +1873,10 @@ Ext.define('Ext.data.TreeStore', {
         if (newNodes.length) {
             node.appendChild(newNodes, undefined, true);
         }
-        --me.bulkUpdate;
-
+        if (!--me.bulkUpdate) {
+            me.resumeEvent('datachanged');
+        }
         // No need to call registerNode here, because each child will register itself as it joins
-
         return newNodes;
     },
 
@@ -2039,6 +2136,10 @@ Ext.define('Ext.data.TreeStore', {
     },
 
     privates: {
+        fireChangeEvent: function(record) {
+            return !!this.byIdMap[record.id];
+        },
+        
         /**
          * @private
          * Returns the array of nodes which have been removed since the last time this store was synced.

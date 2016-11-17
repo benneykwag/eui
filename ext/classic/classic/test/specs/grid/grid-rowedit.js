@@ -6,7 +6,8 @@ describe("grid-rowedit", function() {
             var ENTER = 13,
                 ESC = 27;
 
-            var grid, view, store, plugin, colRef, GridEventModel = Ext.define(null, {
+            var grid, view, scroller, store, plugin, editor, colRef, 
+                GridEventModel = Ext.define(null, {
                 extend: 'Ext.data.Model',
                 fields: [
                     'field1',
@@ -48,19 +49,50 @@ describe("grid-rowedit", function() {
                 return grid.getView().getCellInclusive({
                     row: rowIdx,
                     column: cellIdx
-                }, true);
+                });
             }
             
-            function startEdit(rec) {
+            function startEdit(rec, column) {
                 if (!rec || !rec.isModel) {
                     rec = store.getAt(rec || 0);
                 }
-                plugin.startEdit(rec);
+                
+                if (typeof column === 'number') {
+                    column = colRef[column];
+                }
+                
+                plugin.startEdit(rec, column);
+                
+                editor = plugin.getEditor();
             }
             
             // Prevent validity from running on a delay
             function clearFormDelay() {
                 plugin.getEditor().getForm().taskDelay = 0;
+            }
+            
+            function getDefaultColumns(locked, cfg, count) {
+                var columns = [],
+                    i, colConfig;
+
+                for (i = 1; i <= (count || 5); ++i) {
+                    colConfig = Ext.apply({
+                        text: 'F' + i,
+                        dataIndex: 'field' + i,
+                        field: {
+                            xtype: 'textfield',
+                            id: 'field' + i,
+                            allowBlank: i !== 1
+                        }
+                    }, cfg);
+
+                    // Columns 1 and 2 are locked if the locked config is true
+                    if (locked && i < 3) {
+                        colConfig.locked = true;
+                    }
+                    columns[i - 1] = new Ext.grid.column.Column(colConfig);
+                }
+                return columns;
             }
 
             // locked param as true means that columns 1 and 2 are locked
@@ -68,30 +100,11 @@ describe("grid-rowedit", function() {
                 var data = [],
                     defaultCols = [],
                     hasCols,
-                    i,
-                    colConfig;
+                    i;
                 
                 if (!columns) {
                     hasCols = true;
-                    colRef = [];    
-                    for (i = 1; i <= 5; ++i) {
-                        colConfig = {
-                            text: 'F' + i,
-                            dataIndex: 'field' + i,
-                            field: {
-                                xtype: 'textfield',
-                                id: 'field' + i,
-                                allowBlank: i !== 1
-                            }
-                        };
-
-                        // Columns 1 and 2 are locked if the locked config is true
-                        if (locked && i < 3) {
-                            colConfig.locked = true;
-                        }
-                        defaultCols.push(new Ext.grid.column.Column(colConfig));
-                        colRef[i - 1] = defaultCols[i - 1];
-                    }
+                    colRef = defaultCols = getDefaultColumns(locked);
                 }
                     
                 for (i = 1; i <= 10; ++i) {
@@ -134,11 +147,12 @@ describe("grid-rowedit", function() {
                     colRef = grid.getColumnManager().getColumns();
                 }
                 view = grid.getView();
+                scroller = view.getScrollable ? view.getScrollable() : grid.normalGrid.view.getScrollable();
             }
             
-            afterEach(function(){
+            afterEach(function() {
                 Ext.destroy(grid, store);
-                plugin = grid = store = view = null;
+                plugin = editor = grid = store = view = null;
                 Ext.data.Model.schema.clear();
             });
 
@@ -213,8 +227,11 @@ describe("grid-rowedit", function() {
                     }
                     store.add(data);
                     startEdit(900);
-                    expect(plugin.editing).toBe(true);
-                    expect(plugin.getEditor().isVisible()).toBe(true);
+                    
+                    waitsFor(function() {
+                        return plugin.editing === true &&
+                               plugin.getEditor().isVisible() === true;
+                    });
                 });
 
                 it("should trigger the edit on cell interaction", function(){
@@ -335,6 +352,200 @@ describe("grid-rowedit", function() {
                     makeGrid();
                     startEdit(store.first());
                     expect(plugin.getEditor().isDirty()).toBe(false);
+                });
+                
+                it("should commit changes with autoUpdate", function() {
+                    makeGrid(null, {
+                        autoUpdate: true
+                    });
+
+                    startEdit(0, 0);
+                    
+                    editor.activeField.setValue('foo');
+                    expect(editor.isDirty()).toBe(true);
+                    
+                    startEdit(1, 1);
+                    
+                    expect(getRec(0).get('field1')).toBe('foo');
+                    expect(editor.isDirty()).toBe(false);
+                });
+                
+                it("should reset changes with autoCancel", function() {
+                    makeGrid();
+                    
+                    startEdit(0, 0);
+                    
+                    editor.activeField.setValue('bar');
+                    expect(editor.isDirty()).toBe(true);
+                    
+                    startEdit(1, 1);
+                    
+                    expect(getRec(0).get('field1')).toBe('1.1');
+                    expect(editor.isDirty()).toBe(false);
+                });
+            });
+            
+            describe("tabbing", function() {
+                beforeEach(function() {
+                    makeGrid();
+                });
+                
+                describe("basic tabbing", function() {
+                    it("should tab from F1 to F2", function() {
+                        startEdit(0, 0);
+                        
+                        runs(function() {
+                            pressTabKey(editor.activeField, true);
+                        });
+                        
+                        waitForFocus(editor.items.getAt(1));
+                        
+                        runs(function() {
+                            expect(editor.activeField.getValue()).toBe('1.2');
+                            expect(document.activeElement).toBe(editor.activeField.inputEl.dom);
+                        });
+                    });
+                    
+                    it("should shift-tab from F2 to F1", function() {
+                        startEdit(0, 1);
+                        
+                        runs(function() {
+                            pressTabKey(editor.activeField, false);
+                        });
+                        
+                        waitForFocus(editor.items.getAt(0));
+                        
+                        runs(function() {
+                            expect(editor.activeField.getValue()).toBe('1.1');
+                            expect(document.activeElement).toBe(editor.activeField.inputEl.dom);
+                        });
+                    });
+                });
+                
+                describe("wrapping over edges", function() {
+                    it("should tab from F5 to F1", function() {
+                        startEdit(0, 4);
+                        
+                        runs(function() {
+                            pressTabKey(editor.activeField, true);
+                        });
+                        
+                        waitForFocus(editor.items.getAt(0));
+                        
+                        runs(function() {
+                            expect(editor.activeField.getValue()).toBe('2.1');
+                            expect(document.activeElement).toBe(editor.activeField.inputEl.dom);
+                        });
+                    });
+                    
+                    it("should shift-tab from F1 to F5", function() {
+                        startEdit(1, 0);
+                        
+                        runs(function() {
+                            pressTabKey(editor.activeField, false);
+                        });
+                        
+                        waitForFocus(editor.items.getAt(4));
+                        
+                        runs(function() {
+                            expect(editor.activeField.getValue()).toBe('1.5');
+                            expect(document.activeElement).toBe(editor.activeField.inputEl.dom);
+                        });
+                    });
+                });
+                
+                describe("wrapping over end rows", function() {
+                    it("should wrap over to the first row when editing last row", function() {
+                        var firstField, lastField;
+                        
+                        startEdit(store.last(), colRef[4]);
+                        
+                        firstField = plugin.getEditor().items.getAt(0);
+                        lastField = plugin.getEditor().items.getAt(4);
+                        
+                        // Async from now on
+                        waitForFocus(lastField);
+                        
+                        pressTabKey(lastField, true);
+                        
+                        waitForFocus(firstField);
+                        
+                        runs(function() {
+                            expect(plugin.context.record).toBe(store.first());
+                        });
+                    });
+                    
+                    it("should wrap over to the last row when editing first row", function() {
+                        var firstField, lastField;
+                        
+                        startEdit(store.first(), colRef[0]);
+                        
+                        firstField = plugin.getEditor().items.getAt(0);
+                        lastField = plugin.getEditor().items.getAt(4);
+                        
+                        // Async from now on
+                        waitForFocus(firstField);
+                        
+                        pressTabKey(firstField, false);
+                        
+                        waitForFocus(lastField);
+                        
+                        runs(function() {
+                            expect(plugin.context.record).toBe(store.last());
+                        });
+                    });
+                });
+                
+                describe("with dirty values", function() {
+                    describe("autoUpdate == false", function() {
+                        it("should tab to Update button from last field", function() {
+                            startEdit(0, 4);
+                            
+                            var button = editor.down('#update');
+                            
+                            editor.activeField.setValue('blerg');
+                            pressTabKey(editor.activeField, true);
+                            
+                            expectFocused(button);
+                        });
+                        
+                        it("should shift-tab to Update button from first field", function() {
+                            startEdit(0, 0);
+                            
+                            var button = editor.down('#update');
+                            
+                            editor.activeField.setValue('throbbe');
+                            pressTabKey(editor.activeField, false);
+                            
+                            expectFocused(button);
+                        });
+                    });
+                    
+                    describe("autoUpdate == true", function() {
+                        it("should tab to the next row from the last field", function() {
+                            startEdit(0, 4);
+
+                            editor.autoUpdate = true;
+                            editor.autoCancel = false;
+                            
+                            editor.activeField.setValue('zumbo');
+                            pressTabKey(editor.activeField, true);
+                            
+                            expectFocused(editor.items.getAt(0));
+                        });
+                        
+                        it("should shift-tab to the previous row from the first field", function() {
+                            startEdit(1, 0);
+
+                            editor.autoUpdate = true;
+                            editor.autoCancel = false;
+                            
+                            editor.activeField.setValue('ghurl');
+                            pressTabKey(editor.activeField, false);
+                            
+                            expectFocused(editor.items.getAt(4));
+                        });
+                    });
                 });
             });
 
@@ -1655,6 +1866,27 @@ describe("grid-rowedit", function() {
                 });
             });
 
+            describe('resizing columns', function() {
+                it('should keep x scroll synced', function() {
+                    makeGrid(getDefaultColumns(false, {
+                        width: 200
+                    }, 10));
+                    scroller.scrollBy(300);
+
+                    waitsForEvent(scroller, 'scrollend', 'view to scroll');
+                    runs(function() {
+                        startEdit(0, 3);
+                        colRef[5].setWidth(colRef[5].getWidth() - 50);
+                    });
+
+                    waitsFor(function() {
+
+                        // X positions must be synced
+                        return plugin.editor.getScrollable().getPosition().x === scroller.getPosition().x;
+                    }, 'scroll positions to sync');
+                });
+            });
+
             describe('showing after the normal side has already been scrolled horizontally', function() {
                 it('should align itself to the existing horizontal scroll position on show', function() {
                     makeGrid(null, null, true, {
@@ -1670,6 +1902,131 @@ describe("grid-rowedit", function() {
                     // The normal grid has been scrolled.
                     // Thr RowEditor should sync with it on show.
                     expect(plugin.editor.normalColumnContainer.getScrollX()).toBe(grid.normalGrid.getView().getScrollable().getPosition().x);
+                });
+            });
+
+            describe('removeUnmodified', function() {
+                it('should remove an unmodified phantom record on cancel', function() {
+                    makeGrid(null, {
+                        removeUnmodified: true
+                    }, true, {
+                        width: 400, height: 200
+                    });
+                    var storeCount = store.getCount();
+
+                    // Begin editing a new record
+                    store.insert(0, new GridEventModel());
+                    expect(store.getCount()).toBe(storeCount + 1);
+                    plugin.startEdit(0, 0);
+
+                    // Cancel without modifying the new record, the record should be removed
+                    plugin.cancelEdit();
+                    expect(store.getCount()).toBe(storeCount);
+                });
+            });
+
+            describe('with record delete action column', function() {
+                var oldOnError = window.onerror;
+
+                function triggerAction(type, row, colIdx) {
+                    var cell = findCell(row || 0, colIdx || 0);
+                    jasmine.fireMouseEvent(cell.down('.' + Ext.grid.column.Action.prototype.actionIconCls, true), type || 'click');
+                    return cell;
+                }
+                
+                afterEach(function() {
+                    window.onerror = oldOnError;
+                });
+
+                it('should not throw', function() {
+                    var columns = getDefaultColumns();
+
+                    // Insert actino column
+                    columns.unshift({
+                        xtype: 'actioncolumn',
+                        sortable: false,
+                        width: 50,
+                        items: [{
+                            icon: 'https://cdn.sencha.com/ext/commercial/6.0.2/examples/classic/simple-tasks/resources/images/delete_task.png',
+                            tooltip: 'Delete user',
+                            handler: function(view, rowIndex, colIndex, item, event, record) {
+                                store.remove(record);
+                            }
+                        }]
+                    });
+                    makeGrid(columns, {
+                        clicksToEdit: 1
+                    });
+                    
+                    // We can't catch any exceptions thrown by synthetic events,
+                    // so a standard toThrow() or even try/catch won't do the job
+                    // here. They will hit onerror though, so use that.
+                    var errorSpy = jasmine.createSpy();
+
+                    window.onerror = errorSpy.andCallFake(function() {
+                        if (oldOnError) {
+                            oldOnError();
+                        }
+                    });
+
+                    // Click on the delete action column.
+                    // The Editor's click handler will be passed a
+                    // context which is stale. It should handle it.
+                    triggerAction('click', 0, 0);
+
+                    expect(errorSpy.callCount).toBe(0);
+                });
+            });
+
+            describe("ARIA", function() {
+                describe("with visible headers", function() {
+                    beforeEach(function() {
+                        makeGrid();
+                        
+                        startEdit(0, 0);
+                    });
+                    
+                    it("should have form role on the editor body", function() {
+                        expect(editor.body).toHaveAttr('role', 'form');
+                    });
+                    
+                    it("should have aria-label on the editor body", function() {
+                        expect(editor.body).toHaveAttr('aria-label', 'Editing row 2');
+                    });
+                    
+                    it("should have aria-owns on the editor body", function() {
+                        expect(editor.body).toHaveAttr('aria-owns', editor.floatingButtons.id);
+                    });
+                    
+                    it("should have toolbar role on the floating buttons", function() {
+                        expect(editor.floatingButtons).toHaveAttr('role', 'toolbar');
+                    });
+                    
+                    it("should have aria-labelledby on the fields' inputEls", function() {
+                        expect(editor.items.getAt(0).inputEl).toHaveAttr('aria-labelledby', colRef[0].id);
+                        expect(editor.items.getAt(1).inputEl).toHaveAttr('aria-labelledby', colRef[1].id);
+                        expect(editor.items.getAt(2).inputEl).toHaveAttr('aria-labelledby', colRef[2].id);
+                        expect(editor.items.getAt(3).inputEl).toHaveAttr('aria-labelledby', colRef[3].id);
+                        expect(editor.items.getAt(4).inputEl).toHaveAttr('aria-labelledby', colRef[4].id);
+                    });
+                });
+                
+                describe("with hidden headers", function() {
+                    beforeEach(function() {
+                        makeGrid(null, null, null, {
+                            hideHeaders: true
+                        });
+                        
+                        startEdit(0, 1);
+                    });
+                    
+                    it("should have aria-labels on the fields' inputEls", function() {
+                        expect(editor.items.getAt(0).inputEl).toHaveAttr('aria-label', 'F1');
+                        expect(editor.items.getAt(1).inputEl).toHaveAttr('aria-label', 'F2');
+                        expect(editor.items.getAt(2).inputEl).toHaveAttr('aria-label', 'F3');
+                        expect(editor.items.getAt(3).inputEl).toHaveAttr('aria-label', 'F4');
+                        expect(editor.items.getAt(4).inputEl).toHaveAttr('aria-label', 'F5');
+                    });
                 });
             });
         });

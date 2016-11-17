@@ -51,7 +51,7 @@ Ext.define('Ext.draw.engine.Canvas', {
                     alpha = this.globalAlpha,
                     bbox = this.bbox;
 
-                if (fillStyle !== Ext.draw.Color.RGBA_NONE && fillOpacity !== 0) {
+                if (fillStyle !== Ext.util.Color.RGBA_NONE && fillOpacity !== 0) {
                     if (fillGradient && bbox) {
                         this.fillStyle = fillGradient.generateGradient(this, bbox);
                     }
@@ -81,7 +81,7 @@ Ext.define('Ext.draw.engine.Canvas', {
                     alpha = this.globalAlpha,
                     bbox = this.bbox;
 
-                if (strokeStyle !== Ext.draw.Color.RGBA_NONE && strokeOpacity !== 0) {
+                if (strokeStyle !== Ext.util.Color.RGBA_NONE && strokeOpacity !== 0) {
                     if (strokeGradient && bbox) {
                         this.strokeStyle = strokeGradient.generateGradient(this, bbox);
                     }
@@ -111,7 +111,7 @@ Ext.define('Ext.draw.engine.Canvas', {
                     strokeOpacity = this.strokeOpacity,
                     shadowColor = ctx.shadowColor,
                     shadowBlur = ctx.shadowBlur,
-                    none = Ext.draw.Color.RGBA_NONE;
+                    none = Ext.util.Color.RGBA_NONE;
 
                 if (transformFillStroke === undefined) {
                     transformFillStroke = attr.transformFillStroke;
@@ -776,11 +776,11 @@ Ext.define('Ext.draw.engine.Canvas', {
 
         }
 
-        for (k += 1; k < canvases.length; k++) {
-            canvases[k].destroy();
+        me.activeCanvases = k = xSplits * ySplits;
+
+        while (canvases.length > k) {
+            canvases.pop().destroy();
         }
-        me.activeCanvases = xSplits * ySplits;
-        canvases.length = me.activeCanvases;
 
         me.clear();
     },
@@ -887,7 +887,7 @@ Ext.define('Ext.draw.engine.Canvas', {
 
                 ctx.save();
                 sprite.useAttributes(ctx, rect);
-                if (false === sprite.render(me, ctx, [left, top, width, height], rect)) {
+                if (false === sprite.render(me, ctx, [left, top, width, height])) {
                     return false;
                 }
                 ctx.restore();
@@ -927,7 +927,7 @@ Ext.define('Ext.draw.engine.Canvas', {
     },
 
     applyDefaults: function (ctx) {
-        var none = Ext.draw.Color.RGBA_NONE;
+        var none = Ext.util.Color.RGBA_NONE;
         ctx.strokeStyle = none;
         ctx.fillStyle = none;
         ctx.textAlign = 'start';
@@ -958,16 +958,17 @@ Ext.define('Ext.draw.engine.Canvas', {
      */
     destroy: function () {
         var me = this,
-            i, ln = me.canvases.length;
+            canvases = me.canvases,
+            ln = canvases.length,
+            i;
 
         for (i = 0; i < ln; i++) {
             me.contexts[i] = null;
-            me.canvases[i].destroy();
-            me.canvases[i] = null;
+            canvases[i].destroy();
+            canvases[i] = null;
         }
 
-        delete me.contexts;
-        delete me.canvases;
+        me.contexts = me.canvases = null;
 
         me.callParent();
     },
@@ -979,7 +980,7 @@ Ext.define('Ext.draw.engine.Canvas', {
             me.callParent();
             me.canvases = [];
             me.contexts = [];
-            me.activeCanvases = (me.xSplits = 0) * (me.ySplits = 0);
+            me.activeCanvases = me.xSplits = me.ySplits = 0;
         }
     }
 }, function () {

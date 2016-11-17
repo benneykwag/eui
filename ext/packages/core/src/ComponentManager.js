@@ -248,7 +248,7 @@ Ext.define('Ext.ComponentManager', {
                 }
             }
         }
-        if (toComponent && !toComponent.destroyed) {
+        if (toComponent && !(toComponent.destroyed || toComponent.destroying)) {
             if (toComponent.handleFocusEvent) {
                 toComponent.handleFocusEvent(e);
             }

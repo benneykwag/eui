@@ -4,7 +4,13 @@ describe('Ext.grid.feature.Grouping', function () {
     var grid, view, store, menu, schema, groupingFeature,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function completeWithData(data) {
         Ext.Ajax.mockComplete({
@@ -87,13 +93,7 @@ describe('Ext.grid.feature.Grouping', function () {
     beforeEach(function() {
         MockAjaxManager.addMethods();
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         schema = Ext.data.Model.schema;
         Ext.define('spec.Restaurant', {
@@ -103,14 +103,14 @@ describe('Ext.grid.feature.Grouping', function () {
     });
 
     afterEach(function(){
+        Ext.undefine('spec.Restaurant');
+        schema.clear(true);
+        grid = view = store = menu = schema = groupingFeature = Ext.destroy(grid, store);
+        
         MockAjaxManager.removeMethods();
 
         // Undo the overrides.
         Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
-
-        Ext.undefine('spec.Restaurant');
-        schema.clear(true);
-        grid = view = store = menu = schema = groupingFeature = Ext.destroy(grid);
     });
 
     describe('init', function () {
@@ -535,7 +535,7 @@ describe('Ext.grid.feature.Grouping', function () {
                 expect(Ext.fly(firstRowInGroup1).hasCls('x-grid-item-alt')).toBe(true);
 
                 // Extract the trimmed text content of the data row. Due date "07/01/2007" is now on the right"
-                expect((dataRowOfFirstRowInGroup1.innerText || dataRowOfFirstRowInGroup1.textContent).replace(/\r/g,'').replace(/\n/g,'')).toEqual("6 hours$100.00$600.0007/01/2007");
+                expect((dataRowOfFirstRowInGroup1.innerText || dataRowOfFirstRowInGroup1.textContent).replace(/[\r\n\t]/g,'')).toEqual("6 hours$100.00$600.0007/01/2007");
 
                 // Show group summaries
                 toggleGroupSummaries();
@@ -554,7 +554,7 @@ describe('Ext.grid.feature.Grouping', function () {
                 var group0SummaryRow = Ext.fly(collapsedGroup0Placeholder).down('tr.x-grid-row-summary', true);
 
                 //Extract the text content of the summary row. The due date should have moved back to the left
-                expect((group0SummaryRow.innerText || group0SummaryRow.textContent).replace(/\n/g,'').replace(/\r/g,'')).toBe("06/29/200722 hours$112.50$2,100.00");
+                expect((group0SummaryRow.innerText || group0SummaryRow.textContent).replace(/[\r\n\t]/g,'')).toBe("06/29/200722 hours$112.50$2,100.00");
             });
         });
 
@@ -2321,6 +2321,33 @@ describe('Ext.grid.feature.Grouping', function () {
             });
         });
 
+        describe('group where groupKey = ""', function() {
+            beforeEach(function () {
+                makeGrid({
+                    groupField: 'cuisine',
+                    data: [
+                        { name: "Chicks' Ciao", cuisine: "Fine Dining"},
+                        { name: "Molly's Table", cuisine: "Fine Dining"},
+                        { name: "Gary's Grille", cuisine: ""},
+                        { name: "Henry's Hibachi", cuisine: ""}
+                    ]
+                });
+            });
+
+            it('should collapse the group', function() {
+                groupingFeature.collapse('');
+
+                expect(groupingFeature.getMetaGroup('').isCollapsed).toBe(true);
+            });
+
+            it('should expand the group', function() {
+                groupingFeature.collapse('');
+                groupingFeature.expand('');
+
+                expect(groupingFeature.getMetaGroup('').isCollapsed).toBe(false);
+            });
+        });
+
         describe('collapsing the last group in the view', function () {
             var groupName;
 
@@ -2446,7 +2473,7 @@ describe('Ext.grid.feature.Grouping', function () {
             completeWithData(data);
         });
     });
-    
+
     describe("move column with filters", function() {
         // Pass a reference to the cmp not an index!
         function dragColumn(from, to, onRight) {
@@ -2492,4 +2519,3 @@ describe('Ext.grid.feature.Grouping', function () {
     });
       
 });
-

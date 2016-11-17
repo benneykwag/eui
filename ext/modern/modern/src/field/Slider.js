@@ -112,11 +112,9 @@ Ext.define('Ext.field.Slider', {
     */
 
     config: {
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        cls: Ext.baseCSSPrefix + 'slider-field',
+        component: {
+            xtype: 'slider'
+        },
 
         /**
          * @cfg {Boolean} liveUpdate
@@ -126,7 +124,7 @@ Ext.define('Ext.field.Slider', {
         liveUpdate: false,
 
         /**
-         * @cfg
+         * @cfg tabIndex
          * @inheritdoc
          */
         tabIndex: -1,
@@ -145,6 +143,8 @@ Ext.define('Ext.field.Slider', {
          */
         value: 0
     },
+
+    classCls: Ext.baseCSSPrefix + 'sliderfield',
 
     proxyConfig: {
 
@@ -170,7 +170,7 @@ Ext.define('Ext.field.Slider', {
         maxValue: 100
     },
 
-    defaultBindProperty: 'values',
+    defaultBindProperty: 'value',
     twoWayBindable: {
         values: 1,
         value: 1
@@ -206,13 +206,6 @@ Ext.define('Ext.field.Slider', {
             drag: 'onSliderDrag',
             dragend: 'onSliderDragEnd'
         });
-    },
-
-    /**
-     * @private
-     */
-    applyComponent: function(config) {
-        return Ext.factory(config, Ext.slider.Slider);
     },
 
     /**
@@ -302,12 +295,6 @@ Ext.define('Ext.field.Slider', {
             initialValue = (this.config.hasOwnProperty('values')) ? config.values : config.value;
 
         this.setValue(initialValue);
-    },
-
-    updateDisabled: function(disabled) {
-        this.callParent(arguments);
-
-        this.getComponent().setDisabled(disabled);
     },
 
     updateReadOnly: function(newValue) {

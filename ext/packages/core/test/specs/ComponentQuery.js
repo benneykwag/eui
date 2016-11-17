@@ -279,15 +279,6 @@ describe("Ext.ComponentQuery", function() {
             expect(comp.is('[foo]:not([bar])')).toBe(true);
         });
         
-        it("should be able to run on destroyed components", function(){
-            var comp = new Ext.Component({
-                foo: 1
-            });
-            
-            comp.destroy();
-            expect(comp.is('[foo]:not([bar])')).toBe(true);
-        });
-        
         describe("hierarchy selectors", function() {
             it("should match a direct child", function(){
                 expect(cq.is(child6, '#child4 > #child6')).toBe(true);    
@@ -1126,6 +1117,7 @@ describe("Ext.ComponentQuery", function() {
         afterEach(function() {
             Ext.undefine('spec.Foo');
             Ext.undefine('spec.Bar');
+            Ext.undefine('spec.Bletch');
         });
         it("should match instance config", function(){
             result = cq.query('[bar=1]');

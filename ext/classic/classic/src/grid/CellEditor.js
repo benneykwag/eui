@@ -92,52 +92,60 @@ Ext.define('Ext.grid.CellEditor', {
             e.event.stopEvent();
             return;
         }
+
         delete me.focusLeaveAction;
 
         // If the related target is not a cell, turn actionable mode off
-        if (!view.destroyed && view.el.contains(related) && !related.isAncestor(e.target) && !related.up(view.getCellSelector(), view.el)) {
+        if (!view.destroyed && view.el.contains(related) && (!related.isAncestor(e.target) || related === view.el) && !related.up(view.getCellSelector(), view.el)) {
             me.context.grid.setActionableMode(false, view.actionPosition);
         }
 
+        me.cacheElement();
         // Bypass Editor's onFocusLeave
         Ext.container.Container.prototype.onFocusLeave.apply(me, arguments);
     },
 
     completeEdit: function(remainVisible) {
-        var me = this;
-        if (!me.editingPlugin.validateEdit(me.context) && !me.context.cancel) {
-            me.editing = true;
-            return false;
-        }
+        var me = this,
+            context = me.context;
 
+        if (me.editing) {
+            context.value = me.field.value;
+            if (me.editingPlugin.validateEdit(context) === false) {
+                if (context.cancel) {
+                    context.value = me.originalValue;
+                    me.editingPlugin.cancelEdit();
+                }
+                return !!context.cancel;
+            }
+        }
         me.callParent([remainVisible]);
     },
 
     onEditComplete: function(remainVisible, canceling) {
         var me = this,
-            activeElement = Ext.Element.getActiveElement();
+            activeElement = Ext.Element.getActiveElement(),
+            boundEl;
 
         me.editing = false;
 
         // Must refresh the boundEl in case DOM has been churned during edit.
-        me.boundEl = me.context.getCell();
+        boundEl = me.boundEl = me.context.getCell();
 
-        // Restore cells content to visibility
-        me.restoreCell();
+        // We have to test if boundEl is still present because it could have been
+        // de-rendered by a bufferedRenderer scroll.
+        if (boundEl) {
+            me.restoreCell();
 
-        // IF we are just terminating, and NOT being terminated due to focus
-        // having moved out of this editor, then we must prevent any upcoming blur
-        // from letting focus fly out of the view.
-        // onFocusLeave will have no effect because the editing flag is cleared.
-        if (me.boundEl.contains(activeElement) && me.boundEl.dom !== activeElement) {
-            me.boundEl.focus();
+            // IF we are just terminating, and NOT being terminated due to focus
+            // having moved out of this editor, then we must prevent any upcoming blur
+            // from letting focus fly out of the view.
+            // onFocusLeave will have no effect because the editing flag is cleared.
+            if (boundEl.contains(activeElement) && boundEl.dom !== activeElement) {
+                boundEl.focus();
+            }
         }
 
-        // When being asked to process edit completion, if we are hiding
-        // move the el into detached body to protect it from garbage collection.
-        if (!remainVisible) {
-            me.cacheElement();
-        }
         me.callParent(arguments);
 
         // Do not rely on events to sync state with editing plugin,
@@ -165,10 +173,10 @@ Ext.define('Ext.grid.CellEditor', {
         Ext.Editor.superclass.onHide.apply(this, arguments);
     },
 
-    onSpecialKey: function(field, event) {
+    onSpecialKey: function(field, event, eOpts) {
         var me = this,
             key = event.getKey(),
-            complete = me.completeOnEnter && key === event.ENTER,
+            complete = me.completeOnEnter && key === event.ENTER && (!eOpts || !eOpts.fromBoundList),
             cancel = me.cancelOnEsc && key === event.ESC,
             view = me.editingPlugin.view;
 

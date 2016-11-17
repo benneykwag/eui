@@ -22,6 +22,7 @@
  */
 Ext.define('Ext.draw.sprite.Text', function () {
 
+    // Absolute font sizes.
     var fontSizes = {
         'xx-small': true,
         'x-small': true,
@@ -231,6 +232,15 @@ return {
         }
     },
 
+    config: {
+        /**
+         * @private
+         * If the value is boolean, it overrides the TextMeasurer's 'precise' config
+         * (for the given sprite only).
+         */
+        preciseMeasurement: undefined
+    },
+
     constructor: function (config) {
         if (config && config.font) {
             config = Ext.clone(config);
@@ -416,14 +426,16 @@ return {
             plain = me.attr.bbox.plain,
             surface = me.getSurface();
         //<debug>
-        if (!surface) {
-            Ext.raise("The sprite does not belong to a surface.");
-        }
+        // The sprite's bounding box won't account for RTL if it doesn't
+        // belong to a surface.
+        //if (!surface) {
+        //    Ext.raise("The sprite does not belong to a surface.");
+        //}
         //</debug>
         if (plain.dirty) {
             me.updatePlainBBox(plain);
             plain.dirty = false;
-        } if (surface.getInherited().rtl && surface.getFlipRtlText()) {
+        } if (surface && surface.getInherited().rtl && surface.getFlipRtlText()) {
             // Since sprite's attributes haven't actually changed at this point,
             // and we just want to update the position of its bbox
             // based on surface's width, there's no reason to perform
@@ -450,18 +462,28 @@ return {
             text = attr.text,
             baseline = attr.textBaseline,
             alignment = attr.textAlign,
-            size = (useOldSize && me.oldSize) ?
-                me.oldSize :
-                (me.oldSize = Ext.draw.TextMeasurer.measureText(text, font)),
-            surface = me.getSurface(),
-            isRtl = surface.getInherited().rtl,
+            precise = me.getPreciseMeasurement(),
+            size, textMeasurerPrecision;
+
+        if (useOldSize && me.oldSize) {
+            size = me.oldSize;
+        } else {
+            textMeasurerPrecision = Ext.draw.TextMeasurer.precise;
+            if (Ext.isBoolean(precise)) {
+                Ext.draw.TextMeasurer.precise = precise;
+            }
+            size = me.oldSize = Ext.draw.TextMeasurer.measureText(text, font);
+            Ext.draw.TextMeasurer.precise = textMeasurerPrecision;
+        }
+
+        var surface = me.getSurface(),
+            isRtl = (surface && surface.getInherited().rtl) || false,
             flipRtlText = isRtl && surface.getFlipRtlText(),
-            rect = surface.getRect(),
             sizes = size.sizes,
             blockHeight = size.height,
             blockWidth = size.width,
             ln = sizes ? sizes.length : 0,
-            lineWidth,
+            lineWidth, rect,
             i = 0;
 
         // To get consistent results in all browsers we don't apply textAlign
@@ -491,6 +513,7 @@ return {
                 break;
         }
         if (flipRtlText) {
+            rect = surface.getRect();
             x = rect[2] - rect[0] - x;
             alignment = me.rtlAlignments[alignment];
         }
@@ -541,7 +564,7 @@ return {
             mat = Ext.draw.Matrix.fly(attr.matrix.elements.slice(0)),
             bbox = me.getBBox(true),
             dx = attr.textAlignOffsets,
-            none = Ext.draw.Color.RGBA_NONE,
+            none = Ext.util.Color.RGBA_NONE,
             x, y, i, lines, lineHeight;
 
         if (attr.text.length === 0) {
@@ -576,7 +599,7 @@ return {
         if (debug) {
             // This assumes no part of the sprite is rendered after this call.
             // If it is, we need to re-apply transformations.
-            // But the bounding box should always be rendered as is, untransformed.
+            // But the bounding box is already transformed, so we remove the transformation.
             this.attr.inverseMatrix.toContext(ctx);
             debug.bbox && me.renderBBox(surface, ctx);
         }

@@ -4,7 +4,13 @@ describe('Ext.grid.plugin.Clipboard', function () {
     var store, cellediting, clipboard, grid, view, navModel, record, column, field,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function makeGrid(editorCfg, clipboardCfg, gridCfg, storeCfg, locked) {
         store = new Ext.data.Store(Ext.apply({
@@ -73,13 +79,7 @@ describe('Ext.grid.plugin.Clipboard', function () {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         MockAjaxManager.addMethods();
     });

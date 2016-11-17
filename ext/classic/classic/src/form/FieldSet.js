@@ -203,19 +203,6 @@ Ext.define('Ext.form.FieldSet', {
      * @param {Ext.form.FieldSet} fieldset The FieldSet that has been collapsed.
      */
 
-    beforeDestroy: function(){
-        var me = this,
-            legend = me.legend;
-
-        if (legend) {
-            // get rid of the ownerCt since it's not a proper item
-            delete legend.ownerCt;
-            legend.destroy();
-            me.legend = null;
-        }
-        me.callParent();
-    },
-
     initComponent: function() {
         var me = this,
             baseCls = me.baseCls;
@@ -270,6 +257,20 @@ Ext.define('Ext.form.FieldSet', {
         delete me.protoBody;
 
         return data;
+    },
+
+    doDestroy: function() {
+        var me = this,
+            legend = me.legend;
+
+        if (legend) {
+            // get rid of the ownerCt since it's not a proper item
+            delete legend.ownerCt;
+            legend.destroy();
+            me.legend = null;
+        }
+        
+        me.callParent();
     },
 
     getState: function () {
@@ -484,6 +485,7 @@ Ext.define('Ext.form.FieldSet', {
             }
             me.titleCmp.update(title);
             
+            // ariaLabel property was htmlEncoded in initComponent
             me.ariaEl.dom.setAttribute('aria-label', me.ariaLabel);
         } else if (legend) {
             me.titleCmp.update(title);
@@ -522,6 +524,16 @@ Ext.define('Ext.form.FieldSet', {
      */
     collapse : function() {
         return this.setExpanded(false);
+    },
+
+    /**
+     * Set the collapsed state of the fieldset.
+     * @param {Boolean} collapsed The collapsed state.
+     *
+     * @since 6.2.0
+     */
+    setCollapsed: function(collapsed) {
+        this.setExpanded(!collapsed);
     },
 
     /**

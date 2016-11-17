@@ -177,7 +177,7 @@ Ext.define('Ext.form.field.Date', {
      * @cfg {String} formatText The format text to be announced by screen readers
      * when the field is focused.
      */
-    formatText: 'Expected date format: {0}',
+    formatText: 'Expected date format {0}.',
     //</locale>
     
     /**
@@ -295,6 +295,24 @@ Ext.define('Ext.form.field.Date', {
         me.initDisabledDays();
 
         me.callParent();
+    },
+    
+    getSubTplData: function(fieldData) {
+        var me = this,
+            data, ariaAttr;
+        
+        data = me.callParent([fieldData]);
+        
+        if (!me.ariaStaticRoles[me.ariaRole]) {
+            ariaAttr = data.ariaElAttributes;
+            
+            if (ariaAttr) {
+                ariaAttr['aria-owns'] = me.id + '-inputEl ' + me.id + '-picker-eventEl';
+                ariaAttr['aria-autocomplete'] = 'none';
+            }
+        }
+        
+        return data;
     },
 
     initValue: function() {
@@ -511,6 +529,8 @@ Ext.define('Ext.form.field.Date', {
     setValue: function(v) {
         var me = this;
 
+        me.lastValue = me.rawDateText;
+        me.lastDate = me.rawDate;
         if (Ext.isDate(v)) {
             me.rawDate  = v;
             me.rawDateText = me.formatDate(v);
@@ -524,6 +544,36 @@ Ext.define('Ext.form.field.Date', {
             }
         }
         me.callParent(arguments);
+    },
+
+   /**
+     * Checks whether the value of the field has changed since the last time it was checked.
+     * If the value has changed, it:
+     *
+     * 1. Fires the {@link #change change event},
+     * 2. Performs validation if the {@link #validateOnChange} config is enabled, firing the
+     *    {@link #validitychange validitychange event} if the validity has changed, and
+     * 3. Checks the {@link #isDirty dirty state} of the field and fires the {@link #dirtychange dirtychange event}
+     *    if it has changed.
+     */
+    checkChange: function() {
+        var me = this,
+            newVal, oldVal, lastDate;
+
+        if (!me.suspendCheckChange) {
+            newVal = me.getRawValue();
+            oldVal = me.lastValue;
+            lastDate = me.lastDate;
+
+            if (!me.destroyed && me.didValueChange(newVal, oldVal)) {
+                me.rawDate = me.rawToValue(newVal);
+                me.rawDateText = me.formatDate(newVal);
+                me.lastValue = newVal;
+                me.lastDate = me.rawDate;
+                me.fireEvent('change', me, me.getValue(), lastDate);
+                me.onChange(newVal, oldVal);
+            }
+        }
     },
 
     /**
@@ -572,6 +622,15 @@ Ext.define('Ext.form.field.Date', {
         return this.rawDate || null;
     },
 
+    setRawValue: function(value) {
+        var me = this;
+
+        me.callParent([value]);
+
+        me.rawDate = Ext.isDate(value) ? value : me.rawToValue(value);
+        me.rawDateText = this.formatDate(value);
+    },
+
     /**
      * @private
      */
@@ -612,6 +671,7 @@ Ext.define('Ext.form.field.Date', {
         // its ancestor hierarchy (Pickers use their pickerField property as an upward link)
         // for a floating component.
         return new Ext.picker.Date({
+            id: me.id + '-picker',
             pickerField: me,
             floating: true,
             preventRefocus: true,
@@ -682,7 +742,7 @@ Ext.define('Ext.form.field.Date', {
         var me = this,
             v = me.rawToValue(me.getRawValue());
 
-        if (Ext.isDate(v)) {
+        if (v === '' || Ext.isDate(v)) {
             me.setValue(v);
         }
         me.callParent([e]);

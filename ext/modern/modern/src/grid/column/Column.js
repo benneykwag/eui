@@ -63,15 +63,19 @@ Ext.define('Ext.grid.column.Column', {
     extend: 'Ext.Component',
     alternateClassName: 'Ext.grid.column.Template',
 
-    xtype: ['column', 'templatecolumn'],
+    xtype: ['gridcolumn', 'column', 'templatecolumn'],
+
+    // This mixin is used to cache the padding size for cells in this column,
+    // to be shared by all cells in the column.
+    mixins: ['Ext.mixin.StyleCacher'],
 
     config: {
         /**
-         * @cfg {String} align
+         * @cfg {String} [align='left']
          * Sets the alignment of the header and rendered columns.
          * Possible values are: `'left'`, `'center'`, and `'right'`.
          */
-        align: 'left',
+        align: null,
 
         /**
          * @cfg {Object} cell
@@ -89,6 +93,15 @@ Ext.define('Ext.grid.column.Column', {
          * which to draw the column's value. **Required.**
          */
         dataIndex: null,
+
+        /**
+         * @cfg {Number} defaultWidth
+         * A width to apply if the {@link #flex} or {@link #width} configurations have not
+         * been specified.
+         *
+         * @since 6.2.0
+         */
+        defaultWidth: 100,
 
         /**
          * @cfg {String} text
@@ -163,11 +176,31 @@ Ext.define('Ext.grid.column.Column', {
          * @cfg {Ext.grid.column.Column} renderer.column The current column.
          * @cfg {String} renderer.return The HTML string to be rendered.
          */
-        renderer: false,
+        renderer: null,
+
+        /**
+         * @cfg {String} formatter
+         * This config accepts a format specification as would be used in a `Ext.Template`
+         * formatted token. For example `'round(2)'` to round numbers to 2 decimal places
+         * or `'date("Y-m-d")'` to format a Date.
+         *
+         * In previous releases the `renderer` config had limited abilities to use one
+         * of the `Ext.util.Format` methods but `formatter` now replaces that usage and
+         * can also handle formatting parameters.
+         *
+         * When the value begins with `"this."` (for example, `"this.foo(2)"`), the
+         * implied scope on which "foo" is found is the `scope` config for the column.
+         *
+         * If the `scope` is not given, or implied using a prefix of `"this"`, then either the
+         * {@link #method-getController ViewController} or the closest ancestor component configured
+         * as {@link #defaultListenerScope} is assumed to be the object with the method.
+         * @since 6.2.0
+         */
+        formatter: null,
 
         /**
          * @cfg {Object} scope
-         * The scope to use when calling the {@link #renderer} function.
+         * The scope to use when calling the {@link #renderer} or {@link #formatter} function.
          */
         scope: null,
 
@@ -206,6 +239,95 @@ Ext.define('Ext.grid.column.Column', {
         ignore: false,
 
         /**
+         * @cfg {Boolean} ignoreExport
+         * This flag indicates that this column will be ignored when grid data is exported.
+         *
+         * When grid data is exported you may want to export only some columns that are important
+         * and not everything. You can set this flag on any column that you want to be ignored during export.
+         *
+         * This is used by {@link Ext.grid.plugin.Exporter exporter plugin}.
+         */
+        ignoreExport: false,
+
+        /**
+         * @cfg {Ext.exporter.file.Style/Ext.exporter.file.Style[]} exportStyle
+         *
+         * A style definition that is used during data export via the {@link Ext.grid.plugin.Exporter exporter plugin}.
+         * This style will be applied to the columns generated in the exported file.
+         *
+         * You could define it as a single object that will be used by all exporters:
+         *
+         *      {
+         *          xtype: 'numbercolumn',
+         *          dataIndex: 'price',
+         *          exportStyle: {
+         *              format: 'Currency',
+         *              alignment: {
+         *                  horizontal: 'Right'
+         *              },
+         *              font: {
+         *                  italic: true
+         *              }
+         *          }
+         *      }
+         *
+         * You could also define it as an array of objects, each object having a `type` that specifies by
+         * which exporter will be used:
+         *
+         *      {
+         *          xtype: 'numbercolumn',
+         *          dataIndex: 'price',
+         *          exportStyle: [{
+         *              type: 'html', // used by the `html` exporter
+         *              format: 'Currency',
+         *              alignment: {
+         *                  horizontal: 'Right'
+         *              },
+         *              font: {
+         *                  italic: true
+         *              }
+         *          },{
+         *              type: 'csv', // used by the `csv` exporter
+         *              format: 'General'
+         *          }]
+         *      }
+         *
+         * Or you can define it as an array of objects that has:
+         *
+         * - one object with no `type` key that is considered the style to use by all exporters
+         * - objects with the `type` key defined that are exceptions of the above rule
+         *
+         *      {
+         *          xtype: 'numbercolumn',
+         *          dataIndex: 'price',
+         *          exportStyle: [{
+         *              // no type defined means this is the default
+         *              format: 'Currency',
+         *              alignment: {
+         *                  horizontal: 'Right'
+         *              },
+         *              font: {
+         *                  italic: true
+         *              }
+         *          },{
+         *              type: 'csv', // only the CSV exporter has a special style
+         *              format: 'General'
+         *          }]
+         *      }
+         *
+         */
+        exportStyle: null,
+
+        /**
+         * @cfg {Object} cell
+         * The config object used to create {@link Ext.grid.cell.Base cells} in
+         * {@link Ext.grid.plugin.Summary Summary Rows} for this column.
+         */
+        summaryCell: {
+            xtype: 'summarycell'
+        },
+
+        /**
          * @cfg {String/Function} summaryType
          * This configuration specifies the type of summary. There are several built in
          * summary types. These call underlying methods on the store:
@@ -237,9 +359,20 @@ Ext.define('Ext.grid.column.Column', {
          */
         summaryRenderer: null,
 
+        /**
+         * @cfg {String} summaryFormatter
+         * This summaryFormatter is similar to {@link #formatter} but is called before displaying a value in the SummaryRow. The
+         * config is optional, if not specified the default calculated value is shown. The
+         * summaryFormatter is called with:
+         *
+         *  - value {Object} - The calculated value.
+         *
+         * Note that this configuration only works when the grid has the
+         * {@link Ext.grid.plugin.SummaryRow SummaryRow} plugin enabled.
+         */
+        summaryFormatter: null,
+
         minWidth: 40,
-        baseCls: Ext.baseCSSPrefix + 'grid-column',
-        sortedCls: Ext.baseCSSPrefix + 'column-sorted',
         sortDirection: null,
 
         /**
@@ -294,20 +427,67 @@ Ext.define('Ext.grid.column.Column', {
         computedWidth: null
     },
 
-    getElementConfig: function () {
-        return {
-            reference: 'element',
-            children: [
-                {
-                    reference: 'trigger',
-                    className: 'x-grid-column-trigger'
-                },
-                {
-                    reference: 'resizer',
-                    className: 'x-grid-column-resizer'
-                }
-            ]
-        };
+    classCls: Ext.baseCSSPrefix + 'gridcolumn',
+    sortedCls: Ext.baseCSSPrefix + 'sorted',
+    resizableCls: Ext.baseCSSPrefix + 'resizable',
+
+    getTemplate: function () {
+        var me = this,
+            template = [],
+            beforeTitleTemplate = me.beforeTitleTemplate,
+            afterTitleTemplate = me.afterTitleTemplate;
+
+        // Hook for subclasses to insert extra elements
+        if (beforeTitleTemplate) {
+            template.push.apply(template, beforeTitleTemplate);
+        }
+
+        template.push({
+            reference: 'titleElement',
+            className: Ext.baseCSSPrefix + 'title-el',
+            children: [{
+                reference: 'textElement',
+                className: Ext.baseCSSPrefix + 'text-el'
+            }, {
+                reference: 'sortIconElement',
+                classList: [
+                    Ext.baseCSSPrefix + 'sort-icon-el',
+                    Ext.baseCSSPrefix + 'font-icon'
+                ]
+            }]
+        });
+
+        // Hook for subclasses to insert extra elements
+        if (afterTitleTemplate) {
+            template.push.apply(template, afterTitleTemplate);
+        }
+
+        template.push({
+            reference: 'resizerElement',
+            className: Ext.baseCSSPrefix + 'resizer-el'
+        });
+
+        return template
+    },
+
+    getCells: function() {
+        var cells = [],
+            rows = this.grid.getListItems(),
+            len = rows.length,
+            i;
+
+        for (i = 0; i < len; ++i) {
+            cells.push(rows[i].getCellByColumn(this));
+        }
+
+        return cells;
+    },
+
+    onAdded: function(parent, instanced) {
+        var me = this;
+
+        me.callParent([parent, instanced]);
+        me.grid = me.up('headercontainer').getGrid();
     },
 
     applyTpl: function (tpl) {
@@ -319,7 +499,8 @@ Ext.define('Ext.grid.column.Column', {
     },
 
     updateAlign: function (align, oldAlign) {
-        var prefix = Ext.baseCSSPrefix + 'grid-column-align-';
+        var prefix = Ext.baseCSSPrefix + 'align-';
+
         if (oldAlign) {
             this.removeCls(prefix + align);
         }
@@ -329,9 +510,15 @@ Ext.define('Ext.grid.column.Column', {
     },
 
     initialize: function () {
-        this.callParent();
+        var me = this;
 
-        this.element.on({
+        if (!me.getWidth() && me.getFlex() == null) {
+            me.setWidth(me.getDefaultWidth());
+        }
+
+        me.callParent();
+
+        me.element.on({
             tap: 'onColumnTap',
             longpress: 'onColumnLongPress',
             scope: this
@@ -347,11 +534,22 @@ Ext.define('Ext.grid.column.Column', {
     },
 
     updateResizable: function(resizable) {
-        this.resizer.toggleCls(Ext.baseCSSPrefix + 'grid-column-resizable', resizable);
+        this.element.toggleCls(this.resizableCls, resizable);
     },
 
     updateText: function (text) {
         this.setHtml(text || '&#160;');
+    },
+
+    applyWidth: function(width) {
+        var minWidth = this.getMinWidth() || -Infinity,
+            maxWidth = this.getMaxWidth() || Infinity;
+
+        if (width !== null) {
+            return Math.max(Math.min(maxWidth, width), minWidth);
+        }
+
+        return width;
     },
 
     updateWidth: function (width, oldWidth) {
@@ -397,26 +595,66 @@ Ext.define('Ext.grid.column.Column', {
     },
 
     updateSortDirection: function (direction, oldDirection) {
-        if (!this.getSortable()) {
-            return;
+        var me = this,
+            sortedCls, element;
+
+        if (me.getSortable()) {
+            sortedCls = me.sortedCls;
+            element = me.element;
+
+            if (oldDirection) {
+                element.removeCls([sortedCls, sortedCls + '-' + oldDirection.toLowerCase()]);
+            }
+
+            if (direction) {
+                element.addCls([sortedCls, sortedCls + '-' + direction.toLowerCase()]);
+            }
+
+            me.fireEvent('sort', this, direction, oldDirection);
         }
-
-        var sortedCls = this.getSortedCls();
-
-        if (oldDirection) {
-            this.element.removeCls(sortedCls + '-' + oldDirection.toLowerCase());
-        }
-
-        if (direction) {
-            this.element.addCls(sortedCls + '-' + direction.toLowerCase());
-        }
-
-        this.fireEvent('sort', this, direction, oldDirection);
     },
 
-    destroy: function () {
+    applyFormatter: function(format){
+        var me = this,
+            fmt = format,
+            parser;
+
+        if(fmt){
+            parser = Ext.app.bind.Parser.fly(fmt);
+            fmt = parser.compileFormat();
+            parser.release();
+            return function(v){
+                return fmt(v, me.getScope() || me.resolveListenerScope());
+            };
+        }
+
+        return fmt;
+    },
+
+    applySummaryFormatter: function(format){
+        var me = this,
+            fmt = format,
+            parser;
+
+        if(fmt){
+            parser = Ext.app.bind.Parser.fly(fmt);
+            fmt = parser.compileFormat();
+            parser.release();
+            return function(v){
+                return fmt(v, me.getScope() || me.resolveListenerScope());
+            };
+        }
+
+        return fmt;
+    },
+
+    doDestroy: function () {
         this.resizeListener = Ext.destroy(this.resizeListener);
         this.callParent();
+    },
+
+    getInnerHtmlElement: function() {
+        return this.textElement;
     }
 
     /**

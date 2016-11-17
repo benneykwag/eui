@@ -29,7 +29,7 @@
  *             phone: '555-222-1254'
  *         }]
  *     });
- *     
+ *
  *     Ext.create('Ext.grid.Grid', {
  *         store: store,
  *         plugins: [{
@@ -80,7 +80,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
          * The configuration of the menu
          */
         sheet: {
-            baseCls: Ext.baseCSSPrefix + 'grid-viewoptions',
+            baseCls: Ext.baseCSSPrefix + 'gridviewoptions',
             xtype: 'sheet',
             items: [{
                 docked: 'top',
@@ -94,10 +94,11 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
                     role: 'donebutton'
                 }
             }],
-            hideOnMaskTap: false,
+            hidden: true,
+            hideOnMaskTap: true,
             enter: 'right',
             exit: 'right',
-            modal: false,
+            modal: true,
             translatable: {
                 translationMethod: 'csstransform'
             },
@@ -122,17 +123,17 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
                 itemTpl: [
                     '<div class="' + Ext.baseCSSPrefix + 'column-options-itemwrap<tpl if="hidden"> {hiddenCls}</tpl>',
                             '<tpl if="grouped"> {groupedCls}</tpl>">',
-                        '<div class="' + Ext.baseCSSPrefix + 'column-options-sortablehandle"></div>',
+                        '<div class="' + Ext.baseCSSPrefix + 'column-options-sortablehandle ' + Ext.baseCSSPrefix + 'font-icon"></div>',
                         '<tpl if="header">',
-                            '<div class="' + Ext.baseCSSPrefix + 'column-options-folder"></div>',
+                            '<div class="' + Ext.baseCSSPrefix + 'column-options-folder ' + Ext.baseCSSPrefix + 'font-icon"></div>',
                         '<tpl else>',
-                            '<div class="' + Ext.baseCSSPrefix + 'column-options-leaf"></div>',
+                            '<div class="' + Ext.baseCSSPrefix + 'column-options-leaf ' + Ext.baseCSSPrefix + 'font-icon"></div>',
                         '</tpl>',
                         '<div class="' + Ext.baseCSSPrefix + 'column-options-text">{text}</div>',
                         '<tpl if="groupable && dataIndex">',
-                            '<div class="' + Ext.baseCSSPrefix + 'column-options-groupindicator"></div>',
+                            '<div class="' + Ext.baseCSSPrefix + 'column-options-groupindicator ' + Ext.baseCSSPrefix + 'font-icon"></div>',
                         '</tpl>',
-                        '<div class="' + Ext.baseCSSPrefix + 'column-options-visibleindicator"></div>',
+                        '<div class="' + Ext.baseCSSPrefix + 'column-options-visibleindicator ' + Ext.baseCSSPrefix + 'font-icon"></div>',
                     '</div>'
                 ],
                 triggerEvent: null,
@@ -180,11 +181,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
      */
     _groupedColumnCls: Ext.baseCSSPrefix + 'column-options-grouped',
 
-    /**
-     * Determines the menu's visibility when the grid is loaded.
-     */
-    sheetVisible: false,
-
     init: function(grid) {
         this.setGrid(grid);
     },
@@ -205,6 +201,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
 
         if (grid) {
             grid.getHeaderContainer().renderElement.on({
+                contextmenu: 'onHeaderContextMenu',
                 longpress: 'onHeaderLongPress',
                 scope: this
             });
@@ -252,11 +249,9 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
     },
 
     updateSheet: function(sheet) {
-        var sheetWidth = this.getSheetWidth();
-        sheet.setWidth(sheetWidth);
-        sheet.translate(sheetWidth);
-
+        sheet.setWidth(this.getSheetWidth());
         sheet.add(this.getColumnList());
+        sheet.on('hide', 'onSheetHide', this);
     },
 
     onDoneButtonTap: function() {
@@ -447,59 +442,50 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             record.parentNode.removeChild(record, true);
         }
     },
+    
+    onHeaderContextMenu: function(e) {
+        // Stop context menu from being triggered by a longpress
+        e.preventDefault();
+    },
 
     onHeaderLongPress: function(e) {
-        if (!this.sheetVisible) {
+        if (!this.getSheet().isVisible()) {
             this.showViewOptions();
         }
     },
 
     hideViewOptions: function() {
-        var sheet = this.getSheet();
+        var me = this,
+            sheet = me.getSheet();
 
-        this.getGrid().getHeaderContainer().setSortable(true);
+        me.getGrid().getHeaderContainer().setSortable(me.cachedSortable);
+        delete me.cachedSortable;
 
-        sheet.translate(this.getSheetWidth(), 0, {duration: 100});
-        sheet.getTranslatable().on('animationend', function() {
-            if (sheet.getModal()) {
-                sheet.getModal().destroy();
-                sheet.setModal(null);
-            }
-            sheet.hide(null);
-        }, this, {single: true});
+        sheet.hide();
+    },
 
-        this.sheetVisible = false;
+    onSheetHide: function() {
+        this.hideViewOptions();
     },
 
     showViewOptions: function() {
         var me = this,
             sheet = me.getSheet(),
-            modal = null;
+            header;
 
         me.setup();
 
-        if (!me.sheetVisible) {
+        if (!sheet.isVisible()) {
             // Since we may have shown the header in response to a longpress we don't
             // want the succeeeding "tap" to trigger column sorting, so we temporarily
             // disable sort-on-tap while the ViewOptions are shown
-            me.getGrid().getHeaderContainer().setSortable(false);
+            header = me.getGrid().getHeaderContainer();
+            me.cachedSortable = header.getSortable();
+            header.setSortable(false);
 
             me.updateListInfo();
 
             sheet.show();
-
-            sheet.translate(0, 0, {duration: 100});
-            sheet.getTranslatable().on('animationend', function() {
-                sheet.setModal(true);
-
-                modal = sheet.getModal();
-                modal.element.onBefore({
-                    tap: 'hideViewOptions',
-                    scope: me
-                });
-            }, me, {single: true});
-
-            me.sheetVisible = true;
         }
     },
 
@@ -530,7 +516,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
                 grouperProp = grouper && grouper.getProperty(),
                 headerContainer = grid.getHeaderContainer();
 
-            this.getColumnList().getStore().getRoot().cascadeBy(function(node) {
+            this.getColumnList().getStore().getRoot().cascade(function(node) {
                 var dataIndex = node.get('dataIndex');
                 node.set('grouped', dataIndex && dataIndex === grouperProp);
             });

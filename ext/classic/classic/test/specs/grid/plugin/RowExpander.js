@@ -118,6 +118,15 @@ describe('Ext.grid.plugin.RowExpander', function () {
         bufferedRenderer = view.bufferedRenderer;
     }
 
+    function getElementBottom (el) {
+        return el.dom.getBoundingClientRect().bottom;
+    }
+ 
+    function getRowBodyTr (index, locked) {
+        view = locked ? expander.lockedView : expander.view;
+        return view.all.item(index).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr');
+    }
+
     afterEach(function () {
         Ext.destroy(grid);
         store = expander = grid = columns = null;
@@ -142,7 +151,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
 
         jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'mousedown');
 
-        expect(grid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(false);
+        expect(getRowBodyTr(0).isVisible()).toBe(false);
     });
 
     it("should expand on click", function() {
@@ -152,7 +161,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
 
         jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'click');
 
-        expect(grid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(true);
+        expect(getRowBodyTr(0).isVisible()).toBe(true);
 
         // Scroller's scroll range must have increased as a result of row expansion
         expect(scroller.getSize().y).toBeGreaterThan(yRange);
@@ -174,7 +183,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
 
         jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'click');
 
-        expect(grid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(true);
+        expect(getRowBodyTr(0).isVisible()).toBe(true);
 
         // Scroller's scroll range must have increased as a result of row expansion
         // EXTJS-20385
@@ -193,10 +202,84 @@ describe('Ext.grid.plugin.RowExpander', function () {
 
         jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'click');
 
-        expect(grid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(false);
+        expect(getRowBodyTr(0).isVisible()).toBe(false);
 
         // Collapsing ust lay out in case it triggers underflow
         expect(grid.view.componentLayoutCounter).toBe(layoutCounter + 1);
+    });
+
+    describe("with scrollIntoViewOnExpand", function() {
+        it("should scroll the full row body into view", function() {
+            var viewBottom, rowBottom;
+
+            makeGrid(null, {
+                scrollIntoViewOnExpand: true
+            });
+
+            expander.toggleRow(8, store.getAt(8));
+            // measure position of row vs. height of view
+            viewBottom = getElementBottom(view.el);
+            rowBottom = getElementBottom(getRowBodyTr(8));
+            // row body should be scrolled into view
+            expect(rowBottom).not.toBeGreaterThan(viewBottom);
+        });
+
+        describe("with locked columns", function() {
+            function makeLockedGrid (tall) {
+                var smallTpl = new Ext.XTemplate('{industry}'),
+                    tallTpl = new Ext.XTemplate(
+                        '<p><b>Company:</b> {company}</p>',
+                        '<p><b>Change:</b> {change}</p><br>',
+                        '<p><b>Summary:</b> {desc}</p>'
+                    );
+
+                makeGrid({
+                    columns: [
+                        {text: "Company", width: 200, dataIndex: 'company', locked: true},
+                        {text: "Price", renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
+                        {text: "Change", dataIndex: 'change'}
+                    ]
+                }, {
+                    scrollIntoViewOnExpand: true,
+                    rowBodyTpl : tall ? tallTpl : smallTpl,
+                    lockedTpl : tall ? smallTpl : tallTpl
+                });
+            }
+
+            it("should use the lockTpl content (when it is taller) to determine scroll distance", function() {
+                var viewBottom, rowBottom;
+
+                makeLockedGrid(false);
+
+                expander.toggleRow(8, store.getAt(8));
+
+                waits(200);
+                runs(function() {
+                    // measure position of row vs. height of view
+                    viewBottom = getElementBottom(expander.lockedView.el);
+                    rowBottom = getElementBottom(getRowBodyTr(8, true));
+                    // row body should be scrolled into view
+                    expect(rowBottom).not.toBeGreaterThan(viewBottom);
+                });            
+            });
+
+            it("should use the rowBodyTpl content (when it is taller) to determine scroll distance", function() {
+                var viewBottom, rowBottom;
+
+                makeLockedGrid(true);
+
+                expander.toggleRow(8, store.getAt(8));
+
+                waits(200);
+                runs(function() {
+                    // measure position of row vs. height of view
+                    viewBottom = getElementBottom(expander.normalView.el);
+                    rowBottom = getElementBottom(getRowBodyTr(8, false));
+                    // row body should be scrolled into view
+                    expect(rowBottom).not.toBeGreaterThan(viewBottom);
+                });            
+            });
+        });
     });
 
     describe("with a lockedTpl", function() {
@@ -229,13 +312,13 @@ describe('Ext.grid.plugin.RowExpander', function () {
         it("should not expand in response to mousedown", function() {
             jasmine.fireMouseEvent(grid.lockedGrid.view.el.query('.x-grid-row-expander')[0], 'mousedown');
 
-            expect(grid.lockedGrid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(false);
+            expect(getRowBodyTr(0, true).isVisible()).toBe(false);
         });
 
         it("should expand on click", function() {
             jasmine.fireMouseEvent(grid.lockedGrid.view.el.query('.x-grid-row-expander')[0], 'click');
 
-            expect(grid.lockedGrid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(true);
+            expect(getRowBodyTr(0, true).isVisible()).toBe(true);
             
             expect(grid.lockedGrid.view.body.getHeight()).toBe(grid.normalGrid.view.body.getHeight());
         });
@@ -248,7 +331,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
             jasmine.fireMouseEvent(grid.lockedGrid.view.el.query('.x-grid-row-expander')[0], 'click');
 
             // The rowbody row of item 0 should not be visible
-            expect(grid.lockedGrid.view.all.item(0).down('.' + Ext.baseCSSPrefix + 'grid-rowbody-tr').isVisible()).toBe(false);
+            expect(getRowBodyTr(0, true).isVisible()).toBe(false);
 
             // Check the content of the rowbody in the locked side.
             // The lockedTpl specifies that it be the industry field.
@@ -257,6 +340,51 @@ describe('Ext.grid.plugin.RowExpander', function () {
             // Check thetwo rows (one on each side) are synched in height
             // The lockedTpl specifies that it be the industry field.
             expect(grid.lockedGrid.view.all.item(0).getHeight()).toBe(grid.normalGrid.view.all.item(0).getHeight());
+        });
+    });
+
+    describe("with checkbox model", function() {
+        it("should move checkcolumn up one position", function() {
+            makeGrid({
+                selModel: {
+                    selType: 'checkboxmodel',
+                    injectCheckbox: 0
+                }
+            });
+
+            expect(grid.getColumnManager().getColumns()[1].xtype).toBe('checkcolumn');
+        });
+
+        it("should move checkcolumn up one position when injectBox is greater than 0", function() {
+            makeGrid({
+                selModel: {
+                    selType: 'checkboxmodel',
+                    injectCheckbox: 2
+                }
+            });
+            expect(grid.getColumnManager().getColumns()[2].xtype).toBe('checkcolumn');
+        });
+
+        it("should move checkcolumn up one position when injectBox is a first", function() {
+            makeGrid({
+                selModel: {
+                    selType: 'checkboxmodel',
+                    injectCheckbox: 'first'
+                }
+            });
+
+            expect(grid.getColumnManager().getColumns()[1].xtype).toBe('checkcolumn');
+        });
+
+        it("should keep the checkcolumn at the last index when injectBox is last", function() {
+            makeGrid({
+                selModel: {
+                    selType: 'checkboxmodel',
+                    injectCheckbox: 'last'
+                }
+            });
+
+            expect(grid.getColumnManager().getColumns()[6].xtype).toBe('checkcolumn');
         });
     });
 
@@ -430,7 +558,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
             });
 
             it('should add the expander column to the normal grid', function () {
-                expect(expander.grid).toBe(grid.normalGrid);
+                expect(expander.expanderColumn.up('tablepanel')).toBe(grid.normalGrid);
             });
 
             it('should hide the locked grid', function () {
@@ -441,7 +569,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
                 // Pass in an active header. Don't use the first column in the stack (it's the rowexpander column)!
                 grid.lock(grid.columnManager.getColumns()[1]);
 
-                expect(expander.grid).toBe(grid.lockedGrid);
+                expect(expander.expanderColumn.up('tablepanel')).toBe(grid.lockedGrid);
             });
         });
 
@@ -459,7 +587,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
             });
 
             it('should add the expander column to the locked grid', function () {
-                expect(expander.grid).toBe(grid.lockedGrid);
+                expect(expander.expanderColumn.up('tablepanel')).toBe(grid.lockedGrid);
             });
 
             it('should not hide the locked grid', function () {
@@ -471,7 +599,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
                 grid.unlock(grid.columnManager.getColumns()[1]);
 
                 expect(grid.lockedGrid);
-                expect(expander.grid).toBe(grid.normalGrid);
+                expect(expander.expanderColumn.up('tablepanel')).toBe(grid.normalGrid);
             });
         });
     });
@@ -513,7 +641,16 @@ describe('Ext.grid.plugin.RowExpander', function () {
             jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'click');
             
             grid.view.scrollTo(0, 100);
-            jasmine.fireMouseEvent(grid.view.all.item(0).down(Ext.grid.feature.RowBody.prototype.innerSelector), 'mousedown');
+
+            // We must wait until the Scroller knows about the scroll position
+            // at which point it fires a scrollend event
+            waitsForEvent(grid.getView().getScrollable(), 'scrollend', 'Grid scrollend');
+
+            runs(function() {
+                // Must give a valid x coordinate, so that it can be matched below a column so that the navigation model
+                // can determin the closet column to navigate to.
+                jasmine.fireMouseEvent(grid.view.all.item(0).down(Ext.grid.feature.RowBody.prototype.innerSelector), 'mousedown', 100);
+            });
 
             // Nothing detectable should happen. Scroll position should remain stable
             waits(100);

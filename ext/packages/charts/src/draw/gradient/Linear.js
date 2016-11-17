@@ -93,6 +93,6 @@ Ext.define('Ext.draw.gradient.Linear', {
             }
             return gradient;
         }
-        return Ext.draw.Color.NONE;
+        return Ext.util.Color.NONE;
     }
 });

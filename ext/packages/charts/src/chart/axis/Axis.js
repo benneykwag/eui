@@ -629,6 +629,23 @@ Ext.define('Ext.chart.axis.Axis', {
             }
         }
     },
+    
+    updateMinorTickSteps: function (minorTickSteps) {
+        var me = this,
+            sprites = me.getSprites(),
+            axisSprite = sprites && sprites[0],
+            surface;
+
+        if (axisSprite) {
+            axisSprite.setAttributes({
+                minorTicks: !!minorTickSteps
+            });
+            surface = me.getSurface();
+            if (!me.isConfiguring && surface) {
+                surface.renderFrame();
+            }
+        }
+    },
 
     /**
      * @private
@@ -819,7 +836,10 @@ Ext.define('Ext.chart.axis.Axis', {
             master[action]('rangechange', 'onMasterAxisRangeChange', slave);
         }
         if (me.masterAxis) {
-            link('un', me, me.masterAxis);
+            if (!me.masterAxis.destroyed) {
+                link('un', me, me.masterAxis);
+            }
+            
             me.masterAxis = null;
         }
         if (masterAxis) {
@@ -1038,7 +1058,7 @@ Ext.define('Ext.chart.axis.Axis', {
             position = me.getPosition(),
             initialConfig = me.getInitialConfig(),
             defaultConfig = me.defaultConfig,
-            configs = me.getConfigurator().configs,
+            configs = me.self.getConfigurator().configs,
             genericAxisTheme = axisTheme.defaults,
             specificAxisTheme = axisTheme[position],
             themeOnlyIfConfigured = me.themeOnlyIfConfigured,
@@ -1157,6 +1177,25 @@ Ext.define('Ext.chart.axis.Axis', {
         }
 
         return me.sprites;
+    },
+
+    /**
+     * @private
+     */
+    performLayout: function () {
+        if (this.isConfiguring) {
+            return;
+        }
+        var me = this,
+            sprites = me.getSprites(),
+            surface = me.getSurface(),
+            chart = me.getChart(),
+            sprite = sprites && sprites.length && sprites[0];
+
+        if (chart && surface && sprite) {
+            sprite.callUpdater(null, 'layout'); // recalculate axis ticks
+            chart.scheduleLayout();
+        }
     },
 
     updateTitleSprite: function () {

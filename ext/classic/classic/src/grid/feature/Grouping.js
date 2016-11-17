@@ -440,6 +440,9 @@ Ext.define('Ext.grid.feature.Grouping', {
     },
 
     indexOf: function(record) {
+        if (record.isCollapsedPlaceholder) {
+            return this.dataSource.indexOfPlaceholder(record);
+        }
         return this.dataSource.indexOf(record);
     },
 
@@ -562,6 +565,7 @@ Ext.define('Ext.grid.feature.Grouping', {
 
         view.on({
             scope: me,
+            groupmousedown: me.onGroupMousedown,
             groupclick: me.onGroupClick
         });
 
@@ -874,11 +878,14 @@ Ext.define('Ext.grid.feature.Grouping', {
 
     /**
      * Expand a group
-     * @param {String} groupName The group name
-     * @param {Boolean} focus Pass `true` to focus the group after expand.
+     * @param {String} groupName The group name.
+     * @param {Object} [options]. Pass when the group should be scrolled into view.
+     * This contains flags for postprocessing the group's first row after
+     * expansion. See {@link Ext.panel.Table#ensureVisible} for details. *note:*
+     * a boolean may be passed to indicate whether to focus the target group after expand.
      */
-    expand: function(groupName, focus) {
-        this.doCollapseExpand(false, groupName, focus);
+    expand: function(groupName, options) {
+        this.doCollapseExpand(false, groupName, options);
     },
 
     /**
@@ -917,11 +924,13 @@ Ext.define('Ext.grid.feature.Grouping', {
 
     /**
      * Collapse a group
-     * @param {String} groupName The group name
-     * @param {Boolean} focus Pass `true` to focus the group after expand.
+     * @param {String} groupName The group name.
+     * @param {Object} options. Pass when the group should be scrolled into view.
+     * This contains flags for postprocessing the group's header row after
+     * collapsing. See {@link Ext.panel.Table#ensureVisible} for details.
      */
-    collapse: function(groupName, focus) {
-        this.doCollapseExpand(true, groupName, focus);
+    collapse: function(groupName, options) {
+        this.doCollapseExpand(true, groupName, options);
     },
 
     /**
@@ -1003,10 +1012,16 @@ Ext.define('Ext.grid.feature.Grouping', {
 
     },
 
-    doCollapseExpand: function(collapsed, groupName, focus) {
+    doCollapseExpand: function(collapsed, groupName, options) {
         var me = this,
             lockingPartner = me.lockingPartner,
             group = me.getGroup(groupName);
+
+        if (options === true) {
+            options = {
+                focus: true
+            };
+        }
 
         // metaGroupCache is shared between two lockingPartners.
         if (me.getMetaGroup(group).isCollapsed !== collapsed) {
@@ -1024,36 +1039,40 @@ Ext.define('Ext.grid.feature.Grouping', {
             Ext.resumeLayouts(true);
 
             // Sync the group state and focus the row if requested.
-            me.afterCollapseExpand(collapsed, groupName, focus);
+            me.afterCollapseExpand(collapsed, groupName, options);
 
             // Sync the lockingPartner's group state.
-            // Do not pass on focus flag. If we were told to focus, we must focus, not the other side.
             if (lockingPartner) {
-                lockingPartner.afterCollapseExpand(collapsed, groupName, false);
+                // Clear focus flag (without mutating a passed in object).
+                // If we were told to focus, we must focus, not the other side.
+                if (options && options.focus) {
+                    options = Ext.Object.chain(options);
+                    options.focus = false;
+                }
+                lockingPartner.afterCollapseExpand(collapsed, groupName, options);
             }
 
             me.isExpandingOrCollapsing = false;
         }
     },
 
-    afterCollapseExpand: function(collapsed, groupName, focus) {
+    afterCollapseExpand: function(collapsed, groupName, options) {
         var me = this,
             view = me.view,
-            bufferedRenderer = view.bufferedRenderer,
-            header;
+            header, record;
 
         header = me.getHeaderNode(groupName);
 
         view.fireEvent(collapsed ? 'groupcollapse' : 'groupexpand', view, header, groupName);
-        if (focus) {
-            if (header) {
-                view.scrollElIntoView(Ext.fly(header).up(view.getItemSelector()), false, true);
+        if (options) {
+            // NavigationModel cannot focus a collapsed group header. They are not navigable yet.
+            if (collapsed) {
+                options.focus = false;
+                record = me.metaGroupCache[groupName].placeholder;
+            } else {
+                record = me.getGroup(groupName).getAt(0);
             }
-            // The header might be outside the rendered range if we are buffer rendering
-            else if (bufferedRenderer) {
-                // Find the first record in the group and ask the buffered renderer to take us there
-                bufferedRenderer.scrollTo(me.getGroup(groupName).getAt(0));
-            }
+            me.grid.ensureVisible(record, options);
         }
     },
 
@@ -1086,6 +1105,16 @@ Ext.define('Ext.grid.feature.Grouping', {
 
         if (groupName) {
             me.onGroupClick(me.view, event.target, groupName, event);
+        }
+    },
+
+    /**
+     * Prevent focusing - it causes a scroll between mousedown and mouseup.
+     * @private
+     */
+    onGroupMousedown: function(view, rowElement, groupName, e) {
+        if (e.pointerType === 'mouse') {
+            e.preventDefault();
         }
     },
 
@@ -1143,7 +1172,7 @@ Ext.define('Ext.grid.feature.Grouping', {
             groupKey = record.groupKey,
             // MetaGroup placheholder records store the groupKey not a reference.
             // See EXTJS-18655.
-            group = record.isCollapsedPlaceholder && groupKey ?
+            group = record.isCollapsedPlaceholder && Ext.isDefined(groupKey) ?
                 me.getGroup(groupKey) :
                 record.group,
             grouper, groupName, prev, next, items;
@@ -1302,6 +1331,7 @@ Ext.define('Ext.grid.feature.Grouping', {
             updateSummaryRow = me.updateSummaryRow,
             data = {},
             ownerCt = me.view.ownerCt,
+            columnsChanged = me.didColumnsChange(),
             i, len, group, metaGroup, record, hasRemote, remoteData;
 
         /**
@@ -1319,7 +1349,7 @@ Ext.define('Ext.grid.feature.Grouping', {
             metaGroup = me.getMetaGroup(group);
 
             // Something has changed or it doesn't exist, populate it.
-            if (updateSummaryRow || hasRemote || store.updating || me.grid.reconfiguring || me.didGroupChange(group, metaGroup, filters)) {
+            if (updateSummaryRow || hasRemote || store.updating || me.grid.reconfiguring || columnsChanged || me.didGroupChange(group, metaGroup, filters)) {
                 record = me.populateRecord(group, metaGroup, remoteData);
 
                 // Clear the dirty state of the group if this is the only Summary, or this is the right hand (normal grid's) summary.
@@ -1417,12 +1447,12 @@ Ext.define('Ext.grid.feature.Grouping', {
         me.view = me.prunedHeader = me.grid = me.dataSource = me.groupers = null;
         me.invalidateCache();
 
-        me.callParent();
-
-        if (dataSource) {
+        if (dataSource && !dataSource.destroyed) {
             dataSource.bindStore(null);
             Ext.destroy(dataSource);
         }
+        
+        me.callParent();
     },
 
     beforeReconfigure: function(grid, store, columns, oldStore, oldColumns) {
@@ -1518,6 +1548,15 @@ Ext.define('Ext.grid.feature.Grouping', {
             return ret;
         },
 
+        didColumnsChange: function() {
+            var me = this,
+                result = (me.view.headerCt.items.generation !== me.lastHeaderCtGeneration);
+
+            me.lastHeaderCtGeneration = me.view.headerCt.items.generation;
+            
+            return result;
+        },
+
         setupStoreListeners: function(store) {
             var me = this;
 
@@ -1529,4 +1568,3 @@ Ext.define('Ext.grid.feature.Grouping', {
         }
      }
 });
-

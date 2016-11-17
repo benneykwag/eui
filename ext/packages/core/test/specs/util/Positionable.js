@@ -10,7 +10,8 @@ describe("Ext.util.Positionable", function() {
                 left: '6px',
                 top: '7px',
                 'z-index': 10,
-                position: 'absolute'
+                position: 'absolute',
+                backgroundColor: 'green'
             }
         }, cfg));
     }
@@ -25,14 +26,15 @@ describe("Ext.util.Positionable", function() {
                 left: '6px',
                 top: '7px',
                 'z-index': 10,
-                position: 'absolute'
+                position: 'absolute',
+                backgroundColor: 'green'
             }
         }, cfg));
     }
 
     beforeEach(function() {
         // creates an absolute positioned wrapper element so that specs can
-        // append Elements/Components to it to test potioning to page-coordinates
+        // append Elements/Components to it to test positioning to page-coordinates
         wrap = Ext.getBody().createChild({
             style: {
                 width: '100px',
@@ -86,7 +88,8 @@ describe("Ext.util.Positionable", function() {
                         height: '60px',
                         left: '60px',
                         top: '60px',
-                        position: 'absolute'
+                        position: 'absolute',
+                        backgroundColor: 'red'
                     }
                 });
             });
@@ -188,7 +191,7 @@ describe("Ext.util.Positionable", function() {
                 "b-bl?": [15, 60],
                 "b-b?": [45, 60],
                 "b-br?": [75, 60],
-                "br-tl?": [95, 100],
+                "br-tl?": [15, 100],
                 "br-t?": [25, 100],
                 "br-tr?": [55, 100],
                 "br-l?": [95, 30],

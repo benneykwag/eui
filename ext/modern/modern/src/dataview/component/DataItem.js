@@ -121,8 +121,6 @@ Ext.define('Ext.dataview.component.DataItem', {
     xtype : 'dataitem',
 
     config: {
-        baseCls: Ext.baseCSSPrefix + 'data-item',
-
         defaultType: 'component',
 
         /**
@@ -169,6 +167,8 @@ Ext.define('Ext.dataview.component.DataItem', {
             xtype: 'component'
         }]
     },
+
+    classCls: Ext.baseCSSPrefix + 'dataitem',
 
     updateBaseCls: function(newBaseCls, oldBaseCls) {
         var me = this;

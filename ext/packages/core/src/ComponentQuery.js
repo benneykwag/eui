@@ -507,7 +507,7 @@ Ext.define('Ext.ComponentQuery', {
                 // If the candidate is a product of the Ext class system, then
                 // use the configurator to call getters to access the property.
                 // CQ can be used to filter raw Objects.
-                config = candidate.getConfigurator && candidate.self.$config.configs[property];
+                config = candidate.self && candidate.self.getConfigurator && candidate.self.$config.configs[property];
                 if (config) {
                     propValue = candidate[config.names.get]();
                 } else if (mustBeOwnProperty && !candidate.hasOwnProperty(property)) {
@@ -645,7 +645,7 @@ Ext.define('Ext.ComponentQuery', {
                 return [property, operator, compareTo];
             }
         }, {
-            // checks for #cmpItemId or ##cmpId. ## means only
+            // checks for #cmpItemId
             re: /^#((?:\\\.|[\w\-])+)/,
             method: filterById
         }, {

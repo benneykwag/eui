@@ -2,6 +2,7 @@
  * The PanZoom interaction allows the user to navigate the data for one or more chart
  * axes by panning and/or zooming. Navigation can be limited to particular axes. Zooming is
  * performed by pinching on the chart or axis area; panning is performed by single-touch dragging.
+ * The interaction only works with cartesian charts/series.
  *
  * For devices which do not support multiple-touch events, zooming can not be done via pinch gestures; in this case the
  * interaction will allow the user to perform both zooming and panning using the same single-touch drag gesture.
@@ -16,7 +17,7 @@
  *         insetPadding: 40,            
  *         interactions: [{
  *             type: 'panzoom',
- *             zoomOnPanGesture: true
+ *             zoomOnPan: true
  *         }],
  *         store: {
  *             fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5'],
@@ -208,9 +209,16 @@ Ext.define('Ext.chart.interactions.PanZoom', {
 
         /**
          * @cfg {Boolean} zoomOnPanGesture
-         * If `true`, the pan gesture will zoom the chart. Ignored on touch devices.
+         * @deprecated 6.2 Please use {@link #zoomOnPan} instead.
+         * If `true`, the pan gesture will zoom the chart.
          */
-        zoomOnPanGesture: false,
+        zoomOnPanGesture: null,
+
+        /**
+         * @cfg {Boolean} zoomOnPan
+         * If `true`, the pan gesture will zoom the chart.
+         */
+        zoomOnPan: false,
 
         modeToggleButton: {
             xtype: 'segmentedbutton',
@@ -235,29 +243,18 @@ Ext.define('Ext.chart.interactions.PanZoom', {
         return Ext.merge(oldAxesConfig || {}, axesConfig);
     },
 
-    applyZoomOnPanGesture: function (zoomOnPanGesture) {
-        this.getChart();
-        if (this.isMultiTouch()) {
-            return false;
-        }
-        return zoomOnPanGesture;
+    updateZoomOnPan: function (zoomOnPan) {
+        var button = this.getModeToggleButton();
+
+        button.setValue(zoomOnPan ? 'zoom' : 'pan');
     },
 
     updateZoomOnPanGesture: function (zoomOnPanGesture) {
-        var button = this.getModeToggleButton();
-        if (!this.isMultiTouch()) {
-            button.show();
-            button.setValue(zoomOnPanGesture ? 'zoom' : 'pan');
-        } else {
-            button.hide();
-        }
+        this.setZoomOnPan(zoomOnPanGesture);
     },
 
-    toggleMode: function () {
-        var me = this;
-        if (!me.isMultiTouch()) {
-            me.setZoomOnPanGesture(!me.getZoomOnPanGesture());
-        }
+    getZoomOnPanGesture: function () {
+        return this.getZoomOnPan();
     },
 
     applyModeToggleButton: function (button, oldButton) {
@@ -275,7 +272,7 @@ Ext.define('Ext.chart.interactions.PanZoom', {
 
     onModeToggleChange: function (segmentedButton, button, pressed) {
         if (pressed) {
-            this.setZoomOnPanGesture(button.getValue() === 'zoom');
+            this.setZoomOnPan(button.getValue() === 'zoom');
         }
     },
 
@@ -314,6 +311,8 @@ Ext.define('Ext.chart.interactions.PanZoom', {
                 rect = me.getChart().getInnerRect(),
                 xy = me.getChart().element.getXY();
 
+            e.claimGesture();
+
             me.startX = e.getX() - xy[0] - rect[0];
             me.startY = e.getY() - xy[1] - rect[1];
             me.oldVisibleRanges = null;
@@ -325,12 +324,15 @@ Ext.define('Ext.chart.interactions.PanZoom', {
     },
 
     onPanGestureMove: function (e) {
-        var me = this;
+        var me = this,
+            isMouse = e.pointerType === 'mouse',
+            isZoomOnPan = isMouse && me.getZoomOnPan();
+
         if (me.getLocks()[me.getPanGesture()] === me) { // Limit drags to single touch.
             var rect = me.getChart().getInnerRect(),
                 xy = me.getChart().element.getXY();
 
-            if (me.getZoomOnPanGesture()) {
+            if (isZoomOnPan) {
                 me.transformAxesBy(
                     me.getZoomableAxes(e), 0, 0,
                     (e.getX() - xy[0] - rect[0]) / me.startX,
@@ -374,6 +376,8 @@ Ext.define('Ext.chart.interactions.PanZoom', {
                 ],
                 xDistance = Math.max(44, Math.abs(newPoints[2] - newPoints[0])),
                 yDistance = Math.max(44, Math.abs(newPoints[3] - newPoints[1]));
+
+            e.claimGesture();
 
             me.getChart().suspendThicknessChanged();
             me.lastZoomDistances = [xDistance, yDistance];

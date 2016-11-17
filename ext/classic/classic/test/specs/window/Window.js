@@ -1,14 +1,14 @@
-/* global Ext, expect, jasmine */
+/* global Ext, expect, jasmine, xit */
 
 describe("Ext.window.Window", function() {
     var win, container;
     
     function makeWindow(config, noShow) {
         config = Ext.apply({
-            width: 200,
-            height: 200,
-            x: 10,
-            y: 10
+             width: 200,
+             height: 200,
+             x: 10,
+             y: 10
         }, config);
         
         win = new Ext.window.Window(config);
@@ -21,7 +21,7 @@ describe("Ext.window.Window", function() {
     }
 
     afterEach(function(){
-        if (win) {
+        if (win && !win.destroyed) {
             win.hide();
             Ext.destroy(win);
             win = null;
@@ -30,6 +30,86 @@ describe("Ext.window.Window", function() {
             Ext.destroy(container);
             container = null;
         }
+    });
+    
+    describe("tools", function() {
+        var tool;
+        
+        afterEach(function() {
+            tool = null;
+        });
+        
+        describe("close", function() {
+            beforeEach(function() {
+                makeWindow({ closable: true });
+                
+                tool = win.down('tool[type=close]');
+            });
+            
+            it("should not be focusable", function() {
+                expect(tool.focusable).toBe(false);
+            });
+            
+            it("should have presentation role", function() {
+                expect(tool).toHaveAttr('role', 'presentation');
+            });
+            
+            it("should not be tabbable", function() {
+                expect(tool.el.isTabbable()).toBe(false);
+            });
+        });
+    });
+    
+    describe("header", function() {
+        var header;
+        
+        afterEach(function() {
+            header = null;
+        });
+        
+        describe("no focusable tools", function() {
+            beforeEach(function() {
+                makeWindow({ closable: true });
+                
+                header = win.header;
+            });
+            
+            it("should disable focusable container", function() {
+                expect(header.enableFocusableContainer).toBe(false);
+            });
+            
+            it("should have presentation role", function() {
+                expect(header).toHaveAttr('role', 'presentation');
+            });
+            
+            it("should not be tabbable", function() {
+                expect(header.ariaEl.isTabbable()).toBe(false);
+            });
+        });
+        
+        describe("with focusable tools", function() {
+            beforeEach(function() {
+                makeWindow({
+                    closable: true,
+                    collapsible: true
+                });
+                
+                header = win.header;
+            });
+            
+            it("should enable focusable container", function() {
+                expect(header.enableFocusableContainer).toBe(true);
+            });
+            
+            it("should have toolbar role", function() {
+                expect(header).toHaveAttr('role', 'toolbar');
+            });
+            
+            it("should have tabbable guards", function() {
+                expect(header.tabGuardBeforeEl.isTabbable()).toBe(true);
+                expect(header.tabGuardAfterEl.isTabbable()).toBe(true);
+            });
+        });
     });
     
     describe("expandOnShow", function() {
@@ -637,7 +717,6 @@ describe("Ext.window.Window", function() {
                         maximizable: true,
                         closable: false
                     });
-
                     var tool = win.tools[0];
                     expect(tool.type).toBe('restore');
                     expect(tool.toolEl).toHaveCls('x-tool-maximize');
@@ -921,6 +1000,104 @@ describe("Ext.window.Window", function() {
         win.destroy();
     });
 
+    it("should restore focus after dragging", function() {
+        win = Ext.widget({
+            xtype: 'window',
+            renderTo: Ext.getBody(),
+            height: 100,
+            width: 300,
+            closable: true,
+            maximizable: true,
+            x: 0,
+            y: 0,
+            tools: [{type: 'pin'}],
+            header: {
+                title: 'Title',
+                titlePosition: 2
+            },
+            items: {
+                xtype: 'textfield'
+            }
+        }).show();
+        var t = win.down('textfield');
+
+        t.focus();
+
+        // Wait for any asynchronous focus on the input field
+        waitsFor(function() {
+            return win.containsFocus && Ext.Element.getActiveElement() === t.inputEl.dom;
+        });
+
+        // Begin a window drag operation, move it halfway
+        runs(function() {
+            jasmine.fireMouseEvent(win.header.el, 'mouseover', 5, 5);
+            jasmine.fireMouseEvent(win.header.el, 'mousedown', 5, 5);
+            jasmine.fireMouseEvent(win.header.el, 'mousemove', 55, 5);
+        });
+
+        // Wait for window to be clipped out of view.
+        waitsFor(function() {
+            return win.el.hasCls(Ext.baseCSSPrefix + 'hidden-clip');
+        });
+
+        // Complete the window drag, 100px rightwards
+        runs(function() {
+            jasmine.fireMouseEvent(document.body, 'mousemove', 105, 5);
+            jasmine.fireMouseEvent(document.body, 'mouseup', 100, 5);
+            expect(win.x).toBe(100);
+            expect(win.y).toBe(0);
+        });
+
+        // Wait for any asynchronous focus on the input field
+        waitsFor(function() {
+            return Ext.Element.getActiveElement() === t.inputEl.dom;
+        });
+    });
+
+
+    it("should allow click to focus", function() {
+        win = Ext.widget({
+            xtype: 'window',
+            renderTo: Ext.getBody(),
+            height: 100,
+            width: 300,
+            closable: true,
+            maximizable: true,
+            x: 0,
+            y: 0,
+            tools: [{type: 'pin'}],
+            header: {
+                title: 'Title',
+                titlePosition: 2
+            },
+            items: [{
+                xtype: 'textfield'
+            }, {
+                xtype: 'textfield'
+            }]
+        }).show();
+        var ts = win.query('textfield');
+
+        ts[0].focus();
+
+        // Wait for any asynchronous focus on the input field
+        waitsFor(function() {
+            return win.containsFocus && Ext.Element.getActiveElement() === ts[0].inputEl.dom;
+        });
+
+        // Mousedown in the second field.
+        // Jasmine focuses a focusable mousedowned element after a
+        // mousedown which has NOT been preventDefaulted.
+        runs(function() {
+            jasmine.fireMouseEvent(ts[1].inputEl, 'mousedown');
+        });
+
+        // Wait for any asynchronous focus on the second field
+        waitsFor(function() {
+            return Ext.Element.getActiveElement() === ts[1].inputEl.dom;
+        });
+    });
+
     it("should correctly render the minimize/maximize tools when there is an iconCls present", function() {
         // https://sencha.jira.com/browse/EXTJS-13806
         win = Ext.create({
@@ -1151,6 +1328,63 @@ describe("Ext.window.Window", function() {
             });
         });
     });
+
+    describe("stateful", function(){
+        afterEach(function() {
+            Ext.state.Manager.set('foo', null);
+        });
+        it("should restore position", function() {
+            makeWindow({
+                stateful: true,
+                stateId: 'foo'
+            });
+
+            win.setPosition(20,20);
+            win.saveState();
+            win.destroy();
+
+            makeWindow({
+                stateful: true,
+                stateId: 'foo'
+            });
+
+            expect(win.getPosition()).toEqual([20,20]);
+
+        });
+
+        it("should restore the correct position when window has an owner", function() {
+            var panel  = new Ext.panel.Panel({
+                renderTo: document.body,
+                width: 500,
+                height: 500
+            }), position;
+
+            makeWindow({
+                stateful: true,
+                stateId: 'foo',
+                constrain: true
+            }, true);
+
+            panel.add(win).show();
+
+            win.setPosition(150, 200);
+            win.saveState();
+            position = win.getPosition();
+            win.destroy();
+            makeWindow({
+                stateful: true,
+                stateId: 'foo',
+                constrain: true
+            }, true);
+
+            panel.add(win).show();
+
+            expect(win.getPosition()).toEqual(position);
+
+            panel.destroy();
+
+        });
+    });
     
     describe("tab guards", function() {
         var docBody = Ext.getBody(),
@@ -1185,7 +1419,8 @@ describe("Ext.window.Window", function() {
                 it("should add tab guards when tool is added", function() {
                     win.addTool({ type: 'pin' });
                     
-                    expectTabbables(3);
+                    // 2 window guards + 2 header guards
+                    expectTabbables(4);
                 });
                 
                 it("should add tab guards when an item is docked", function() {
@@ -1248,20 +1483,12 @@ describe("Ext.window.Window", function() {
         
         describe("ARIA attributes", function() {
             beforeEach(function() {
-                makeWindow();
+                makeWindow({ collapsible: true });
             });
             
             function makeAttrSuite(position) {
                 describe(position + " guard", function() {
                     var guard;
-                    
-                    function expectAria(attr, value) {
-                        jasmine.expectAriaAttr(guard, attr, value);
-                    }
-                    
-                    function expectNoAria(attr) {
-                        jasmine.expectNoAriaAttr(guard, attr);
-                    }
                     
                     beforeEach(function() {
                         guard = position === 'top' ? win.tabGuardBeforeEl : win.tabGuardAfterEl;
@@ -1270,32 +1497,28 @@ describe("Ext.window.Window", function() {
                     it("should have tabindex", function() {
                         expect(guard.isTabbable()).toBe(true);
                     });
-                
-                    it("should have button role on the top guard", function() {
-                        expectAria('role', 'button');
-                    });
             
-                    it("should have aria-busy on the top guard", function() {
-                        expectAria('aria-busy', 'true');
+                    it("should have aria-hidden", function() {
+                        expect(guard).toHaveAttr('aria-hidden', 'true');
                     });
                     
                     // It is important that tab guards are not published
                     // to Assistive Technologies as announceable entities,
                     // hence the tests.
                     it("should have no title", function() {
-                        expectNoAria('title');
+                        expect(guard).not.toHaveAttr('title');
                     });
                     
                     it("should not have aria-label", function() {
-                        expectNoAria('aria-label');
+                        expect(guard).not.toHaveAttr('aria-label');
                     });
                     
                     it("should not have aria-labelledby", function() {
-                        expectNoAria('aria-labelledby');
+                        expect(guard).not.toHaveAttr('aria-labelledby');
                     });
                     
                     it("should have no aria-describedby", function() {
-                        expectNoAria('aria-describedby');
+                        expect(guard).not.toHaveAttr('aria-describedby');
                     });
                 });
             }
@@ -1312,7 +1535,7 @@ describe("Ext.window.Window", function() {
         function makeTabSuite(modal) {
             var pressTab = jasmine.pressTabKey,
                 expectFocused = jasmine.expectFocused,
-                tool, fooField, barField, okBtn;
+                tool, fooField, barField, okBtn, cancelBtn;
             
             describe("tabbing with focusables inside, modal: " + modal, function() {
                 beforeEach(function() {
@@ -1358,6 +1581,7 @@ describe("Ext.window.Window", function() {
                     fooField = win.down('textfield[name=foo]');
                     barField = win.down('textfield[name=bar]');
                     okBtn = win.down('button[text=OK]');
+                    cancelBtn = win.down('button[text=Cancel]');
                     
                     after = new Ext.button.Button({
                         renderTo: docBody,
@@ -1369,22 +1593,28 @@ describe("Ext.window.Window", function() {
                 describe("from outside the window", function() {
                     it("should tab from before button to the first tool", function() {
                         pressTab(before, true);
-                        
-                        expectFocused(tool);
+
+                        runs(function() {
+                            expectFocused(tool);
+                        });
                     });
                     
-                    it("should shift-tab from after button to the OK button", function() {
+                    it("should shift-tab from after button to the Cancel button", function() {
                         pressTab(after, false);
-                        
-                        expectFocused(okBtn);
+
+                        runs(function() {
+                            expectFocused(cancelBtn);
+                        });
                     });
                 });
                 
                 describe("from window", function() {
                     it("should tab to the first tool", function() {
                         pressTab(win, true);
-                        
-                        expectFocused(tool);
+
+                        runs(function() {
+                            expectFocused(tool);
+                        });
                     });
                 });
                 
@@ -1392,52 +1622,84 @@ describe("Ext.window.Window", function() {
                     describe("forward", function() {
                         it("should tab from first tool to the foo field", function() {
                             pressTab(tool, true);
-                            
-                            expectFocused(fooField);
+
+                            runs(function() {
+                                expectFocused(fooField);
+                            });
                         });
                         
                         it("should tab from foo field to bar field", function() {
                             pressTab(fooField, true);
-                            
-                            expectFocused(barField);
+
+                            runs(function() {
+                                expectFocused(barField);
+                            });
                         });
                         
                         it("should tab from bar field to OK button", function() {
                             pressTab(barField, true);
-                            
-                            expectFocused(okBtn);
+
+                            runs(function() {
+                                expectFocused(okBtn);
+                            });
                         });
                         
-                        it("should tab from OK button back to the first tool", function() {
+                        it("should tab from OK button to Cancel button", function() {
                             pressTab(okBtn, true);
-                            
-                            expectFocused(tool);
+
+                            runs(function() {
+                                expectFocused(cancelBtn);
+                            });
+                        });
+                        
+                        it("should tab from Cancel button back to the first tool", function() {
+                            pressTab(cancelBtn, true);
+
+                            runs(function() {
+                                expectFocused(tool);
+                            });
                         });
                     });
                     
                     describe("backward", function() {
+                        it("should shift-tab from Cancel button to OK button", function() {
+                            pressTab(cancelBtn, false);
+
+                            runs(function() {
+                                expectFocused(okBtn);
+                            });
+                        });
+                        
                         it("should shift-tab from Ok button to bar field", function() {
                             pressTab(okBtn, false);
-                            
-                            expectFocused(barField);
+
+                            runs(function() {
+                                expectFocused(barField);
+                            });
                         });
                         
                         it("should shift-tab from bar field to foo field", function() {
                             pressTab(barField, false);
-                            
-                            expectFocused(fooField);
+
+                            runs(function() {
+                                expectFocused(fooField);
+                            });
                         });
                         
-                        it("should shift-tab from foo field to the firs tool", function() {
+                        it("should shift-tab from foo field to the first tool", function() {
                             pressTab(fooField, false);
-                            
-                            expectFocused(tool);
+
+                            runs(function() {
+                                expectFocused(tool);
+                            });
                         });
                         
-                        it("should shift-tab from the first tool back to OK button", function() {
+                        it("should shift-tab from the first tool back to Cancel button", function() {
                             pressTab(tool, false);
-                            
-                            expectFocused(okBtn);
+
+                            runs(function() {
+                                expectFocused(cancelBtn);
+                            });
                         });
                     });
                 });
@@ -1486,19 +1748,15 @@ describe("Ext.window.Window", function() {
                 });
             }
         }
-        
-        // Trapping focus within the window relies on finding next or previous
-        // tabbable element, which is done in Element.findTabbableElements().
-        // However that method is busted in IE8/9 due to a bug in querySelectorAll()
-        // See https://sencha.jira.com/browse/EXTJS-17170
-        if (!Ext.isIE9) {
-            makeTabSuite(false);
-            makeTabSuite(true);
-        }
+
+        makeTabSuite(false);
+        makeTabSuite(true);
     });
 
     describe('nested Windows', function() {
-        it('should disable tabbing in tha parent window', function() {
+        var rootPanel, win1, win2;
+        
+        beforeEach(function() {
             Ext.define('spec.window.TestOneWindow', {
                 extend: 'Ext.window.Window',
                 alias: 'widget.testonewindow',
@@ -1550,8 +1808,21 @@ describe("Ext.window.Window", function() {
                     text:' Test Button 4'
                 }]
             });
- 
-            var rootPanel = Ext.create('Ext.panel.Panel', {
+        });
+        
+        afterEach(function() {
+            Ext.destroy([rootPanel, win1, win2]);
+            
+            Ext.undefine('spec.window.TestOneWindow');
+            Ext.undefine('spec.window.TestTwoWindow');
+            
+            spec.window = null;
+        });
+        
+        it('should disable tabbing in the parent window', function() {
+            var button1, button2;
+            
+            rootPanel = Ext.create('Ext.panel.Panel', {
                 title: 'Hello',
                 renderTo: Ext.getBody(),
                 width: 800,
@@ -1570,15 +1841,14 @@ describe("Ext.window.Window", function() {
                         }
                     }]
                 }]
-            }),
-            button1 = rootPanel.down('button[text=Open Window 1]'),
-            button2,
-            win1, win2;
+            });
+            
+            button1 = rootPanel.down('button[text=Open Window 1]');
 
             jasmine.fireMouseEvent(button1.el, 'click');
 
-            // Three buttons in the body, before and after tab guard and the header FocusableContainer.
-            expect(win1.el.findTabbableElements().length).toBe(6);
+            // Three buttons in the body, before and after tab guard.
+            expect(win1.el.findTabbableElements().length).toBe(5);
 
             button2 = win1.down('button[text=Open Window 2]');
             jasmine.fireMouseEvent(button2.el, 'click');
@@ -1586,10 +1856,123 @@ describe("Ext.window.Window", function() {
             // Should all be untabbable now
             expect(win1.el.findTabbableElements().length).toBe(0);
 
-            // Three buttons, two input fields in the body, before and after tab guard and the header FocusableContainer.
-            expect(win2.el.findTabbableElements().length).toBe(8);
+            // Three buttons, two input fields in the body, before and after tab guard.
+            expect(win2.el.findTabbableElements().length).toBe(7);
+        });
+    });
 
-            Ext.destroy([rootPanel, win1, win2]);
+    describe('maskClickAction', function() {
+        var field;
+        
+        afterEach(function() {
+            if (field) {
+                field = Ext.destroy(field);
+            }
+        });
+
+        it('should focus the window by default', function() {
+            win = makeWindow({
+                modal: true
+            });
+            field = new Ext.form.field.Text({
+                renderTo: document.body
+            });
+            field.focus();
+
+            waitsFor(function() {
+                return field.hasFocus;
+            }, 'field to be focused');
+
+            runs(function() {
+                jasmine.fireMouseEvent(win.zIndexManager.mask, 'click');
+            });
+
+            waitsFor(function() {
+                return win.containsFocus;
+            }, 'window to be focused');
+        });
+        it("should hide the window if configured with maskClickAction: 'hide'", function() {
+            win = makeWindow({
+                modal: true,
+                maskClickAction: 'hide'
+            });
+            jasmine.fireMouseEvent(win.zIndexManager.mask, 'click');
+            expect(win.isVisible()).toBe(false);
+            expect(win.destroyed).toBe(false);
+        });
+        it("should destroy the window if configured with maskClickAction: 'destroy'", function() {
+            win = makeWindow({
+                modal: true,
+                maskClickAction: 'destroy'
+            });
+            jasmine.fireMouseEvent(win.zIndexManager.mask, 'click');
+            expect(win.destroyed).toBe(true);
+        });
+        it("should not hide the window if configured with maskClickAction: 'hide', but the maskclick event was vetoed", function() {
+            win = makeWindow({
+                modal: true,
+                maskClickAction: 'hide',
+                listeners: {
+                    maskclick: function() {
+                        return false;
+                    }
+                }
+            });
+            jasmine.fireMouseEvent(win.zIndexManager.mask, 'click');
+            expect(win.isVisible()).toBe(true);
+        });
+        it("should destroy the window if configured with maskClickAction: 'destroy', but the maskclick event was vetoed", function() {
+            win = makeWindow({
+                modal: true,
+                maskClickAction: 'destroy',
+                listeners: {
+                    maskclick: function() {
+                        return false;
+                    }
+                }
+            });
+            jasmine.fireMouseEvent(win.zIndexManager.mask, 'click');
+            expect(win.destroyed).toBe(false);
+        });
+    });
+
+    describe('dragging', function() {
+        var outer;
+
+        afterEach(function() {
+            outer.destroy();
+        });
+
+        it('should constrain the header within ownerCt is headerConstrain: true', function() {
+            outer = Ext.widget({
+                xtype: 'container',
+                border: false,
+                renderTo: document.body,
+                height: 500,
+                width: 800,
+                x: 100,
+                y: 100,
+                style: {
+                    backgroundColor: 'yellow'
+                },
+                items: {
+                    id: 'child-window',
+                    xtype: 'window',
+                    title: 'draggable',
+                    constrainHeader: true,
+                    autoShow: true,
+                    height: 100,
+                    width: 200
+                }
+            });
+            var childWindow = outer.down('#child-window');
+            
+            jasmine.fireMouseEvent(childWindow.header.el, 'mousedown');
+            jasmine.fireMouseEvent(document.body, 'mousemove', 600, 10000);
+            jasmine.fireMouseEvent(document.body, 'mouseup', 600, 10000);
+
+            // Even though the drag dragged down to y=10000, the header sticks at the bottom
+            expect(childWindow.getY()).toBe(outer.getRegion().bottom - childWindow.header.getHeight());
         });
     });
 });

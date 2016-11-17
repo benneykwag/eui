@@ -4,7 +4,13 @@ describe('Ext.grid.Panel', function(){
     var itShowsScrollbars = Ext.getScrollbarSize().width ? it : xit,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
 
     function completeWithData(theData) {
         Ext.Ajax.mockComplete({
@@ -107,13 +113,7 @@ describe('Ext.grid.Panel', function(){
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         failedLayouts = Ext.failedLayouts || 0;
     });
@@ -122,7 +122,7 @@ describe('Ext.grid.Panel', function(){
         // Undo the overrides.
         Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
 
-        grid = view = selModel = Ext.destroy(grid);
+        grid = view = selModel = store = Ext.destroy(grid, store);
     });
 
     function expectNoFailedLayouts () {
@@ -133,7 +133,16 @@ describe('Ext.grid.Panel', function(){
     describe('scrollable: false', function() {
         var field;
         afterEach(function() {
-            field.destroy();
+            if (field) {
+                field.destroy();
+            }
+        });
+        it('should disable scrolling with scrollable: false', function() {
+            createGrid(null, {
+                scrollable: false
+            });
+            expect(grid.view.getScrollable()).toBe(false);
+            expect(grid.view.getScrollable()).toBe(false);
         });
         it('should be able to focus for a second time without throwing an error', function() {
             createGrid(null, {
@@ -178,6 +187,23 @@ describe('Ext.grid.Panel', function(){
                 store: store,
                 renderTo: Ext.getBody()
             });
+        });
+    });
+    
+    describe('Splitter in locked grid', function() {
+        it('should allow configuration of the splitter', function() {
+            createGrid(null, {
+                height: 100,
+                split: {
+                    width: 30
+                },
+                columns: [
+                    { header: 'Name',  dataIndex: 'name', width: 200, locked: true },
+                    { header: 'Email', dataIndex: 'email', width: 200 },
+                    { header: 'Phone', dataIndex: 'phone', width: 200 }
+                ]
+            });
+            expect(grid.child('splitter').getWidth()).toBe(30);
         });
     });
 
@@ -379,7 +405,7 @@ describe('Ext.grid.Panel', function(){
             });
 
             // Width must be the locked column width plus any left & right borders
-            expect(grid.lockedGrid.getWidth()).toBe(210);
+            expect(grid.lockedGrid.getWidth()).toBe(200 + grid.lockedGrid.gridPanelBorderWidth);
         });
 
         it('should properly place table below header', function () {
@@ -742,8 +768,10 @@ describe('Ext.grid.Panel', function(){
                     ]
                 })
             });
-            var view = grid.getView();
-            grid.getNavigationModel().setPosition(0, 0);
+            var view = grid.getView(),
+                navModel = grid.getNavigationModel();
+            
+            navModel.setPosition(0, 0);
             
             waitsFor(function() {
                 return view.containsFocus;
@@ -766,8 +794,11 @@ describe('Ext.grid.Panel', function(){
 
             // Same cell by row/column should be focused after the reconfigure even though the record and column are different
             waitsFor(function() {
-                return view.containsFocus && grid.getNavigationModel().getPosition().isEqual(new Ext.grid.CellContext(view).setPosition(0, 0));
-            });
+                var position = navModel.getPosition();
+                
+                return view.containsFocus && position &&
+                       position.isEqual(new Ext.grid.CellContext(view).setPosition(0, 0));
+            }, 'position to match', 1000);
         });
 
         it("Should reconfigure the grid with no error when no columns are passed", function() {
@@ -1822,7 +1853,7 @@ describe('Ext.grid.Panel', function(){
                 expect(grid.lockedGrid.isVisible()).toBe(true);
 
                 // We now expect the locked grid to be the width of colRef[2] plus its border width
-                expect(grid.lockedGrid.width).toBe(colRef[2].getWidth() + grid.lockedGrid.el.getBorderWidth('lr'));
+                expect(grid.lockedGrid.width).toBe(colRef[2].getWidth() + grid.lockedGrid.gridPanelBorderWidth);
 
                 grid.saveState();
                 grid.destroy();
@@ -1838,7 +1869,7 @@ describe('Ext.grid.Panel', function(){
                 expect(grid.lockedGrid.isVisible()).toBe(true);
 
                 // We now expect the locked grid to be the width of colRef[0] plus its border width
-                expect(grid.lockedGrid.width).toBe(colRef[0].getWidth() + grid.lockedGrid.el.getBorderWidth('lr'));
+                expect(grid.lockedGrid.width).toBe(colRef[0].getWidth() + grid.lockedGrid.gridPanelBorderWidth);
             });
         });
 

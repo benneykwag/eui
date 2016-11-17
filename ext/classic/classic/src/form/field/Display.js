@@ -55,6 +55,10 @@ Ext.define('Ext.form.field.Display', {
     
     focusable: false,
 
+    // Display fields are divs not real input fields, so rendering
+    // "for" attribute in the label does not do any good.
+    skipLabelForAttribute: true,
+
     /**
      * @cfg {Boolean} readOnly
      * @private
@@ -176,16 +180,6 @@ Ext.define('Ext.form.field.Display', {
         ret.value = this.getDisplayValue();
 
         return ret;
-    },
-    
-    getLabelableRenderData: function() {
-        var data = this.callParent();
-        
-        // Display fields are divs not real input fields, so rendering
-        // "for" attribute in the label does not do any good.
-        delete data.inputId;
-        
-        return data;
     }
 
     /**

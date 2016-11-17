@@ -879,6 +879,31 @@ describe("Ext.Component", function(){
             expect(c.getHeight()).toBe(200);
         });
 
+        it("should stop reacting when setting the binding to null", function() {
+            makeComponent({
+                renderTo: Ext.getBody(),
+                height: 200,
+                viewModel: {
+                    data: {
+                        width: 200
+                    }
+                },
+                bind: {
+                    width: '{width}'
+                }
+            });
+            var vm = c.getViewModel();
+
+            vm.notify();
+            expect(c.getWidth()).toBe(200);
+            c.setBind({
+                width: null
+            });
+            vm.set('width', 400);
+            vm.notify();
+            expect(c.getWidth()).toBe(200);
+        });
+
         describe("twoWayBindable", function() {
             var Cls, viewModel;
 
@@ -929,6 +954,52 @@ describe("Ext.Component", function(){
                         bind: {}
                     });
                 }).not.toThrow();
+            });
+
+            it("should stop reacting when setting the binding to null", function() {
+                makeCls({
+                    renderTo: Ext.getBody(),
+                    viewModel: {
+                        data: {
+                            d: 200
+                        }
+                    },
+                    bind: {
+                        customD: '{d}'
+                    }
+                });
+                var vm = c.getViewModel();
+
+                vm.notify();
+                expect(c.getCustomD()).toBe(200);
+                c.setBind({
+                    customD: null
+                });
+                vm.set('customD', 400);
+                vm.notify();
+                expect(c.getCustomD()).toBe(200);
+            });
+
+            it("should not be two way if the binding has twoWay: false", function() {
+                makeCls({
+                    renderTo: Ext.getBody(),
+                    viewModel: {
+                        data: {
+                            d: 200
+                        }
+                    },
+                    bind: {
+                        customD: {
+                            bindTo: '{d}',
+                            twoWay: false
+                        }
+                    }
+                });
+                var vm = c.getViewModel();
+                vm.notify();
+                c.setCustomD(400);
+                vm.notify();
+                expect(vm.get('d')).toBe(200);
             });
 
             describe("when the binding has not fired", function() {
@@ -1193,15 +1264,7 @@ describe("Ext.Component", function(){
         });
 
         afterEach(function() {
-            if (cmp) {
-                cmp.destroy();
-            }
-            if (parent) {
-                parent.destroy();
-            }
-            if (grandparent) {
-                grandparent.destroy();
-            }
+            cmp = parent = grandparent = Ext.destroy(cmp, parent, grandparent);
         });
 
         describe("listener declared on class body", function() {
@@ -3493,7 +3556,28 @@ describe("Ext.Component", function(){
             expect(c.el.getWidth()).toBe(200);
             expect(c.el.getHeight()).toBe(200);
         });
-        
+       
+        it("should suspend layouts in Ext.batchLayouts", function() {
+            Ext.batchLayouts(function() {
+                expect(Component.layoutSuspendCount).toBe(1);
+            });
+            expect(Component.layoutSuspendCount).toBe(0);
+        });
+
+        it("should resume layouts in Ext.batchLayouts if fn throws an error", function() {
+            // try/catch required to avoid causing test to fail due to the exception thrown
+            try {
+                Ext.batchLayouts(function() {
+                    expect(Component.layoutSuspendCount).toBe(1);
+                    throw 'unexpected exception';
+                });
+            }
+            catch (e) {
+            }
+            // finally should resume
+            expect(Component.layoutSuspendCount).toBe(0);
+        });
+
         it("should run the layout straight away when resuming layouts with flush", function() {
             var spy = jasmine.createSpy();
             c.on('resize', spy);
@@ -3918,7 +4002,7 @@ describe("Ext.Component", function(){
                 expect(ct.body.component).toBe(ct);
 
                 var bodyEl = ct.body.el.dom;
-                expect(bodyEl.parentNode).toBe(ct.el.dom);
+                expect(bodyEl.parentNode.parentNode).toBe(ct.el.dom);
 
                 var item = ct.items.getAt(0);
                 expect(item.el.dom.parentNode).toBe(bodyEl);
@@ -3951,13 +4035,13 @@ describe("Ext.Component", function(){
                 expect(ct.body.component).toBe(ct);
 
                 var bodyEl = ct.body.el.dom;
-                expect(bodyEl.parentNode).toBe(ct.el.dom);
+                expect(bodyEl.parentNode.parentNode).toBe(ct.el.dom);
 
                 var subPanel = ct.items.getAt(0);
                 var bodyEl2 = subPanel.body.el.dom;
 
                 expect(subPanel.el.dom.parentNode).toBe(bodyEl);
-                expect(bodyEl2.parentNode).toBe(subPanel.el.dom);
+                expect(bodyEl2.parentNode.parentNode).toBe(subPanel.el.dom);
 
                 var item = subPanel.items.getAt(0);
                 expect(item.el.dom.parentNode).toBe(bodyEl2);
@@ -3984,7 +4068,7 @@ describe("Ext.Component", function(){
                 expect(ct.body.component).toBe(ct);
 
                 var bodyEl = ct.body.el.dom;
-                expect(bodyEl.parentNode).toBe(ct.el.dom);
+                expect(bodyEl.parentNode.parentNode).toBe(ct.el.dom);
 
                 var outerCt = ct.layout.outerCt;
                 expect(outerCt.component).toBe(ct);
@@ -4019,7 +4103,7 @@ describe("Ext.Component", function(){
                 expect(ct.body.component).toBe(ct);
 
                 var bodyEl = ct.body.el.dom;
-                expect(bodyEl.parentNode).toBe(ct.el.dom);
+                expect(bodyEl.parentNode.parentNode).toBe(ct.el.dom);
 
                 var innerCt = ct.layout.innerCt;
                 expect(innerCt.component).toBe(ct);
@@ -4054,7 +4138,7 @@ describe("Ext.Component", function(){
                 expect(ct.body.component).toBe(ct);
 
                 var bodyEl = ct.body.el.dom;
-                expect(bodyEl.parentNode).toBe(ct.el.dom);
+                expect(bodyEl.parentNode.parentNode).toBe(ct.el.dom);
 
                 var innerCt = ct.layout.innerCt;
                 expect(innerCt.component).toBe(ct);
@@ -5680,6 +5764,34 @@ describe("Ext.Component", function(){
                 });
             });
             
+        });
+    });
+
+    describe("findParentBy", function () {
+        var ct;
+
+        describe("findParentByType", function () {
+            beforeEach(function() {
+                ct = new Ext.toolbar.Toolbar({
+                    renderTo: document.body
+                });
+                makeComponent({
+                    renderTo: null
+                });
+                ct.add(c);
+            });
+
+            afterEach(function(){
+                ct.destroy();
+            });
+
+            it("should find by xtype", function() {
+                expect(c.findParentByType('toolbar')).toBe(ct);
+            });
+
+            it("should find by class", function() {
+                expect(c.findParentByType(Ext.toolbar.Toolbar)).toBe(ct);
+            });
         });
     });
     
@@ -8212,6 +8324,58 @@ describe("Ext.Component", function(){
                 });
             });
         });
+        
+        describe("ARIA", function() {
+            beforeEach(function() {
+                makeComponent({
+                    height: 100,
+                    width: 100,
+                    renderTo: Ext.getBody(),
+                    style: 'background-color:red',
+                    ariaRole: 'button',
+                    focusable: true,
+                    tabIndex: 0
+                });
+            });
+            
+            describe("masking", function() {
+                beforeEach(function() {
+                    c.setLoading(true);
+                });
+                
+                it("should set aria-describedby", function() {
+                    expect(c).toHaveAttr('aria-describedby', c.loadMask.id);
+                });
+                
+                it("should set aria-busy", function() {
+                    expect(c).toHaveAttr('aria-busy', 'true');
+                });
+            });
+            
+            describe("unmasking", function() {
+                it("should remove aria-describedby", function() {
+                    c.setLoading(true);
+                    c.setLoading(false);
+                    
+                    expect(c).not.toHaveAttr('aria-describedby');
+                });
+                
+                it("should preserve aria-describedby value if it was set", function() {
+                    c.ariaEl.dom.setAttribute('aria-describedby', 'foo');
+                    c.setLoading(true);
+                    c.setLoading(false);
+                    
+                    expect(c).toHaveAttr('aria-describedby', 'foo');
+                });
+                
+                it("should remove aria-busy", function() {
+                    c.setLoading(true);
+                    c.setLoading(false);
+                    
+                    expect(c).not.toHaveAttr('aria-busy');
+                });
+            });
+        });
     });
 
     describe("size constraints", function() {
@@ -9389,14 +9553,6 @@ describe("Ext.Component", function(){
     });
     
     describe("ARIA attributes", function() {
-        function expectAttr(attr, value) {
-            jasmine.expectAriaAttr(c, attr, value);
-        }
-        
-        function expectNoAttr(attr) {
-            jasmine.expectNoAriaAttr(c, attr);
-        }
-        
         describe("static roles", function() {
             function createSuite(role) {
                 describe(role, function() {
@@ -9409,39 +9565,39 @@ describe("Ext.Component", function(){
                     
                     describe('aria-hidden', function() {
                         it("should not be present after render", function() {
-                            expectNoAttr('aria-hidden');
+                            expect(c).not.toHaveAttr('aria-hidden');
                         });
                         
                         it("should not be present after hiding", function() {
                             c.hide();
                             
-                            expectNoAttr('aria-hidden');
+                            expect(c).not.toHaveAttr('aria-hidden');
                         });
                         
                         it("should not be present after showing", function() {
                             c.hide();
                             c.show();
                             
-                            expectNoAttr('aria-hidden');
+                            expect(c).not.toHaveAttr('aria-hidden');
                         });
                     });
                     
                     describe('aria-disabled', function() {
                         it("should not be present after render", function() {
-                            expectNoAttr('aria-disabled');
+                            expect(c).not.toHaveAttr('aria-disabled');
                         });
                         
                         it("should not be present after disabling", function() {
                             c.disable();
                             
-                            expectNoAttr('aria-disabled');
+                            expect(c).not.toHaveAttr('aria-disabled');
                         });
                         
                         it("should not be present after enabling", function() {
                             c.disable();
                             c.enable();
                             
-                            expectNoAttr('aria-disabled');
+                            expect(c).not.toHaveAttr('aria-disabled');
                         });
                     });
                 });
@@ -9462,42 +9618,234 @@ describe("Ext.Component", function(){
             
             describe("aria-hidden", function() {
                 it("should be false after render", function() {
-                    expectAttr('aria-hidden', 'false');
+                    expect(c).toHaveAttr('aria-hidden', 'false');
                 });
             
                 it("should be true after hiding", function() {
                     c.hide();
                 
-                    expectAttr('aria-hidden', 'true');
+                    expect(c).toHaveAttr('aria-hidden', 'true');
                 });
             
                 it("should be false again after showing", function() {
                     c.hide();
                     c.show();
                 
-                    expectAttr('aria-hidden', 'false');
+                    expect(c).toHaveAttr('aria-hidden', 'false');
                 });
             });
         
             describe("aria-disabled", function() {
                 it("should be false after render", function() {
-                    expectAttr('aria-disabled', 'false');
+                    expect(c).toHaveAttr('aria-disabled', 'false');
                 });
             
                 it("should be true after disabling", function() {
                     c.disable();
                 
-                    expectAttr('aria-disabled', 'true');
+                    expect(c).toHaveAttr('aria-disabled', 'true');
                 });
             
                 it("should be false again after enabling", function() {
                     c.disable();
                     c.enable();
                 
-                    expectAttr('aria-disabled', 'false');
+                    expect(c).toHaveAttr('aria-disabled', 'false');
                 });
             });
         });
     });
-});
 
+    (Ext.supports.PointerEvents ? describe : xdescribe)("touchAction", function() {
+        var Cmp, cmp;
+
+        function makeCmpWithTouchAction(touchAction) {
+            Cmp = Ext.define(null, {
+                extend: 'Ext.Component',
+                childEls: [ 'child' ],
+                renderTpl: '<div id="{id}-child" data-ref="child">{%this.renderContent(out,values)%}</div>'
+            });
+            cmp = new Cmp({
+                renderTo: Ext.getBody(),
+                touchAction: touchAction
+            });
+        }
+
+        function expectTouchAction(el, value) {
+            // touch actions read from the dom are not always returned in the same order
+            // as they were set, so we have to parse theme out.
+            var expectedTouchAction = el.getStyle('touch-action').split(' '),
+                actualTouchAction = value.split(' ');
+
+            expect(actualTouchAction.length).toBe(expectedTouchAction.length);
+
+            Ext.each(expectedTouchAction, function(item) {
+                expect(Ext.Array.contains(actualTouchAction, item)).toBe(true);
+            });
+        }
+
+        afterEach(function() {
+            if (cmp) {
+                cmp.destroy();
+                cmp = null;
+            }
+        });
+
+        it("should default to auto", function() {
+            makeCmpWithTouchAction(null);
+
+            expectTouchAction(cmp.el, 'auto');
+            expectTouchAction(cmp.child, 'auto');
+        });
+
+        it("should disable panX", function() {
+            makeCmpWithTouchAction({
+                panX: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-y pinch-zoom double-tap-zoom');
+        });
+
+        it("should disable panY", function() {
+            makeCmpWithTouchAction({
+                panY: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x pinch-zoom double-tap-zoom');
+        });
+
+        it("should disable panX and panY", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                panY: false
+            });
+
+            expectTouchAction(cmp.el, 'pinch-zoom double-tap-zoom');
+        });
+
+        it("should disable pinchZoom", function() {
+            makeCmpWithTouchAction({
+                pinchZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x pan-y double-tap-zoom');
+        });
+
+        it("should disable panX and pinchZoom", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                pinchZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-y double-tap-zoom');
+        });
+
+        it("should disable panY and pinchZoom", function() {
+            makeCmpWithTouchAction({
+                panY: false,
+                pinchZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x double-tap-zoom');
+        });
+
+        it("should disable panX, panY, and PinchZoom", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                panY: false,
+                pinchZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'double-tap-zoom');
+        });
+
+        it("should disable doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'manipulation');
+        });
+
+        it("should disable panX and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-y pinch-zoom');
+        });
+
+        it("should disable panY and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                panY: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x pinch-zoom');
+        });
+
+        it("should disable panX, panY, and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                panY: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pinch-zoom');
+        });
+
+        it("should disable pinchZoom and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                pinchZoom: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x pan-y');
+        });
+
+        it("should disable panX, pinchZoom, and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                pinchZoom: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-y');
+        });
+
+        it("should disable panY, pinchZoom, and doubleTapZoom", function() {
+            makeCmpWithTouchAction({
+                panY: false,
+                pinchZoom: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'pan-x');
+        });
+
+        it("should disable all touch actions", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                panY: false,
+                pinchZoom: false,
+                doubleTapZoom: false
+            });
+
+            expectTouchAction(cmp.el, 'none');
+        });
+
+        it("should set touch action on a child element", function() {
+            makeCmpWithTouchAction({
+                panX: false,
+                child: {
+                    panY: false,
+                    pinchZoom: false
+                }
+            });
+
+            expectTouchAction(cmp.el, 'pan-y pinch-zoom double-tap-zoom');
+            expectTouchAction(cmp.child, 'pan-x double-tap-zoom');
+        });
+    });
+});

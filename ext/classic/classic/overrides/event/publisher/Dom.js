@@ -75,7 +75,7 @@ Ext.define('Ext.overrides.event.publisher.Dom', {
                 }
             },
 
-            doDelegatedEvent: function(e, invokeAfter) {
+            doDelegatedEvent: function(e) {
                 e.target = e.srcElement || window;
 
                 if (e.type === 'focusin') {
@@ -86,7 +86,7 @@ Ext.define('Ext.overrides.event.publisher.Dom', {
                     e.relatedTarget = e.toElement === docBody || e.toElement === docElement ? null : e.toElement;
                 }
 
-                return this.callParent([e, invokeAfter]);
+                return this.callParent([e]);
             }
         });
 

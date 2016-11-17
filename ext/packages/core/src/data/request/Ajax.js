@@ -428,8 +428,13 @@ Ext.define('Ext.data.request.Ajax', {
         if (success) {
             response = me.createResponse(xhr);
             
-            owner.fireEvent('requestcomplete', owner, response, options);
-            Ext.callback(options.success, options.scope, [response, options]);
+            if (owner.hasListeners.requestcomplete) {
+                owner.fireEvent('requestcomplete', owner, response, options);
+            }
+            
+            if (options.success) {
+                Ext.callback(options.success, options.scope, [response, options]);
+            }
         }
         else {
             if (result.isException || me.aborted || me.timedout) {
@@ -439,13 +444,20 @@ Ext.define('Ext.data.request.Ajax', {
                 response = me.createResponse(xhr);
             }
             
-            owner.fireEvent('requestexception', owner, response, options);
-            Ext.callback(options.failure, options.scope, [response, options]);
+            if (owner.hasListeners.requestexception) {
+                owner.fireEvent('requestexception', owner, response, options);
+            }
+            
+            if (options.failure) {
+                Ext.callback(options.failure, options.scope, [response, options]);
+            }
         }
         
         me.result = response;
         
-        Ext.callback(options.callback, options.scope, [options, success, response]);
+        if (options.callback) {
+            Ext.callback(options.callback, options.scope, [options, success, response]);
+        }
         
         owner.onRequestComplete(me);
         

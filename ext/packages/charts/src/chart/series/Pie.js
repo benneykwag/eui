@@ -64,6 +64,7 @@ Ext.define('Ext.chart.series.Pie', {
     type: 'pie',
     alias: 'series.pie',
     seriesType: 'pieslice',
+    isPie: true,
 
     config: {
         /**
@@ -415,8 +416,13 @@ Ext.define('Ext.chart.series.Pie', {
         b %= pp;
 
         // Because 360 * n angles will be normalized to 0,
-        // we need to treat b === 0 as a special case.
-        return x < b || b === 0;
+        // we need to treat b ~= 0 as a special case.
+        return x < b || Ext.Number.isEqual(b, 0, 1e-8);
+    },
+
+    getItemByIndex: function (index, category) {
+        category = category || 'sprites';
+        return this.callParent([index, category]);
     },
 
     /**

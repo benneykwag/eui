@@ -34,9 +34,8 @@ Ext.define('Ext.app.bind.Binding', {
      * Destroys this binding. No further calls will be made to the callback method. No
      * methods should be called on this binding after calling this method.
      * @since 5.0.0
-     * @param fromParent (private)
      */
-    destroy: function (fromParent) {
+    destroy: function (/* private */ fromParent) {
         var me = this,
             stub = me.stub;
 
@@ -109,14 +108,9 @@ Ext.define('Ext.app.bind.Binding', {
      */
     getValue: function () {
         var me = this,
-            stub = me.stub,
-            ret = stub && stub.getValue();
+            stub = me.stub;
 
-        if (me.transform) {
-            ret = me.transform(ret);
-        }
-
-        return ret;
+        return stub && stub.getValue();
     },
 
     /**
@@ -188,14 +182,9 @@ Ext.define('Ext.app.bind.Binding', {
 
         getRawValue: function () {
             var me = this,
-                stub = me.stub,
-                ret = stub && stub.getRawValue();
+                stub = me.stub;
 
-            if (me.transform) {
-                ret = me.transform(ret);
-            }
-
-            return ret;
+            return stub && stub.getRawValue();
         },
 
         isDescendantOf: function (item) {

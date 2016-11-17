@@ -3,7 +3,7 @@ Ext.define(null, {
     
     compatibility: Ext.isIE10m,
     
-    doDelegatedEvent: function(e, invokeAfter) {
+    publishDelegatedDomEvent: function(e) {
         var body = document.body,
             el = Ext.synchronouslyFocusing;
         
@@ -16,8 +16,8 @@ Ext.define(null, {
               e.toElement === null)))
         {
             return;
-        };
+        }
         
-        return this.callParent([e, invokeAfter]);
+        this.callParent([e]);
     }
 });

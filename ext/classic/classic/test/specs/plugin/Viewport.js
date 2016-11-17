@@ -199,30 +199,11 @@ describe("Ext.plugin.Viewport", function() {
     describe("viewport scroll events", function() {
         function makeSuite(name, cls) {
             describe("auto layout " + name, function() {
-                var DomScroller = Ext.scroll.DomScroller,
-                    viewportScrollCount = 0,
-                    documentScrollCount = 0;
+                var viewportScrollCount = 0;
 
                 beforeEach(function() {
-                    // Gets destroyed by viewports, so restore to initial conditions for tests
-                    if (!DomScroller.document) {
-                        DomScroller.document = new DomScroller({
-                            x: true,
-                            y: true,
-                            element: document.documentElement
-                        });
-                    }
-
                     document.documentElement.style.height = '2000px';
                     document.documentElement.style.overflow = 'auto';
-                    // This must not fire.
-                    // We can't use a single global listener because different
-                    // event sources are used on different platforms.
-                    // We are checking that the global instance is destroyed and fires
-                    // no events.
-                    DomScroller.document.on('scroll', function() {
-                        documentScrollCount++;
-                    });
                     makeComponent({
                         scrollable: true,
                         items: {
@@ -251,13 +232,7 @@ describe("Ext.plugin.Viewport", function() {
                     }, "scroll never fired");
 
                     runs(function() {
-                        // Document scroller must have been destroyed
-                        expect(DomScroller.document).toBeFalsy();
-
                         expect(viewportScrollCount).toBe(1);
-
-                        // We must have received no scroll events from the document scroller
-                        expect(documentScrollCount).toBe(0);
                     });
                 });
             });
@@ -266,34 +241,15 @@ describe("Ext.plugin.Viewport", function() {
         makeSuite('Panel', Ext.panel.Panel);
     });
 
-    (Ext.supports.touchScroll ? xdescribe : describe)("global DOM scroll viewport", function() {
+    describe("global DOM scroll viewport", function() {
         function makeSuite(name, cls) {
             describe("auto layout " + name, function() {
-                var DomScroller = Ext.scroll.DomScroller,
-                    viewportScrollCount = 0,
-                    documentScrollCount = 0;
+                var viewportScrollCount = 0;
 
                 beforeEach(function() {
-                    // Gets destroyed by viewports, so restore to initial conditions for tests
-                    if (!DomScroller.document) {
-                        DomScroller.document = new DomScroller({
-                            x: true,
-                            y: true,
-                            element: document.documentElement
-                        });
-                    }
-
                     document.documentElement.style.height = '2000px';
                     document.documentElement.style.overflow = 'auto';
 
-                    // This must not fire.
-                    // We can't use a single global listener because different
-                    // event sources are used on different platforms.
-                    // We are checking that the global instance is destroyed and fires
-                    // no events.
-                    DomScroller.document.on('scroll', function() {
-                        documentScrollCount++;
-                    });
                     Ext.on('scroll', function() {
                         viewportScrollCount++;
                     });
@@ -320,13 +276,7 @@ describe("Ext.plugin.Viewport", function() {
                     }, "scroll never fired");
 
                     runs(function() {
-                        // Document scroller must have been destroyed
-                        expect(DomScroller.document).toBeFalsy();
-
                         expect(viewportScrollCount).toBe(1);
-
-                        // We must have received no scroll events from the document scroller
-                        expect(documentScrollCount).toBe(0);
                     });
                 });
             });

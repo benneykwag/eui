@@ -191,7 +191,7 @@ Ext.define('Ext.util.Floating', {
         me.initHierarchyEvents();
     },
 
-    alignTo: function (alignTarget, position, offsets, animate) {
+    alignTo: function (alignTarget, position, offsets, animate, monitorScroll) {
         var me = this,
             alignEl,
             destroyed,
@@ -219,7 +219,7 @@ Ext.define('Ext.util.Floating', {
             return;
         }
 
-        me.mixins.positionable.alignTo.call(me, alignEl, position, offsets, animate);
+        me.mixins.positionable.alignTo.call(me, alignEl, position, offsets, animate, monitorScroll !== false);
 
         // Work out the vector to maintain our relative position as the alignTarget element moves
         myXY = me.getXY();
@@ -331,6 +331,7 @@ Ext.define('Ext.util.Floating', {
     onMouseDown: function (e) {
         var me = this,
             focusTask = me.focusTask,
+            owner = me.getRefOwner(),
             
             // Do not autofocus the Component (which delegates onto the getFocusEl() descendant)
             // for touch events.
@@ -342,6 +343,11 @@ Ext.define('Ext.util.Floating', {
             // that the handler for a mousedown on a child element set the focus on some
             // other component, and we so not want to steal it back. See EXTJSIV-9458
             (!focusTask || !focusTask.id)) {
+
+            // If focus is already within this floating hierarchy, then do not disturb it on mousedown.
+            if (me.owns(Ext.Element.getActiveElement())) {
+                preventFocus = true;
+            }
 
             target = e.target;
             dom = me.el.dom;
@@ -367,6 +373,11 @@ Ext.define('Ext.util.Floating', {
             // preventFocus as true.
             if (!skipFronting) {
                 me.toFront(preventFocus);
+            }
+            // If we have not hit a focusable element, and our owner
+            // contains focus, then prevent the default action of mousedown (focus movement)
+            if (!preventFocus && owner && owner.containsFocus) {
+                e.preventDefault();
             }
         }
     },
@@ -528,7 +539,9 @@ Ext.define('Ext.util.Floating', {
             activeCmp;
 
         if (active) {
-            if (me.el.shadow && !me.maximized) {
+            // Check the element's visible state. Might be clipped to hide but
+            // be accessible. Do not show a shadow.
+            if (me.el.shadow && me.el.getData().isVisible !== false && !me.maximized) {
                 me.el.enableShadow(null, true);
             }
 
@@ -577,20 +590,17 @@ Ext.define('Ext.util.Floating', {
         return me;
     },
     
-    onFloatShow: function(skipToFront) {
+    onFloatShow: function() {
         var me = this;
 
         if (me.needsCenter) {
             me.center();    
         }
         else if (me._lastAlignTarget) {
-            me.alignTo(me._lastAlignTarget, me._lastAlignToPos, me._lastAlignToOffsets);
+            // Anchor to the target. Do not track scroll if we are position:fixed
+            me.alignTo(me._lastAlignTarget, me._lastAlignToPos, me._lastAlignToOffsets, false, !me.fixed);
         }
-        delete me.needsCenter;
-
-        if (me.toFrontOnShow && !skipToFront) {
-            me.toFront();
-        }
+        me.needsCenter = false;
     },
 
     /**

@@ -1,13 +1,12 @@
-.x-grid-column:after {
-    content: '';
-    width: 0;
-    background-color: $grid-column-resizing-background-color;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
+.x-gridcolumn:after {
+  content: '';
+  width: 0;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
 
-.x-grid-column.x-grid-column-resizing:after {
+.x-gridcolumn.x-resizing:after {
   width: 1em;
 }

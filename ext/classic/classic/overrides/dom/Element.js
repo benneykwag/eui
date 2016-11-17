@@ -173,86 +173,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
-         * Sets up event handlers to add and remove a css class when the mouse is down and then up on this element (a click effect)
-         * @param {String} className The class to add
-         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
-         * will be the Element instance. If this functions returns false, the class will not be added.
-         * @param {Object} [scope] The scope to execute the testFn in.
-         * @return {Ext.dom.Element} this
-         */
-        addClsOnClick: function(className, testFn, scope) {
-            var me = this,
-                dom = me.dom,
-                hasTest = Ext.isFunction(testFn);
-                
-            me.on("mousedown", function() {
-                if (hasTest && testFn.call(scope || me, me) === false) {
-                    return false;
-                }
-                Ext.fly(dom).addCls(className);
-                var d = Ext.getDoc(),
-                    fn = function() {
-                        Ext.fly(dom).removeCls(className);
-                        d.removeListener("mouseup", fn);
-                    };
-                d.on("mouseup", fn);
-            });
-            return me;
-        },
-
-        /**
-         * Sets up event handlers to add and remove a css class when this element has the focus
-         * @param {String} className The class to add
-         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
-         * will be the Element instance. If this functions returns false, the class will not be added.
-         * @param {Object} [scope] The scope to execute the testFn in.
-         * @return {Ext.dom.Element} this
-         */
-        addClsOnFocus: function(className, testFn, scope) {
-            var me = this,
-                dom = me.dom,
-                hasTest = Ext.isFunction(testFn);
-                
-            me.on("focus", function() {
-                if (hasTest && testFn.call(scope || me, me) === false) {
-                    return false;
-                }
-                Ext.fly(dom).addCls(className);
-            });
-            me.on("blur", function() {
-                Ext.fly(dom).removeCls(className);
-            });
-            return me;
-        },
-
-        /**
-         * Sets up event handlers to add and remove a css class when the mouse is over this element
-         * @param {String} className The class to add
-         * @param {Function} [testFn] A test function to execute before adding the class. The passed parameter
-         * will be the Element instance. If this functions returns false, the class will not be added.
-         * @param {Object} [scope] The scope to execute the testFn in.
-         * @return {Ext.dom.Element} this
-         */
-        addClsOnOver: function(className, testFn, scope) {
-            var me = this,
-                dom = me.dom,
-                hasTest = Ext.isFunction(testFn);
-                
-            me.hover(
-                function() {
-                    if (hasTest && testFn.call(scope || me, me) === false) {
-                        return;
-                    }
-                    Ext.fly(dom).addCls(className);
-                },
-                function() {
-                    Ext.fly(dom).removeCls(className);
-                }
-            );
-            return me;
-        },
-
-        /**
          * Convenience method for constructing a KeyMap
          * @param {String/Number/Number[]/Object} key Either a string with the keys to listen for, the numeric key code,
          * array of key codes or an object with the following options:
@@ -650,8 +570,12 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 data = me.getData(),
                 maskEl, maskMsg;
 
-            if (dom && me.isAnimate) {
-                me.stopAnimation();
+            if (dom) {
+                if (me.isAnimate) {
+                    me.stopAnimation();
+                }
+                
+                me.removeAnchor();
             }
 
             me.callParent();
@@ -946,7 +870,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
 
         /**
          * Gets an object with all CSS positioning properties. Useful along with
-         * #setPostioning to get snapshot before performing an update and then restoring
+         * `setPostioning` to get snapshot before performing an update and then restoring
          * the element.
          * @param {Boolean} [autoPx=false] true to return pixel values for "auto" styles.
          * @return {Object}
@@ -1463,44 +1387,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
-         * Monitors this Element for the mouse leaving. Calls the function after the specified delay only if
-         * the mouse was not moved back into the Element within the delay. If the mouse *was* moved
-         * back in, the function is not called.
-         * @param {Number} delay The delay **in milliseconds** to wait for possible mouse re-entry before calling the handler function.
-         * @param {Function} handler The function to call if the mouse remains outside of this Element for the specified time.
-         * @param {Object} [scope] The scope (`this` reference) in which the handler function executes. Defaults to this Element.
-         * @return {Object} The listeners object which was added to this element so that monitoring can be stopped. Example usage:
-         *
-         *     // Hide the menu if the mouse moves out for 250ms or more
-         *     this.mouseLeaveMonitor = this.menuEl.monitorMouseLeave(250, this.hideMenu, this);
-         *
-         *     ...
-         *     // Remove mouseleave monitor on menu destroy
-         *     this.menuEl.un(this.mouseLeaveMonitor);
-         *
-         */
-        monitorMouseLeave: function(delay, handler, scope) {
-            var me = this,
-                timer,
-                listeners = {
-                    mouseleave: function(e) {
-                        //<feature legacyBrowser>
-                        if (Ext.isIE9m) {
-                            e.enableIEAsync();
-                        }
-                        //</feature>
-                        timer = Ext.defer(handler, delay, scope || me, [e]);
-                    },
-                    mouseenter: function() {
-                        clearTimeout(timer);
-                    }
-                };
-
-            me.on(listeners);
-            return listeners;
-        },
-
-        /**
          * Fades the element out while slowly expanding it in all directions. When the effect is completed, the element will
          * be hidden (visibility = 'hidden') but block elements will still take up space in the document. Usage:
          *
@@ -1802,7 +1688,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
-         * Set positioning with an object returned by #getPositioning.
+         * Set positioning with an object returned by `getPositioning`.
          * @param {Object} posCfg
          * @return {Ext.dom.Element} this
          */
@@ -2910,7 +2796,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.0': {
                 methods: {
                     /**
-                     * @method pause
                      * Creates a pause before any subsequent queued effects begin. If there are no effects queued after the pause it will
                      * have no effect. Usage:
                      *
@@ -2929,7 +2814,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method scale
                      * Animates the transition of an element's dimensions from a starting height/width to an ending height/width. This
                      * method is a convenience implementation of {@link #shift}. Usage:
                      *
@@ -2961,7 +2845,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method shift
                      * Animates the transition of any combination of an element's dimensions, xy position and/or opacity. Any of these
                      * properties not specified in the config object will not be changed. This effect requires that at least one new
                      * dimension, position or opacity setting must be passed in on the config object in order for the function to have
@@ -2994,7 +2877,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.2': {
                 methods: {
                     /**
-                     * @method moveTo
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position (coordinates are page-based)
                      * @param {Number} y Y value for new position (coordinates are page-based)
@@ -3008,7 +2890,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method setBounds
                      * Sets the element's position and size in one shot. If animation is true then
                      * width, height, x and y will be animated concurrently.
                      *
@@ -3040,7 +2921,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method setLeftTop
                      * Sets the element's left and top positions directly using CSS style
                      * @param {Number/String} left Number of pixels or CSS string value to
                      * set as the left CSS property value
@@ -3064,7 +2944,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method setLocation
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position
                      * @param {Number} y Y value for new position
@@ -3081,7 +2960,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '5.0': {
                 methods: {
                     /**
-                     * @method getAttributeNS
                      * Returns the value of a namespaced attribute from the element's underlying DOM node.
                      * @param {String} namespace The namespace in which to look for the attribute
                      * @param {String} name The attribute name
@@ -3093,7 +2971,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method getCenterXY
                      * Calculates the x, y to center this element on the screen
                      * @return {Number[]} The x, y values [x, y]
                      * @deprecated 5.0.0 Use {@link Ext.dom.Element#getAlignToXY} instead.
@@ -3104,7 +2981,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method getComputedHeight
                      * Returns either the offsetHeight or the height of this element based on CSS height adjusted by padding or borders
                      * when needed to simulate offsetHeight when offsets aren't available. This may not work on display:none elements
                      * if a height has not been set using CSS.
@@ -3117,7 +2993,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method getComputedWidth
                      * Returns either the offsetWidth or the width of this element based on CSS width adjusted by padding or borders
                      * when needed to simulate offsetWidth when offsets aren't available. This may not work on display:none elements
                      * if a width has not been set using CSS.
@@ -3130,7 +3005,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method getStyleSize
                      * Returns the dimensions of the element available to lay content out in.
                      *
                      * getStyleSize utilizes prefers style sizing if present, otherwise it chooses the larger of offsetHeight/clientHeight and
@@ -3173,7 +3047,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
 
 
                     /**
-                     * @method isBorderBox
                      * Returns true if this element uses the border-box-sizing model.  This method is
                      * deprecated as of version 5.0 because border-box sizing is forced upon all elements
                      * via a style sheet rule, and the browsers that do not support border-box (IE6/7 strict
@@ -3186,7 +3059,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method isDisplayed
                      * Returns true if display is not "none"
                      * @return {Boolean}
                      * @deprecated 5.0.0 use element.isStyle('display', 'none');
@@ -3196,7 +3068,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     },
 
                     /**
-                     * @method focusable
                      * Checks whether this element can be focused.
                      * @return {Boolean} True if the element is focusable
                      * @deprecated 5.0.0 use {@link #isFocusable} instead
@@ -3490,7 +3361,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     }
                     catch (xcpt) {
                         ex = xcpt;
-                    };
+                    }
                     
                     // Ok so now we have this situation when we tried to focus
                     // the first time but did not succeed. Let's try again but
@@ -3528,25 +3399,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * and {@link Ext.LoadMask LoadMasks}
          */
         useShims: false,
-
-        /**
-         * @private
-         * Returns an HTML div element into which {@link Ext.container.Container#method-remove removed} components
-         * are placed so that their DOM elements are not garbage collected as detached Dom trees.
-         * @return {Ext.dom.Element}
-         * @member Ext
-         */
-        getDetachedBody: function () {
-            var detachedEl = Ext.detachedBodyEl;
-
-            if (!detachedEl) {
-                detachedEl = DOC.createElement('div');
-                Ext.detachedBodyEl = detachedEl = new Ext.dom.Fly(detachedEl);
-                detachedEl.isDetachedBody = true;
-            }
-
-            return detachedEl;
-        },
 
         getElementById: function (id) {
             var el = DOC.getElementById(id),
@@ -4078,6 +3930,10 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             bodyCls.push(Ext.baseCSSPrefix + 'ie11');
         }
 
+        if (Ext.isEdge) {
+            bodyCls.push(Ext.baseCSSPrefix + 'edge');
+        }
+
         if (Ext.isGecko) {
             bodyCls.push(Ext.baseCSSPrefix + 'gecko');
         }
@@ -4110,6 +3966,9 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         }
         if (supports.Touch) {
             bodyCls.push(Ext.baseCSSPrefix + 'touch');
+        }
+        if (Ext.os.deviceType) {
+            bodyCls.push(Ext.baseCSSPrefix + Ext.os.deviceType.toLowerCase());
         }
         //Ext.fly(document.documentElement).addCls(htmlCls);
 

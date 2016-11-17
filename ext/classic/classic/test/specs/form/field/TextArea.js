@@ -1323,7 +1323,7 @@ describe("Ext.form.field.TextArea", function() {
             runs(function() {
                 var args = spy.mostRecentCall.args;
                 
-                expect(args[0].isStopped).toBe(true);
+                expect(args[0].stopped).toBe(true);
             });
         });
     });

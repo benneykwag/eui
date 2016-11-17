@@ -167,9 +167,7 @@ Ext.define('Ext.dashboard.Dashboard', {
         return collection;
     },
 
-    /**
-     * @private
-     */
+    /** @private */
     getPart: function (type) {
         var parts = this.getParts();
         return parts.getByKey(type);
@@ -280,10 +278,11 @@ Ext.define('Ext.dashboard.Dashboard', {
          this.updateLayout();
     },
 
-    beforeDestroy : function() {
+    doDestroy: function() {
         if (this.dd) {
             Ext.destroy(this.dd);
         }
+        
         this.callParent();
     },
 

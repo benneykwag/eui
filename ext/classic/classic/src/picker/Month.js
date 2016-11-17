@@ -554,19 +554,9 @@ Ext.define('Ext.picker.Month', {
         }
     },
 
-    /**
-     * @inheritdoc
-     * @private
-     */
-    beforeDestroy: function(){
-        var me = this;
-        me.years = me.months = null;
-        Ext.destroyMembers(me, 'backRepeater', 'nextRepeater', 'okBtn', 'cancelBtn');
-        me.callParent();
-    },
-
-    onDestroy: function() {
-        Ext.destroyMembers(this, 'okBtn', 'cancelBtn');
+    doDestroy: function() {
+        Ext.destroy(this.backRepeater, this.nextRepeater, this.okBtn, this.cancelBtn);
+        
         this.callParent();
     },
 

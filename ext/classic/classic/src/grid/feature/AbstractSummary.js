@@ -80,9 +80,8 @@ Ext.define('Ext.grid.feature.AbstractSummary', {
     /**
      * Toggle whether or not to show the summary row.
      * @param {Boolean} visible True to show the summary row
-     * @param fromLockingPartner (private)
      */
-    toggleSummaryRow: function(visible, fromLockingPartner) {
+    toggleSummaryRow: function(visible /* private */, fromLockingPartner) {
         var me = this,
             prev = me.showSummaryRow,
             doRefresh;

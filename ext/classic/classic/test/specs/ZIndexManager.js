@@ -94,10 +94,10 @@ describe("Ext.ZIndexManager", function() {
                 target: c2.el.dom
             });
 
-            // Because there is a visible alwaysOnTop component, that mousedown should have changed nothing
-            // Order bottom up should still be c2, c3, c1
-            expect(c1.el.getZIndex()).toBeGreaterThan(c3.el.getZIndex());
-            expect(c3.el.getZIndex()).toBeGreaterThan(c2.el.getZIndex());
+            // c2 should have gone up as far as it can to just below the alwaysOnTop c1
+            // Order bottom up should now be c3, c2, c1
+            expect(c1.el.getZIndex()).toBeGreaterThan(c2.el.getZIndex());
+            expect(c2.el.getZIndex()).toBeGreaterThan(c3.el.getZIndex());
 
         });
 
@@ -113,6 +113,27 @@ describe("Ext.ZIndexManager", function() {
             // Order bottom up should be c3, c1, c2
             expect(c2.el.getZIndex()).toBeGreaterThan(c1.el.getZIndex());
             expect(c1.el.getZIndex()).toBeGreaterThan(c3.el.getZIndex());
+        });
+
+        it("should move to the front as far as possible while respecting other alwaysOnTop components", function() {
+            c4.setAlwaysOnTop(1); // This will always be second from top
+            c4.modal = false;
+            c3.setAlwaysOnTop(2); // This will always be topmost
+            c1.show();
+            c2.show();
+            c3.show();
+            c4.show();
+            // onMousedown quits if there is a pending focus task
+            cancelFocus();
+
+            // It cannot go all the way to front because there are two alwaysOnTop
+            // Windows which should be above it.
+            c1.toFront();
+
+            // Order bottom up should c2, c1, c4, c3
+            expect(c1.el.getZIndex()).toBeGreaterThan(c2.el.getZIndex());
+            expect(c4.el.getZIndex()).toBeGreaterThan(c1.el.getZIndex());
+            expect(c3.el.getZIndex()).toBeGreaterThan(c4.el.getZIndex());
         });
 
         it("should order parents", function() {
@@ -295,12 +316,11 @@ describe("Ext.ZIndexManager", function() {
                     
                     // 6 tababbles:
                     // - Top focus trap
-                    // - Window header (it's a FocusableContainer)
                     // - textfield 1
                     // - textfield 2
-                    // - Toolbar (FocusableContainer)
+                    // - Button
                     // - Bottom focus trap
-                    expect(tabbables.length).toBe(6);
+                    expect(tabbables.length).toBe(5);
                 });
             });
         });
@@ -543,7 +563,7 @@ describe("Ext.ZIndexManager", function() {
 
             waitsFor(function() {
                 return plugin.editing;
-            });
+            }, 'plugin to edit');
 
             runs(function(){
                 jasmine.fireKeyEvent(Ext.Element.getActiveElement(), 'keydown', Ext.event.Event.ENTER);
@@ -551,7 +571,7 @@ describe("Ext.ZIndexManager", function() {
 
             waitsFor(function() {
                 return Ext.MessageBox.isVisible();
-            });
+            }, 'become visible');
 
             runs(function() {
                 expect(Ext.MessageBox.el.getZIndex()).toBeGreaterThan(win.el.getZIndex());
@@ -626,11 +646,26 @@ describe("Ext.ZIndexManager", function() {
                 title: 'Win',
                 id: 'theWin',
                 width: 100,
-                height: 100
+                height: 100,
+                autoShow: true
             });
             expect(Ext.WindowManager.bringToFront('theWin')).toBe(false);
             win.destroy();
-        });   
+        });
+
+        it("should return false when bringing to front a componwnt we do not own", function() {
+            var win = new Ext.window.Window({
+                title: 'Win',
+                id: 'theWin',
+                width: 100,
+                height: 100
+            });
+
+            // It is not rendered, so will not have regsitered with the default ZIndexManager.
+            // So asking for it to be moved to front should return false.
+            expect(Ext.WindowManager.bringToFront(win)).toBe(false);
+            win.destroy();
+        });
     });
     
     // This test would better fit a Floating test suite but it's not clear
@@ -781,8 +816,9 @@ describe("Ext.ZIndexManager", function() {
                 win.close();
                 
                 expect(events).toEqual(['sort', 'hide']);
-                
-                Ext.WindowManager.onCollectionSort = oldOnCollectionSort;
+
+                // Fall back to the prototype
+                delete Ext.WindowManager.onCollectionSort;
                 
                 win.destroy();
                 

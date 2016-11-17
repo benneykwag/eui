@@ -356,6 +356,11 @@ Ext.define('Ext.Editor', {
         }
 
         if (me.fireEvent('beforestartedit', me, me.boundEl, value) !== false) {
+            if (me.context) {
+                // Grab the value again, may have changed in beforestartedit
+                value = me.context.value;
+            }
+
             // If NOT configured with a renderTo, render to the ownerCt's element
             // Being floating, we do not need to use the actual layout's target.
             // Indeed, it's better if we do not so that we do not interfere with layout's child management.
@@ -531,7 +536,7 @@ Ext.define('Ext.Editor', {
         }
     },
 
-    beforeDestroy: function () {
+    doDestroy: function() {
         var me = this,
             task = me.specialKeyTask;
 
@@ -539,7 +544,8 @@ Ext.define('Ext.Editor', {
             task.cancel();
         }
 
-        me.specialKeyTask = me.field = me.boundEl = Ext.destroy(me.field);
-        me.callParent(arguments);
+        Ext.destroy(me.field);
+        
+        me.callParent();
     }
 });

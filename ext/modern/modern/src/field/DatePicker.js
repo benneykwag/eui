@@ -119,15 +119,12 @@ Ext.define('Ext.field.DatePicker', {
      */
 
     config: {
-        ui: 'select',
-
         /**
          * @cfg {Object/Ext.picker.Date} picker
          * An object that is used when creating the internal {@link Ext.picker.Date} component or a direct instance of {@link Ext.picker.Date}.
          * @accessor
          */
         picker: true,
-
 
         /**
          * @cfg {Object/Date} value
@@ -150,8 +147,16 @@ Ext.define('Ext.field.DatePicker', {
          * @cfg {String} [dateFormat=Ext.util.Format.defaultDateFormat] The format to be used when displaying the date in this field.
          * Accepts any valid date format. You can view formats over in the {@link Ext.Date} documentation.
          */
-        dateFormat: ''
+        dateFormat: '',
+
+        triggers: {
+            expand: {
+                type: 'date'
+            }
+        }
     },
+
+    classCls: Ext.baseCSSPrefix + 'datepickerfield',
 
     applyValue: function(value, oldValue) {
         if (!Ext.isDate(value)) {
@@ -292,9 +297,9 @@ Ext.define('Ext.field.DatePicker', {
         this.fireEvent('focus', this, e);
 
         if (Ext.os.is.Android4) {
-            component.input.dom.focus();
+            component.inputElement.dom.focus();
         }
-        component.input.dom.blur();
+        component.inputElement.dom.blur();
 
         if (this.getReadOnly()) {
             return false;
@@ -305,10 +310,7 @@ Ext.define('Ext.field.DatePicker', {
         this.getPicker().show();
     },
 
-    /**
-     * @private
-     */
-    destroy: function() {
+    doDestroy: function() {
         var picker = this._picker;
 
         if (picker && picker.isPicker) {

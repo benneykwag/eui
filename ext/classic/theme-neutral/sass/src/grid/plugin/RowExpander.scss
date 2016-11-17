@@ -24,7 +24,6 @@
         @include font-icon($row-expander-collapse-glyph);
     } @else {
         background-image: theme-background-image('grid/group-collapse');
-        $row-expander-collapse-uses-background-image: true;
     }
 
     .#{$prefix}grid-row-collapsed & {
@@ -32,7 +31,6 @@
             @include font-icon($row-expander-expand-glyph);
         } @else {
             background-image: theme-background-image('grid/group-expand');
-            $row-expander-expand-uses-background-image: true;
         }
     }
 }

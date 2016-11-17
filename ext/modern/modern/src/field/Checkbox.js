@@ -97,12 +97,6 @@ Ext.define('Ext.field.Checkbox', {
 
     config: {
         /**
-         * @cfg
-         * @inheritdoc
-         */
-        ui: 'checkbox',
-
-        /**
          * @cfg {String} value The string value to submit if the item is in a checked state.
          * @accessor
          */
@@ -125,10 +119,7 @@ Ext.define('Ext.field.Checkbox', {
          * @inheritdoc
          */
         component: {
-            xtype: 'input',
-            type: 'checkbox',
-            useMask: true,
-            cls: Ext.baseCSSPrefix + 'input-checkbox'
+            xtype: 'checkboxinput'
         }
 
         /**
@@ -136,6 +127,9 @@ Ext.define('Ext.field.Checkbox', {
          * @private
          */
     },
+
+    classCls: Ext.baseCSSPrefix + 'checkboxfield',
+    checkedCls: Ext.baseCSSPrefix + 'checked',
 
     /**
      * @private
@@ -154,7 +148,7 @@ Ext.define('Ext.field.Checkbox', {
 
         component.doMaskTap = Ext.emptyFn;
 
-        me.label.on({
+        me.labelElement.on({
             scope: me,
             tap: 'onMaskTap'
         });
@@ -162,7 +156,7 @@ Ext.define('Ext.field.Checkbox', {
         // Important to publish the value here, since we
         // may be relying on checked. This differs from other
         // fields because the initial value may not come from
-        // the viewModel if it detaults to false.
+        // the viewModel if it defaults to false.
         me.publishState('checked', me.getChecked());
     },
 
@@ -219,6 +213,8 @@ Ext.define('Ext.field.Checkbox', {
 
         me.getComponent().setChecked(checked);
 
+        me.toggleCls(me.checkedCls, checked);
+
         // only call onChange (which fires events) if the component has been initialized
         if (me.initialized) {
             eventName = checked ? 'check' : 'uncheck';
@@ -232,7 +228,7 @@ Ext.define('Ext.field.Checkbox', {
      */
     onMaskTap: function(component, e) {
         var me = this,
-            dom = me.getComponent().input.dom;
+            dom = me.getComponent().inputElement.dom;
 
         if (me.getDisabled()) {
             return false;

@@ -159,9 +159,10 @@ Ext.define('Ext.grid.selection.Columns', {
         setRangeEnd: function(endColumn) {
             var me = this,
                 prevSelection = me.getColumns(),
-                columns = this.view.ownerGrid.getVisibleColumnManager().getColumns(),
-                start = me.startColumn.getVisibleIndex(),
-                end = endColumn.getVisibleIndex(),
+                colManager = this.view.ownerGrid.getVisibleColumnManager(),
+                columns = colManager.getColumns(),
+                start = colManager.indexOf(me.startColumn),
+                end = colManager.indexOf(endColumn),
                 i;
 
             // Allow looping through columns

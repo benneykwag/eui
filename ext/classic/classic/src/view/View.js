@@ -527,7 +527,8 @@ Ext.define('Ext.view.View', {
             e.record = me.getRecord(e.item);
         }
 
-        if (me.processUIEvent(e) !== false) {
+        // Event handlers could have destroyed the view
+        if (me.processUIEvent(e) !== false && !me.destroyed) {
             me.processSpecialEvent(e);
         }
         

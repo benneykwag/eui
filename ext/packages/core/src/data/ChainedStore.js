@@ -15,14 +15,8 @@ Ext.define('Ext.data.ChainedStore', {
          */
         source: null,
 
-        /**
-         * @inheritdoc
-         */
         remoteFilter: false,
 
-        /**
-         * @inheritdoc
-         */
         remoteSort: false
     },
 
@@ -30,11 +24,6 @@ Ext.define('Ext.data.ChainedStore', {
         'Ext.data.LocalStore'
     ],
     
-    constructor: function() {
-        this.callParent(arguments);
-        this.getData().addObserver(this);
-    },
-
     //<debug>
     updateRemoteFilter: function(remoteFilter, oldRemoteFilter) {
         if (remoteFilter) {
@@ -71,6 +60,10 @@ Ext.define('Ext.data.ChainedStore', {
         return data;
     },
 
+    getTotalCount: function() {
+        return this.getCount();
+    },
+
     getSession: function() {
         return this.getSource().getSession();
     },
@@ -97,7 +90,7 @@ Ext.define('Ext.data.ChainedStore', {
         var me = this,
             data;
         
-        if (oldSource) {
+        if (oldSource && !oldSource.destroyed) {
             oldSource.removeObserver(me);
         }
         
@@ -250,13 +243,15 @@ Ext.define('Ext.data.ChainedStore', {
         return this.getSource().isLoading();
     },
 
-    onDestroy: function() {
+    doDestroy: function() {
         var me = this;
 
         me.observers = null;
         me.setSource(null);
         me.getData().destroy(true);
         me.data = null;
+        
+        me.callParent();
     },
 
     privates: {

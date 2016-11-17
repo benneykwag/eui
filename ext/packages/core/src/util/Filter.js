@@ -140,8 +140,11 @@ Ext.define('Ext.util.Filter', {
 
         /**
          * @cfg {Function} [serializer]
-         * A function to post-process any serialization.
-         * @private
+         * A function to post-process any serialization. Accepts a filter state object
+         * containing `property`, `value` and `operator` properties, and may either
+         * mutate it, or return a completely new representation. Returning a falsey
+         * value does not modify the representation.
+         * @since 6.2.0
          */
         serializer: null,
 
@@ -198,6 +201,31 @@ Ext.define('Ext.util.Filter', {
 
                 return match;
             };
+        },
+        /**
+         * Checks if two filters have the same properties (Property, Operator and Value).
+         *
+         * @param {Ext.util.Filter} filter The first filter to be compared
+         * @param {Ext.util.Filter} filter The second filter to be compared
+         * @return {Boolean} `true` if they have the same properties.
+         * @since 6.2.0
+         */
+        isEqual: function(filter1, filter2) {
+            if (filter1.getProperty() !== filter2.getProperty()) {
+                return false;
+            }
+
+            if (filter1.getOperator() !== filter2.getOperator()) {
+                return false;
+            }
+
+            if (filter1.getValue() === filter2.getValue()) {
+                return true;
+            } else if (Ext.isArray(filter1) && Ext.isArray(filter2) && Ext.Array.equals(filter1, filter2)) {
+                return true;
+            }
+
+            return false;
         },
         
         /**
@@ -372,13 +400,17 @@ Ext.define('Ext.util.Filter', {
      */
     serialize: function () {
         var result = this.getState(),
-            serializer = this.getSerializer();
+            serializer = this.getSerializer(),
+            serialized;
 
         delete result.id;
         delete result.serializer;
 
         if (serializer) {
-            serializer.call(this, result);
+            serialized = serializer.call(this, result);
+            if (serialized) {
+                result = serialized;
+            }
         }
 
         return result;
@@ -405,11 +437,11 @@ Ext.define('Ext.util.Filter', {
     },
 
     updateDisableOnEmpty: function(disableOnEmpty) {
-        var disabled = false;
+        // Only poke disabled if true because otherwise we'll smash the disabled
+        // config that may also be getting set.
         if (disableOnEmpty) {
-            disabled = Ext.isEmpty(this.getValue());
+            this.setDisabled(Ext.isEmpty(this.getValue()));
         }
-        this.setDisabled(disabled);
     },
 
     privates: {

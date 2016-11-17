@@ -21,10 +21,6 @@
         }
     }
 
-    > .x-layout-box-item {
-        @include st-box();
-    }
-
     &.x-align-start {
         @include st-box-align(start);
     }
@@ -39,6 +35,21 @@
 
     &.x-align-stretch {
         @include st-box-align(stretch);
+
+        // Using a vbox as the base for this:
+        // The following are required because the height is provided
+        // by align stretch. As such, if you attempt to put a height: 100%
+        // as a child of the first item, the height is not applied because
+        // the parent element does not have an explicit height. While this technically
+        // follows standards behaviour, it's difficult to work with. As of writing this
+        // issue only appears to affect safari.
+        & > .x-layout-hbox-item.x-stretched {
+            height: 100%;
+        }
+
+        & > .x-layout-vbox-item.x-stretched {
+            width: 100%;
+        }
     }
 
     &.x-pack-start {
@@ -96,7 +107,6 @@
     .x-container {
         .x-dock-horizontal.x-unsized {
             .x-dock-body {
-                @include st-box-flex(1, 0px);
                 min-height: 0;
                 min-width: 0;
             }

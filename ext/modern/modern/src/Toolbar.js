@@ -98,12 +98,6 @@ Ext.define('Ext.Toolbar', {
 
     config: {
         /**
-         * @cfg baseCls
-         * @inheritdoc
-         */
-        baseCls: Ext.baseCSSPrefix + 'toolbar',
-
-        /**
          * @cfg {String/Ext.Title} title
          * The title of the toolbar.
          * @accessor
@@ -171,6 +165,10 @@ Ext.define('Ext.Toolbar', {
         }
     },
 
+    border: false,
+
+    classCls: Ext.baseCSSPrefix + 'toolbar',
+
     hasCSSMinHeight: true,
 
     constructor: function(config) {
@@ -193,7 +191,7 @@ Ext.define('Ext.Toolbar', {
         if (typeof title == 'string') {
             title = {
                 title: title,
-                centered : Ext.theme.is.Tizen ? false : true
+                centered : true
             };
         }
 

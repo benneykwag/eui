@@ -9,15 +9,15 @@ describe("Ext.util.Sorter", function() {
         };
 
         it("should require either a property or a function", function() {
-            expect(createSorter({})).toRaiseExtError();
+            expect(createSorter({})).toThrow();
         });
 
         it("should accept a property config", function() {
-            expect(createSorter({property: 'test'})).not.toRaiseExtError();
+            expect(createSorter({property: 'test'})).not.toThrow();
         });
 
         it("should accept a sorter function", function() {
-            expect(createSorter({sorterFn: Ext.emptyFn})).not.toRaiseExtError();
+            expect(createSorter({sorterFn: Ext.emptyFn})).not.toThrow();
         });
 
         it("should have no transform method", function(){

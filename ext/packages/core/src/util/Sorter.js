@@ -1,5 +1,4 @@
 /**
- * 
  * Represents a single sorter that can be used as part of the sorters configuration in Ext.mixin.Sortable.
  *
  * A common place for Sorters to be used are {@link Ext.data.Store Stores}. For example:

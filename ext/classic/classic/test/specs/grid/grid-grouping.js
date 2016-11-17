@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect */
+
 describe("grid-grouping", function() {
     function createSuite(buffered) {
         describe(buffered ? "with buffered rendering" : "without buffered rendering", function() {
@@ -207,7 +209,7 @@ describe("grid-grouping", function() {
                         groupStoreIndex = view.dataSource.indexOf(rec25);
 
                     grid.view.refreshNode(25);
-                    expect(spy).toHaveBeenCalledWith(rec25, 25, view.all.item(groupStoreIndex).dom);
+                    expect(spy).toHaveBeenCalledWith(rec25, 25, view.all.item(groupStoreIndex).dom, view);
                 });
 
                 it("should fire itemupdate event with recordIndex when group above is collapsed", function() {
@@ -218,7 +220,7 @@ describe("grid-grouping", function() {
                     triggerHeaderClick('t1');
                     groupStoreIndex = view.dataSource.indexOf(rec25);
                     grid.view.refreshNode(25);
-                    expect(spy).toHaveBeenCalledWith(rec25, 25, view.all.item(groupStoreIndex).dom);
+                    expect(spy).toHaveBeenCalledWith(rec25, 25, view.all.item(groupStoreIndex).dom, view);
                 });
 
                 it("should expand a collapsed header on clicking", function(){
@@ -474,7 +476,7 @@ describe("grid-grouping", function() {
                             });
                         });
                     });
-                })
+                });
             });
 
             describe("moving columns", function() {
@@ -1096,63 +1098,63 @@ describe("grid-grouping", function() {
             });
 
             describe("loading new data", function() {
-                it("should be able to collapse and expand groups after loading new data", function() {
-                    makeGrid();
-                    store.loadData([{
-                        id: 1001,
-                        type: 't1'
-                    }, {
-                        id: 1002,
-                        type: 't1'
-                    }, {
-                        id: 1003,
-                        type: 't2'
-                    }, {
-                        id: 1004,
-                        type: 't2'
-                    }]);
-
-                    grouping.expand('t1');
-                    grouping.expand('t2');
-
-                    expect(grouping.isExpanded('t1')).toBe(true);
-                    expect(grouping.isExpanded('t2')).toBe(true);
-
-                    grouping.collapse('t1');
-                    grouping.collapse('t2');
-                    
-                    expect(grouping.isExpanded('t1')).toBe(false);
-                    expect(grouping.isExpanded('t2')).toBe(false);
-                });
-
-                it("should be able to collapse and expand groups after loading new data with startCollapsed: true", function() {
-                    makeGrid(null, null, null, null, {
-                        startCollapsed: true
-                    });
-
-                    grouping.expand('t1');;
-
-                    store.loadData([{
-                        id: 1001,
-                        type: 't1'
-                    }, {
-                        id: 1002,
-                        type: 't1'
-                    }, {
-                        id: 1003,
-                        type: 't2'
-                    }, {
-                        id: 1004,
-                        type: 't2'
-                    }]);
-
-                    grouping.collapse('t1');
-                    expect(grouping.isExpanded('t1')).toBe(false);
-
-                    grouping.expand('t1');
-                    expect(grouping.isExpanded('t1')).toBe(true);
-                });
-            });
+                 it("should be able to collapse and expand groups after loading new data", function() {
+                     makeGrid();
+                     store.loadData([{
+                         id: 1001,
+                         type: 't1'
+                     }, {
+                         id: 1002,
+                         type: 't1'
+                     }, {
+                         id: 1003,
+                         type: 't2'
+                     }, {
+                         id: 1004,
+                         type: 't2'
+                     }]);
+ 
+                     grouping.expand('t1');
+                     grouping.expand('t2');
+ 
+                     expect(grouping.isExpanded('t1')).toBe(true);
+                     expect(grouping.isExpanded('t2')).toBe(true);
+ 
+                     grouping.collapse('t1');
+                     grouping.collapse('t2');
+                     
+                     expect(grouping.isExpanded('t1')).toBe(false);
+                     expect(grouping.isExpanded('t2')).toBe(false);
+                 });
+ 
+                 it("should be able to collapse and expand groups after loading new data with startCollapsed: true", function() {
+                     makeGrid(null, null, null, null, {
+                         startCollapsed: true
+                     });
+ 
+                     grouping.expand('t1');;
+ 
+                     store.loadData([{
+                         id: 1001,
+                         type: 't1'
+                     }, {
+                         id: 1002,
+                         type: 't1'
+                     }, {
+                         id: 1003,
+                         type: 't2'
+                     }, {
+                         id: 1004,
+                         type: 't2'
+                     }]);
+ 
+                     grouping.collapse('t1');
+                     expect(grouping.isExpanded('t1')).toBe(false);
+ 
+                     grouping.expand('t1');
+                     expect(grouping.isExpanded('t1')).toBe(true);
+                 });
+             });
 
             describe("reconfiguring", function() {
                 function createReconfigureSuite(withLocking) {

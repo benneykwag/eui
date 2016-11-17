@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect */
+
 describe('Ext.grid.NavigationModel', function() {
     
     // Expect that a row and column are focused.
@@ -492,15 +494,61 @@ describe('Ext.grid.NavigationModel', function() {
         afterEach(function() {
             grid.destroy();
         });
-        it('should select when clicking a widget is stopSelection is false', function() {
+        it('should select when clicking a widget and stopSelection is false', function() {
             var row0Button = widgetColumn.getWidget(store.getAt(0));
             
             jasmine.fireMouseEvent(row0Button.el, 'click');
 
             // The selection must get set
             waitsFor(function() {
-                return !!pos;
+                pos = grid.getSelectionModel().getPosition();
+                return pos && pos.rowIdx === 0 && pos.colIdx === 1;
             });
+        });
+    });
+
+    describe('With non-focusable column', function() {
+        it('should skip the non-focusable cells', function() {
+            makeGrid(3, 500);
+            colRef[0].cellFocusable = false;
+            view.refreshView();
+
+            colRef[0].focus();
+
+            waitsFor(function() {
+                return colRef[0].containsFocus;
+            }, 'column header 0 to focus');
+
+            // TAB off column header 0
+            runs(function() {
+                jasmine.simulateTabKey(colRef[0].el, true);
+            });
+
+            // Should skip on to column 1
+            waitsFor(function() {
+                return new Ext.grid.CellContext(view).setPosition(0, 1).isEqual(navModel.getPosition());
+            }, 'cell 0,1 to focus');
+
+            // RIGHT to column 2
+            runs(function() {
+                // Sort ascending
+                jasmine.fireKeyEvent(Ext.Element.getActiveElement(), 'keydown', Ext.event.Event.RIGHT);
+            });
+            
+            waitsFor(function() {
+                return new Ext.grid.CellContext(view).setPosition(0, 2).isEqual(navModel.getPosition());
+            }, 'cell 0,2 to focus');
+
+            // RIGHT again should wrap
+            runs(function() {
+                // Sort ascending
+                jasmine.fireKeyEvent(Ext.Element.getActiveElement(), 'keydown', Ext.event.Event.RIGHT);
+            });
+
+            // But skip column 0, and go to 1,1
+            waitsFor(function() {
+                return new Ext.grid.CellContext(view).setPosition(1, 1).isEqual(navModel.getPosition());
+            }, 'cell 1,1 to focus');
         });
     });
 

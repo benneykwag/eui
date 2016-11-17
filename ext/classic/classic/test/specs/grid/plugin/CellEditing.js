@@ -5,7 +5,30 @@ describe('Ext.grid.plugin.CellEditing', function () {
         TAB = 9,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        };
+
+    function spyOnEvent(object, eventName, fn) {
+        var obj = {
+            fn: fn || Ext.emptyFn
+        },
+        spy = spyOn(obj, 'fn');
+
+        object.addListener(eventName, obj.fn);
+        return spy;
+    }
+
+    function findCell(rowIdx, cellIdx) {
+        return grid.getView().getCellInclusive({
+            row: rowIdx,
+            column: cellIdx
+        }, true);
+    }
 
     function makeGrid(pluginCfg, gridCfg, storeCfg, locked) {
         store = new Ext.data.Store(Ext.apply({
@@ -60,13 +83,7 @@ describe('Ext.grid.plugin.CellEditing', function () {
 
     beforeEach(function() {
         // Override so that we can control asynchronous loading
-        loadStore = Ext.data.ProxyStore.prototype.load = function() {
-            proxyStoreLoad.apply(this, arguments);
-            if (synchronousLoad) {
-                this.flushLoad.apply(this, arguments);
-            }
-            return this;
-        };
+        Ext.data.ProxyStore.prototype.load = loadStore;
 
         MockAjaxManager.addMethods();
     });
@@ -82,6 +99,26 @@ describe('Ext.grid.plugin.CellEditing', function () {
     function tearDown() {
         store = plugin = grid = view = record = column = field = Ext.destroy(grid);
     }
+
+    describe("Events", function() {
+        it("it should fire cellactivate event", function() {
+            makeGrid(
+                {clicksToEdit: 1}, 
+                { 
+                    width: 600
+                });
+            var spy = spyOnEvent(grid, 'cellactivate'),
+                cell = findCell(0, 0),
+                ed;
+           
+            jasmine.fireMouseEvent(cell, 'click');
+            ed = plugin.getActiveEditor();
+            triggerEditorKey(ed.field.inputEl, TAB);
+            ed = plugin.getActiveEditor();
+            triggerEditorKey(ed.field.inputEl, TAB);
+            expect(spy.callCount).toBe(3);
+        });
+    });
 
     describe('finding the cell editing plugin in a locking grid', function() {
         beforeEach(function() {
@@ -1018,32 +1055,37 @@ describe('Ext.grid.plugin.CellEditing', function () {
                 expect(plugin.activeEditor.setPosition).not.toHaveBeenCalled();
             });
 
-            it('should not reposition when within a draggable container', function () {
-                // See EXTJS-15532.
+            describe('within a draggable container', function() {
                 var win;
 
-                tearDown();
-
-                makeGrid(null, {
-                    renderTo: null
+                afterEach(function() {
+                    win = Ext.destroy(win);
                 });
 
-                win = new Ext.window.Window({
-                    items: grid
-                }).show();
+                it('should not reposition when within a draggable container', function () {
+                    // See EXTJS-15532.
+                    tearDown();
 
-                startEdit();
+                    makeGrid(null, {
+                        renderTo: null
+                    });
 
-                spyOn(plugin.activeEditor, 'setPosition');
+                    win = new Ext.window.Window({
+                        items: grid
+                    });
+                    win.show();
 
-                jasmine.fireMouseEvent(win.el.dom, 'mousedown');
-                jasmine.fireMouseEvent(win.el.dom, 'mousemove', win.x, win.y);
-                jasmine.fireMouseEvent(win.el.dom, 'mousemove', (win.x - 100), (win.y - 100));
-                jasmine.fireMouseEvent(win.el.dom, 'mouseup', 400);
+                    startEdit();
 
-                expect(plugin.activeEditor.setPosition).not.toHaveBeenCalled();
+                    spyOn(plugin.activeEditor, 'setPosition');
 
-                win.destroy();
+                    jasmine.fireMouseEvent(win.el.dom, 'mousedown');
+                    jasmine.fireMouseEvent(win.el.dom, 'mousemove', win.x, win.y);
+                    jasmine.fireMouseEvent(win.el.dom, 'mousemove', (win.x - 100), (win.y - 100));
+                    jasmine.fireMouseEvent(win.el.dom, 'mouseup', 400);
+
+                    expect(plugin.activeEditor.setPosition).not.toHaveBeenCalled();
+                });
             });
         });
 
@@ -1417,7 +1459,7 @@ describe('Ext.grid.plugin.CellEditing', function () {
             startEdit(0, 1);
             waitsFor(function() {
                 ed = plugin.activeEditor;
-                return !!ed;
+                return ed.editing;
             }, 'editing to start at cell(0, 1)');
             runs(function() {
                 context = plugin.context;

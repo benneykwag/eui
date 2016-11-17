@@ -247,11 +247,12 @@ Ext.define('Ext.grid.property.Grid', {
      * @param {Object} oldValue The original property value prior to editing
      */
 
-    initComponent : function() {
+    initComponent: function() {
         var me = this,
             // selectOnFocus: true results in weird exceptions thrown when tabbing
             // between cell editors in IE and there's no known cure at the moment
-            selectOnFocus = !Ext.isIE;
+            selectOnFocus = !Ext.isIE,
+            view;
 
         me.source = me.source || {};
         me.addCls(me.gridCls);
@@ -292,9 +293,14 @@ Ext.define('Ext.grid.property.Grid', {
         me.columns = new Ext.grid.property.HeaderContainer(me, me.store);
 
         me.callParent();
-
+        
+        var view = me.getView();
+        
         // Inject a custom implementation of walkCells which only goes up or down
-        me.getView().walkCells = this.walkCells;
+        view.walkCells = me.walkCells;
+        
+        // Inject a custom implementation that only allows focusing value column
+        view.getDefaultFocusPosition = me.getDefaultFocusPosition;
 
         // Set up our default editor set for the 4 atomic data types
         me.editors = {
@@ -456,6 +462,15 @@ Ext.define('Ext.grid.property.Grid', {
         pos.colIdx = valueColumn.getVisibleIndex();
         return pos;
     },
+    
+    getDefaultFocusPosition: function() {
+        var view = this, // NOT grid!
+            focusPosition;
+        
+        focusPosition = new Ext.grid.CellContext(view).setColumn(1);
+        
+        return focusPosition;
+    },
 
     /**
      * @private
@@ -514,15 +529,28 @@ Ext.define('Ext.grid.property.Grid', {
         // Give the editor a unique ID because the CellEditing plugin caches them
         editor.editorId = propName;
         editor.field.column = me.valueColumn;
+        
+        if (propName) {
+            propName = Ext.String.htmlEncode(propName);
+            
+            if (field.rendered) {
+                field.inputEl.dom.setAttribute('aria-label', propName);
+            }
+            else {
+                field.ariaLabel = propName;
+            }
+        }
+        
         return editor;
     },
 
-    beforeDestroy: function() {
+    doDestroy: function() {
         var me = this;
-        me.callParent();
+        
         me.destroyEditors(me.editors);
         me.destroyEditors(me.customEditors);
-        delete me.source;
+        
+        me.callParent();
     },
 
     destroyEditors: function (editors) {

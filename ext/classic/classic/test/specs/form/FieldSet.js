@@ -9,10 +9,6 @@ describe("Ext.form.FieldSet", function() {
         });
         component = new Ext.form.FieldSet(config);
     }
-    
-    function expectAria(attr, value) {
-        jasmine.expectAriaAttr(component, attr, value);
-    }
 
     afterEach(function() {
         if (component) {
@@ -218,15 +214,15 @@ describe("Ext.form.FieldSet", function() {
         });
         
         it("should have the group role", function() {
-            expectAria('role', 'group');
+            expect(component).toHaveAttr('role', 'group');
         });
         
         it("should have aria-label", function() {
-            expectAria('aria-label', 'foo field set');
+            expect(component).toHaveAttr('aria-label', 'foo field set');
         });
         
         it("should have aria-expanded", function() {
-            expectAria('aria-expanded', 'true');
+            expect(component).toHaveAttr('aria-expanded', 'true');
         });
     });
 
@@ -400,16 +396,12 @@ describe("Ext.form.FieldSet", function() {
                 
                 var cb = component.legend.down('checkboxfield');
                 
-                jasmine.expectAriaAttr(cb, 'aria-label', 'Expand field set');
+                expect(cb).toHaveAttr('aria-label', 'Expand field set');
             });
         });
         
         describe("toggle tool", function() {
             var tool;
-            
-            function expectAria(attr, value) {
-                jasmine.expectAriaAttr(tool, attr, value);
-            }
             
             beforeEach(function() {
                 makeComponent({
@@ -425,21 +417,21 @@ describe("Ext.form.FieldSet", function() {
             });
             
             it("should have checkbox role", function() {
-                expectAria('role', 'checkbox');
+                expect(tool).toHaveAttr('role', 'checkbox');
             });
             
             it("should have aria-label", function() {
-                expectAria('aria-label', 'Expand field set');
+                expect(tool).toHaveAttr('aria-label', 'Expand field set');
             });
             
             it("should have aria-checked", function() {
-                expectAria('aria-checked', 'true');
+                expect(tool).toHaveAttr('aria-checked', 'true');
             });
             
             it("should update aria-checked when fieldset is collapsed", function() {
                 component.collapse();
                 
-                expectAria('aria-checked', 'false');
+                expect(tool).toHaveAttr('aria-checked', 'false');
             });
         });
 
@@ -502,7 +494,7 @@ describe("Ext.form.FieldSet", function() {
             makeComponent({ collapsed: false });
             component.collapse();
             
-            expectAria('aria-expanded', 'false');
+            expect(component).toHaveAttr('aria-expanded', 'false');
         });
     });
 
@@ -529,7 +521,7 @@ describe("Ext.form.FieldSet", function() {
             makeComponent({ collapsed: true });
             component.expand();
             
-            expectAria('aria-expanded', 'true');
+            expect(component).toHaveAttr('aria-expanded', 'true');
         });
     });
 

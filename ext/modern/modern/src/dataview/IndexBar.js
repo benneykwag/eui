@@ -48,6 +48,7 @@
 Ext.define('Ext.dataview.IndexBar', {
     extend: 'Ext.Component',
     alternateClassName: 'Ext.IndexBar',
+    xtype: 'indexbar',
 
     /**
      * @event index
@@ -58,16 +59,12 @@ Ext.define('Ext.dataview.IndexBar', {
      */
 
     config: {
-        baseCls: Ext.baseCSSPrefix + 'indexbar',
-
         /**
          * @cfg {Array} letters
          * The letters to show on the index bar.
          * @accessor
          */
         letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
-
-        ui: 'alphabet',
 
         /**
          * @cfg {String} listPrefix
@@ -78,6 +75,23 @@ Ext.define('Ext.dataview.IndexBar', {
         listPrefix: null
     },
 
+
+    cachedConfig: {
+        /**
+         * @private
+         * The parent list that created this index bar
+         */
+        parentList: null // this is a cachedConfig so that it is available from updateUi
+    },
+
+    classCls: Ext.baseCSSPrefix + 'indexbar',
+    verticalCls: Ext.baseCSSPrefix + 'vertical',
+    horizontalCls: Ext.baseCSSPrefix + 'horizontal',
+    indexedCls: Ext.baseCSSPrefix + 'indexed',
+    pressedCls: Ext.baseCSSPrefix + 'pressed',
+    indexedVerticalCls: Ext.baseCSSPrefix + 'indexed-vertical',
+    indexedHorizontalCls: Ext.baseCSSPrefix + 'indexed-horizontal',
+
     eventedConfig: {
         /**
          * @cfg {String} direction
@@ -87,16 +101,35 @@ Ext.define('Ext.dataview.IndexBar', {
         direction: 'vertical'
     },
 
-    updateDirection: function(newDirection, oldDirection) {
-        var baseCls = this.getBaseCls();
+    updateDirection: function(direction) {
+        var me = this,
+            verticalCls = me.verticalCls,
+            horizontalCls = me.horizontalCls,
+            indexedVerticalCls = me.indexedVerticalCls,
+            indexedHorizontalCls = me.indexedHorizontalCls,
+            oldCls, newCls, oldIndexedCls, newIndexedCls;
 
-        this.element.replaceCls(baseCls + '-' + oldDirection, baseCls + '-' + newDirection);
+        if (direction === 'vertical') {
+            oldCls = horizontalCls;
+            newCls = verticalCls;
+            oldIndexedCls = indexedHorizontalCls;
+            newIndexedCls = indexedVerticalCls
+        } else {
+            oldCls = verticalCls;
+            newCls = horizontalCls;
+            oldIndexedCls = indexedVerticalCls;
+            newIndexedCls = indexedHorizontalCls;
+        }
+
+        me.element.replaceCls(oldCls, newCls);
+        me.wrapper.replaceCls(oldCls, newCls);
+        me.getParentList().element.replaceCls(oldIndexedCls, newIndexedCls);
     },
 
     getElementConfig: function() {
         return {
             reference: 'wrapper',
-            classList: ['x-centered', 'x-indexbar-wrapper'],
+            classList: ['x-center', 'x-indexbar-wrapper'],
             children: [this.callParent()]
         };
     },
@@ -110,6 +143,7 @@ Ext.define('Ext.dataview.IndexBar', {
 
             for (i = 0; i < ln; i++) {
                 this.innerElement.createChild({
+                    cls: 'x-indexbar-item',
                     html: letters[i]
                 });
             }
@@ -124,6 +158,31 @@ Ext.define('Ext.dataview.IndexBar', {
         }
     },
 
+    updateUi: function(ui, oldUi) {
+        var me = this,
+            list = me.getParentList(),
+            listElement = list.element,
+            indexedCls = me.indexedCls;
+
+        // list element needs the x-indexed-[indexBarUi] class added so that it can pad
+        // its items to account for the presence of the index bar
+        if (oldUi) {
+            listElement.removeCls(oldUi, indexedCls);
+        }
+
+        if (ui) {
+            listElement.addCls(ui, indexedCls);
+        }
+
+        me.callParent([ui, oldUi]);
+    },
+
+    updateParentList: function(parentList) {
+        if (parentList) {
+            parentList.element.addCls(this.indexedCls);
+        }
+    },
+
     /**
      * @private
      */
@@ -133,12 +192,13 @@ Ext.define('Ext.dataview.IndexBar', {
         me.callParent();
 
         me.innerElement.on({
-            touchstart: me.onTouchStart,
-            touchend: me.onTouchEnd,
-            dragend: me.onDragEnd,
-            drag: me.onDrag,
+            touchstart: 'onTouchStart',
+            drag: 'onDrag',
+            dragEnd: 'onDragEnd',
             scope: me
         });
+
+        me.innerElement.addClsOnClick(this.pressedCls);
     },
 
     isVertical: function() {
@@ -148,22 +208,11 @@ Ext.define('Ext.dataview.IndexBar', {
     onTouchStart: function(e) {
         var me = this;
 
-        e.stopPropagation();
-        me.innerElement.addCls(me.getBaseCls() + '-pressed');
         me.pageBox = me.innerElement.getBox();
         me.onDrag(e);
     },
 
-    onTouchEnd: function(e) {
-        this.onDragEnd();
-    },
-
-    /**
-     * @private
-     */
-    onDragEnd: function() {
-        this.innerElement.removeCls(this.getBaseCls() + '-pressed');
-    },
+    onDragEnd: Ext.emptyFn,
 
     /**
      * @private
@@ -185,7 +234,7 @@ Ext.define('Ext.dataview.IndexBar', {
                 return;
             }
             target = Ext.Element.fromPoint(pageBox.left + (pageBox.width / 2), point.y);
-            isValidTarget = target.getParent() === el;
+            isValidTarget = target && target.getParent() === el;
 
             me.onVerticalDrag(point, target, isValidTarget);
         } else {
@@ -193,7 +242,7 @@ Ext.define('Ext.dataview.IndexBar', {
                 return;
             }
             target = Ext.Element.fromPoint(point.x, pageBox.top + (pageBox.height / 2));
-            isValidTarget = target.getParent() === el;
+            isValidTarget = target && target.getParent() === el;
         }
 
         if (target && isValidTarget) {

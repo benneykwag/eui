@@ -529,6 +529,66 @@ describe("Ext.window.MessageBox", function(){
         });
     });
     
+    describe("ARIA", function() {
+        describe("aria-describedby", function() {
+            it("should set aria-describedby for alert", function() {
+                M.alert('foo', 'bar');
+                
+                expect(M.ariaEl).toHaveAttribute('aria-describedby', M.msg.id);
+            });
+            
+            it("should set aria-describedby for confirm", function() {
+                M.confirm('blerg', 'zingbong');
+                
+                expect(M.ariaEl).toHaveAttribute('aria-describedby', M.msg.id);
+            });
+            
+            it("should remove aria-describedby for prompt", function() {
+                M.prompt('quiz', 'type something');
+                
+                expect(M.ariaEl).not.toHaveAttribute('aria-describedby');
+            });
+        });
+        
+        describe("aria-labelledby", function() {
+            describe("textField", function() {
+                beforeEach(function() {
+                    M.show({
+                        title: 'throbbe',
+                        msg: 'bonzo',
+                        prompt: true
+                    });
+                });
+                
+                it("should not have for attribute on labelEl", function() {
+                    expect(M.textField.labelEl).not.toHaveAttribute('for');
+                });
+                
+                it("should have aria-labelledby attribute on inputEl", function() {
+                    expect(M.textField.inputEl).toHaveAttribute('aria-labelledby', M.msg.id);
+                });
+            });
+            
+            describe("textArea", function() {
+                beforeEach(function() {
+                    M.show({
+                        title: 'changa',
+                        msg: 'masala',
+                        multiline: true
+                    });
+                });
+                
+                it("should not have for attribute on labelEl", function() {
+                    expect(M.textArea.labelEl).not.toHaveAttribute('for');
+                });
+                
+                it("should have aria-labelledby attribute on inputEl", function() {
+                    expect(M.textArea.inputEl).toHaveAttribute('aria-labelledby', M.msg.id);
+                });
+            });
+        });
+    });
+    
     describe("layouts", function(){
 
         var widths = [

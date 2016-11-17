@@ -35,9 +35,10 @@
  * required.
  */
 Ext.define('Ext.form.FieldSet', {
-    extend  : 'Ext.Container',
-    alias   : 'widget.fieldset',
+    extend: 'Ext.Container',
+    alias: 'widget.fieldset',
     requires: ['Ext.Title'],
+    mixins: ['Ext.form.FieldContainer'],
 
     config: {
         /**

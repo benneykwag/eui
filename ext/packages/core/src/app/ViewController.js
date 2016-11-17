@@ -115,6 +115,7 @@
  */
 Ext.define('Ext.app.ViewController', {
     extend: 'Ext.app.BaseController',
+    alias: 'controller.controller',
     
     requires: [
         'Ext.app.domain.View'

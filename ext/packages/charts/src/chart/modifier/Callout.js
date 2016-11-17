@@ -15,8 +15,8 @@ Ext.define('Ext.chart.modifier.Callout', {
             // so manually saving a reference to 'attr' after chaining.
             attr.calloutOriginal.prototype = attr;
         }
-        if (this._previous) {
-            this._previous.prepareAttributes(attr.calloutOriginal);
+        if (this._lower) {
+            this._lower.prepareAttributes(attr.calloutOriginal);
         }
     },
 
@@ -118,8 +118,8 @@ Ext.define('Ext.chart.modifier.Callout', {
     popUp: function (attr, changes) {
         attr = attr.prototype;
         changes = this.setAttrs(attr, changes);
-        if (this._next) {
-            return this._next.popUp(attr, changes);
+        if (this._upper) {
+            return this._upper.popUp(attr, changes);
         } else {
             return Ext.apply(attr, changes);
         }

@@ -3,7 +3,14 @@
 describe("Ext.view.MultiSelector", function(){
     var synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
-        loadStore, Employee, multiSelector;
+        loadStore = function() {
+            proxyStoreLoad.apply(this, arguments);
+            if (synchronousLoad) {
+                this.flushLoad.apply(this, arguments);
+            }
+            return this;
+        },
+        Employee, multiSelector;
 
     var firstNames = ['Ben', 'Don', 'Evan', 'Kevin', 'Nige', 'Phil', 'Ross', 'Ryan'],
         lastNames = ['Toll', 'Griffin', 'Trimboli', 'Krohe', 'White', 'Guerrant', 'Gerbasi', 'Smith'],
@@ -23,6 +30,7 @@ describe("Ext.view.MultiSelector", function(){
     var defaultSearchStoreCfg = {
         model: 'spec.Employee',
         autoLoad: true,
+        asynchronousLoad: false,
         proxy: {
             type: 'ajax',
             url: 'bar'
@@ -87,6 +95,11 @@ describe("Ext.view.MultiSelector", function(){
     }
 
     beforeEach(function() {
+        // Override so that we can control asynchronous loading
+        Ext.data.ProxyStore.prototype.load = loadStore;
+
+        MockAjaxManager.addMethods();
+
         Employee = Ext.define('spec.Employee', {
             extend: 'Ext.data.Model',
             fields: [{
@@ -108,6 +121,10 @@ describe("Ext.view.MultiSelector", function(){
         Ext.undefine('spec.Employee');
         Ext.data.Model.schema.clear();
         multiSelector = Ext.destroy(multiSelector);
+
+        // Undo the overrides.
+        Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
+        MockAjaxManager.removeMethods();
     });
 
     describe("search popup", function () {
@@ -136,24 +153,7 @@ describe("Ext.view.MultiSelector", function(){
         describe("synchronizing selection", function () {
             describe("store with remote data", function () {
                 beforeEach(function() {
-                    // Override so that we can control asynchronous loading
-                    loadStore = Ext.data.ProxyStore.prototype.load = function() {
-                        proxyStoreLoad.apply(this, arguments);
-                        if (synchronousLoad) {
-                            this.flushLoad.apply(this, arguments);
-                        }
-                        return this;
-                    };
-
-                    MockAjaxManager.addMethods();
-
                     makeSelector();
-                });
-
-                afterEach(function() {
-                    // Undo the overrides.
-                    Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
-                    MockAjaxManager.removeMethods();
                 });
 
                 it("should select the records in the searcher which match by ID the records in the selector", function() {

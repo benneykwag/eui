@@ -41,19 +41,16 @@ Ext.define('Ext.field.Search', {
     xtype: 'searchfield',
     alternateClassName: 'Ext.form.Search',
 
-    config: {
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-        component: {
-	        type: 'search'
-	    },
+    component: {
+        type: 'search'
+    },
 
-        /**
-         * @cfg
-         * @inheritdoc
-         */
-	    ui: 'search'
-    }
+    triggers: {
+        search: {
+            type: 'search',
+            side: 'left'
+        }
+    },
+
+    classCls: Ext.baseCSSPrefix + 'searchfield'
 });

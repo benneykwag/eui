@@ -674,13 +674,17 @@ Ext.define('Ext.draw.sprite.Sprite', {
 
     config: {
         /**
+         * @private
          * @cfg {Ext.draw.Surface/Ext.draw.sprite.Instancing/Ext.draw.sprite.Composite} parent
          * The immediate parent of the sprite. Not necessarily a surface.
          */
         parent: null,
         /**
+         * @private
          * @cfg {Ext.draw.Surface} surface
          * The surface that this sprite is rendered into.
+         * This config is not meant to be used directly.
+         * Please use the {@link Ext.draw.Surface#add} method instead.
          */
         surface: null
     },
@@ -778,13 +782,13 @@ Ext.define('Ext.draw.sprite.Sprite', {
         }
         modifier.setSprite(me);
         if (modifier.preFx || modifier.config && modifier.config.preFx) {
-            if (me.fx.getPrevious()) {
-                me.fx.getPrevious().setNext(modifier);
+            if (me.fx._lower) {
+                me.fx._lower.setUpper(modifier);
             }
-            modifier.setNext(me.fx);
+            modifier.setUpper(me.fx);
         } else {
-            me.topModifier.getPrevious().setNext(modifier);
-            modifier.setNext(me.topModifier);
+            me.topModifier._lower.setUpper(modifier);
+            modifier.setUpper(me.topModifier);
         }
         if (reinitializeAttributes) {
             me.initializeAttributes();
@@ -801,7 +805,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
 
         // Link modifiers
         me.fx = new Ext.draw.modifier.Animation({sprite: me});
-        me.fx.setNext(me.topModifier);
+        me.fx.setUpper(me.topModifier);
 
         for (i = 0, ln = additionalModifiers.length; i < ln; i++) {
             me.addModifier(additionalModifiers[i], false);
@@ -866,6 +870,8 @@ Ext.define('Ext.draw.sprite.Sprite', {
      * @param attr The attributes of a sprite or its instance.
      */
     callUpdaters: function (attr) {
+        attr = attr || this.attr;
+        
         var me = this,
             pendingUpdaters = attr.pendingUpdaters,
             updaters = me.self.def.getUpdaters(),
@@ -905,6 +911,14 @@ Ext.define('Ext.draw.sprite.Sprite', {
 
     /**
      * @private
+     */
+    callUpdater: function (attr, updater, triggers) {
+        this.scheduleUpdater(attr, updater, triggers);
+        this.callUpdaters(attr);
+    },
+
+    /**
+     * @private
      * Schedules specified updaters to be called.
      * Updaters are called implicitly as a result of a change to sprite attributes.
      * But sometimes it may be required to call an updater without setting an attribute,
@@ -931,6 +945,8 @@ Ext.define('Ext.draw.sprite.Sprite', {
     scheduleUpdaters: function (attr, updaters, triggers) {
         var updater;
 
+        attr = attr || this.attr;
+
         if (triggers) {
             for (var i = 0, ln = updaters.length; i < ln; i++) {
                 updater = updaters[i];
@@ -952,6 +968,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
      */
     scheduleUpdater: function (attr, updater, triggers) {
         triggers = triggers || [];
+        attr = attr || this.attr;
 
         var pendingUpdaters = attr.pendingUpdaters;
 
@@ -1586,6 +1603,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
     },
 
     /**
+     * @method
      * Called before rendering.
      */
     preRender: Ext.emptyFn,
@@ -1665,8 +1683,8 @@ Ext.define('Ext.draw.sprite.Sprite', {
             parent = this.getParent(),
             hasParent = parent && (parent.isSurface || parent.isVisible()),
             isSeen = hasParent && !attr.hidden && attr.globalAlpha,
-            none1 = Ext.draw.Color.NONE,
-            none2 = Ext.draw.Color.RGBA_NONE,
+            none1 = Ext.util.Color.NONE,
+            none2 = Ext.util.Color.RGBA_NONE,
             hasFill = attr.fillOpacity && attr.fillStyle !== none1 && attr.fillStyle !== none2,
             hasStroke = attr.strokeOpacity && attr.strokeStyle !== none1 && attr.strokeStyle !== none2,
             result = isSeen && (hasFill || hasStroke);
@@ -1706,7 +1724,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
 
         while (modifier) {
             currentModifier = modifier;
-            modifier = modifier.getPrevious();
+            modifier = modifier._lower;
             currentModifier.destroy();
         }
 

@@ -52,9 +52,15 @@ Ext.define('Ext.data.LocalStore', {
     },
 
     constructDataCollection: function() {
-        return new Ext.util.Collection({
+        var result = new Ext.util.Collection({
             rootProperty: 'data'
         });
+
+        // Add this store as an observer immediately so that we are informed of any
+        // synchronous autoLoad which may occur in this event.
+        result.addObserver(this);
+        
+        return result;
     },
 
     /**

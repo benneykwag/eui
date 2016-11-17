@@ -87,12 +87,7 @@ Ext.define('Ext.draw.modifier.Animation', {
          *         'cx,cy': 1000
          *     }
          */
-        customDurations: {},
-
-        /**
-         * @deprecated Use {@link #customDurations} instead.
-         */
-        customDuration: null
+        customDurations: {}
     },
 
     constructor: function (config) {
@@ -104,9 +99,6 @@ Ext.define('Ext.draw.modifier.Animation', {
         me.callParent([config]);
     },
 
-    /**
-     * @inheritdoc
-     */
     prepareAttributes: function (attr) {
         if (!attr.hasOwnProperty('timers')) {
             attr.animating = false;
@@ -119,8 +111,8 @@ Ext.define('Ext.draw.modifier.Animation', {
             attr.animationOriginal = Ext.Object.chain(attr);
             attr.animationOriginal.prototype = attr;
         }
-        if (this._previous) {
-            this._previous.prepareAttributes(attr.animationOriginal);
+        if (this._lower) {
+            this._lower.prepareAttributes(attr.animationOriginal);
         }
     },
 
@@ -208,21 +200,6 @@ Ext.define('Ext.draw.modifier.Animation', {
             this.anySpecialAnimations = any;
         }
         return oldDurations;
-    },
-
-    /**
-     * @private
-     * @deprecated
-     * @since 5.0.1.
-     */
-    applyCustomDuration: function (newDuration, oldDuration) {
-        if (newDuration) {
-            this.getCustomDurations();
-            this.setCustomDurations(newDuration);
-            //<debug>
-            Ext.log.warn("'customDuration' config is deprecated. Use 'customDurations' config instead.");
-            //</debug>
-        }
     },
 
     /**
@@ -446,28 +423,25 @@ Ext.define('Ext.draw.modifier.Animation', {
         return changes;
     },
 
-    /**
-     * @inheritdoc
-     */
     pushDown: function (attr, changes) {
         changes = this.callParent([attr.animationOriginal, changes]);
         return this.setAttrs(attr, changes);
     },
 
-    /**
-     * @inheritdoc
-     */
     popUp: function (attr, changes) {
         attr = attr.prototype;
         changes = this.setAttrs(attr, changes);
-        if (this._next) {
-            return this._next.popUp(attr, changes);
+        if (this._upper) {
+            return this._upper.popUp(attr, changes);
         } else {
             return Ext.apply(attr, changes);
         }
     },
 
-    // This is called as an animated object in `Ext.draw.Animator`.
+    /**
+     * @private
+     * This is called as an animated object in `Ext.draw.Animator`.
+     */
     step: function (frameTime) {
         var me = this,
             pool = me.animatingPool.slice(),
@@ -479,8 +453,8 @@ Ext.define('Ext.draw.modifier.Animation', {
             attr = pool[i];
             changes = me.updateAttributes(attr);
 
-            if (changes && me._next) {
-                me._next.popUp(attr, changes);
+            if (changes && me._upper) {
+                me._upper.popUp(attr, changes);
             }
         }
     },
@@ -504,8 +478,7 @@ Ext.define('Ext.draw.modifier.Animation', {
     },
 
     destroy: function () {
-        this.animatingPool.length = 0;
-        this.animating = 0;
+        this.stop();
         this.callParent();
     }
 });

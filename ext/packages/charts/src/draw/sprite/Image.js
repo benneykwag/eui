@@ -19,6 +19,10 @@ Ext.define('Ext.draw.sprite.Image', {
                  * @cfg {String} [src=''] The image source of the sprite.
                  */
                 src: 'string'
+                /**
+                 * @private
+                 * @cfg {Number} radius
+                 */
             },
             defaults: {
                 src: '',

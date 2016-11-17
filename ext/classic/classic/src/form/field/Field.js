@@ -321,6 +321,7 @@ Ext.define('Ext.form.field.Field', {
     },
     
     /**
+     * @method
      * Template method before a field is reset.
      * @protected
      */
@@ -350,11 +351,11 @@ Ext.define('Ext.form.field.Field', {
         var me = this,
             newVal, oldVal;
             
-        if (!me.suspendCheckChange) {
+        if (!me.suspendCheckChange && !me.destroying && !me.destroyed) {
             newVal = me.getValue();
             oldVal = me.lastValue;
                 
-            if (!me.destroyed && me.didValueChange(newVal, oldVal)) {
+            if (me.didValueChange(newVal, oldVal)) {
                 me.lastValue = newVal;
                 me.fireEvent('change', me, newVal, oldVal);
                 me.onChange(newVal, oldVal);
@@ -506,7 +507,7 @@ Ext.define('Ext.form.field.Field', {
         return isValid;
     },
 
-    /*
+    /**
      * @private 
      */
     setValidationField: function(value, record) {

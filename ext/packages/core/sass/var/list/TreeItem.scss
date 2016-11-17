@@ -1,4 +1,5 @@
-/*
+/**
+ * @class Ext.list.TreeItem
  * This file contains the base variables for styling a treelist.
  */
 
@@ -74,6 +75,12 @@ $treelist-item-icon-width-big: dynamic(null);
 
 $treelist-item-icon-font-size: dynamic(18px);
 $treelist-item-icon-font-size-big: dynamic(null);
+
+//--------------------------------------------------------------------------
+
+$item-icon-over-transition: color 0.5s;
+$item-text-over-transition: color 0.5s;
+$item-expander-over-transition: color 0.5s;
 
 //--------------------------------------------------------------------------
 

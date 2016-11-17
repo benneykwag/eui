@@ -130,10 +130,11 @@ Ext.define('Ext.dd.DragZone', {
         return Ext.fly(this.dragData.ddel).getXY();
     },
 
-    destroy : function(){
-        this.callParent();
+    destroy: function() {
         if (this.containerScroll) {
             Ext.dd.ScrollManager.unregister(this.scrollEl || this.el);
         }
+
+        this.callParent();
     }
 });

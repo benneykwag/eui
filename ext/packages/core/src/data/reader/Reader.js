@@ -553,10 +553,11 @@ Ext.define('Ext.data.reader.Reader', {
      * @return {Ext.data.ResultSet} The parsed or default ResultSet object
      */
     read: function(response, readOptions) {
-        var data, result;
+        var data, result, responseText;
 
         if (response) {
-            if (response.responseText) {
+            responseText = response.responseText
+            if (responseText) {
                 result = this.getResponseData(response);
                 if (result && result.__$isError) {
                     return new Ext.data.ResultSet({
@@ -569,7 +570,7 @@ Ext.define('Ext.data.reader.Reader', {
                 } else {
                     data = this.readRecords(result, readOptions);
                 }
-            } else {
+            } else if (responseText !== '') {
                 data = this.readRecords(response, readOptions);
             }
         }
@@ -607,10 +608,9 @@ Ext.define('Ext.data.reader.Reader', {
      * processing should not be needed.
      * @param {Object} data The raw data object
      * @param {Object} [readOptions] See {@link #read} for details.
-     * @param internalReadOptions (private)
      * @return {Ext.data.ResultSet} A ResultSet object
      */
-    readRecords: function(data, readOptions, internalReadOptions) {
+    readRecords: function(data, readOptions, /* private */ internalReadOptions) {
         var me = this,
             recordsOnly = internalReadOptions && internalReadOptions.recordsOnly,
             asRoot = internalReadOptions && internalReadOptions.asRoot,

@@ -74,6 +74,8 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
             autoStart: 300,
             el: el
         });
+
+        headerCt.setTouchAction({ panX: false });
     },
 
     // As we mouse over individual headers, change the cursor to indicate
@@ -170,7 +172,7 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
 
         if (me.dragHd && !me.headerCt.dragging) {
             // Prevent drag and longpress gestures being triggered by this mousedown
-            e.cancelGesture();
+            e.claimGesture();
 
             // Calculate how far off the right marker line the mouse pointer is.
             // This will be the xDelta during the following drag operation.

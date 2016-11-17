@@ -237,7 +237,7 @@ Ext.define('Ext.draw.Point', {
     /**
      * Rotates the point by the given angle. This point is not modified.
      * @param {Number} angle The rotation angle.
-     * @param {Ext.draw.Point} center The center of rotation (optional). Defaults to origin.
+     * @param {Ext.draw.Point} [center] The center of rotation (optional). Defaults to origin.
      * @return {Ext.draw.Point} The rotated point.
      */
     rotate: function (angle, center) {

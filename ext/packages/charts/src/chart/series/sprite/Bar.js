@@ -177,7 +177,7 @@ Ext.define('Ext.chart.series.sprite.Bar', {
         me.putMarker('labels', labelCfg, labelId);
     },
 
-    drawBar: function (ctx, surface, clip, left, top, right, bottom, index) {
+    drawBar: function (ctx, surface, rect, left, top, right, bottom, index) {
         var me = this,
             itemCfg = {},
             renderer = me.attr.renderer,
@@ -200,7 +200,7 @@ Ext.define('Ext.chart.series.sprite.Bar', {
     /**
      * @inheritdoc
      */
-    renderClipped: function (surface, ctx, clip, rect) {
+    renderClipped: function (surface, ctx, rect) {
         if (this.cleanRedraw) {
             return;
         }
@@ -225,8 +225,8 @@ Ext.define('Ext.chart.series.sprite.Bar', {
             surfaceMatrix = me.surfaceMatrix,
             left, right, bottom, top, i, center,
             halfLineWidth = 0.5 * attr.lineWidth,
-            min = Math.min(clip[0], clip[2]),
-            max = Math.max(clip[0], clip[2]),
+            min = Math.min(rect[0], rect[2]),
+            max = Math.max(rect[0], rect[2]),
             start = Math.max(0, Math.floor(min)),
             end = Math.min(dataX.length - 1, Math.ceil(max)),
             isDrawLabels = dataText && me.getMarker('labels'),
@@ -241,7 +241,7 @@ Ext.define('Ext.chart.series.sprite.Bar', {
             right = surface.roundPixel(center + barWidth / 2) - halfLineWidth;
             bottom = surface.roundPixel(yLow * yy + dy + lineWidth);
 
-            me.drawBar(ctx, surface, clip, left, top - halfLineWidth, right, bottom - halfLineWidth, i);
+            me.drawBar(ctx, surface, rect, left, top - halfLineWidth, right, bottom - halfLineWidth, i);
 
             // We want 0 values to be passed to the renderer
             if (isDrawLabels && dataText[i] != null) {

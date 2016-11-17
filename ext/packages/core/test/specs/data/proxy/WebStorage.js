@@ -217,7 +217,7 @@ describe("Ext.data.proxy.WebStorage", function() {
 
             describe("getStorageObject", function(){
                 it("should throw an error on getStorageObject", function() {
-                    expect(Ext.data.proxy.WebStorage.prototype.getStorageObject).toRaiseExtError();
+                    expect(Ext.data.proxy.WebStorage.prototype.getStorageObject).toThrow();
                 });
             });
         });
