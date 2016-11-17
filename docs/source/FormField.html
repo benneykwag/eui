@@ -15,14 +15,20 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&quot;eui.mixin.FormField&quot;, {
+  <pre class="prettyprint lang-js"><span id='eui-mixin-FormField'>/***
+</span> *
+ * ## Summary
+ *
+ * 폼필드 공통 제어
+ */
+Ext.define(&quot;eui.mixin.FormField&quot;, {
     extend: &#39;Ext.Mixin&#39;,
 
-    mixinConfig: {
-
+<span id='eui-mixin-FormField-property-mixinConfig'>    mixinConfig: {
+</span>
     },
 
-<span id='global-method-setAllowBlank'>    /**
+<span id='eui-mixin-FormField-method-setAllowBlank'>    /**
 </span>     * 폼필드의 allowBlank:false일 경우
      * *를 표시하도록한다.
      */
@@ -35,7 +41,7 @@
         }
     },
 
-<span id='global-method-setCheckboxGroupRadioGroupBindVar'>    /**
+<span id='eui-mixin-FormField-method-setCheckboxGroupRadioGroupBindVar'>    /**
 </span>     * 체크박스그룹과 라디오그룹에 바인드변수
      * 사용 편의를 위한 메소드.
      */
@@ -76,7 +82,7 @@
         });
     },
 
-<span id='global-method-setCustomDefaultValue'>    /***
+<span id='eui-mixin-FormField-method-setCustomDefaultValue'>    /***
 </span>     * numberfield 등 폼필드
      * bind설정에 경우 클래스 내부 기본값을 지워버리는 현상
      * 을 해결하기 위함.

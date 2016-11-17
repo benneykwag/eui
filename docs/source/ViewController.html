@@ -15,7 +15,13 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.mvvm.ViewController&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-mvvm-ViewController'>/***
+</span> *
+ * ## Summary
+ *
+ * 공통 뷰 컨트롤러
+ */
+Ext.define(&#39;eui.mvvm.ViewController&#39;, {
     extend: &#39;Ext.app.ViewController&#39;,
     mixins: [
         &#39;eui.mixin.FormField&#39;,
@@ -27,14 +33,14 @@
         &#39;eui.Util&#39;
     ],
 
-    init: function () {
-        var vm = this.vm = this.getViewModel(),
+<span id='eui-mvvm-ViewController-method-init'>    init: function () {
+</span>        var vm = this.vm = this.getViewModel(),
             view = this.view = this.getView();
     },
 
-<span id='global-property-'>    /***** form 관련 *******/
+<span id='eui-mvvm-ViewController-property-'>    /***** form 관련 *******/
 </span>
-<span id='global-method-baseFormSave'>    /***
+<span id='eui-mvvm-ViewController-method-baseFormSave'>    /***
 </span>     * 공통 폼 저장 처리. 무조건 재정의 해야한다.
      */
     baseFormSave: function (form, srvOpt, callback) {
@@ -62,8 +68,8 @@
             }
         });
     },
-    transaction: function(transactionID, className, methodName, outgoingDataset, incomingDataset,
-    		additionalParameters, showLoadMask, userCallBack, timeout){
+<span id='eui-mvvm-ViewController-method-transaction'>    transaction: function(transactionID, className, methodName, outgoingDataset, incomingDataset,
+</span>    		additionalParameters, showLoadMask, userCallBack, timeout){
     	var option = {
     		url:Ext.util.Format.format(&#39;/{0}/{1}/&#39;, Util.getContextPath(), Util.getBaseUrl()),
     		async:true,

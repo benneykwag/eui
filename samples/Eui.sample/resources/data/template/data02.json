@@ -1,0 +1,109 @@
+// children: 하위 노드..
+// text: '트리노드의 텍스트 정보..'
+// expanded : true -> 펼칠 것인지.
+// leaf: true -> 최하위 노드일 경우 꼭요.
+{
+    "success": true,
+    "message": "",
+    "children": [
+        {
+            "text":"",
+            "MENU_NAME": "그룹웨어",
+            "LEVEL": "1",
+            "SORT" : 1,
+            "MENU_ID":"MN00",
+            "PARENT_ID":"MN00",
+            "expanded": true,
+            "USE_YN": "Y",
+            "children": [
+                {
+                    "MENU_NAME": "업무연락처 및 보고",
+                    "LEVEL": "2",
+                    "MENU_ID":"MN00",
+                    "PARENT_ID":"MN00",
+                    "expanded": true,
+                    "USE_YN": "N",
+                    "SORT" : 1,
+                    "children": [
+                        {
+                            "SORT" : 1,
+                            "MENU_NAME": "업무연락",
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN00",
+                            "LEVEL": "3",
+                            "leaf": true
+                        },
+                        {
+                            "MENU_NAME": "주간업무보고",
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN00",
+                            "SORT" : 1,
+                            "LEVEL": "3",
+                            "leaf": true
+                        },
+                        {
+                            "MENU_NAME": "월간업무보고",
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN00",
+                            "SORT" : 1,
+                            "LEVEL": "3",
+                            "leaf": true
+                        }
+                    ]
+                },
+                {
+                    "MENU_NAME": "일정관리",
+                    "LEVEL": "2",
+                    "SORT" : 1,
+                    "MENU_ID":"MN00",
+                    "PARENT_ID":"MN05",
+                    "expanded": true,
+                    "children": [
+                        {
+                            "LEVEL": "3",
+                            "SORT" : 1,
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN00",
+                            "MENU_NAME": "나의 업무일정관리",
+                            "leaf": true
+                        },
+                        {
+                            "MENU_NAME": "부서조직업무일정관리",
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN12",
+                            "SORT" : 1,
+                            "LEVEL": "3",
+                            "expanded": true,
+                            "children": [
+                                {
+                                    "MENU_NAME": "개인업무",
+                                    "MENU_ID":"MN00",
+                                    "PARENT_ID":"MN12",
+                                    "SORT" : 2,
+                                    "LEVEL": "4",
+                                    "leaf": true
+                                },
+                                {
+                                    "MENU_NAME": "부서물품",
+                                    "MENU_ID":"MN00",
+                                    "PARENT_ID":"MN11",
+                                    "SORT" : 3,
+                                    "LEVEL": "5",
+                                    "leaf": true
+                                }
+                            ]
+                        },
+                        {
+                            "MENU_NAME": "부서조직업무일정관리",
+                            "MENU_ID":"MN00",
+                            "PARENT_ID":"MN04",
+                            "SORT" : 1,
+                            "LEVEL": "3",
+                            "leaf": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

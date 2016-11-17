@@ -15,19 +15,26 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Radio&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Radio'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.field.Radio 확장. 스타일 적용
+ *
+ **/
+Ext.define(&#39;eui.form.field.Radio&#39;, {
     extend: &#39;Ext.form.field.Radio&#39;,
-    alias: &#39;widget.spradio&#39;,
+    alias: &#39;widget.euiradio&#39;,
 
-    cellCls: &#39;fo-table-row-td&#39;,
-
-    initComponent: function() {
-        var me = this;
+<span id='eui-form-field-Radio-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span>
+<span id='eui-form-field-Radio-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         me.callParent(arguments);
     },
 
-    getValue: function () {
-        return this.getSubmitValue();
+<span id='eui-form-field-Radio-method-getValue'>    getValue: function () {
+</span>        return this.getSubmitValue();
     }
 });</pre>
 </body>

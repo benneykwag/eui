@@ -15,26 +15,32 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.toolbar.Command&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-toolbar-Command'>/***
+</span> *
+ * ## Summary
+ *
+ * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ **/
+Ext.define(&#39;eui.toolbar.Command&#39;, {
     extend: &#39;Ext.toolbar.Toolbar&#39;,
     xtype: &#39;commandtoolbar&#39;,
-    ui: &#39;plain&#39;,
-
+<span id='eui-toolbar-Command-property-ui'>    ui: &#39;plain&#39;,
+</span>
     config: {
-        showText: true,
-        showRowAddBtn: false,
-        showRowDelBtn: false,
-        showRegBtn: false,
-        showReloadBtn: false,
-        showModBtn: false,
-        showSaveBtn: false,
-        showCloseBtn: false,
-        showGridCount: false,
-        showExcelDownBtn: false
-    },
+<span id='eui-toolbar-Command-cfg-showText'>        showText: true,
+</span><span id='eui-toolbar-Command-cfg-showRowAddBtn'>        showRowAddBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showRowDelBtn'>        showRowDelBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showRegBtn'>        showRegBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showReloadBtn'>        showReloadBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showModBtn'>        showModBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showSaveBtn'>        showSaveBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showCloseBtn'>        showCloseBtn: false,
+</span><span id='eui-toolbar-Command-cfg-showGridCount'>        showGridCount: false,
+</span><span id='eui-toolbar-Command-cfg-showExcelDownBtn'>        showExcelDownBtn: false
+</span>    },
 
-    initComponent: function () {
-        var me = this,
+<span id='eui-toolbar-Command-method-initComponent'>    initComponent: function () {
+</span>        var me = this,
             owner = this.up(&#39;grid,form&#39;);
         Ext.apply(me, {
             items: [

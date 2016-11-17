@@ -15,18 +15,26 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.FieldContainer&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-FieldContainer'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.FieldContainer 확장. 스타일 적용
+ * 기본 item사이즈 적용
+ *
+ **/
+Ext.define(&#39;eui.form.FieldContainer&#39;, {
     extend: &#39;Ext.form.FieldContainer&#39;,
     alias: &#39;widget.euifieldcontainer&#39;,
 
-    cellCls: &#39;fo-table-row-td&#39;,
-    width: &#39;100%&#39;,
-    layout: &#39;column&#39;,
-    defaults: {
-        width: &#39;50%&#39;
+<span id='eui-form-FieldContainer-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-FieldContainer-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-FieldContainer-property-layout'>    layout: &#39;column&#39;,
+</span><span id='eui-form-FieldContainer-property-defaults'>    defaults: {
+</span>        width: &#39;50%&#39;
     },
-    initComponent: function() {
-        var me = this;
+<span id='eui-form-FieldContainer-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         me.callParent(arguments);
     }
 });</pre>

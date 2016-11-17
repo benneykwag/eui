@@ -15,21 +15,48 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.button.Button&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-button-Button'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.button.Button 클래스를 확장합니다. toolbar 또는 기타 container의 자식으로 포함됩니다.
+ *
+ *     @example
+ *     Ext.create(&#39;Ext.panel.Panel&#39;, {
+ *          title: &#39;Eui Button&#39;,
+ *          requires: [&#39;eui.button.Button&#39;],
+ *          defaultListenerScope: true,
+ *          items: [
+ *              {
+ *                  xtype: &#39;euibutton&#39;,
+ *                  text: &#39;저장&#39;,
+ *                  handler: &#39;onClickButton&#39;
+ *              }
+ *         ],
+ *         onClickButton: function(button){
+ *              Ext.Msg.alert(&#39;Status&#39;, button.getText() + &#39; Button Clicked.&#39;);
+ *         },
+ *         height: 200,
+ *         width: 300,
+ *         renderTo: Ext.getBody()
+ *     });
+ *
+ */
+Ext.define(&#39;eui.button.Button&#39;, {
     extend: &#39;Ext.button.Button&#39;,
     xtype: &#39;euibutton&#39;,
 //    text: &#39;SpButton&#39;,
 //    ui: &#39;basicbtn&#39;,
 
     config: {
-        iconCls: null,
-        showText: true
-    },
+<span id='eui-button-Button-cfg-iconCls'>        iconCls: null,
+</span><span id='eui-button-Button-cfg-showText'>        showText: true
+</span>    },
 
-    localeProperties: [&#39;text&#39;,&#39;iconCls&#39;],
-    margin: &#39;0 5 2 0&#39;,
-    initComponent: function() {
-        var me = this;
+<span id='eui-button-Button-property-localeProperties'>    localeProperties: [&#39;text&#39;,&#39;iconCls&#39;],
+</span><span id='eui-button-Button-property-margin'>    margin: &#39;0 5 2 0&#39;,
+</span><span id='eui-button-Button-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         if(!me.getShowText()){
             delete me.text;
         }

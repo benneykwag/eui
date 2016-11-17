@@ -15,18 +15,26 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Date&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Date'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.field.Data를 확장. 날자 포맷 지정 및 스타일 적용
+ *
+ **/
+
+Ext.define(&#39;eui.form.field.Date&#39;, {
     extend: &#39;Ext.form.field.Date&#39;,
     alias: &#39;widget.euidate&#39;,
-    submitFormat: &#39;Ymd&#39;,
-    format: &#39;Y.m.d&#39;,
-    altFormats: &#39;Ymd&#39;,
-    value: new Date(),
-    dateNum : null,
-    width: &#39;100%&#39;,
-    cellCls: &#39;fo-table-row-td&#39;,
-    initComponent: function() {
-        var me = this;
+<span id='eui-form-field-Date-property-submitFormat'>    submitFormat: &#39;Ymd&#39;,
+</span><span id='eui-form-field-Date-property-format'>    format: &#39;Y.m.d&#39;,
+</span><span id='eui-form-field-Date-property-altFormats'>    altFormats: &#39;Ymd&#39;,
+</span><span id='eui-form-field-Date-property-value'>    value: new Date(),
+</span><span id='eui-form-field-Date-property-dateNum'>    dateNum : null,
+</span><span id='eui-form-field-Date-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-field-Date-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-field-Date-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         var dateNum = me.dateNum;
         me.callParent(arguments);
 
@@ -35,8 +43,8 @@
         }
     },
     
-    dayCal : function(val,num){
-    	val.setDate(val.getDate()+num);
+<span id='eui-form-field-Date-method-dayCal'>    dayCal : function(val,num){
+</span>    	val.setDate(val.getDate()+num);
     	return val;
     }
 

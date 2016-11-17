@@ -15,60 +15,67 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.window.Notification&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-window-Notification'>/***
+</span> *
+ * ## Summary
+ *
+ * 토스트 알람용 (제거 예정)
+ *
+ **/
+Ext.define(&#39;eui.window.Notification&#39;, {
     extend: &#39;Ext.window.Window&#39;,
     alias: &#39;widget.uxNotification&#39;,
 
-    cls: &#39;ux-notification-window&#39;,
-    autoClose: true,
-    autoHeight: true,
-    plain: false,
-    draggable: false,
-    shadow: false,
-    focus: Ext.emptyFn,
+<span id='eui-window-Notification-property-cls'>    cls: &#39;ux-notification-window&#39;,
+</span><span id='eui-window-Notification-property-autoClose'>    autoClose: true,
+</span><span id='eui-window-Notification-property-autoHeight'>    autoHeight: true,
+</span><span id='eui-window-Notification-property-plain'>    plain: false,
+</span><span id='eui-window-Notification-property-draggable'>    draggable: false,
+</span><span id='eui-window-Notification-property-shadow'>    shadow: false,
+</span><span id='eui-window-Notification-method-focus'>    focus: Ext.emptyFn,
+</span>
+<span id='eui-window-Notification-property-manager'>    // For alignment and to store array of rendered notifications. Defaults to document if not set.
+</span>    manager: null,
 
-    // For alignment and to store array of rendered notifications. Defaults to document if not set.
-    manager: null,
+<span id='eui-window-Notification-property-useXAxis'>    useXAxis: false,
+</span>
+<span id='eui-window-Notification-property-position'>    // Options: br, bl, tr, tl, t, l, b, r
+</span>    position: &#39;br&#39;,
 
-    useXAxis: false,
+<span id='eui-window-Notification-property-spacing'>    // Pixels between each notification
+</span>    spacing: 6,
 
-    // Options: br, bl, tr, tl, t, l, b, r
-    position: &#39;br&#39;,
-
-    // Pixels between each notification
-    spacing: 6,
-
-    // Pixels from the managers borders to start the first notification
-    paddingX: 30,
-    paddingY: 10,
-
-    slideInAnimation: &#39;easeIn&#39;,
-    slideBackAnimation: &#39;bounceOut&#39;,
-    slideInDuration: 1500,
-    slideBackDuration: 1000,
-    hideDuration: 500,
-    autoCloseDelay: 7000,
-    stickOnClick: true,
-    stickWhileHover: true,
-
-    // Private. Do not override!
-    isHiding: false,
-    isFading: false,
-    destroyAfterHide: false,
-    closeOnMouseOut: false,
-
-    // Caching coordinates to be able to align to final position of siblings being animated
-    xPos: 0,
-    yPos: 0,
-
+<span id='eui-window-Notification-property-paddingX'>    // Pixels from the managers borders to start the first notification
+</span>    paddingX: 30,
+<span id='eui-window-Notification-property-paddingY'>    paddingY: 10,
+</span>
+<span id='eui-window-Notification-property-slideInAnimation'>    slideInAnimation: &#39;easeIn&#39;,
+</span><span id='eui-window-Notification-property-slideBackAnimation'>    slideBackAnimation: &#39;bounceOut&#39;,
+</span><span id='eui-window-Notification-property-slideInDuration'>    slideInDuration: 1500,
+</span><span id='eui-window-Notification-property-slideBackDuration'>    slideBackDuration: 1000,
+</span><span id='eui-window-Notification-property-hideDuration'>    hideDuration: 500,
+</span><span id='eui-window-Notification-property-autoCloseDelay'>    autoCloseDelay: 7000,
+</span><span id='eui-window-Notification-property-stickOnClick'>    stickOnClick: true,
+</span><span id='eui-window-Notification-property-stickWhileHover'>    stickWhileHover: true,
+</span>
+<span id='eui-window-Notification-property-isHiding'>    // Private. Do not override!
+</span>    isHiding: false,
+<span id='eui-window-Notification-property-isFading'>    isFading: false,
+</span><span id='eui-window-Notification-property-destroyAfterHide'>    destroyAfterHide: false,
+</span><span id='eui-window-Notification-property-closeOnMouseOut'>    closeOnMouseOut: false,
+</span>
+<span id='eui-window-Notification-property-xPos'>    // Caching coordinates to be able to align to final position of siblings being animated
+</span>    xPos: 0,
+<span id='eui-window-Notification-property-yPos'>    yPos: 0,
+</span>
     statics: {
-        defaultManager: {
-            el: null
+<span id='eui-window-Notification-static-property-defaultManager'>        defaultManager: {
+</span>            el: null
         }
     },
 
-    initComponent: function() {
-        var me = this;
+<span id='eui-window-Notification-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
 
         // Backwards compatibility
         if (Ext.isDefined(me.corner)) {
@@ -106,8 +113,8 @@
         me.callParent(arguments);
     },
 
-    onRender: function() {
-        var me = this;
+<span id='eui-window-Notification-method-onRender'>    onRender: function() {
+</span>        var me = this;
         me.callParent(arguments);
 
         me.el.hover(
@@ -126,8 +133,8 @@
 
     },
 
-    updateAlignment: function (position) {
-        var me = this;
+<span id='eui-window-Notification-method-updateAlignment'>    updateAlignment: function (position) {
+</span>        var me = this;
 
         switch (position) {
             case &#39;br&#39;:
@@ -201,8 +208,8 @@
         }
     },
 
-    getXposAlignedToManager: function () {
-        var me = this;
+<span id='eui-window-Notification-method-getXposAlignedToManager'>    getXposAlignedToManager: function () {
+</span>        var me = this;
 
         var xPos = 0;
 
@@ -227,8 +234,8 @@
         return xPos;
     },
 
-    getYposAlignedToManager: function () {
-        var me = this;
+<span id='eui-window-Notification-method-getYposAlignedToManager'>    getYposAlignedToManager: function () {
+</span>        var me = this;
 
         var yPos = 0;
 
@@ -253,8 +260,8 @@
         return yPos;
     },
 
-    getXposAlignedToSibling: function (sibling) {
-        var me = this;
+<span id='eui-window-Notification-method-getXposAlignedToSibling'>    getXposAlignedToSibling: function (sibling) {
+</span>        var me = this;
 
         if (me.useXAxis) {
             if (me.position == &#39;tl&#39; || me.position == &#39;bl&#39; || me.position == &#39;l&#39;) {
@@ -270,8 +277,8 @@
 
     },
 
-    getYposAlignedToSibling: function (sibling) {
-        var me = this;
+<span id='eui-window-Notification-method-getYposAlignedToSibling'>    getYposAlignedToSibling: function (sibling) {
+</span>        var me = this;
 
         if (me.useXAxis) {
             return me.el.getTop();
@@ -286,8 +293,8 @@
         }
     },
 
-    getNotifications: function (alignment) {
-        var me = this;
+<span id='eui-window-Notification-method-getNotifications'>    getNotifications: function (alignment) {
+</span>        var me = this;
 
         if (!me.manager.notifications[alignment]) {
             me.manager.notifications[alignment] = [];
@@ -296,8 +303,8 @@
         return me.manager.notifications[alignment];
     },
 
-    setManager: function (manager) {
-        var me = this;
+<span id='eui-window-Notification-method-setManager'>    setManager: function (manager) {
+</span>        var me = this;
 
         me.manager = manager;
 
@@ -319,8 +326,8 @@
         }
     },
 
-    beforeShow: function () {
-        var me = this;
+<span id='eui-window-Notification-method-beforeShow'>    beforeShow: function () {
+</span>        var me = this;
 
         if (me.stickOnClick) {
             if (me.body &amp;&amp; me.body.dom) {
@@ -342,8 +349,8 @@
 
     },
 
-    afterShow: function () {
-        var me = this;
+<span id='eui-window-Notification-method-afterShow'>    afterShow: function () {
+</span>        var me = this;
 
         me.callParent(arguments);
 
@@ -379,8 +386,8 @@
 
     },
 
-    slideBack: function () {
-        var me = this;
+<span id='eui-window-Notification-method-slideBack'>    slideBack: function () {
+</span>        var me = this;
 
         var notifications = me.getNotifications(me.managerAlignment);
         var index = Ext.Array.indexOf(notifications, me)
@@ -410,16 +417,16 @@
         }
     },
 
-    cancelAutoClose: function() {
-        var me = this;
+<span id='eui-window-Notification-method-cancelAutoClose'>    cancelAutoClose: function() {
+</span>        var me = this;
 
         if (me.autoClose) {
             me.task.cancel();
         }
     },
 
-    doAutoClose: function () {
-        var me = this;
+<span id='eui-window-Notification-method-doAutoClose'>    doAutoClose: function () {
+</span>        var me = this;
 
         if (!(me.stickWhileHover &amp;&amp; me.mouseIsOver)) {
             // Close immediately
@@ -430,8 +437,8 @@
         }
     },
 
-    removeFromManager: function () {
-        var me = this;
+<span id='eui-window-Notification-method-removeFromManager'>    removeFromManager: function () {
+</span>        var me = this;
 
         if (me.manager) {
             var notifications = me.getNotifications(me.managerAlignment);
@@ -448,8 +455,8 @@
         }
     },
 
-    hide: function () {
-        var me = this;
+<span id='eui-window-Notification-method-hide'>    hide: function () {
+</span>        var me = this;
 
         if (me.isHiding) {
             if (!me.isFading) {
@@ -485,8 +492,8 @@
         return me;
     },
 
-    destroy: function () {
-        var me = this;
+<span id='eui-window-Notification-method-destroy'>    destroy: function () {
+</span>        var me = this;
         if (!me.hidden) {
             me.destroyAfterHide = true;
             me.hide(me.animateTarget, me.doClose, me);
