@@ -1,6 +1,6 @@
 {
     "--": ["classic", "src"],
-  "--title": "EUI JS - v${euijs.version} API Documentation",
+  "--title": "EUI JS - v6.2.0 API Documentation",
   "--ignore-global": true,
   "--head-html": [
 //    "<link rel=\"stylesheet\" href=\"../build/resources/eui-core-all.css\" type=\"text/css\" />",

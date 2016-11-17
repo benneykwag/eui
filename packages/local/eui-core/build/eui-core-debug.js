@@ -1792,11 +1792,16 @@ Ext.define('eui.form.Panel', {
          */
         tableColumns: 4,
         hbuttons: null,
-        /***
+        /**
+         * @cfg {Boolean} [useRespColumn='true']
          * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
         useRespColumn: true,
+        /**
+         * @cfg {Boolean} [usePagingToolbar='false']
+         * 페이징 툴바 사용여부
+         */
         usePagingToolbar: false
     },
     initComponent: function() {

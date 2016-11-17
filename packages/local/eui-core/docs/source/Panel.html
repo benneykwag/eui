@@ -72,14 +72,19 @@ Ext.define(&#39;eui.form.Panel&#39;, {
         tableColumns: 4,
 <span id='eui-form-Panel-cfg-hbuttons'>        hbuttons: null,
 </span>
-<span id='eui-form-Panel-cfg-useRespColumn'>        /***
-</span>         * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
+<span id='eui-form-Panel-cfg-useRespColumn'>        /**
+</span>         * @cfg {Boolean} [useRespColumn=&#39;true&#39;]
+         * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
         useRespColumn: true,
 
-<span id='eui-form-Panel-cfg-usePagingToolbar'>        usePagingToolbar: false
-</span>    },
+<span id='eui-form-Panel-cfg-usePagingToolbar'>        /**
+</span>         * @cfg {Boolean} [usePagingToolbar=&#39;false&#39;]
+         * 페이징 툴바 사용여부
+         */
+        usePagingToolbar: false
+    },
 
 <span id='eui-form-Panel-method-initComponent'>    initComponent: function () {
 </span>        var me = this;
