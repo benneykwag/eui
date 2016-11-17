@@ -1,4 +1,4 @@
-Ext.define('Eui.sample.view.tmp002.TMP002M', {
+Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.TMP002M',
     data: {

@@ -46,6 +46,16 @@ Ext.define('Override.eui.Config', {
             "CODE": "GRID02",
             "PCODE": "GRID"
         },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "TMP005V01",
+            "TEXT": "Tree Grid",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.template.tmp005.TMP005V",
+            "CODE": "GRID03",
+            "PCODE": "GRID"
+        },
+
         // Grid End..
         // Form Start..
         {

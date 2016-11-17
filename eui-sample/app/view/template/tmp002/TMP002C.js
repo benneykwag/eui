@@ -1,4 +1,4 @@
-Ext.define('Eui.sample.view.tmp002.TMP002C', {
+Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
     extend: 'eui.mvvm.ViewController',
     alias: 'controller.TMP002C',
 

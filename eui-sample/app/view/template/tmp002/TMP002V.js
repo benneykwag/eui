@@ -1,13 +1,13 @@
-Ext.define('Eui.sample.view.tmp002.TMP002V',{
+Ext.define('Eui.sample.view.template.tmp002.TMP002V',{
     extend: 'eui.container.BaseContainer',
     xtype: 'TMP002V',
     title: 'TMP002V',
     requires: [
-        'Eui.sample.view.tmp002.TMP002C',
-        'Eui.sample.view.tmp002.TMP002M',
-        'Eui.sample.view.tmp002.TMP002V01',
-        'Eui.sample.view.tmp002.TMP002V02',
-        'Eui.sample.view.tmp002.TMP002V03'
+        'Eui.sample.view.template.tmp002.TMP002C',
+        'Eui.sample.view.template.tmp002.TMP002M',
+        'Eui.sample.view.template.tmp002.TMP002V01',
+        'Eui.sample.view.template.tmp002.TMP002V02',
+        'Eui.sample.view.template.tmp002.TMP002V03'
     ],
     controller: 'TMP002C',
     viewModel: 'TMP002M',

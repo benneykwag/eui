@@ -1,43 +1,48 @@
 Ext.define('Eui.sample.view.template.tmp005.TMP005V01',{
-    extend: 'Ext.container.Container',
+    extend: 'eui.panel.Panel',
     xtype: 'TMP005V01',
-    layout: 'hbox',
-    height: 50,
-    margin: 10,
-    defaults: {
-        margin: '27 5 0 0'
-    },
-    items: [
+    margin : 10,
+    tbar: [
         {
-            xtype: 'container',
-            margin: 0,
-            layout: 'vbox',
-            flex: 1,
-            items: [
-                {
-                    width: 100,
-                    hideHeaderICon: false,
-                    xtype: 'euipanel',
-                    title: '운영관리'
-                },
-                {
-                    margin: '5 0 5 5',
-                    xtype: 'component',
-                    html : '임대관리 > 임대운영사 정보 > 운영기초관리'
+            xtype: 'euitext',
+            triggers: {
+                search: {
+                    cls: 'x-form-search-trigger',
+                    handler: 'onClearClick',
+                    scope: 'this'
                 }
-            ]
+            },
+
+            cellCls: 'null',
+            fieldLabel: '플랫폼사용자',
+            width: 200
+        },
+        '->',
+        {
+            xtype: 'euibutton',
+            iconCls: 'x-fa fa-filter',
+            width: 50,
+            text: '검색'
         },
         {
-            iconCls: 'x-fa fa-folder-open',
-            xtype: 'euibutton',
-            text: '조회',
-            handler: 'onLoadData'
+            xtype: 'tbseparator'
         },
         {
-            iconCls: 'x-fa fa-folder-open',
             xtype: 'euibutton',
-            text: '저장',
-            handler: 'onSave'
+            iconCls: 'x-fa fa-save',
+            width: 50,
+            text: '저장'
         }
-    ]
-});
+    ],
+    header: {
+        xtype: 'header',
+        titlePosition: 0,
+        items: [
+            {
+                xtype: 'component',
+                html : '임상관리 > 임대운영사 정보 > 기초정보관리'
+            }
+        ]
+    },
+    title: '기초정보관리'
+})

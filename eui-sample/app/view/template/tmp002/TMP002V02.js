@@ -1,4 +1,4 @@
-Ext.define('Eui.sample.view.tmp002.TMP002V02', {
+Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
     extend: 'eui.grid.Panel',
     xtype: 'TMP002V02',
     margin: 10,
