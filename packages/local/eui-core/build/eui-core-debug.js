@@ -163,7 +163,6 @@ Ext.define('Override.Ext.data.TreeModel', {
     override: 'Ext.data.TreeModel',
     listeners: {
         recusivechildcheck: function(record, field) {
-            debugger;
             Ext.each(record.childNodes, function(child) {
                 var flag = record.get(field);
                 if (record.get(field) === 'Y') {
@@ -771,19 +770,19 @@ Ext.define('eui.Util', {
                 pagingtoolbar = ownerCt.down('pagingtoolbar'),
                 window = Ext.create('Ext.window.Window', config);
             /*if(commandtoolbar){
-                commandtoolbar.setDisabled(true);
-            }
-            if(pagingtoolbar){
-                pagingtoolbar.setDisabled(true);
-            }
-            window.addListener('close', function () {
-                if(commandtoolbar){
-                    commandtoolbar.setDisabled(false);
-                }
-                if(pagingtoolbar){
-                    pagingtoolbar.setDisabled(false);
-                }
-            });*/
+             commandtoolbar.setDisabled(true);
+             }
+             if(pagingtoolbar){
+             pagingtoolbar.setDisabled(true);
+             }
+             window.addListener('close', function () {
+             if(commandtoolbar){
+             commandtoolbar.setDisabled(false);
+             }
+             if(pagingtoolbar){
+             pagingtoolbar.setDisabled(false);
+             }
+             });*/
             return ownerCt.add(window);
         }
         return Ext.create('Ext.window.Window', config);
@@ -1161,7 +1160,7 @@ Ext.define('eui.Util', {
         Ext.Ajax.request(option);
     },
     sessionValidationCallback: function(response) {},
-    //TODO 
+    //TODO
     /**
      * fgn(fully qualified name of the function. for example: my.app.service.MenuService.getMenu )
      * dn(dataset name. for example: ds_menulist)
@@ -1215,18 +1214,16 @@ Ext.define('eui.Util', {
                         data: {}
                     };
                 Ext.each(records.config.fields, function(field) {
-                    if (record.get('DSKT_SQ') < 4) {
-                        if (Ext.isObject(field)) {
-                            obj[field.name] = record.get(field.name);
+                    if (Ext.isObject(field)) {
+                        obj[field.name] = record.get(field.name);
+                    } else {
+                        if (field === 'PCODE' && (record.get(field) === '*')) {
+                            obj.data[field] = record.get('CODE');
+                        } else if (field === 'TEXT') {
+                            obj.data[field] = record.get(field);
+                            obj[Ext.util.Format.lowercase(field)] = record.get(field);
                         } else {
-                            if (field === 'PCODE' && (record.get(field) === '*')) {
-                                obj.data[field] = record.get('CODE');
-                            } else if (field === 'TEXT') {
-                                obj.data[field] = record.get(field);
-                                obj[Ext.util.Format.lowercase(field)] = record.get(field);
-                            } else {
-                                obj.data[field] = record.get(field);
-                            }
+                            obj.data[field] = record.get(field);
                         }
                     }
                 });
@@ -1272,6 +1269,28 @@ Ext.define('eui.Util', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.button.Button 클래스를 확장합니다. toolbar 또는 기타 container의 자식으로 포함됩니다.
+ *
+ *     @example
+ *     Ext.create('Ext.panel.Panel', {
+ *          requires: ['eui.button.Button'],
+ *          items: [
+ *              {
+ *                  xtype: 'euibutton',
+ *                  text: '저장',
+ *                  handler: 'onClickButton'
+ *              }
+ *         ],
+ *         height: 500,
+ *         width: 800,
+ *         renderTo: Ext.getBody()
+ *     });
+ *
+ */
 Ext.define('eui.button.Button', {
     extend: 'Ext.button.Button',
     xtype: 'euibutton',
@@ -7879,10 +7898,10 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
         return Ext.String.format("<ss:Row>{0}</ss:Row>", cells.join(""));
     },
     buildCell: function(value, type, style) {
-        if (type == "DateTime" && Ext.isFunction(value.format))  {
+        if (type == "DateTime" && Ext.isFunction(value.format)) {
             value = value.format(this.dateFormatString);
         }
-        
+        value = value.replace(/</g, "&lt;");
         return new Ext.ux.exporter.excelFormatter.Cell({
             value: value,
             type: type,
