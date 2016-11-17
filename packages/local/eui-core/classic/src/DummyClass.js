@@ -1,2 +1,0 @@
-Ext.define('eui.DummyClass', {
-});

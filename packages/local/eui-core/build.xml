@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="eui-core" default=".help">
-    <property file="build.properties" />
     <!--
     The build-impl.xml file imported here contains the guts of the build process. It is
     a great idea to read that file to understand how the process works, but it is best to
     limit your changes to this file.
     -->
     <import file="${basedir}/.sencha/package/build-impl.xml"/>
-
+    <property name="skip.sass" value="1" />
+    <property name="skip.slice" value="1" />
     <!--
-    The following targets can be provided to inject logic before and/or after key steps
-    of the build process:
+ The following targets can be provided to inject logic before and/or after key steps
+ of the build process:
 
-        The "init-local" target is used to initialize properties that may be personalized
-        for the local machine.
+     The "init-local" target is used to initialize properties that may be personalized
+     for the local machine.
 
-            <target name="-before-init-local"/>
-            <target name="-after-init-local"/>
+         <target name="-before-init-local"/>
+         <target name="-after-init-local"/>
 
-        The "clean" target is used to clean build output from the build.dir.
+     The "clean" target is used to clean build output from the build.dir.
 
-            <target name="-before-clean"/>
-            <target name="-after-clean"/>
+         <target name="-before-clean"/>
+         <target name="-after-clean"/>
 
-        The general "init" target is used to initialize all other properties, including
-        those provided by Sencha Cmd.
+     The general "init" target is used to initialize all other properties, including
+     those provided by Sencha Cmd.
 
-            <target name="-before-init"/>
-            <target name="-after-init"/>
-        
-        The "build" target performs the call to Sencha Cmd to build the application.
+         <target name="-before-init"/>
+         <target name="-after-init"/>
 
-            <target name="-before-build"/>
-            <target name="-after-build"/>
-    -->
+     The "build" target performs the call to Sencha Cmd to build the application.
+
+         <target name="-before-build"/>
+         <target name="-after-build"/>
+ -->
 
     <!--<target name="-before-build">
         <delete dir="${workspace.dir}/packages/local/eui-core/resources/css">
@@ -113,9 +113,6 @@
         <echo message="Generating API documentation..." />
         <exec executable="${jsDuckExecutable}" timeout="20000" failonerror="true" />
 
-
-
-
         <echo message="Applying custom JSDuck theme..." />
         <copy todir="docs" overwrite="true">
             <fileset file=".jsduck/eg-iframe.html"></fileset>
@@ -126,8 +123,8 @@
         <copy todir="docs/extjs" overwrite="true">
             <fileset file="${workspace.dir}/ext/build/ext-all-debug.js"></fileset>
         </copy>
-        <copy todir="docs/theme-triton"  overwrite="true">
-            <fileset dir="${workspace.dir}/ext/build/classic/theme-triton"></fileset>
+        <copy todir="docs/theme-gray"  overwrite="true">
+            <fileset dir="${workspace.dir}/ext/build/classic/theme-gray"></fileset>
         </copy>
 
         <copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">
@@ -140,6 +137,5 @@
             <fileset dir="/Volumes/Disk1/Users/benney/Documents/Architect/Extensions" includes="sp/**/*" />
         </copy>
     </target>-->
-
 
 </project>

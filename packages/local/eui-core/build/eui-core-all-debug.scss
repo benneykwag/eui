@@ -1,6 +1,5 @@
 $image-search-path: '/Volumes/Disk2/git.projects/eui-workspace/packages/local/eui-core/build/resources' !default;
 $theme-name:  '${theme.name}' !default;
-$include-config: dynamic(true);;
 $include-ext-abstractcomponent: dynamic(false);;
 $include-ext-abstractcontainer: dynamic(false);;
 $include-ext-abstractmanager: dynamic(false);;
@@ -898,7 +897,6 @@ $include-override-grid-column-column: dynamic(true);;
 $include-override-panel-panel: dynamic(true);;
 $include-override-window-window: dynamic(true);;
 $include-util: dynamic(true);;
-$include-eui-config: dynamic(true);;
 $include-eui-dummyclass: dynamic(true);;
 $include-eui-util: dynamic(true);;
 $include-eui-button-button: dynamic(true);;
@@ -956,7 +954,6 @@ $include-eui-ux-popup-defaultpopup: dynamic(true);;
 $include-eui-ux-table-tablecellmerge: dynamic(true);;
 $include-eui-view-merge: dynamic(true);;
 $include-eui-window-notification: dynamic(true);;
-$include-sprr-dummyclass: dynamic(true);;
 
 
 /* ======================== ETC ======================== */

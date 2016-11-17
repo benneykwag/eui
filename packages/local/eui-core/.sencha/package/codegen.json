@@ -31,10 +31,15 @@
       "version": "33f446bd02c3fd24eb27891582eff6a2e789796b",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     "sass/etc/all.scss": {
@@ -42,10 +47,15 @@
       "version": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     "sass/example/custom.js": {
@@ -53,10 +63,15 @@
       "version": "199e99bbd15c3c0415569425cb21e77c95e9042a",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     "sass/example/fashion.html": {
@@ -64,10 +79,15 @@
       "version": "5117b27d384b8c5ae0bd4aafdb1fad14eaddcc62",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     "sass/example/theme.html": {
@@ -75,10 +95,15 @@
       "version": "2c775eb1b3eb10df6efa0743d8aa426af3f9a562",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     ".sencha/package/build.properties": {
@@ -86,10 +111,15 @@
       "version": "8b81315dbe73ce9c08478f4c1d2df84f456efcf5",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     ".sencha/package/sencha.cfg": {
@@ -97,10 +127,15 @@
       "version": "057f5f361104adf05c1c49b01b08cd389b3822b2",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     },
     ".sencha/package/testing.properties": {
@@ -108,10 +143,15 @@
       "version": "e65f969c42eb4f355c850fc58fea852582f20db8",
       "parameters": {
         "extRelPath": "../../../ext",
+        "pkgExtend": "${args.extend}",
+        "pkgFramework": "",
         "pkgName": "eui-core",
+        "pkgNamespace": "Eui.core",
+        "pkgTheme": "",
+        "pkgToolkit": "",
         "pkgType": "code",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../${touch.dir}"
       }
     }
   }

@@ -40,10 +40,11 @@ Ext.define(&#39;eui.grid.column.Check&#39;, {
         if (prop ? record[prop] : record.get(me.dataIndex) != val) {
             if (prop) {
                 record[prop] = val;
-                me.updater(cell, checked);
+
             } else {
                 record.set(me.dataIndex, val);
             }
+            me.updater(cell, checked);
         }
     },
 

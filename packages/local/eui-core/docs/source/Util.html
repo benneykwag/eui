@@ -23,7 +23,7 @@
 </span>     * i18n 용
      */
     localeStoreValueField: &#39;MSG_ID&#39;,
-    localeStoreDisplayField : &#39;MSG_CONTENTS&#39;,
+    localeStoreDisplayField: &#39;MSG_CONTENTS&#39;,
 
     UrlPrefix: null,// &quot;http://211.196.150.66:18080/&quot;,
 //    HurlPrefix: &quot;http://103.168.0.58:8080/&quot;,
@@ -336,7 +336,7 @@
         };
         config.items = null;
         if (!Ext.isEmpty(windowOption)) {
-            for(var test in windowOption){
+            for (var test in windowOption) {
                 var value = windowOption[test];
                 config[test] = value;
             }
@@ -352,19 +352,19 @@
                 pagingtoolbar = ownerCt.down(&#39;pagingtoolbar&#39;),
                 window = Ext.create(&#39;Ext.window.Window&#39;, config);
             /*if(commandtoolbar){
-                commandtoolbar.setDisabled(true);
-            }
-            if(pagingtoolbar){
-                pagingtoolbar.setDisabled(true);
-            }
-            window.addListener(&#39;close&#39;, function () {
-                if(commandtoolbar){
-                    commandtoolbar.setDisabled(false);
-                }
-                if(pagingtoolbar){
-                    pagingtoolbar.setDisabled(false);
-                }
-            });*/
+             commandtoolbar.setDisabled(true);
+             }
+             if(pagingtoolbar){
+             pagingtoolbar.setDisabled(true);
+             }
+             window.addListener(&#39;close&#39;, function () {
+             if(commandtoolbar){
+             commandtoolbar.setDisabled(false);
+             }
+             if(pagingtoolbar){
+             pagingtoolbar.setDisabled(false);
+             }
+             });*/
             return ownerCt.add(window);
         }
         return Ext.create(&#39;Ext.window.Window&#39;, config);
@@ -481,7 +481,7 @@
         var rtnData = &quot;&quot;;
         var options = {
             async: pSync,
-            method: (pMethod?pMethod:&#39;GET&#39;),
+            method: (pMethod ? pMethod : &#39;GET&#39;),
             timeout: timeoutSeq,
             disableCaching: false,
             url: pURL,
@@ -690,24 +690,26 @@
         return &#39;&#39;;
     },
     //=================== add start ========================================//
-    config:{
-        contextPath:&#39;eui&#39;,
-        baseUrl:&#39;controller/router&#39;
+    config: {
+        contextPath: &#39;eui&#39;,
+        baseUrl: &#39;controller/router&#39;
     },
     constructor: function (cfg) {
-    	this.initConfig(cfg);
-    	this.init();
+        this.initConfig(cfg);
+        this.init();
     },
-    
-    init: function(){
+
+    init: function () {
 //    	Ext.EventManager.on(Ext.isIE ? document : window, &#39;keydown&#39;, function(e, t) {
 //    		if (e.getKey() == e.BACKSPACE &amp;&amp; ((!/^input$/i.test(t.tagName) &amp;&amp; !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
 //    			e.stopEvent();
 //    		}
 //    	});
-    	
-    	Ext.getDoc().on(&quot;contextmenu&quot;, function(ev){ ev.preventDefault();});
-    	
+
+        Ext.getDoc().on(&quot;contextmenu&quot;, function (ev) {
+            ev.preventDefault();
+        });
+
 //    	Ext.direct.Manager.addProvider({
 //    		id: &#39;euiprovider&#39;,
 //    	    url: Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
@@ -717,79 +719,79 @@
 //    	    actions: {}
 //    	});
     },
-    sessionValidation: function(){
-    	//TODO
-    	var option = {
-    		url:Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
-    		async:true,
-    		method:&#39;POST&#39;,
-    		success: function(response, options){
-    			if(!Ext.isEmpty(response.responseText)){
-    				var returnData = Ext.decode(response.responseText),
-    				result = returnData[0].result;
-    				this.sessionValidationCallback(result);
-    			}
-    		},
-    		failure: function(response, options){
-    			if(!Ext.isEmpty(response.responseText)){
-    				var returnData = Ext.decode(response.responseText),
-    				result = returnData[0].result;
-    				this.sessionValidationCallback(result);
-    			}
-    		},
-    		jsonData: {
-    			action: &#39;&#39;,
-    			method: &#39;&#39;,
-    			tid: Ext.id(),
-    			type:&#39;rpc&#39;,
-    			data: {}
-    		},
-    		scope:this,
-    		timeout: 30000,
-    		disableCaching:false
-    	};
-    	Ext.Ajax.request(option);
-    },    
-    sessionValidationCallback:function(response){
-    	//TODO 
-    	
+    sessionValidation: function () {
+        //TODO
+        var option = {
+            url: Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
+            async: true,
+            method: &#39;POST&#39;,
+            success: function (response, options) {
+                if (!Ext.isEmpty(response.responseText)) {
+                    var returnData = Ext.decode(response.responseText),
+                        result = returnData[0].result;
+                    this.sessionValidationCallback(result);
+                }
+            },
+            failure: function (response, options) {
+                if (!Ext.isEmpty(response.responseText)) {
+                    var returnData = Ext.decode(response.responseText),
+                        result = returnData[0].result;
+                    this.sessionValidationCallback(result);
+                }
+            },
+            jsonData: {
+                action: &#39;&#39;,
+                method: &#39;&#39;,
+                tid: Ext.id(),
+                type: &#39;rpc&#39;,
+                data: {}
+            },
+            scope: this,
+            timeout: 30000,
+            disableCaching: false
+        };
+        Ext.Ajax.request(option);
+    },
+    sessionValidationCallback: function (response) {
+        //TODO
+
     },
 <span id='global-method-createDirectStore'>    /**
 </span>     * fgn(fully qualified name of the function. for example: my.app.service.MenuService.getMenu )
      * dn(dataset name. for example: ds_menulist)
      */
-    createDirectStore: function(fqn, dn, fields){
-    	return{
-    		xclass:&#39;eui.data.DirectStore&#39;,
-    		storeId:Ext.util.Format.format(&#39;{0}-{1}&#39;,dn,Ext.id()),
-    		fields:fields,
-    		proxy:{
-    			type:&#39;direct&#39;,
-    			directFn:fqn,
-    			reader:{
-    				type:&#39;json&#39;,
-    				rootProperty :dn,
-    				totalProperty:&#39;totalCount&#39;
-    			}
-    		}
-    	};
+    createDirectStore: function (fqn, dn, fields) {
+        return{
+            xclass: &#39;eui.data.DirectStore&#39;,
+            storeId: Ext.util.Format.format(&#39;{0}-{1}&#39;, dn, Ext.id()),
+            fields: fields,
+            proxy: {
+                type: &#39;direct&#39;,
+                directFn: fqn,
+                reader: {
+                    type: &#39;json&#39;,
+                    rootProperty: dn,
+                    totalProperty: &#39;totalCount&#39;
+                }
+            }
+        };
     },
-  //=================== add end ========================================//
-    pluck: function(array, propertyName) {
+    //=================== add end ========================================//
+    pluck: function (array, propertyName) {
         var ret = [],
             i, ln, item;
 
         for (i = 0, ln = array.length; i &lt; ln; i++) {
 
-            if(array[i].isModel){
+            if (array[i].isModel) {
                 item = array[i].getData();
                 delete item[&#39;id&#39;];
-            }else{
+            } else {
                 item = array[i];
             }
-            if(propertyName){
+            if (propertyName) {
                 ret.push(item[propertyName]);
-            }else{
+            } else {
                 ret.push(item);
             }
 
@@ -814,18 +816,16 @@
                 data: {}
             };
             Ext.each(records.config.fields, function (field) {
-                if (record.get(&#39;DSKT_SQ&#39;) &lt; 4) {
-                    if (Ext.isObject(field)) {
-                        obj[field.name] = record.get(field.name);
+                if (Ext.isObject(field)) {
+                    obj[field.name] = record.get(field.name);
+                } else {
+                    if (field === &#39;PCODE&#39; &amp;&amp; (record.get(field) === &#39;*&#39;)) {
+                        obj.data[field] = record.get(&#39;CODE&#39;);
+                    } else if (field === &#39;TEXT&#39;) {
+                        obj.data[field] = record.get(field);
+                        obj[Ext.util.Format.lowercase(field)] = record.get(field);
                     } else {
-                        if (field === &#39;PCODE&#39; &amp;&amp; (record.get(field) === &#39;*&#39;)) {
-                            obj.data[field] = record.get(&#39;CODE&#39;);
-                        } else if (field === &#39;TEXT&#39;) {
-                            obj.data[field] = record.get(field);
-                            obj[Ext.util.Format.lowercase(field)] = record.get(field);
-                        } else {
-                            obj.data[field] = record.get(field);
-                        }
+                        obj.data[field] = record.get(field);
                     }
                 }
             });
