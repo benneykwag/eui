@@ -15,16 +15,26 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.panel.Panel&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-panel-Panel'>/***
+</span> *
+ * ## Summary
+ *
+ * 패널 클래스 .
+ */
+Ext.define(&#39;eui.panel.Panel&#39;, {
     extend: &#39;Ext.panel.Panel&#39;,
     alias: &#39;widget.euipanel&#39;,
-    cls: &#39;eui-form-table&#39;,
-    config: {
+<span id='eui-panel-Panel-property-cls'>    cls: &#39;eui-form-table&#39;,
+</span>    config: {
+<span id='eui-panel-Panel-cfg-usePagingToolbar'>        /**
+</span>         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
         usePagingToolbar: false
     },
 
-    initComponent: function () {
-        var me = this;
+<span id='eui-panel-Panel-method-initComponent'>    initComponent: function () {
+</span>        var me = this;
 
         if(me.iconCls){
             me.setHideHeaderICon(false);

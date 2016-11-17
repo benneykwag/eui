@@ -1,3 +1,11 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.FieldContainer 확장. 스타일 적용
+ * 기본 item사이즈 적용
+ *
+ **/
 Ext.define('eui.form.FieldContainer', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.euifieldcontainer',

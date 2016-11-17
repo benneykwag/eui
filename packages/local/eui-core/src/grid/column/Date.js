@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 날자 표시용 그리드 컬럼 클래스 .
+ */
 Ext.define('eui.grid.column.Date', {
     extend: 'Ext.grid.column.Date',
     alias: 'widget.euidatecolumn',

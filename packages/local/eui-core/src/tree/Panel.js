@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.tree.Panel클래스를 확장했다.
+ *
+ **/
 Ext.define('eui.tree.Panel', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.euitreepanel',

@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.FieldContainer 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.Label', {
     extend: 'Ext.form.Label',
     alias: 'widget.euilabel',

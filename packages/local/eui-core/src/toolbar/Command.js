@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',

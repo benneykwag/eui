@@ -27,7 +27,8 @@ Ext.define(&#39;eui.form.field.PopupTrigger&#39;, {
 </span>
 <span id='eui-form-field-PopupTrigger-property-config'>    /***** Custom Config Start *****/
 </span>    config: {
-<span id='eui-form-field-PopupTrigger-cfg-tempTitle'>        tempTitle: null
+<span id='eui-form-field-PopupTrigger-cfg-tempTitle'>        tempTitle: null,
+</span><span id='eui-form-field-PopupTrigger-cfg-title'>        title: &#39;&#39;
 </span>    },
 
 <span id='eui-form-field-PopupTrigger-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
@@ -132,7 +133,7 @@ Ext.define(&#39;eui.form.field.PopupTrigger&#39;, {
             me.popupConfig.height,
             options,
             null,
-            true).show();
+            false).show();
 
     },
 

@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * 토스트 알람용 (제거 예정)
+ *
+ **/
 Ext.define('eui.window.Notification', {
     extend: 'Ext.window.Window',
     alias: 'widget.uxNotification',

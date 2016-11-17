@@ -1,3 +1,11 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Data를 확장. 날자 포맷 지정 및 스타일 적용
+ *
+ **/
+
 Ext.define('eui.form.field.Date', {
     extend: 'Ext.form.field.Date',
     alias: 'widget.euidate',

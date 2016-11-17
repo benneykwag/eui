@@ -15,23 +15,29 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&quot;eui.mixin.Panel&quot;, {
+  <pre class="prettyprint lang-js"><span id='eui-mixin-Panel'>/***
+</span> *
+ * ## Summary
+ *
+ * 패널 클래스 공통제어 .
+ */
+Ext.define(&quot;eui.mixin.Panel&quot;, {
     extend: &#39;Ext.Mixin&#39;,
 
-    mixinConfig: {
-    },
+<span id='eui-mixin-Panel-property-mixinConfig'>    mixinConfig: {
+</span>    },
 
     config: {
-        // 하단 명령 툴바 제어.
-        hiddenBtmTbar: false,
-        defaultToolbarPosition: &#39;top&#39;,
-        defaultToolbarUi: &#39;default&#39;
-    },
+<span id='eui-mixin-Panel-cfg-hiddenBtmTbar'>        // 하단 명령 툴바 제어.
+</span>        hiddenBtmTbar: false,
+<span id='eui-mixin-Panel-cfg-defaultToolbarPosition'>        defaultToolbarPosition: &#39;top&#39;,
+</span><span id='eui-mixin-Panel-cfg-defaultToolbarUi'>        defaultToolbarUi: &#39;default&#39;
+</span>    },
 
     // grid, form
 //    margin: &#39;10 10 10 10&#39;,
 
-<span id='global-method-applyButtonToolBar'>    /***
+<span id='eui-mixin-Panel-method-applyButtonToolBar'>    /***
 </span>     * 명령 라인 버튼 설정
      * hbuttons으로 추가될 경우 기존 버튼과 합쳐보여준다.
      * @param defaultButtons

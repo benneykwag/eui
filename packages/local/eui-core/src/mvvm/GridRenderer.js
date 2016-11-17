@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 그리드 렌더러
+ */
 Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',

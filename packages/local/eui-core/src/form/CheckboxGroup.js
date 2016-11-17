@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.CheckboxGroup 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.CheckboxGroup', {
     extend: 'Ext.form.CheckboxGroup',
     xtype: 'euicheckboxgroup',

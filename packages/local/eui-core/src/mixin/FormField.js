@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 폼필드 공통 제어
+ */
 Ext.define("eui.mixin.FormField", {
     extend: 'Ext.Mixin',
 

@@ -15,27 +15,34 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Trigger&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Trigger'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.field.Text 확장. 스타일 적용
+ *
+ **/
+Ext.define(&#39;eui.form.field.Trigger&#39;, {
     extend: &#39;Ext.form.field.Text&#39;,
     alias: &#39;widget.sptrigger&#39;,
 
-    cellCls: &#39;fo-table-row-td&#39;,
-
-    triggers: {
-        search: {
+<span id='eui-form-field-Trigger-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span>
+<span id='eui-form-field-Trigger-property-triggers'>    triggers: {
+</span>        search: {
 //            cls: &#39;x-form-clear-trigger&#39;,
             handler: &#39;onTriggerClick&#39;,
             scope: &#39;this&#39;
         }
     },
-    onTriggerClick: function() {
-        //noinspection JSUnresolvedFunction
+<span id='eui-form-field-Trigger-method-onTriggerClick'>    onTriggerClick: function() {
+</span>        //noinspection JSUnresolvedFunction
         this.setValue(&#39;&#39;);
         this.fireEvent(&quot;ontriggerclick&quot;, this, event);
     },
 
-    initComponent: function() {
-        var me = this;
+<span id='eui-form-field-Trigger-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         me.callParent(arguments);
     }
 });</pre>

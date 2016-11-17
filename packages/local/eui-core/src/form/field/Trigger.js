@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Text 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Trigger', {
     extend: 'Ext.form.field.Text',
     alias: 'widget.sptrigger',

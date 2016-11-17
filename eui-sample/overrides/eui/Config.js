@@ -48,7 +48,7 @@ Ext.define('Override.eui.Config', {
         },
         {
             "ICONCLS": "fa-circle-o text-aqua",
-            "SWIDGET": "TMP005V01",
+            "SWIDGET": "TMP005V",
             "TEXT": "Tree Grid",
             "LEVEL": 2,
             "SCLASS": "Eui.sample.view.template.tmp005.TMP005V",

@@ -15,15 +15,21 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.grid.column.Number&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-grid-column-Number'>/***
+</span> *
+ * ## Summary
+ *
+ * 숫자 표시용 그리드 컬럼 클래스이다 금액의 표시 , 소수점의 표시 지원
+ */
+Ext.define(&#39;eui.grid.column.Number&#39;, {
     extend: &#39;Ext.grid.column.Number&#39;,
     alias: &#39;widget.euinumbercolumn&#39;,
-    align : &#39;right&#39;,
-    mixins: [
+<span id='eui-grid-column-Number-property-align'>    align : &#39;right&#39;,
+</span>    mixins: [
         &#39;eui.mvvm.GridRenderer&#39;
     ],
     config: {
-<span id='global-cfg-isCurrency'>        /**
+<span id='eui-grid-column-Number-cfg-isCurrency'>        /**
 </span>         * @cfg {Boolean} [isCurrency=`true`]
          * currencyRenderer가 기본 적용되고 이를 피하고 싶을 경우 `false`로 설정한다.
          * false로 지정하고 포맷을 지정할 경우
@@ -33,8 +39,8 @@
          */
         isCurrency: true
     },
-    initComponent: function() {
-        var me = this;
+<span id='eui-grid-column-Number-method-initComponent'>    initComponent: function() {
+</span>        var me = this;
         if(!me.renderer &amp;&amp; me.isCurrency){
             me.renderer = me.currencyRenderer
         }

@@ -196,6 +196,12 @@ Ext.define('Override.window.Window', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 폼필드 공통 제어
+ */
 Ext.define("eui.mixin.FormField", {
     extend: 'Ext.Mixin',
     mixinConfig: {},
@@ -293,8 +299,12 @@ Ext.define('Override.grid.column.Column', {
 });
 
 /***
+ *
+ * ## Summary
+ *
  * App전역 변수 설정.
- */
+ *
+ **/
 Ext.define('eui.Config', {
     singleton: true,
     alternateClassName: [
@@ -451,6 +461,12 @@ Ext.define('eui.Config', {
 
 Ext.define('sprr.DummyClass', {});
 
+/***
+ *
+ * ## Summary
+ *
+ * 유틸리티 클래스 .
+ */
 Ext.define('eui.Util', {
     singleton: true,
     alternateClassName: [
@@ -469,6 +485,15 @@ Ext.define('eui.Util', {
     webosShowWindowId: null,
     currentAjaxButtonId: null,
     // 통신을 일으키는 버튼 아이디.
+    /***
+     *
+     * @param observable
+     */
+    captureEvents: function(observable) {
+        Ext.util.Observable.capture(observable, function(eventName) {
+            console.info(Ext.Date.format(new Date(), 'Y년m월d일 A g시i분 s초 u'), observable.id, observable.xtype || observable.storeId, 'event :', eventName);
+        }, this);
+    },
     /***
      * 통신중인 버튼을 disabled한다.
      * @param flag
@@ -1322,11 +1347,11 @@ Ext.define('eui.container.BaseContainer', {
     alias: 'widget.euibasecontainer',
     mixins: [],
     //        'com.ux.mixin.BaseContainer'
-    //    scrollable: 'y',
-    //    layout: {
-    //        type :'vbox',
-    //        align: 'stretch'
-    //    },
+    scrollable: 'y',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
     //    style: {
     //        'background-color': 'white'
     //    },
@@ -1338,7 +1363,7 @@ Ext.define('eui.container.BaseContainer', {
 
 Ext.define('eui.container.PopupContainer', {
     extend: 'Ext.container.Container',
-    alias: 'widget.sppopupcontainer',
+    alias: 'widget.euipopupcontainer',
     initComponent: function() {
         var me = this;
         me.callParent(arguments);
@@ -1355,6 +1380,7 @@ Ext.define('eui.container.PopupContainer', {
                 valueField || trigger.valueField,
                 displayField || trigger.displayField
             ]);
+            trigger.fireEvent('popupsetvalues', trigger, record, valueField || trigger.valueField, displayField || trigger.displayField);
         } else if (Ext.isFunction(this.__PARENT.popupCallback)) {
             //화면에서 호출시 리턴 함수 호출 ( popupCallback )
             this.__PARENT.popupCallback([
@@ -1363,7 +1389,12 @@ Ext.define('eui.container.PopupContainer', {
                 displayField
             ]);
         }
-        Util.getOwnerCt(this).close();
+        var owner = Util.getOwnerCt(this);
+        if (owner.xtype.indexOf('window') != -1) {
+            owner.close();
+        } else {
+            owner.hide();
+        }
     }
 });
 
@@ -1571,6 +1602,13 @@ Ext.define('eui.store.LocaleStore', {
 
     }*/
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.CheckboxGroup 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.CheckboxGroup', {
     extend: 'Ext.form.CheckboxGroup',
     xtype: 'euicheckboxgroup',
@@ -1589,6 +1627,14 @@ Ext.define('eui.form.CheckboxGroup', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.FieldContainer 확장. 스타일 적용
+ * 기본 item사이즈 적용
+ *
+ **/
 Ext.define('eui.form.FieldContainer', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.euifieldcontainer',
@@ -1604,6 +1650,13 @@ Ext.define('eui.form.FieldContainer', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.FieldContainer 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.Label', {
     extend: 'Ext.form.Label',
     alias: 'widget.euilabel',
@@ -1624,6 +1677,12 @@ Ext.define('eui.form.Label', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 패널 클래스 공통제어 .
+ */
 Ext.define("eui.mixin.Panel", {
     extend: 'Ext.Mixin',
     mixinConfig: {},
@@ -1678,6 +1737,13 @@ Ext.define("eui.mixin.Panel", {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.Panel 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.euiform',
@@ -1720,6 +1786,10 @@ Ext.define('eui.form.Panel', {
         hiddenClearBtn: true,
         // table layout을 사용치 않는다면 false로 설정할 것.
         useTableLayout: true,
+        /**
+         * @cfg {Number} [tableColumns=4]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
         tableColumns: 4,
         hbuttons: null,
         /***
@@ -1935,6 +2005,13 @@ Ext.define('eui.form.Panel', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.RadioGroup 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.RadioGroup', {
     extend: 'Ext.form.RadioGroup',
     xtype: 'euiradiogroup',
@@ -1953,10 +2030,14 @@ Ext.define('eui.form.RadioGroup', {
     }
 });
 
-/*
-* checkbox의 값은 기본으로 'Y', 'N'으로 한다.
-* getData()에서 return시 true, false를 return하는 것이 아니라, Y, N을 return한다.
-* */
+/***
+ *
+ * ## Summary
+ *
+ * checkbox의 값은 기본으로 'Y', 'N'으로 한다.
+ * getData()에서 return시 true, false를 return하는 것이 아니라, Y, N을 return한다.
+ *
+ **/
 Ext.define('eui.form.field.Checkbox', {
     extend: 'Ext.form.field.Checkbox',
     alias: 'widget.euicheckbox',
@@ -2289,6 +2370,13 @@ Ext.define('eui.form.field.ComboBoxController', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.ComboBox 를 확장
+ *
+ **/
 Ext.define('eui.form.field.ComboBox', {
     extend: 'Ext.form.field.ComboBox',
     alias: 'widget.euicombo',
@@ -3438,6 +3526,13 @@ Ext.define('eui.form.field.ComboBox_today', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Data를 확장. 날자 포맷 지정 및 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Date', {
     extend: 'Ext.form.field.Date',
     alias: 'widget.euidate',
@@ -3462,6 +3557,13 @@ Ext.define('eui.form.field.Date', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Display를 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Display', {
     extend: 'Ext.form.field.Display',
     alias: 'widget.euidisplay',
@@ -3469,6 +3571,13 @@ Ext.define('eui.form.field.Display', {
     cellCls: 'fo-table-row-td'
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.File 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.File', {
     extend: 'Ext.form.field.File',
     alias: 'widget.euifile',
@@ -3476,6 +3585,13 @@ Ext.define('eui.form.field.File', {
     cellCls: 'fo-table-row-td'
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.HtmlEditor 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.HtmlEditor', {
     extend: 'Ext.form.field.HtmlEditor',
     alias: 'widget.euihtmleditor',
@@ -3484,6 +3600,13 @@ Ext.define('eui.form.field.HtmlEditor', {
     cellCls: 'fo-table-row-td'
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Number 확장. 포맷 및 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Number', {
     extend: 'Ext.form.field.Number',
     alias: 'widget.euinumber',
@@ -3737,6 +3860,60 @@ Ext.define('eui.form.field.Number', {
 });
 
 /***
+ *
+ * ## Summary
+ *
+ * 팝업을 호출하고 선택된 값을 설정한다.
+ *
+ **/
+Ext.define('eui.form.field.PopUpPicker', {
+    extend: 'Ext.form.field.Picker',
+    alias: 'widget.euipopuppicker',
+    triggerCls: 'x-form-search-trigger',
+    cellCls: 'fo-table-row-td',
+    callBack: 'onTriggerCallback',
+    config: {
+        simpleMode: false,
+        displayField: 'NAME',
+        valueField: 'CODE'
+    },
+    onTriggerCallback: function(trigger, record, valueField, displayField) {
+        this.setValue(record.get(this.getValueField()));
+    },
+    enableKeyEvents: true,
+    matchFieldWidth: false,
+    createPicker: function(C) {
+        // #4
+        var me = this;
+        if (!me.picker) {
+            me.picker = Ext.create('Ext.panel.Panel', {
+                title: me.popupConfig.title,
+                floating: true,
+                height: (me.simpleMode ? 300 : me.popupConfig.height),
+                width: me.popupConfig.width,
+                layout: 'fit',
+                items: [
+                    {
+                        margin: 10,
+                        xtype: me.popupConfig.popupWidget,
+                        height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
+                        tableColumns: 2,
+                        trigger: me,
+                        valueField: me.valueField,
+                        __PARENT: me,
+                        __PARAMS: {
+                            popupConfig: me.popupConfig
+                        },
+                        multiReturnValue: false
+                    }
+                ]
+            });
+        }
+        return me.picker;
+    }
+});
+
+/***
  * 팝업을 호출하고 선택된 값을 설정한다.
  *
  */
@@ -3746,7 +3923,8 @@ Ext.define('eui.form.field.PopupTrigger', {
     hideLabel: true,
     /***** Custom Config Start *****/
     config: {
-        tempTitle: null
+        tempTitle: null,
+        title: ''
     },
     cellCls: 'fo-table-row-td',
     displayField: 'ENG_VALUE',
@@ -3820,7 +3998,7 @@ Ext.define('eui.form.field.PopupTrigger', {
         if (!me.popupConfig.title && me.getTempTitle()) {
             me.popupConfig.title = me.getTempTitle();
         }
-        Util.commonPopup(this, me.popupConfig.title, me.popupConfig.popupClass, me.popupConfig.width, me.popupConfig.height, options, null, true).show();
+        Util.commonPopup(this, me.popupConfig.title, me.popupConfig.popupClass, me.popupConfig.width, me.popupConfig.height, options, null, false).show();
     },
     initComponent: function() {
         var me = this;
@@ -4369,9 +4547,16 @@ Ext.define('eui.form.field.PopupTriggerSet2', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Radio 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Radio', {
     extend: 'Ext.form.field.Radio',
-    alias: 'widget.spradio',
+    alias: 'widget.euiradio',
     cellCls: 'fo-table-row-td',
     initComponent: function() {
         var me = this;
@@ -4382,6 +4567,13 @@ Ext.define('eui.form.field.Radio', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Text 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Text', {
     extend: 'Ext.form.field.Text',
     alias: 'widget.euitext',
@@ -4392,6 +4584,13 @@ Ext.define('eui.form.field.Text', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.TextArea 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.TextArea', {
     extend: 'Ext.form.field.TextArea',
     alias: 'widget.euitextarea',
@@ -4404,6 +4603,13 @@ Ext.define('eui.form.field.TextArea', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Text 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Trigger', {
     extend: 'Ext.form.field.Text',
     alias: 'widget.sptrigger',
@@ -4527,10 +4733,14 @@ Ext.define('eui.form.field.TriggerCombo', {
 });
 
 /***
+ *
+ * ## Summary
+ *
  * eui.grid.Merge에서 사용할 테이블 클래스
  * colspan, rowspan정보가 있다면 실행한다.
  * 이 정보는 eui.grid.Merge클래스에서 모델정보로 전달한다.
- */
+ *
+ **/
 Ext.define('eui.view.Merge', {
     extend: 'Ext.view.Table',
     xtype: 'mergetableview',
@@ -5351,7 +5561,7 @@ Ext.define('Ext.ux.grid.PageSize', {
  *                  flex: 1,
  *                  dataIndex: 'MSG_LABEL'
  *              }
- *         ]
+ *         ],
  *         listeners:{  // 각 버튼들의 리스너 구현.
  *              regbtnclick: 'onRowReg',
  *              rowdeletebtnclick: 'onRowDelete',
@@ -5802,6 +6012,7 @@ Ext.define('eui.grid.Panel', {
 
 /***
  * ## Summary
+ *
  * 체크박스용 컬럼 : true/false를 사용하지 않고 Y/N을 사용한다.
  */
 Ext.define('eui.grid.column.Check', {
@@ -5854,6 +6065,13 @@ Ext.define('eui.grid.column.Check', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 일반 컬럼 클래스 .
+ * 특이사항 없음.
+ */
 Ext.define('eui.grid.column.Column', {
     extend: 'Ext.grid.column.Column',
     alias: 'widget.euicolumn',
@@ -5863,6 +6081,12 @@ Ext.define('eui.grid.column.Column', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 그리드 렌더러
+ */
 Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',
@@ -5894,6 +6118,12 @@ Ext.define('eui.mvvm.GridRenderer', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 날자 표시용 그리드 컬럼 클래스 .
+ */
 Ext.define('eui.grid.column.Date', {
     extend: 'Ext.grid.column.Date',
     alias: 'widget.euidatecolumn',
@@ -5912,6 +6142,12 @@ Ext.define('eui.grid.column.Date', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 숫자 표시용 그리드 컬럼 클래스이다 금액의 표시 , 소수점의 표시 지원
+ */
 Ext.define('eui.grid.column.Number', {
     extend: 'Ext.grid.column.Number',
     alias: 'widget.euinumbercolumn',
@@ -5939,6 +6175,12 @@ Ext.define('eui.grid.column.Number', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 그리드 역순번 표시 컬럼 클래스
+ */
 Ext.define('eui.grid.column.RowNumberer', {
     extend: 'Ext.grid.column.Number',
     alias: 'widget.euirownumberer',
@@ -6147,6 +6389,12 @@ Ext.define('eui.mvvm.HViewModel', {
     extend: 'Ext.app.ViewModel'
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 공통 뷰 컨트롤러
+ */
 Ext.define('eui.mvvm.ViewController', {
     extend: 'Ext.app.ViewController',
     mixins: [
@@ -6229,11 +6477,21 @@ Ext.define('eui.mvvm.ViewController', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 패널 클래스 .
+ */
 Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.euipanel',
     cls: 'eui-form-table',
     config: {
+        /**
+         * @cfg {Boolean} [usePagingToolbar=`false`]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
         usePagingToolbar: false
     },
     initComponent: function() {
@@ -6305,6 +6563,12 @@ Ext.define('eui.tab.Panel', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',
@@ -6465,6 +6729,13 @@ Ext.define('eui.toolbar.Command', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * Ext.tree.Panel클래스를 확장했다.
+ *
+ **/
 Ext.define('eui.tree.Panel', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.euitreepanel',
@@ -6649,7 +6920,7 @@ Ext.define('eui.ux.popup.DefaultPopup', {
                     hiddenCloseBtn: false,
                     hiddenHeader: true,
                     itemId: 'popup',
-                    xtype: 'spform',
+                    xtype: 'euiform',
                     hiddenSearchBtn: false,
                     listeners: {
                         scome: me,
@@ -6657,7 +6928,7 @@ Ext.define('eui.ux.popup.DefaultPopup', {
                     }
                 },
                 {
-                    xtype: 'spgrid',
+                    xtype: 'euigrid',
                     flex: 1,
                     usePagingToolbar: true,
                     bind: {
@@ -6777,6 +7048,13 @@ Ext.define('eui.ux.table.TableCellMerge', {
     }
 });
 
+/***
+ *
+ * ## Summary
+ *
+ * 토스트 알람용 (제거 예정)
+ *
+ **/
 Ext.define('eui.window.Notification', {
     extend: 'Ext.window.Window',
     alias: 'widget.uxNotification',

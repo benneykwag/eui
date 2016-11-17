@@ -1,7 +1,11 @@
 /***
+ *
+ * ## Summary
+ *
  * 팝업을 호출하고 선택된 값을 설정한다.
  *
- */
+ **/
+
 Ext.define('eui.form.field.PopUpPicker', {
     extend: 'Ext.form.field.Picker',
     alias: 'widget.euipopuppicker',

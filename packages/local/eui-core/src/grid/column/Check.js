@@ -1,5 +1,6 @@
 /***
  * ## Summary
+ *
  * 체크박스용 컬럼 : true/false를 사용하지 않고 Y/N을 사용한다.
  */
 Ext.define('eui.grid.column.Check', {

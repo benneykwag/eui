@@ -1,6 +1,10 @@
 /***
+ *
+ * ## Summary
+ *
  * App전역 변수 설정.
- */
+ *
+ **/
 Ext.define('eui.Config', {
     singleton: true,
     alternateClassName: ['Config'],

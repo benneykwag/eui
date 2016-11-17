@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.Panel 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.euiform',
@@ -40,15 +47,25 @@ Ext.define('eui.form.Panel', {
         hiddenClearBtn: true,
         // table layout을 사용치 않는다면 false로 설정할 것.
         useTableLayout: true,
+
+        /**
+         * @cfg {Number} [tableColumns=4]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
         tableColumns: 4,
         hbuttons: null,
 
-        /***
+        /**
+         * @cfg {Boolean} [useRespColumn='true']
          * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
          * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
          */
         useRespColumn: true,
 
+        /**
+         * @cfg {Boolean} [usePagingToolbar='false']
+         * 페이징 툴바 사용여부
+         */
         usePagingToolbar: false
     },
 

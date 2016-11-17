@@ -1,8 +1,13 @@
 /***
+ *
+ * ## Summary
+ *
  * eui.grid.Merge에서 사용할 테이블 클래스
  * colspan, rowspan정보가 있다면 실행한다.
  * 이 정보는 eui.grid.Merge클래스에서 모델정보로 전달한다.
- */
+ *
+ **/
+
 Ext.define('eui.view.Merge',{
     extend:'Ext.view.Table',
     xtype:'mergetableview',

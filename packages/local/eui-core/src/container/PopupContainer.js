@@ -1,6 +1,6 @@
 Ext.define('eui.container.PopupContainer', {
     extend: 'Ext.container.Container',
-    alias: 'widget.sppopupcontainer',
+    alias: 'widget.euipopupcontainer',
     initComponent: function() {
         var me = this;
         me.callParent(arguments);

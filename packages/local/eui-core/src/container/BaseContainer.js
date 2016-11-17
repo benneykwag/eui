@@ -4,11 +4,11 @@ Ext.define('eui.container.BaseContainer', {
     mixins: [
 //        'com.ux.mixin.BaseContainer'
     ],
-//    scrollable: 'y',
-//    layout: {
-//        type :'vbox',
-//        align: 'stretch'
-//    },
+    scrollable: 'y',
+    layout: {
+        type :'vbox',
+        align: 'stretch'
+    },
 //    style: {
 //        'background-color': 'white'
 //    },

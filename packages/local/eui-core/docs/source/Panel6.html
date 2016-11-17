@@ -15,17 +15,24 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.tree.Panel&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-tree-Panel'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.tree.Panel클래스를 확장했다.
+ *
+ **/
+Ext.define(&#39;eui.tree.Panel&#39;, {
     extend: &#39;Ext.tree.Panel&#39;,
     alias: &#39;widget.euitreepanel&#39;,
-    cls: &#39;eui-form-table&#39;,
-    rootVisible: false,
-    useArrows: true,
-    config: {
+<span id='eui-tree-Panel-property-cls'>    cls: &#39;eui-form-table&#39;,
+</span><span id='eui-tree-Panel-property-rootVisible'>    rootVisible: false,
+</span><span id='eui-tree-Panel-property-useArrows'>    useArrows: true,
+</span>    config: {
     },
 
-    initComponent: function () {
-        var me = this;
+<span id='eui-tree-Panel-method-initComponent'>    initComponent: function () {
+</span>        var me = this;
 
         if(me.iconCls){
             me.setHideHeaderICon(false);

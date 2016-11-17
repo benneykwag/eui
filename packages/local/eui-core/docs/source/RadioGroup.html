@@ -15,21 +15,28 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.RadioGroup&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-RadioGroup'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.RadioGroup 확장. 스타일 적용
+ *
+ **/
+Ext.define(&#39;eui.form.RadioGroup&#39;, {
     extend: &#39;Ext.form.RadioGroup&#39;,
     xtype: &#39;euiradiogroup&#39;,
 
     mixins: [
         &#39;eui.mixin.FormField&#39;
     ],
-    cellCls: &#39;fo-table-row-td&#39;,
-    width: &#39;100%&#39;,
-    defaultListenerScope: true,
-    listeners: {
-        afterrender: &#39;setCheckboxGroupRadioGroupBindVar&#39;
+<span id='eui-form-RadioGroup-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-RadioGroup-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-RadioGroup-property-defaultListenerScope'>    defaultListenerScope: true,
+</span><span id='eui-form-RadioGroup-property-listeners'>    listeners: {
+</span>        afterrender: &#39;setCheckboxGroupRadioGroupBindVar&#39;
     },
-    initComponent: function () {
-        this.setAllowBlank();
+<span id='eui-form-RadioGroup-method-initComponent'>    initComponent: function () {
+</span>        this.setAllowBlank();
         this.callParent(arguments);
     }
 });</pre>

@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 숫자 표시용 그리드 컬럼 클래스이다 금액의 표시 , 소수점의 표시 지원
+ */
 Ext.define('eui.grid.column.Number', {
     extend: 'Ext.grid.column.Number',
     alias: 'widget.euinumbercolumn',

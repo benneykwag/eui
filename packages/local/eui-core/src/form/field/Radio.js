@@ -1,6 +1,13 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Radio 확장. 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Radio', {
     extend: 'Ext.form.field.Radio',
-    alias: 'widget.spradio',
+    alias: 'widget.euiradio',
 
     cellCls: 'fo-table-row-td',
 

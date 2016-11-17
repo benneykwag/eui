@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 유틸리티 클래스 .
+ */
 Ext.define('eui.Util', {
     singleton: true,
     alternateClassName: ['Util'],
@@ -15,6 +21,10 @@ Ext.define('eui.Util', {
     webosShowWindowId: null,
     currentAjaxButtonId: null,  // 통신을 일으키는 버튼 아이디.
 
+    /***
+     *
+     * @param observable
+     */
     captureEvents: function (observable) {
         Ext.util.Observable.capture(
             observable,

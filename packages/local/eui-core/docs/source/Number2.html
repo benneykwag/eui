@@ -15,21 +15,28 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&#39;eui.form.field.Number&#39;, {
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Number'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.field.Number 확장. 포맷 및 스타일 적용
+ *
+ **/
+Ext.define(&#39;eui.form.field.Number&#39;, {
     extend: &#39;Ext.form.field.Number&#39;,
     alias: &#39;widget.euinumber&#39;,
 
-    cellCls: &#39;fo-table-row-td&#39;,
-    hideTrigger: true,
-    mouseWheelEnabled: false,
-    fieldStyle: &#39;text-align: right&#39;,
-    decimalPrecision: 0,
-    useThousandSeparator: true,
-    submitLocaleSeparator: false,
-    value: 0,
-    width: &#39;100%&#39;,
-//    fieldStyle: &#39;text-align: right;ime-mode:disabled&#39;,
-    initComponent: function () {
+<span id='eui-form-field-Number-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-field-Number-property-hideTrigger'>    hideTrigger: true,
+</span><span id='eui-form-field-Number-property-mouseWheelEnabled'>    mouseWheelEnabled: false,
+</span><span id='eui-form-field-Number-property-fieldStyle'>    fieldStyle: &#39;text-align: right&#39;,
+</span><span id='eui-form-field-Number-property-decimalPrecision'>    decimalPrecision: 0,
+</span><span id='eui-form-field-Number-property-useThousandSeparator'>    useThousandSeparator: true,
+</span><span id='eui-form-field-Number-property-submitLocaleSeparator'>    submitLocaleSeparator: false,
+</span><span id='eui-form-field-Number-property-value'>    value: 0,
+</span><span id='eui-form-field-Number-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-field-Number-method-initComponent'>//    fieldStyle: &#39;text-align: right;ime-mode:disabled&#39;,
+</span>    initComponent: function () {
         var me = this;
         me.enableKeyEvents = true;
         me.callParent(arguments);
@@ -46,8 +53,8 @@
             }
         });
     },
-    setInterceptor: function (me) {
-        Ext.Function.interceptAfter(me, &quot;postBlur&quot;, function (e) {
+<span id='eui-form-field-Number-method-setInterceptor'>    setInterceptor: function (me) {
+</span>        Ext.Function.interceptAfter(me, &quot;postBlur&quot;, function (e) {
             var me = this,
                 hadError = me.hasActiveError();
 
@@ -59,14 +66,14 @@
             }
         });
     },
-<span id='global-method-toRawNumber'>    /**
+<span id='eui-form-field-Number-method-toRawNumber'>    /**
 </span>     * @inheritdoc
      */
     toRawNumber: function (value) {
         return String(value).replace(this.decimalSeparator, &#39;.&#39;).replace(new RegExp(Ext.util.Format.thousandSeparator, &quot;g&quot;), &#39;&#39;);
     },
 
-<span id='global-method-getErrors'>    /**
+<span id='eui-form-field-Number-method-getErrors'>    /**
 </span>     * @inheritdoc
      */
     getErrors: function (value) {
@@ -111,7 +118,7 @@
 
 
 
-<span id='global-method-getSubmitValue'>    /**
+<span id='eui-form-field-Number-method-getSubmitValue'>    /**
 </span>     * @inheritdoc
      */
     getSubmitValue: function () {
@@ -126,7 +133,7 @@
         return value;
     },
 
-<span id='global-method-setMinValue'>    /**
+<span id='eui-form-field-Number-method-setMinValue'>    /**
 </span>     * @inheritdoc
      */
     setMinValue: function (value) {
@@ -161,7 +168,7 @@
             }
         }
     },
-<span id='global-method-parseValue'>    /**
+<span id='eui-form-field-Number-method-parseValue'>    /**
 </span>     * @private
      */
     parseValue: function (value) {
@@ -170,8 +177,8 @@
         value = parseFloat(this.toRawNumber(value));
         return isNaN(value) ? null : value;
     },
-    exNumber: function (v, formatString) {
-        var UtilFormat = Ext.util.Format,
+<span id='eui-form-field-Number-method-exNumber'>    exNumber: function (v, formatString) {
+</span>        var UtilFormat = Ext.util.Format,
             stripTagsRE = /&lt;\/?[^&gt;]+&gt;/gi,
             stripScriptsRe = /(?:&lt;script.*?&gt;)((\n|\r|.)*?)(?:&lt;\/script&gt;)/ig,
             nl2brRe = /\r?\n/g,
@@ -276,8 +283,8 @@
 
         return (neg ? &#39;-&#39; : &#39;&#39;) + formatString.replace(/[\d,?\.?]+/, fnum);
     },
-    valueToRaw: function (value) {
-        if (!this.useThousandSeparator)
+<span id='eui-form-field-Number-method-valueToRaw'>    valueToRaw: function (value) {
+</span>        if (!this.useThousandSeparator)
             return this.callParent(arguments);
         var me = this;
 

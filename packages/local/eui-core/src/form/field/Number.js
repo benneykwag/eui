@@ -1,3 +1,10 @@
+/***
+ *
+ * ## Summary
+ *
+ * Ext.form.field.Number 확장. 포맷 및 스타일 적용
+ *
+ **/
 Ext.define('eui.form.field.Number', {
     extend: 'Ext.form.field.Number',
     alias: 'widget.euinumber',

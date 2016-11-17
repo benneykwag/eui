@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 공통 뷰 컨트롤러
+ */
 Ext.define('eui.mvvm.ViewController', {
     extend: 'Ext.app.ViewController',
     mixins: [

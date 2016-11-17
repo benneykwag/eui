@@ -18,7 +18,7 @@
  *                  flex: 1,
  *                  dataIndex: 'MSG_LABEL'
  *              }
- *         ]
+ *         ],
  *         listeners:{  // 각 버튼들의 리스너 구현.
  *              regbtnclick: 'onRowReg',
  *              rowdeletebtnclick: 'onRowDelete',

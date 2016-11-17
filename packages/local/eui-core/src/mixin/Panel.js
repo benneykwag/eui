@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ *
+ * 패널 클래스 공통제어 .
+ */
 Ext.define("eui.mixin.Panel", {
     extend: 'Ext.Mixin',
 
