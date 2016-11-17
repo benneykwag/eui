@@ -1,3 +1,9 @@
+/***
+ *
+ * ## Summary
+ * Ext.tab.Panel클래스를 확장했다.
+ *
+ **/
 Ext.define('eui.tab.Panel', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.euitabpanel',

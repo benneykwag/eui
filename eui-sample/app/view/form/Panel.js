@@ -177,30 +177,5 @@ Ext.define('Eui.sample.view.form.Panel', {
                 }
             ]
         }
-//        {
-//            flex:1,
-//            xtype: 'form',
-//            frame:true,
-//            title: 'Ext.form.Panel',
-//            layout: {
-//                type: 'table',
-//                columns: 2,
-//                tableAttrs: {
-//                    style: {
-//                        width: '100%'
-//                    }
-//                }
-//            },
-//            items: [
-//                {
-//                    fieldLabel:'이름',
-//                    xtype:'textfield'
-//                },
-//                {
-//                    fieldLabel:'이름',
-//                    xtype:'textfield'
-//                }
-//            ]
-//        }
     ]
 })

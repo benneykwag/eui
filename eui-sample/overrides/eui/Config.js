@@ -15,5 +15,76 @@ Ext.define('Override.eui.Config', {
         {"MSG_ID": "M90005", "MSG_LABEL": "그리드 정보를 저장하시겠습니까?"},
         {"MSG_ID": "M90006", "MSG_LABEL": "저장되었습니다."},
         {"MSG_ID": "M90001", "MSG_LABEL": "수정할 로우를 선택하세요."}
+    ],
+
+    menuData: [
+        // Grid Start..
+        {
+            "ICONCLS": "fa-dashboard",
+            "SWIDGET": "",
+            "TEXT": "Grid",
+            "LEVEL": 1,
+            "SCLASS": "",
+            "CODE": "GRID",
+            "PCODE": "*"
+        },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "sample-basic-grid",
+            "TEXT": "Basic Grid",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.grid.Basic",
+            "CODE": "GRID01",
+            "PCODE": "GRID"
+        },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "sample-mergegrid",
+            "TEXT": "Merge Grid",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.grid.MergeGrid",
+            "CODE": "GRID02",
+            "PCODE": "GRID"
+        },
+        // Grid End..
+        // Form Start..
+        {
+            "ICONCLS": "fa-th",
+            "SWIDGET": "",
+            "TEXT": "FORM",
+            "LEVEL": 1,
+            "SCLASS": "",
+            "CODE": "FORM",
+            "PCODE": "*"
+        },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "sample-form",
+            "TEXT": "기본 폼",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.form.Panel",
+            "CODE": "FORM01",
+            "PCODE": "FORM"
+        },
+        // Form End..
+        // Template Start..
+        {
+            "ICONCLS": "fa-folder",
+            "SWIDGET": "",
+            "TEXT": "Template",
+            "LEVEL": 1,
+            "SCLASS": "",
+            "CODE": "TEMPLATE",
+            "PCODE": "*"
+        },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "TMP001V",
+            "TEXT": "TMP001V",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.template.TMP001.TMP001V",
+            "CODE": "TEMPLATE01",
+            "PCODE": "TEMPLATE"
+        },
     ]
 });
