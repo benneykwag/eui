@@ -19,7 +19,7 @@ Ext.define('eui.form.field.Checkbox', {
         me.callParent(arguments);
     },
 
-    getValue: function () {
-        return this.getSubmitValue();
+    getValue: function() {
+        return this.inputValue;
     }
 });
