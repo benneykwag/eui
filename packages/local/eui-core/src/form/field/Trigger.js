@@ -7,7 +7,7 @@
  **/
 Ext.define('eui.form.field.Trigger', {
     extend: 'Ext.form.field.Text',
-    alias: 'widget.sptrigger',
+    alias: 'widget.euitrigger',
 
     cellCls: 'fo-table-row-td',
 

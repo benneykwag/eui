@@ -1,6 +1,10 @@
 Ext.define('Eui.sample.view.template.tmp001.TMP001V',{
     extend: 'Ext.container.Container',
     xtype: 'TMP001V',
+    requires: [
+        'eui.tab.Panel',
+        'eui.form.FieldContainer'
+    ],
     title: '운영기초관리',
 
     items : [

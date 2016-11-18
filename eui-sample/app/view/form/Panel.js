@@ -15,7 +15,8 @@ Ext.define('Eui.sample.view.form.Panel', {
         'eui.form.field.Date',
         'eui.form.CheckboxGroup',
         'eui.form.RadioGroup',
-        'eui.form.field.Text'
+        'eui.form.field.Text',
+        'eui.form.field.PopUpPicker'
     ],
 
     controller: 'sample-form',
@@ -41,16 +42,6 @@ Ext.define('Eui.sample.view.form.Panel', {
                 allowBlank: false
             },
             items: [
-                {
-                    xtype: 'euipopuptrigger',
-                    fieldLabel: '검색팝업',
-                    popupConfig :{
-                        popupClass: 'Eui.sample.view.common.PopUp01',
-                        title: 'aa',
-                        width: 600,
-                        height : 500
-                    }
-                },
                 {
                     xtype: 'euiradiogroup',
                     allowBlank: false,

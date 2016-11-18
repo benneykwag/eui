@@ -3,7 +3,10 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
     xtype: 'TMP010V01',
     margin : 10,
     tableColumns: 2,
-    requires: ['Eui.sample.view.common.PopUp01'],
+    requires: [
+        'Eui.sample.view.common.PopUp01',
+        'Eui.sample.view.common.AddressField'
+    ],
     items: [
         {
             xtype: 'euipopuppicker',
@@ -50,6 +53,16 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
             bind: '{FORMRECORD.DESC}',
             name: 'address',
             fieldLabel: '설명'
+        },
+        {
+            colspan: 2,
+            bindVar : {
+                ZIPCODE : '{FORMRECORD.ZIPCODE}',
+                ADDRESS1 : '{FORMRECORD.ADDRESS1}',
+                ADDRESS2 : '{FORMRECORD.ADDRESS2}'
+            },
+            xtype: 'addressfield'
+
         }
     ]
 });

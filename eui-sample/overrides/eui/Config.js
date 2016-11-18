@@ -76,6 +76,15 @@ Ext.define('Override.eui.Config', {
             "CODE": "FORM01",
             "PCODE": "FORM"
         },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "TMP010V",
+            "TEXT": "eui.form.field.PopUpPicker",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.template.tmp010.TMP010V",
+            "CODE": "FORM02",
+            "PCODE": "FORM"
+        },
         // Form End..
         // Template Start..
         {

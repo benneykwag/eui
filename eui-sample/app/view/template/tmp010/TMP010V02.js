@@ -2,6 +2,7 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V02', {
     extend: 'eui.tree.Panel',
     xtype: 'TMP010V02',
     height: 300,
+    margin : 10,
     plugins: {
         ptype: 'cellediting',   // 셀에디터를 추가.
         clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
@@ -51,34 +52,6 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V02', {
                     width: 600,
                     height : 500
                 }
-            }
-        },
-        {
-            text: 'To-do List항목',
-            dataIndex:'ITEM',
-            editor: {
-                xtype: 'euitext'
-            }
-        },
-        {
-            text: '조건',
-            dataIndex: 'CNDT',
-            editor: {
-                xtype: 'euitext'
-            }
-        },
-        {
-            text:'기준일자',
-            dataIndex:'STD_DT',
-            editor: {
-                xtype: 'euinumber'
-            }
-        },
-        {
-            text:'메시지',
-            dataIndex:'MSG',
-            editor: {
-                xtype: 'euitext'
             }
         }
     ]

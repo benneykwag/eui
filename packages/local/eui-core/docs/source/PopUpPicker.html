@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-field-PopUpPicker'>/***
+</span> *
+ * ## Summary
+ *
+ * 팝업을 호출하고 선택된 값을 설정한다.
+ *
+ **/
+
+Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
+    extend: &#39;Ext.form.field.Picker&#39;,
+    alias: &#39;widget.euipopuppicker&#39;,
+<span id='eui-form-field-PopUpPicker-property-triggerCls'>    triggerCls: &#39;x-form-search-trigger&#39;,
+</span><span id='eui-form-field-PopUpPicker-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-field-PopUpPicker-property-callBack'>    callBack: &#39;onTriggerCallback&#39;,
+</span>    config: {
+<span id='eui-form-field-PopUpPicker-cfg-simpleMode'>        simpleMode: false,
+</span><span id='eui-form-field-PopUpPicker-cfg-displayField'>        displayField: &#39;NAME&#39;,
+</span><span id='eui-form-field-PopUpPicker-cfg-valueField'>        valueField: &#39;CODE&#39;
+</span>    },
+
+<span id='eui-form-field-PopUpPicker-method-onTriggerCallback'>    onTriggerCallback: function (trigger, record, valueField, displayField) {
+</span>        this.setValue(record.get(this.getValueField()));
+    },
+
+<span id='eui-form-field-PopUpPicker-property-enableKeyEvents'>    enableKeyEvents: true,
+</span>
+<span id='eui-form-field-PopUpPicker-property-matchFieldWidth'>    matchFieldWidth: false,
+</span>
+<span id='eui-form-field-PopUpPicker-method-createPicker'>    createPicker: function (C) {        // #4
+</span>        var me = this;
+        if (!me.picker) {
+
+            me.picker = Ext.create(&#39;Ext.panel.Panel&#39;, {
+                title: me.popupConfig.title,
+                floating: true,
+                height: (me.simpleMode ? 300 : me.popupConfig.height),
+                width: me.popupConfig.width,
+                layout: &#39;fit&#39;,
+                items: [
+                    {
+                        margin: 10,
+                        xtype: me.popupConfig.popupWidget,
+                        height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
+                        tableColumns: 2,
+                        trigger: me,
+                        valueField: me.valueField,
+                        __PARENT: me,
+                        __PARAMS: {
+                            popupConfig: me.popupConfig
+                        },
+                        multiReturnValue: false
+                    }
+                ]
+            });
+        }
+        return me.picker;
+    }
+});</pre>
+</body>
+</html>

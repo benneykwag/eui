@@ -1743,6 +1743,8 @@ Ext.define("eui.mixin.Panel", {
  *
  * Ext.form.Panel 확장. 스타일 적용
  *
+ *
+ *
  **/
 Ext.define('eui.form.Panel', {
     extend: 'Ext.form.Panel',
@@ -4617,7 +4619,7 @@ Ext.define('eui.form.field.TextArea', {
  **/
 Ext.define('eui.form.field.Trigger', {
     extend: 'Ext.form.field.Text',
-    alias: 'widget.sptrigger',
+    alias: 'widget.euitrigger',
     cellCls: 'fo-table-row-td',
     triggers: {
         search: {
@@ -6492,13 +6494,7 @@ Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.euipanel',
     cls: 'eui-form-table',
-    config: {
-        /**
-         * @cfg {Boolean} [usePagingToolbar=`false`]
-         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
-         */
-        usePagingToolbar: false
-    },
+    config: {},
     initComponent: function() {
         var me = this;
         if (me.iconCls) {

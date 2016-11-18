@@ -9,11 +9,7 @@ Ext.define('eui.panel.Panel', {
     alias: 'widget.euipanel',
     cls: 'eui-form-table',
     config: {
-        /**
-         * @cfg {Boolean} [usePagingToolbar=`false`]
-         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
-         */
-        usePagingToolbar: false
+
     },
 
     initComponent: function () {

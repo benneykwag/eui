@@ -7,7 +7,10 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010C', {
             NAME : '홍길동',
             ENG_NAME : 'HONG GIL DONG',
             AGE : '25세',
-            ADDRR : '경기 고양시 '
+            ADDRR : '경기 고양시 ',
+            ZIPCODE: '12012',
+            ADDRESS1: '서울특별시 동작구 ',
+            ADDRESS2: '동작 아파트 101동 3201호'
         }))
     },
 
