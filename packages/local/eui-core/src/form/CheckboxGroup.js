@@ -100,7 +100,7 @@
  *      });
  *
  *      Ext.create('CheckboxGroup',{
- *          width: 300,
+ *          width: 400,
  *          renderTo: Ext.getBody()
  *      });
  *

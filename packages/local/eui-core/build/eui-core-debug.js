@@ -1791,7 +1791,7 @@ Ext.define('eui.store.LocaleStore', {
  *      });
  *
  *      Ext.create('CheckboxGroup',{
- *          width: 300,
+ *          width: 400,
  *          renderTo: Ext.getBody()
  *      });
  *
@@ -2327,7 +2327,7 @@ Ext.define('eui.form.RadioGroup', {
  *          value: '{FORMRECORD.fiedl1}'
  *      }
  *
- * # Values
+ * # Sample
  *
  * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
  * 이 클래스는 Y와 N 두가지를 사용한다.
