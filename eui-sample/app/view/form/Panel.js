@@ -70,24 +70,23 @@ Ext.define('Eui.sample.view.form.Panel', {
                         { boxLabel: 'Item 3', inputValue: 'A3' },
                         { boxLabel: 'Item 4', inputValue: 'A4' }
                     ]
-                }/*,
-
+                },
                 {
                     xtype: 'euiradiogroup',
 //                    allowBlank: false,
                     fieldLabel: '라디오그룹',
                     items: [
                         {
-                            boxLabel: '일반',
-                            inputValue: 'N'
+                            boxLabel: 'INPUTVALUE: A',
+                            inputValue: 'A'
                         },
                         {
-                            boxLabel: '법인 관리자',
-                            inputValue: 'S'
+                            boxLabel: 'INPUTVALUE: B',
+                            inputValue: 'B'
                         }
                     ],
-                    bind: '{RECORD.memberFlag}'
-                },
+                    bind: '{RECORD.RADIOGROUP}'
+                }/*,
                 {
                     allowBlank: true,
                     fieldLabel: '아이디',

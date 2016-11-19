@@ -14,7 +14,7 @@ Ext.define('Eui.sample.view.form.Controller', {
     setRecord: function () {
         this.getViewModel().set('RECORD', Ext.create('Eui.sample.model.Base', {
             CHECKBOX1 : 'N',
-            memberFlag: 'N',
+            RADIOGROUP: 'A',
             userId: 'eui',
             userName: '이유아이',
             gender: 'F',
