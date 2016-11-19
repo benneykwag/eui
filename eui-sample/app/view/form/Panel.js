@@ -4,6 +4,7 @@ Ext.define('Eui.sample.view.form.Panel', {
     title: 'EUI 사용하기',
 
     requires: [
+        'eui.form.field.Checkbox',
         'eui.form.field.TextArea',
         'eui.form.field.HtmlEditor',
         'eui.form.field.Display',
@@ -24,7 +25,8 @@ Ext.define('Eui.sample.view.form.Panel', {
 
     },
     defaults: {
-        margin: 5
+        margin: 5,
+        allowBlank: true
     },
 
     layout: {
@@ -35,21 +37,48 @@ Ext.define('Eui.sample.view.form.Panel', {
     items: [
         {
             flex: 1,
+            reference: 'regform',
             xtype: 'euiform',
             title: 'EUI 폼',
             tableColumns: 2,
             defaults: {
-                allowBlank: false
+                allowBlank: true
             },
             items: [
                 {
+                    fieldLabel: '체크박스',
+                    xtype: 'euicheckbox',
+                    listeners: {
+                        change: function (c, newValue, oldValue) {
+                            console.log(newValue, oldValue)
+                        }
+                    },
+                    bind: '{RECORD.CHECKBOX1}'
+                },
+                {
+                    xtype: 'euicheckboxgroup',
+                    fieldLabel: '체크박스그룹',
+                    columns: 4,
+                    reference: 'euicheckboxgroup01',
+                    bind:'{RECORD.CHECKBOXGROUP}',
+                    defaults: {
+                        name: 'CHECKBOXGROUP'
+                    },
+                    items: [
+                        { boxLabel: 'Item 1', inputValue: 'A1' },
+                        { boxLabel: 'Item 2', inputValue: 'A2'},
+                        { boxLabel: 'Item 3', inputValue: 'A3' },
+                        { boxLabel: 'Item 4', inputValue: 'A4' }
+                    ]
+                }/*,
+
+                {
                     xtype: 'euiradiogroup',
-                    allowBlank: false,
-                    fieldLabel: '회원구분',
+//                    allowBlank: false,
+                    fieldLabel: '라디오그룹',
                     items: [
                         {
                             boxLabel: '일반',
-                            checked: true,
                             inputValue: 'N'
                         },
                         {
@@ -57,14 +86,12 @@ Ext.define('Eui.sample.view.form.Panel', {
                             inputValue: 'S'
                         }
                     ],
-                    bind: {
-                        value: '{regMember.memberFlag}'
-                    }
+                    bind: '{RECORD.memberFlag}'
                 },
                 {
                     allowBlank: true,
                     fieldLabel: '아이디',
-                    bind: '{regMember.userId}',
+                    bind: '{RECORD.userId}',
                     xtype: 'euitext'
                 },
                 {
@@ -77,18 +104,18 @@ Ext.define('Eui.sample.view.form.Panel', {
                 },
                 {
                     fieldLabel: '성명',
-                    bind: '{regMember.userName}',
+                    bind: '{RECORD.userName}',
                     xtype: 'euitext'
                 },
                 {
                     fieldLabel: '이메일',
-                    allowBlank: false,
+//                    allowBlank: false,
                     xtype: 'euitext',
                     vtype: 'email'
                 },
                 {
                     fieldLabel: '연락처',
-                    allowBlank: false,
+//                    allowBlank: false,
                     name: 'phone',
                     xtype: 'euitext'
                 },
@@ -96,7 +123,10 @@ Ext.define('Eui.sample.view.form.Panel', {
                     xtype: 'euiradiogroup',
                     fieldLabel: '성별',
                     bind: {
-                        value: '{regMember.gender}'
+                        value: '{RECORD.gender}'
+                    },
+                    defaults: {
+                        name: 'gender'
                     },
                     items: [
                         {
@@ -109,27 +139,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                         }
                     ]
                 },
-                {
-                    colspan: 2,
-                    xtype: 'euicheckboxgroup',
-                    fieldLabel: 'Two Columns',
-                    columns: 6,
-                    vertical: true,
-                    bind: {
-                        value: '{regMember.job}'
-                    },
-                    defaults: {
-                        name: 'job'
-                    },
-                    items: [
-                        { boxLabel: 'Item 1', inputValue: 'A1' },
-                        { boxLabel: 'Item 2', inputValue: 'A2'},
-                        { boxLabel: 'Item 3', inputValue: 'A3' },
-                        { boxLabel: 'Item 4', inputValue: 'A4' },
-                        { boxLabel: 'Item 5', inputValue: 'A5' },
-                        { boxLabel: 'Item 6', inputValue: 'A6' }
-                    ]
-                },
+
                 {
                     fieldLabel: '생년월일',
                     xtype: 'euidate'
@@ -145,7 +155,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                 },
                 {
                     fieldLabel:'연봉',
-                    bind: '{regMember.payment1}',
+                    bind: '{RECORD.payment1}',
                     xtype:'euinumber'
                 },
                 {
@@ -166,12 +176,21 @@ Ext.define('Eui.sample.view.form.Panel', {
                     height: 150,
                     fieldLabel:'경력기술',
                     xtype:'euitextarea'
-                }
+                }*/
             ],
             buttons: [
                 {
+                    text: '체크박스그룹 전체 체크',
+                    handler:'checkBoxgroupAllCheck'
+                },
+                {
+                    text: '체크박스그룹 전체 체크',
+                    handler: 'checkBoxgroupAllUnCheck'
+                },
+                {
                     text: '확인',
-                    formBind: true
+                    formBind: true,
+                    handler: 'onSaveMember'
                 },
                 {
                     text: '취소'

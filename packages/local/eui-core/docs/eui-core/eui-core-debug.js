@@ -117,6 +117,92 @@ Ext.define('Override.data.Model', {
             return false;
         }
         return true;
+    },
+    /***
+     * 모델 데이터를 출력한다.
+     * checkboxgroup의 오브젝트 키값이 중복 처리되는 것을
+     * 막기 위한 코드로 출발함.
+     * @param options
+     * @returns {{}}
+     */
+    getData: function(options) {
+        var me = this,
+            ret = {},
+            opts = (options === true) ? me._getAssociatedOptions : (options || ret),
+            //cheat
+            data = me.data,
+            associated = opts.associated,
+            changes = opts.changes,
+            critical = changes && opts.critical,
+            content = changes ? me.modified : data,
+            fieldsMap = me.fieldsMap,
+            persist = opts.persist,
+            serialize = opts.serialize,
+            criticalFields, field, n, name, value;
+        // DON'T use "opts" from here on...
+        // Keep in mind the two legacy use cases:
+        //  - getData() ==> Ext.apply({}, me.data)
+        //  - getData(true) ==> Ext.apply(Ext.apply({}, me.data), me.getAssociatedData())
+        if (content) {
+            // when processing only changes, me.modified could be null
+            for (name in content) {
+                value = data[name];
+                field = fieldsMap[name];
+                if (field) {
+                    if (persist && !field.persist) {
+                        
+                        continue;
+                    }
+                    if (serialize && field.serialize) {
+                        value = field.serialize(value, me);
+                    }
+                }
+                // 기존 코드 ret[name] = value; 를 아래로 대체함.
+                // checkboxgroup 그룹 사용시 아래와 같이 obj가 중복 표현되는 것을 막기 위함..
+                // case 1
+                // job {
+                //    job : ['A01','A02']
+                // }
+                // case 2 (name을 사용하지 않을 경우 처리)
+                // name: 'job',
+                // defaults: {
+                //        name: 'job'
+                //    },
+                var autogenkey = '';
+                if (value instanceof Object) {
+                    for (var test in value) {
+                        autogenkey = test;
+                    }
+                }
+                if (value && !Ext.isEmpty(value[name])) {
+                    // case1
+                    ret[name] = value[name];
+                } else if (autogenkey.indexOf('euicheckboxgroup') != -1) {
+                    // case2
+                    ret[name] = value[autogenkey];
+                } else {
+                    ret[name] = value;
+                }
+            }
+        }
+        if (critical) {
+            criticalFields = me.self.criticalFields || me.getCriticalFields();
+            for (n = criticalFields.length; n-- > 0; ) {
+                name = (field = criticalFields[n]).name;
+                if (!(name in ret)) {
+                    value = data[name];
+                    if (serialize && field.serialize) {
+                        value = field.serialize(value, me);
+                    }
+                    ret[name] = value;
+                }
+            }
+        }
+        if (associated) {
+            me.getAssociatedData(ret, opts);
+        }
+        // pass ret so new data is added to our object
+        return ret;
     }
 });
 
@@ -218,6 +304,7 @@ Ext.define("eui.mixin.FormField", {
         }
     },
     /**
+     * 사용하지 않음.. simpleValue: true로 해결.
      * 체크박스그룹과 라디오그룹에 바인드변수
      * 사용 편의를 위한 메소드.
      */
@@ -1608,6 +1695,106 @@ Ext.define('eui.store.LocaleStore', {
  *
  * Ext.form.CheckboxGroup 확장. 스타일 적용
  *
+ *      fieldLabel: '체크박스그룹',
+ *      xtype: 'euicheckboxgroup',
+ *      fieldLabel: '체크박스그룹',
+ *      columns: 4,     // 컬럼수를 설정한다.
+ *      // 뷰모델을 배열형태로 CHECKBOXGROUP: ['A1','A2'] 로 사용한다.
+ *      bind:'{RECORD.CHECKBOXGROUP}',
+ *      items: [
+ *      // inputValue가 전달된다.
+ *          { boxLabel: 'Item 1', inputValue: 'A1' },
+ *          { boxLabel: 'Item 2', inputValue: 'A2'},
+ *          { boxLabel: 'Item 3', inputValue: 'A3' },
+ *          { boxLabel: 'Item 4', inputValue: 'A4' }
+ *      ]
+ *
+ * # Sample
+ *
+ *     @example
+ *
+ *      Ext.define('CheckboxGroup', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          title: '체크박스그룹',
+ *          items: [
+ *             {
+ *               xtype: 'euicheckboxgroup',
+ *               fieldLabel: '체크박스그룹',
+ *               itemId: 'euicheckboxgroup',
+ *               columns: 4,
+ *               bind:'{RECORD.CHECKBOXGROUP}',
+ *               items: [
+ *                  {   boxLabel: 'KOREA', inputValue: 'KOREA' },
+ *                  {   boxLabel: 'JAPAN', inputValue: 'JAPAN' },
+ *                  {   boxLabel: 'USA', inputValue: 'USA' },
+ *                  { boxLabel: 'RUSIA', inputValue: 'RUSIA' }
+ *               ]
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '전체 체크',
+ *                  xtype : 'euibutton',
+ *                  handler: 'checkBoxgroupAllCheck'
+ *              },
+ *              {
+ *                  text: '전체 체크해제',
+ *                  xtype : 'euibutton',
+ *                  handler: 'checkBoxgroupAllUnCheck'
+ *              },
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOXGROUP : ['KOREA','JAPAN','USA']
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkBoxgroupAllCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue(['KOREA','JAPAN','USA','RUSIA']);
+ *          },
+ *
+ *          checkBoxgroupAllUnCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue();
+ *          }
+ *      });
+ *
+ *      Ext.create('CheckboxGroup',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
  **/
 Ext.define('eui.form.CheckboxGroup', {
     extend: 'Ext.form.CheckboxGroup',
@@ -1617,9 +1804,48 @@ Ext.define('eui.form.CheckboxGroup', {
     ],
     cellCls: 'fo-table-row-td',
     width: '100%',
-    defaultListenerScope: true,
-    listeners: {
-        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+    /***
+     * object 아래 배열을 단순 배열로 처리하기 위한 로직을 기존 로직에 추가함.
+     * @param value
+     * @returns {euicheckboxgroup}
+     */
+    setValue: function(value) {
+        var me = this,
+            boxes = me.getBoxes(),
+            b,
+            bLen = boxes.length,
+            box, name, cbValue, tmpValue;
+        // 추가로직 object 이하에 배열정보 포함시.
+        if (!Ext.isArray(value)) {
+            for (var test in value) {
+                tmpValue = value[test];
+            }
+            if (!Ext.isArray(tmpValue)) {
+                tmpValue = [
+                    tmpValue
+                ];
+            }
+            value = tmpValue;
+        }
+        me.batchChanges(function() {
+            Ext.suspendLayouts();
+            for (b = 0; b < bLen; b++) {
+                box = boxes[b];
+                name = box.getName();
+                cbValue = false;
+                if (value) {
+                    if (Ext.isArray(value)) {
+                        cbValue = Ext.Array.contains(value, box.inputValue);
+                    } else {
+                        // single value, let the checkbox's own setValue handle conversion
+                        cbValue = value[name];
+                    }
+                }
+                box.setValue(cbValue);
+            }
+            Ext.resumeLayouts(true);
+        });
+        return me;
     },
     initComponent: function() {
         this.setAllowBlank();
@@ -2028,9 +2254,46 @@ Ext.define('eui.form.RadioGroup', {
     cellCls: 'fo-table-row-td',
     width: '100%',
     defaultListenerScope: true,
-    listeners: {
-        afterrender: 'setCheckboxGroupRadioGroupBindVar'
-    },
+    //    listeners: {
+    //        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+    //    },
+    simpleValue: true,
+    //    setValue: function(value) {
+    //        debugger;
+    //        var items = this.items,
+    //            cbValue, cmp, formId, radios, i, len, name;
+    //
+    //        Ext.suspendLayouts();
+    //
+    //        if (this.simpleValue) {
+    //            for (i = 0, len = items.length; i < len; ++i) {
+    //                cmp = items.items[i];
+    //
+    //                if (cmp.inputValue === value) {
+    //                    cmp.setValue(true);
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //        else if (Ext.isObject(value)) {
+    //            cmp = items.first();
+    //            formId = cmp ? cmp.getFormId() : null;
+    //
+    //            for (name in value) {
+    //                cbValue = value[name];
+    //                radios = Ext.form.RadioManager.getWithValue(name, cbValue, formId).items;
+    //                len = radios.length;
+    //
+    //                for (i = 0; i < len; ++i) {
+    //                    radios[i].setValue(true);
+    //                }
+    //            }
+    //        }
+    //
+    //        Ext.resumeLayouts(true);
+    //
+    //        return this;
+    //    },
     initComponent: function() {
         this.setAllowBlank();
         this.callParent(arguments);
@@ -2042,7 +2305,126 @@ Ext.define('eui.form.RadioGroup', {
  * ## Summary
  *
  * checkbox의 값은 기본으로 'Y', 'N'으로 한다.
- * getData()에서 return시 true, false를 return하는 것이 아니라, Y, N을 return한다.
+ * getValue()에서 return시 true, false 대신 Y, N을 반환.
+ * 이 클래스는 뷰모델의 바인딩이 필수 입니다.
+ *
+ * ## 사용예
+ *
+ *      fieldLabel: '체크박스',
+ *      xtype: 'euicheckbox',
+ *      // case1 체크 해제.
+ *      bind: {
+ *          value : 'N'     // 체크해제
+ *      },
+ *      // case 2 체크
+ *      bind: {
+ *          value : 'Y'
+ *      },
+ *      // case 3 뷰모델 설정.
+ *      bind: '{FORMRECORD.fiedl1}'
+ *      또는
+ *      bind : {
+ *          value: '{FORMRECORD.fiedl1}'
+ *      }
+ *
+ * # Values
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define('Checkbox', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: '체크박스',
+ *          items: [
+ *             {
+ *               fieldLabel: '체크박스',
+ *               itemId: 'checkbox1',
+ *               xtype: 'euicheckbox',
+ *               bind: '{RECORD.CHECKBOX1}'
+ *             },
+ *             {
+ *               fieldLabel: '체크박스',
+ *               xtype: 'euicheckbox',
+ *               bind: {
+ *                  value : 'Y'
+ *               }
+ *             },
+ *             {
+ *               fieldLabel: '체크박스',
+ *               xtype: 'euicheckbox',
+ *               bind: {
+ *                  value : 'N'
+ *               }
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '체크',
+ *                  xtype : 'euibutton',
+ *                  handler: 'checkboxHandler'
+ *              },
+ *              {
+ *                  text: '체크해제',
+ *                  xtype : 'euibutton',
+ *                  handler: 'unCheckboxHandler'
+ *              },
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOX1 : 'N'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('Y');
+ *              //this.down('#checkbox1').setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('N');
+ *              this.down('#checkbox1').setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create('Checkbox',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
 Ext.define('eui.form.field.Checkbox', {
@@ -2056,8 +2438,14 @@ Ext.define('eui.form.field.Checkbox', {
         var me = this;
         me.callParent(arguments);
     },
+    /***
+     * Y & N 을 반환한다.
+     * @returns {string}
+     */
     getValue: function() {
-        return this.getSubmitValue();
+        var unchecked = this.uncheckedValue,
+            uncheckedVal = Ext.isDefined(unchecked) ? unchecked : null;
+        return this.checked ? this.inputValue : uncheckedVal;
     }
 });
 

@@ -46,10 +46,10 @@ Ext.define('Eui.sample.view.main.Main', {
                     id : 'contentPanel',
                     region: 'center',
                     items: [
-                        {
-                            title: 'HOME',
-                            xtype: 'TMP010V'
-                        }
+//                        {
+//                            title: 'HOME',
+//                            xtype: 'TMP010V'
+//                        }
                     ]
                 }
             ]

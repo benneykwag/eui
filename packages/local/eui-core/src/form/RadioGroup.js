@@ -15,9 +15,48 @@ Ext.define('eui.form.RadioGroup', {
     cellCls: 'fo-table-row-td',
     width: '100%',
     defaultListenerScope: true,
-    listeners: {
-        afterrender: 'setCheckboxGroupRadioGroupBindVar'
-    },
+//    listeners: {
+//        afterrender: 'setCheckboxGroupRadioGroupBindVar'
+//    },
+    simpleValue: true,
+
+//    setValue: function(value) {
+//        debugger;
+//        var items = this.items,
+//            cbValue, cmp, formId, radios, i, len, name;
+//
+//        Ext.suspendLayouts();
+//
+//        if (this.simpleValue) {
+//            for (i = 0, len = items.length; i < len; ++i) {
+//                cmp = items.items[i];
+//
+//                if (cmp.inputValue === value) {
+//                    cmp.setValue(true);
+//                    break;
+//                }
+//            }
+//        }
+//        else if (Ext.isObject(value)) {
+//            cmp = items.first();
+//            formId = cmp ? cmp.getFormId() : null;
+//
+//            for (name in value) {
+//                cbValue = value[name];
+//                radios = Ext.form.RadioManager.getWithValue(name, cbValue, formId).items;
+//                len = radios.length;
+//
+//                for (i = 0; i < len; ++i) {
+//                    radios[i].setValue(true);
+//                }
+//            }
+//        }
+//
+//        Ext.resumeLayouts(true);
+//
+//        return this;
+//    },
+
     initComponent: function () {
         this.setAllowBlank();
         this.callParent(arguments);

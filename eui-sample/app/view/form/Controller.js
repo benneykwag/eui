@@ -12,12 +12,13 @@ Ext.define('Eui.sample.view.form.Controller', {
     },
 
     setRecord: function () {
-        this.getViewModel().set('regMember', Ext.create('Eui.sample.model.Base', {
+        this.getViewModel().set('RECORD', Ext.create('Eui.sample.model.Base', {
+            CHECKBOX1 : 'N',
             memberFlag: 'N',
             userId: 'eui',
             userName: '이유아이',
             gender: 'F',
-            job: ['A1', 'A3'],
+            CHECKBOXGROUP: ['A1'],
             payment1: 120011000,
             company: 'CCMP'
         }));
@@ -25,7 +26,10 @@ Ext.define('Eui.sample.view.form.Controller', {
 
     onSaveMember: function () {
         var form = this.lookupReference('regform');
-        var data = this.getViewModel().get('regMember').getData();
+//        form.getForm().submit({
+//            url : 'aa'
+//        });
+        var data = this.getViewModel().get('RECORD').getData();
         Util.CommonAjax({
             method: 'POST',
             url: 'resources/data/success.json',
@@ -40,5 +44,15 @@ Ext.define('Eui.sample.view.form.Controller', {
                 }
             }
         });
+    },
+
+    checkBoxgroupAllCheck: function () {
+        var ckg = this.lookupReference('euicheckboxgroup01');
+        ckg.setValue(['A1','A2','A3','A4','A5'])
+    },
+
+    checkBoxgroupAllUnCheck: function () {
+        var ckg = this.lookupReference('euicheckboxgroup01');
+        ckg.setValue()
     }
 });
