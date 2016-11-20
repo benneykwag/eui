@@ -20,7 +20,126 @@
  * ## Summary
  *
  * checkbox의 값은 기본으로 &#39;Y&#39;, &#39;N&#39;으로 한다.
- * getData()에서 return시 true, false를 return하는 것이 아니라, Y, N을 return한다.
+ * getValue()에서 return시 true, false 대신 Y, N을 반환.
+ * 이 클래스는 뷰모델의 바인딩이 필수 입니다.
+ *
+ * ## 사용예
+ *
+ *      fieldLabel: &#39;체크박스&#39;,
+ *      xtype: &#39;euicheckbox&#39;,
+ *      // case1 체크 해제.
+ *      bind: {
+ *          value : &#39;N&#39;     // 체크해제
+ *      },
+ *      // case 2 체크
+ *      bind: {
+ *          value : &#39;Y&#39;
+ *      },
+ *      // case 3 뷰모델 설정.
+ *      bind: &#39;{FORMRECORD.fiedl1}&#39;
+ *      또는
+ *      bind : {
+ *          value: &#39;{FORMRECORD.fiedl1}&#39;
+ *      }
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;Checkbox&#39;, {
+ *          extend: &#39;eui.form.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: &#39;체크박스&#39;,
+ *          items: [
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               itemId: &#39;checkbox1&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: &#39;{RECORD.CHECKBOX1}&#39;
+ *             },
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: {
+ *                  value : &#39;Y&#39;
+ *               }
+ *             },
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: {
+ *                  value : &#39;N&#39;
+ *               }
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: &#39;체크&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;checkboxHandler&#39;
+ *              },
+ *              {
+ *                  text: &#39;체크해제&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;unCheckboxHandler&#39;
+ *              },
+ *              {
+ *                  text: &#39;서버로전송&#39;,
+ *                  xtype: &#39;euibutton&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: &#39;setRecord&#39;
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
+ *                  CHECKBOX1 : &#39;N&#39;
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get(&#39;RECORD&#39;).getData();
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down(&#39;#checkbox1&#39;).setValue(&#39;Y&#39;);
+ *              //this.down(&#39;#checkbox1&#39;).setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down(&#39;#checkbox1&#39;).setValue(&#39;N&#39;);
+ *              this.down(&#39;#checkbox1&#39;).setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;Checkbox&#39;,{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
 
@@ -31,13 +150,20 @@ Ext.define(&#39;eui.form.field.Checkbox&#39;, {
 </span><span id='eui-form-field-Checkbox-property-uncheckedValue'>    uncheckedValue: &#39;N&#39;,
 </span><span id='eui-form-field-Checkbox-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
 </span><span id='eui-form-field-Checkbox-property-width'>    width: &#39;100%&#39;,
-</span><span id='eui-form-field-Checkbox-method-initComponent'>    initComponent: function() {
+</span>
+<span id='eui-form-field-Checkbox-method-initComponent'>    initComponent: function() {
 </span>        var me = this;
         me.callParent(arguments);
     },
 
-<span id='eui-form-field-Checkbox-method-getValue'>    getValue: function () {
-</span>        return this.getSubmitValue();
+<span id='eui-form-field-Checkbox-method-getValue'>    /***
+</span>     * Y &amp; N 을 반환한다.
+     * @returns {string}
+     */
+    getValue: function() {
+        var unchecked = this.uncheckedValue,
+            uncheckedVal = Ext.isDefined(unchecked) ? unchecked : null;
+        return this.checked ? this.inputValue : uncheckedVal;
     }
 });</pre>
 </body>
