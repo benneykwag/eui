@@ -67,8 +67,10 @@
     "requires": [
         "ext-ux",
         "font-awesome",
-        "eui-core"
+        "eui-core",
+        "ext-locale"
     ],
+    "locale": "ko",
 
     /**
      * Fashion build configuration properties.
