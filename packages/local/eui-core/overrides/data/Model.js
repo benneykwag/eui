@@ -52,7 +52,6 @@ Ext.define('Override.data.Model', {
         if (content) { // when processing only changes, me.modified could be null
             for (name in content) {
                 value = data[name];
-
                 field = fieldsMap[name];
                 if (field) {
                     if (persist && !field.persist) {
@@ -61,6 +60,12 @@ Ext.define('Override.data.Model', {
                     if (serialize && field.serialize) {
                         value = field.serialize(value, me);
                     }
+                    // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
+                    if(field.type === 'date'){
+                        value = Ext.Date.format(value, field.dateFormat);
+                    }
+                }else if(Ext.isDate(value)){ // 모델 필드 설정안한 날자는
+                    value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
                 }
                 // 기존 코드 ret[name] = value; 를 아래로 대체함.
                 // checkboxgroup 그룹 사용시 아래와 같이 obj가 중복 표현되는 것을 막기 위함..

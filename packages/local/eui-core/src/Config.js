@@ -14,6 +14,9 @@ Ext.define('eui.Config', {
     defaultDateFormat : 'Y.m.d',
     defaultDateTimeFormat : 'Y.m.d H:i:s',
 
+    // model.getData() 시 euidate, euimonthfield
+    modelGetDataDateFormat: 'Y.m.d',
+
     /***
      * 메시지 제공용 서버사이드 주소.
      *
