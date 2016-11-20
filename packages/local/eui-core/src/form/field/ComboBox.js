@@ -89,13 +89,13 @@ Ext.define('eui.form.field.ComboBox', {
     },
 
     // clear button add
-    triggers: {
-        arrow: {
-            cls: 'x-form-clear-trigger',
-            handler: 'clearValue',
-            scope: 'this'
-        }
-    },
+//    triggers: {
+//        arrow: {
+//            cls: 'x-form-clear-trigger',
+//            handler: 'clearValue',
+//            scope: 'this'
+//        }
+//    },
 
     valueNotFoundText: '검색결과가 존재하지 않습니다.',
 
