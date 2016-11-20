@@ -17,11 +17,11 @@ Ext.define('Eui.sample.view.form.Controller', {
             RADIOGROUP: 'A',
             MONTHFIELD : '2011.09',
             DATEFIELD : '2011.09.22',
-            TEXTFIELD: '텍스트'
+            TEXTFIELD: '텍스트',
 //            userId: 'eui',
 //            userName: '이유아이',
 //            gender: 'F',
-//            CHECKBOXGROUP: ['A1'],
+            CHECKBOXGROUP: ['KOREA','JAPAN','USA','RUSIA']
 //            payment1: 120011000,
 //            company: 'CCMP'
         }));

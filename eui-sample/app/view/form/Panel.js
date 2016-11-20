@@ -66,10 +66,10 @@ Ext.define('Eui.sample.view.form.Panel', {
                         name: 'CHECKBOXGROUP'
                     },
                     items: [
-                        { boxLabel: 'Item 1', inputValue: 'A1' },
-                        { boxLabel: 'Item 2', inputValue: 'A2'},
-                        { boxLabel: 'Item 3', inputValue: 'A3' },
-                        { boxLabel: 'Item 4', inputValue: 'A4' }
+                        { boxLabel: '한국', inputValue: 'KOREA' },
+                        { boxLabel: '일본', inputValue: 'JAPAN'},
+                        { boxLabel: '미국', inputValue: 'USA' },
+                        { boxLabel: '러시아', inputValue: 'RUSIA' }
                     ]
                 },
                 {
