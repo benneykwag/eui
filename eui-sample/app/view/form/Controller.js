@@ -15,12 +15,15 @@ Ext.define('Eui.sample.view.form.Controller', {
         this.getViewModel().set('RECORD', Ext.create('Eui.sample.model.Base', {
             CHECKBOX1 : 'N',
             RADIOGROUP: 'A',
-            userId: 'eui',
-            userName: '이유아이',
-            gender: 'F',
-            CHECKBOXGROUP: ['A1'],
-            payment1: 120011000,
-            company: 'CCMP'
+            MONTHFIELD : '2011.09',
+            DATEFIELD : '2011.09.22',
+            TEXTFIELD: '텍스트'
+//            userId: 'eui',
+//            userName: '이유아이',
+//            gender: 'F',
+//            CHECKBOXGROUP: ['A1'],
+//            payment1: 120011000,
+//            company: 'CCMP'
         }));
     },
 
@@ -54,5 +57,15 @@ Ext.define('Eui.sample.view.form.Controller', {
     checkBoxgroupAllUnCheck: function () {
         var ckg = this.lookupReference('euicheckboxgroup01');
         ckg.setValue()
+    },
+
+    /***
+     * 라디오 그룹을 변경한다.
+     * @param combo
+     * @param record
+     */
+    setRadioGroup: function (combo, record) {
+        var rg = this.lookupReference('euiradiogroup');
+        rg.setValue(record.get(combo.valueField))
     }
 });

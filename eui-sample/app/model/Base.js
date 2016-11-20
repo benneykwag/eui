@@ -2,6 +2,17 @@ Ext.define('Eui.sample.model.Base', {
     extend: 'Ext.data.Model',
     requires: ['Ext.data.validator.Length'],
     fields: [
+        // 정의하지 않을 경우 model.getDate() 시 eui.Config.modelGetDataDateFormat 으로 전송.
+      /*  {
+            name: 'MONTHFIELD',
+            type: 'date',
+            dateFormat: "Y.m"
+        },
+        {
+            name: 'DATEFIELD',
+            type: 'date',
+            dateFormat: "Y.m.d"
+        },*/
         {
             name: "MSG_ID",
             type: "string",

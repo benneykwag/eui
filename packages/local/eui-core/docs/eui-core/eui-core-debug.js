@@ -156,6 +156,13 @@ Ext.define('Override.data.Model', {
                     if (serialize && field.serialize) {
                         value = field.serialize(value, me);
                     }
+                    // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
+                    if (field.type === 'date') {
+                        value = Ext.Date.format(value, field.dateFormat);
+                    }
+                } else if (Ext.isDate(value)) {
+                    // 모델 필드 설정안한 날자는
+                    value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
                 }
                 // 기존 코드 ret[name] = value; 를 아래로 대체함.
                 // checkboxgroup 그룹 사용시 아래와 같이 obj가 중복 표현되는 것을 막기 위함..
@@ -402,6 +409,8 @@ Ext.define('eui.Config', {
     localeDisplayField: 'MSG_LABEL',
     defaultDateFormat: 'Y.m.d',
     defaultDateTimeFormat: 'Y.m.d H:i:s',
+    // model.getData() 시 euidate, euimonthfield
+    modelGetDataDateFormat: 'Y.m.d',
     /***
      * 메시지 제공용 서버사이드 주소.
      *
@@ -2244,6 +2253,121 @@ Ext.define('eui.form.Panel', {
  *
  * Ext.form.RadioGroup 확장. 스타일 적용
  *
+ * ## 사용예
+ *
+ *      fieldLabel: '라디오그룹',
+ *      xtype: 'euiradiogroup',
+ *      items: [
+ *          {
+ *              boxLabel: 'INPUTVALUE: A',
+ *              inputValue: 'A'
+ *          },
+ *          {
+ *              boxLabel: 'INPUTVALUE: B',
+ *              inputValue: 'B'
+ *          }
+ *      ],
+ *      bind: '{RECORD.RADIOGROUP}'
+ *
+ * # Sample
+ *
+ *
+ *     @example
+ *
+ *      Ext.define('RadioGroup', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          items: [
+ *              {
+ *               xtype: 'euiradiogroup',
+ *               allowBlank: false,
+ *               fieldLabel: '라디오그룹',
+ *               items: [
+ *                  {
+ *                      boxLabel: 'INPUTVALUE: A',
+ *                      inputValue: 'A'
+ *                  },
+ *                  {
+ *                      boxLabel: 'INPUTVALUE: B',
+ *                      inputValue: 'B'
+ *                  }
+ *               ],
+ *               bind: '{RECORD.RADIOGROUP}'
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  width: 150,
+ *                  xtype: 'euicombo',
+ *                  displayField: 'name',
+ *                  valueField: 'code',
+ *                  value: 'A',
+ *                  listeners: {
+ *                      select: 'setRadioGroup'
+ *                  },
+ *                  store: {
+ *                      data: [
+ *                          {
+ *                              name: 'INPUTVALUE A',
+ *                              code: 'A'
+ *                          },
+ *                          {
+ *                              name: 'INPUTVALUE B',
+ *                              code: 'B'
+ *                          }
+ *                      ]
+ *                  }
+ *              },
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  RADIOGROUP : 'A'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          setRadioGroup: function (combo, record) {
+ *              var rg = this.down('euiradiogroup');
+ *              rg.setValue(record.get(combo.valueField))
+ *          }
+ *      });
+ *
+ *      Ext.create('RadioGroup',{
+ *          width: 500,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
  **/
 Ext.define('eui.form.RadioGroup', {
     extend: 'Ext.form.RadioGroup',
@@ -2253,47 +2377,7 @@ Ext.define('eui.form.RadioGroup', {
     ],
     cellCls: 'fo-table-row-td',
     width: '100%',
-    defaultListenerScope: true,
-    //    listeners: {
-    //        afterrender: 'setCheckboxGroupRadioGroupBindVar'
-    //    },
     simpleValue: true,
-    //    setValue: function(value) {
-    //        debugger;
-    //        var items = this.items,
-    //            cbValue, cmp, formId, radios, i, len, name;
-    //
-    //        Ext.suspendLayouts();
-    //
-    //        if (this.simpleValue) {
-    //            for (i = 0, len = items.length; i < len; ++i) {
-    //                cmp = items.items[i];
-    //
-    //                if (cmp.inputValue === value) {
-    //                    cmp.setValue(true);
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //        else if (Ext.isObject(value)) {
-    //            cmp = items.first();
-    //            formId = cmp ? cmp.getFormId() : null;
-    //
-    //            for (name in value) {
-    //                cbValue = value[name];
-    //                radios = Ext.form.RadioManager.getWithValue(name, cbValue, formId).items;
-    //                len = radios.length;
-    //
-    //                for (i = 0; i < len; ++i) {
-    //                    radios[i].setValue(true);
-    //                }
-    //            }
-    //        }
-    //
-    //        Ext.resumeLayouts(true);
-    //
-    //        return this;
-    //    },
     initComponent: function() {
         this.setAllowBlank();
         this.callParent(arguments);
@@ -2852,13 +2936,13 @@ Ext.define('eui.form.field.ComboBox', {
         relBindVars: null
     },
     // clear button add
-    triggers: {
-        arrow: {
-            cls: 'x-form-clear-trigger',
-            handler: 'clearValue',
-            scope: 'this'
-        }
-    },
+    //    triggers: {
+    //        arrow: {
+    //            cls: 'x-form-clear-trigger',
+    //            handler: 'clearValue',
+    //            scope: 'this'
+    //        }
+    //    },
     valueNotFoundText: '검색결과가 존재하지 않습니다.',
     listeners: {
         //        focus: function () {
@@ -3993,6 +4077,171 @@ Ext.define('eui.form.field.HtmlEditor', {
     width: '100%',
     height: 100,
     cellCls: 'fo-table-row-td'
+});
+
+/***
+ *
+ * ## Summary
+ *
+ * 년.월 을 표현하기 위한 클래스
+ *
+ * ## 사용예
+ *
+ *      fieldLabel: '월달력',
+ *      xtype: 'monthfield',
+ *      format: 'm.Y',  // 기본 설정은 Y.m
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define('Panel', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          items: [
+ *             {
+ *               fieldLabel: '월달력',
+ *               itemId: 'formfield',
+ *               xtype: 'monthfield',
+ *               bind: '{RECORD.CHECKBOX1}'
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  MONTHFIELD : '2016.11'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create('Panel',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+Ext.define('eui.form.field.Month', {
+    extend: 'Ext.form.field.Date',
+    alias: 'widget.monthfield',
+    requires: [
+        'Ext.picker.Month'
+    ],
+    cellCls: 'fo-table-row-td',
+    width: '100%',
+    format: 'Y.m',
+    alternateClassName: [
+        'Ext.form.MonthField',
+        'Ext.form.Month'
+    ],
+    selectMonth: null,
+    createPicker: function() {
+        var me = this,
+            format = Ext.String.format;
+        return Ext.create('Ext.picker.Month', {
+            pickerField: me,
+            ownerCt: me.ownerCt,
+            renderTo: document.body,
+            floating: true,
+            hidden: true,
+            //            altFormats: 'Y-m',
+            focusOnShow: true,
+            minDate: me.minValue,
+            maxDate: me.maxValue,
+            disabledDatesRE: me.disabledDatesRE,
+            disabledDatesText: me.disabledDatesText,
+            disabledDays: me.disabledDays,
+            disabledDaysText: me.disabledDaysText,
+            format: 'Y.m',
+            showToday: me.showToday,
+            startDay: me.startDay,
+            minText: format(me.minText, me.formatDate(me.minValue)),
+            maxText: format(me.maxText, me.formatDate(me.maxValue)),
+            listeners: {
+                select: {
+                    scope: me,
+                    fn: me.onSelect
+                },
+                monthdblclick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                yeardblclick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                OkClick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                CancelClick: {
+                    scope: me,
+                    fn: me.onCancelClick
+                }
+            },
+            keyNavConfig: {
+                esc: function() {
+                    me.collapse();
+                }
+            }
+        });
+    },
+    onCancelClick: function() {
+        var me = this;
+        me.selectMonth = null;
+        me.collapse();
+    },
+    onOKClick: function() {
+        var me = this;
+        if (me.selectMonth) {
+            //            me.selectMonth = Ext.Date.format(new Date((d[0] + 1) + '/1/' + d[1]), 'Y.m');
+            console.log('value:', me.selectMonth);
+            me.setValue(me.selectMonth);
+            me.fireEvent('select', me, me.selectMonth);
+        }
+        me.collapse();
+    },
+    onSelect: function(m, d) {
+        var me = this;
+        //        me.selectMonth = Ext.Date.format(new Date((d[0] + 1) + '/1/' + d[1]), 'Y.m');
+        me.selectMonth = new Date((d[0] + 1) + '/1/' + d[1]);
+        console.log('selectMonth:', me.selectMonth);
+    }
 });
 
 /***

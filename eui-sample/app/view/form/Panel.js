@@ -4,6 +4,7 @@ Ext.define('Eui.sample.view.form.Panel', {
     title: 'EUI 사용하기',
 
     requires: [
+        'eui.form.field.Month',
         'eui.form.field.Checkbox',
         'eui.form.field.TextArea',
         'eui.form.field.HtmlEditor',
@@ -73,6 +74,7 @@ Ext.define('Eui.sample.view.form.Panel', {
                 },
                 {
                     xtype: 'euiradiogroup',
+                    reference: 'euiradiogroup',
 //                    allowBlank: false,
                     fieldLabel: '라디오그룹',
                     items: [
@@ -86,7 +88,24 @@ Ext.define('Eui.sample.view.form.Panel', {
                         }
                     ],
                     bind: '{RECORD.RADIOGROUP}'
-                }/*,
+                },
+                {
+                    fieldLabel: '월달력',
+                    xtype: 'monthfield',
+                    bind: '{RECORD.MONTHFIELD}'
+                },
+                {
+                    fieldLabel: '달력',
+                    xtype: 'euidate',
+                    bind: '{RECORD.DATEFIELD}'
+                },
+                {
+                    fieldLabel: '텍스트',
+                    xtype: 'euitext',
+                    bind: '{RECORD.TEXTFIELD}'
+                }
+
+                /*,
                 {
                     allowBlank: true,
                     fieldLabel: '아이디',
@@ -178,6 +197,29 @@ Ext.define('Eui.sample.view.form.Panel', {
                 }*/
             ],
             buttons: [
+                {
+                    reference : 'radioValue',
+                    width: 150,
+                    xtype: 'euicombo',
+                    displayField: 'name',
+                    valueField: 'code',
+                    value: 'A',
+                    listeners: {
+                        select: 'setRadioGroup'
+                    },
+                    store: {
+                        data: [
+                            {
+                                name: 'INPUTVALUE A',
+                                code: 'A'
+                            },
+                            {
+                                name: 'INPUTVALUE B',
+                                code: 'B'
+                            }
+                        ]
+                    }
+                },
                 {
                     text: '체크박스그룹 전체 체크',
                     handler:'checkBoxgroupAllCheck'
