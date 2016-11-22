@@ -484,7 +484,7 @@ Ext.define('eui.Util', {
         var rtnData = "";
         var options = {
             async: pSync,
-            method: (pMethod ? pMethod : 'GET'),
+            method: (pMethod ? pMethod : 'POST'),
             timeout: timeoutSeq,
             disableCaching: false,
             url: pURL,
