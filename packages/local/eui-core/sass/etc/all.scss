@@ -89,7 +89,7 @@ $font-icon-font-family: dynamic(FontAwesome);
 }
 
 .eui-form-table .x-form-display-field-default {
-  min-height: 32px;
+  min-height: 22px;
   font: 300 13px/17px 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
   color: #404040;
   padding-top: 5px;
@@ -248,4 +248,8 @@ $font-icon-font-family: dynamic(FontAwesome);
 .x-btn-default-toolbar-small {
   border-color: #9d9d9d !important;
   background-color: #f3f3f3 !important;
+}
+
+.x-border-layout-ct, div.x-border-layout-ct {
+  background-color: white !important;
 }

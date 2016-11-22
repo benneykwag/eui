@@ -300,3 +300,8 @@
     border-color: #9d9d9d !important;
     background-color: #f3f3f3 !important;
 }
+
+
+.x-border-layout-ct, div.x-border-layout-ct {
+    background-color: white !important;
+}

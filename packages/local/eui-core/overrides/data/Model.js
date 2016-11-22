@@ -62,7 +62,12 @@ Ext.define('Override.data.Model', {
                     }
                     // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
                     if(field.type === 'date'){
-                        value = Ext.Date.format(value, field.dateFormat);
+                        if(field.dateFormat){
+                            value = Ext.Date.format(value, field.dateFormat);
+                        }else{
+                            value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
+                        }
+
                     }
                 }else if(Ext.isDate(value)){ // 모델 필드 설정안한 날자는
                     value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);

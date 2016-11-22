@@ -137,10 +137,10 @@ Ext.define('eui.grid.Panel', {
          */
         hideHeaderICon: false,
         /**
-         * @cfg {Boolean} [showRowCountStatusBar=`true`]
-         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         * @cfg {Boolean} [showRowCountStatusBar=`false`]
+         * 그리드 하단 기본 상태바를 표시한다.
          */
-        showRowCountStatusBar: true
+        showRowCountStatusBar: false
     },
 
 

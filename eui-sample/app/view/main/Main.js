@@ -16,7 +16,7 @@ Ext.define('Eui.sample.view.main.Main', {
         'Eui.sample.view.main.MainModel',
         'Eui.sample.view.frame.Header',
         'Eui.sample.view.frame.SideBar',
-        'Eui.sample.view.template.tmp010.TMP010V'
+        'Eui.sample.view.template.tmp008.TMP008V'
     ],
 
     controller: 'main',
@@ -46,10 +46,10 @@ Ext.define('Eui.sample.view.main.Main', {
                     id : 'contentPanel',
                     region: 'center',
                     items: [
-//                        {
-//                            title: 'HOME',
-//                            xtype: 'TMP010V'
-//                        }
+                        {
+                            title: 'HOME',
+                            xtype: 'TMP008V'
+                        }
                     ]
                 }
             ]

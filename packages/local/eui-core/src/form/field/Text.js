@@ -30,6 +30,12 @@
  *               itemId: 'formfield',
  *               xtype: 'euitext',
  *               bind: '{RECORD.TEXTFIELD}'
+ *             },
+ *             {
+ *              fieldLabel: '비밀번호',
+ *              xtype: 'euitext',
+ *              inputType: 'password',
+ *              bind: '{RECORD.TEXTFIELD}'
  *             }
  *          ],
  *          bbar: [

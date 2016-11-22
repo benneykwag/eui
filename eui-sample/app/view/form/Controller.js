@@ -18,12 +18,10 @@ Ext.define('Eui.sample.view.form.Controller', {
             MONTHFIELD : '2011.09',
             DATEFIELD : '2011.09.22',
             TEXTFIELD: '텍스트',
-//            userId: 'eui',
-//            userName: '이유아이',
-//            gender: 'F',
-            CHECKBOXGROUP: ['KOREA','JAPAN','USA','RUSIA']
-//            payment1: 120011000,
-//            company: 'CCMP'
+            COMBOBOX01 : 'VW',
+            COMBOBOX02 : 'MICROSOFT',
+            CHECKBOXGROUP: ['KOREA','JAPAN','USA','RUSIA'],
+            NUMBER01 : 1100090
         }));
     },
 

@@ -10,6 +10,7 @@ Ext.define('eui.form.Label', {
     alias: 'widget.euilabel',
     cellCls: 'fo-table-row-th',
     allowBlank : true,
+    width: '100%',
     localeProperties: ['html', 'text'],
     initComponent: function () {
         var me = this;

@@ -158,7 +158,11 @@ Ext.define('Override.data.Model', {
                     }
                     // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
                     if (field.type === 'date') {
-                        value = Ext.Date.format(value, field.dateFormat);
+                        if (field.dateFormat) {
+                            value = Ext.Date.format(value, field.dateFormat);
+                        } else {
+                            value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
+                        }
                     }
                 } else if (Ext.isDate(value)) {
                     // 모델 필드 설정안한 날자는
@@ -1007,8 +1011,8 @@ Ext.define('eui.Util', {
         }
         var rtnData = "";
         var options = {
-                async: pSync,
-                method: (pMethod ? pMethod : 'GET'),
+                async: (pSync == null ? true : pSync),
+                method: (pMethod ? pMethod : 'POST'),
                 timeout: timeoutSeq,
                 disableCaching: false,
                 url: pURL,
@@ -1897,6 +1901,7 @@ Ext.define('eui.form.Label', {
     alias: 'widget.euilabel',
     cellCls: 'fo-table-row-th',
     allowBlank: true,
+    width: '100%',
     localeProperties: [
         'html',
         'text'
@@ -5243,6 +5248,12 @@ Ext.define('eui.form.field.Radio', {
  *               itemId: 'formfield',
  *               xtype: 'euitext',
  *               bind: '{RECORD.TEXTFIELD}'
+ *             },
+ *             {
+ *              fieldLabel: '비밀번호',
+ *              xtype: 'euitext',
+ *              inputType: 'password',
+ *              bind: '{RECORD.TEXTFIELD}'
  *             }
  *          ],
  *          bbar: [
@@ -6389,10 +6400,10 @@ Ext.define('eui.grid.Panel', {
          */
         hideHeaderICon: false,
         /**
-         * @cfg {Boolean} [showRowCountStatusBar=`true`]
-         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         * @cfg {Boolean} [showRowCountStatusBar=`false`]
+         * 그리드 하단 기본 상태바를 표시한다.
          */
-        showRowCountStatusBar: true
+        showRowCountStatusBar: false
     },
     initComponent: function() {
         var me = this;
@@ -7218,7 +7229,12 @@ Ext.define('eui.panel.Panel', {
 
 Ext.define('eui.panel.BasePanel', {
     extend: 'eui.panel.Panel',
-    alias: 'widget.euibasepanel'
+    alias: 'widget.euibasepanel',
+    scrollable: 'y',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    }
 });
 
 /***

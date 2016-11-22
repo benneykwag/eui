@@ -26,8 +26,7 @@ Ext.define('Eui.sample.view.form.Panel', {
 
     },
     defaults: {
-        margin: 5,
-        allowBlank: true
+        margin: 5
     },
 
     layout: {
@@ -43,7 +42,7 @@ Ext.define('Eui.sample.view.form.Panel', {
             title: 'EUI 폼',
             tableColumns: 2,
             defaults: {
-                allowBlank: true
+                allowBlank: false
             },
             items: [
                 {
@@ -103,68 +102,64 @@ Ext.define('Eui.sample.view.form.Panel', {
                     fieldLabel: '텍스트',
                     xtype: 'euitext',
                     bind: '{RECORD.TEXTFIELD}'
-                }
-
-                /*,
-                {
-                    allowBlank: true,
-                    fieldLabel: '아이디',
-                    bind: '{RECORD.userId}',
-                    xtype: 'euitext'
                 },
                 {
                     fieldLabel: '비밀번호',
-                    xtype: 'euitext'
-                },
-                {
-                    fieldLabel: '비밀번호 확인',
-                    xtype: 'euitext'
-                },
-                {
-                    fieldLabel: '성명',
-                    bind: '{RECORD.userName}',
-                    xtype: 'euitext'
-                },
-                {
-                    fieldLabel: '이메일',
-//                    allowBlank: false,
                     xtype: 'euitext',
-                    vtype: 'email'
+                    inputType: 'password',
+                    bind: '{RECORD.TEXTFIELD}'
                 },
                 {
-                    fieldLabel: '연락처',
-//                    allowBlank: false,
-                    name: 'phone',
-                    xtype: 'euitext'
-                },
-                {
-                    xtype: 'euiradiogroup',
-                    fieldLabel: '성별',
-                    bind: {
-                        value: '{RECORD.gender}'
+                    fieldLabel: '콤보박스 TYPE1',
+                    xtype: 'euicombo',
+                    displayField: 'name',
+                    valueField: 'code',
+                    store: {
+                        data: [
+                            {
+                                name: '아우디',
+                                code: 'AUDI'
+                            },
+                            {
+                                name: '벤츠',
+                                code: 'BENZ'
+                            },
+                            {
+                                name: 'BMW',
+                                code: 'BMW'
+                            },
+                            {
+                                name: '폭스바겐',
+                                code: 'VW'
+                            }
+                        ]
                     },
-                    defaults: {
-                        name: 'gender'
-                    },
-                    items: [
-                        {
-                            boxLabel: '남성',
-                            inputValue: 'M'
-                        },
-                        {
-                            boxLabel: '여성',
-                            inputValue: 'F'
-                        }
-                    ]
-                },
-
-                {
-                    fieldLabel: '생년월일',
-                    xtype: 'euidate'
+                    bind: '{RECORD.COMBOBOX01}'
                 },
                 {
-                    fieldLabel: '회사',
-                    xtype: 'companycombo'
+                    fieldLabel: '콤보박스 TYPE2',
+                    xtype: 'euicombo',
+                    proxyUrl : 'resources/data/companys.json',
+                    displayField: 'name',
+                    valueField: 'code',
+                    groupCode: 'A001',
+                    bind: '{RECORD.COMBOBOX02}'
+                },
+                {
+                    fieldLabel: '콤보박스 TYPE2이후 연결',
+                    xtype: 'euicombo',
+                    proxyUrl : 'resources/data/companys.json',
+                    displayField: 'name',
+                    valueField: 'code',
+                    groupCode: 'A003',
+                    // 파라메터 : A001(RECORD.COMBOBOX02를 사용하는 콤보값을 사용한다.)
+                    relBindVars :['RECORD.COMBOBOX02|A001'],
+                    bind: '{RECORD.COMBOBOX03}'
+                },
+                {
+                    fieldLabel : '숫자필드',
+                    xtype: 'euinumber',
+                    bind: '{RECORD.NUMBER01}'
                 },
                 {
                     fieldLabel:'파일',
@@ -172,29 +167,21 @@ Ext.define('Eui.sample.view.form.Panel', {
                     xtype:'euifile'
                 },
                 {
-                    fieldLabel:'연봉',
-                    bind: '{RECORD.payment1}',
-                    xtype:'euinumber'
-                },
-                {
-                    xtype:'euidisplay',
-                    fieldLabel:'DESC',
-                    value:'ddd'
-                },
-                {
-                    fieldLabel: '성명',
-                    xtype: 'euitext'
-                },
-                {
+                    colspan: 2,
                     height: 150,
-                    fieldLabel:'자기소개',
-                    xtype:'euihtmleditor'
-                },
-                {
-                    height: 150,
-                    fieldLabel:'경력기술',
+                    fieldLabel:'euitextarea',
                     xtype:'euitextarea'
-                }*/
+                },
+                {
+                    colspan: 2,
+                    bindVar : {
+                        ZIPCODE : '{RECORD.ZIPCODE}',
+                        ADDRESS1 : '{RECORD.ADDRESS1}',
+                        ADDRESS2 : '{RECORD.ADDRESS2}'
+                    },
+                    xtype: 'addressfield'
+
+                }
             ],
             buttons: [
                 {

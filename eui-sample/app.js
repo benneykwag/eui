@@ -13,6 +13,17 @@ Ext.application({
     ],
     init: function () {
         eui.Config.initLocaleMessage();
+        Ext.ux.ajax.SimManager.init({
+            delay: 300,
+            defaultSimlet: null
+        }).register({
+            'Numbers': {
+                data: [[123,'One Hundred Twenty Three'],
+                    ['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five'],
+                    ['6', 'Six'], ['7', 'Seven'], ['8', 'Eight'], ['9', 'Nine']],
+                stype: 'json'
+            }
+        });
     },
 
     // The name of the initial view to create. With the classic toolkit this class
@@ -21,41 +32,6 @@ Ext.application({
     //
     mainView: 'Eui.sample.view.main.Main',
     launch: function () {
-//        Ext.create('Ext.grid.Panel', {
-//            title: 'Simpsons',
-//            width: 500,
-//            height: 200,
-//            store: Ext.create('Ext.data.Store', {
-//                fields: ['name', 'email', 'phone', 'progress'],
-//                data: [
-//                    { 'name': 'Lisa', "email": "lisa@simpsons.com", "phone": "555-111-1224", 'progress': 25 },
-//                    { 'name': 'Bart', "email": "bart@simpsons.com", "phone": "555-222-1234", 'progress': 50 },
-//                    { 'name': 'Homer', "email": "home@simpsons.com", "phone": "555-222-1244", 'progress': 75 },
-//                    { 'name': 'Marge', "email": "marge@simpsons.com", "phone": "555-222-1254", 'progress': 100 }
-//                ]
-//            }),
-//            columns: [
-//                { header: 'Name', dataIndex: 'name' },
-//                { header: 'Email', dataIndex: 'email', flex: 1 },
-//                { header: 'Phone', dataIndex: 'phone' },
-//                {
-//                    header: 'Progress',
-//                    dataIndex: 'progress',
-//                    width: 110,
-//                    renderer: function (v, m, r) {
-//                        var id = Ext.id();
-//                        Ext.defer(function () {
-//                            Ext.widget('progressbar', {
-//                                renderTo: id,
-//                                value: v / 100,
-//                                width: 100
-//                            });
-//                        }, 50);
-//                        return Ext.String.format('<div id="{0}"></div>', id);
-//                    }
-//                }
-//            ],
-//            renderTo: document.body
-//        });
+
     }
 });
