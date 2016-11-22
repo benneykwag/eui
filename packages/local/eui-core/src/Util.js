@@ -483,7 +483,7 @@ Ext.define('eui.Util', {
 
         var rtnData = "";
         var options = {
-            async: pSync,
+            async: (pSync == null ? true: pSync),
             method: (pMethod ? pMethod : 'POST'),
             timeout: timeoutSeq,
             disableCaching: false,
