@@ -10,7 +10,7 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008C', {
         var name = this.lookupReference('CODE_NAME').getValue();
         this.getViewModel().get('STORE01').load({
             params: {
-                key : name
+                key: name
             }
         });
     },
@@ -19,17 +19,17 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008C', {
         this.getViewModel().set('MASTERRECORD', record);
         this.getViewModel().get('STORE02').load({
             params: {
-                ad : record.get('field1')
+                ad: record.get('field1')
             }
         });
         this.getViewModel().get('STORE03').load({
             params: {
-                ad : record.get('field1')
+                ad: record.get('field1')
             }
         });
         this.getViewModel().get('STORE04').load({
             params: {
-                ad : record.get('field1')
+                ad: record.get('field1')
             }
         });
     },
@@ -44,7 +44,15 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008C', {
 //        });
     },
 
+    onLinkClick: function (field1) {
+        Util.commonPopup(this.getView(), field1, 'Eui.sample.view.template.tmp008.TMP008V02', 600, 500, null, {
+            modal: true
+        }, true).show();
+    },
+
     onButtonClick: function () {
-        debugger;
+        Util.commonPopup(this.getView(), Util.getLocaleValue('M90003'), 'Eui.sample.view.template.tmp008.TMP008V02', 600, 500, null, {
+            modal: true
+        }, true).show();
     }
 });

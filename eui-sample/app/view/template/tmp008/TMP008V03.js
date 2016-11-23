@@ -3,6 +3,9 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008V03', {
     xtype: 'TMP008V03',
     title: '보증정보',
 
+    listeners: {
+        linkclick: 'onLinkClick'
+    },
     columns: [
         {
             xtype: 'rownumberer'
@@ -11,7 +14,12 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008V03', {
             width: 60,
             align: 'center',
             text: '현장코드',
-            dataIndex: 'field1'
+            dataIndex: 'field1',
+            renderer:function (val, meta, rec, rowIdx) {
+                var id = this.ownerGrid.id,
+                    tempStr="<a href=\"#\" onclick=\"javascript:Ext.getCmp('" + id + "').fireEvent('linkclick'," + rec.get('field1') + ");\"><span style='color:#0000FF'><u>Delete</u></span></a>";
+                return tempStr ;
+            }
         },
         {
             flex: 1,
@@ -32,6 +40,10 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008V03', {
                 handler: 'onButtonClick'
             }
         }
-    ]
+    ],
+    deAllocate:function (rowIdx ) {
+        Ext.getCmp('s_grid').getStore().removeAt(rowIdx);
+        Ext.getCmp('s_grid').getView().refresh();
+    }
 
 });

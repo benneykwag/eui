@@ -119,7 +119,10 @@ Ext.define('Override.data.Model', {
         if (associated) {
             me.getAssociatedData(ret, opts); // pass ret so new data is added to our object
         }
-
+        // 기본 신규 레코드로 처리.
+        if(Ext.isEmpty(ret['__rowStatus'])){
+            ret['__rowStatus'] = 'I';
+        }
         return ret;
     }
 });

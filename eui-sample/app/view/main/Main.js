@@ -39,7 +39,17 @@ Ext.define('Eui.sample.view.main.Main', {
             items: [
                 {
                     xtype: 'sidebar',
-                    region: 'west'
+                    region: 'west',
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width < 800': {
+                            width: 50
+                        },
+
+                        'width >= 800': {
+                            width: 230
+                        }
+                    }
                 },
                 {
                     xtype: 'tabpanel',

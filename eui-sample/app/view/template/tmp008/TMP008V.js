@@ -41,6 +41,7 @@ Ext.define('Eui.sample.view.template.tmp008.TMP008V', {
         {
             margin: 10,
             flex:1,
+            minHeight: 200,
             xtype: 'container',
             layout: {
                 type: 'hbox',
