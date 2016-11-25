@@ -17,7 +17,13 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">Ext.define(&#39;eui.panel.BasePanel&#39;, {
     extend: &#39;eui.panel.Panel&#39;,
-    alias: &#39;widget.euibasepanel&#39;
+    alias: &#39;widget.euibasepanel&#39;,
+
+    scrollable: &#39;y&#39;,
+    layout: {
+        type :&#39;vbox&#39;,
+        align: &#39;stretch&#39;
+    }
 });</pre>
 </body>
 </html>

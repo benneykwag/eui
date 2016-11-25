@@ -158,7 +158,11 @@ Ext.define('Override.data.Model', {
                     }
                     // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
                     if (field.type === 'date') {
-                        value = Ext.Date.format(value, field.dateFormat);
+                        if (field.dateFormat) {
+                            value = Ext.Date.format(value, field.dateFormat);
+                        } else {
+                            value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
+                        }
                     }
                 } else if (Ext.isDate(value)) {
                     // 모델 필드 설정안한 날자는
@@ -209,6 +213,10 @@ Ext.define('Override.data.Model', {
             me.getAssociatedData(ret, opts);
         }
         // pass ret so new data is added to our object
+        // 기본 신규 레코드로 처리.
+        if (Ext.isEmpty(ret['__rowStatus'])) {
+            ret['__rowStatus'] = 'I';
+        }
         return ret;
     }
 });
@@ -867,8 +875,7 @@ Ext.define('eui.Util', {
                 height: height,
                 width: width,
                 //            modal: true,
-                options: params,
-                listeners: {}
+                options: params
             };
         config.items = null;
         if (!Ext.isEmpty(windowOption)) {
@@ -1007,8 +1014,8 @@ Ext.define('eui.Util', {
         }
         var rtnData = "";
         var options = {
-                async: pSync,
-                method: (pMethod ? pMethod : 'GET'),
+                async: (pSync == null ? true : pSync),
+                method: (pMethod ? pMethod : 'POST'),
                 timeout: timeoutSeq,
                 disableCaching: false,
                 url: pURL,
@@ -1897,6 +1904,7 @@ Ext.define('eui.form.Label', {
     alias: 'widget.euilabel',
     cellCls: 'fo-table-row-th',
     allowBlank: true,
+    width: '100%',
     localeProperties: [
         'html',
         'text'
@@ -4526,6 +4534,22 @@ Ext.define('eui.form.field.PopUpPicker', {
     },
     enableKeyEvents: true,
     matchFieldWidth: false,
+    doAlign: function() {
+        var me = this,
+            picker = me.picker,
+            aboveSfx = '-above',
+            isAbove;
+        // Align to the trigger wrap because the border isn't always on the input element, which
+        // can cause the offset to be off
+        if (me.simpleMode) {
+            me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        }
+        // add the {openCls}-above class if the picker was aligned above
+        // the field due to hitting the bottom of the viewport
+        isAbove = picker.el.getY() < me.inputEl.getY();
+        me.bodyEl[isAbove ? 'addCls' : 'removeCls'](me.openCls + aboveSfx);
+        picker[isAbove ? 'addCls' : 'removeCls'](picker.baseCls + aboveSfx);
+    },
     createPicker: function(C) {
         // #4
         var me = this;
@@ -4538,7 +4562,6 @@ Ext.define('eui.form.field.PopUpPicker', {
                 layout: 'fit',
                 items: [
                     {
-                        margin: 10,
                         xtype: me.popupConfig.popupWidget,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
@@ -4553,6 +4576,12 @@ Ext.define('eui.form.field.PopUpPicker', {
                 ]
             });
         }
+        //        me.picker.on('show', function () {
+        ////            Ext.defer(function () {
+        //            me.fireEvent('pickerbeforeshow', me, me.picker);
+        ////            },00)
+        //
+        //        })
         return me.picker;
     }
 });
@@ -6395,10 +6424,10 @@ Ext.define('eui.grid.Panel', {
          */
         hideHeaderICon: false,
         /**
-         * @cfg {Boolean} [showRowCountStatusBar=`true`]
-         * 그리드 하단 기본 상태바를 표시한다. 없앨 경우  `false`로 설정한다.
+         * @cfg {Boolean} [showRowCountStatusBar=`false`]
+         * 그리드 하단 기본 상태바를 표시한다.
          */
-        showRowCountStatusBar: true
+        showRowCountStatusBar: false
     },
     initComponent: function() {
         var me = this;
@@ -7224,7 +7253,12 @@ Ext.define('eui.panel.Panel', {
 
 Ext.define('eui.panel.BasePanel', {
     extend: 'eui.panel.Panel',
-    alias: 'widget.euibasepanel'
+    alias: 'widget.euibasepanel',
+    scrollable: 'y',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    }
 });
 
 /***
