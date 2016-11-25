@@ -26,6 +26,27 @@ Ext.define('eui.form.field.PopUpPicker', {
 
     matchFieldWidth: false,
 
+    doAlign: function () {
+        var me = this,
+            picker = me.picker,
+            aboveSfx = '-above',
+            isAbove;
+
+        // Align to the trigger wrap because the border isn't always on the input element, which
+        // can cause the offset to be off
+        if (me.simpleMode) {
+            me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        }
+
+        // add the {openCls}-above class if the picker was aligned above
+        // the field due to hitting the bottom of the viewport
+        isAbove = picker.el.getY() < me.inputEl.getY();
+        me.bodyEl[isAbove ? 'addCls' : 'removeCls'](me.openCls + aboveSfx);
+        picker[isAbove ? 'addCls' : 'removeCls'](picker.baseCls + aboveSfx);
+    },
+
+
+
     createPicker: function (C) {        // #4
         var me = this;
         if (!me.picker) {
@@ -38,7 +59,6 @@ Ext.define('eui.form.field.PopUpPicker', {
                 layout: 'fit',
                 items: [
                     {
-                        margin: 10,
                         xtype: me.popupConfig.popupWidget,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
@@ -53,6 +73,12 @@ Ext.define('eui.form.field.PopUpPicker', {
                 ]
             });
         }
+//        me.picker.on('show', function () {
+////            Ext.defer(function () {
+//            me.fireEvent('pickerbeforeshow', me, me.picker);
+////            },00)
+//
+//        })
         return me.picker;
     }
 });

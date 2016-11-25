@@ -14,9 +14,7 @@ Ext.define('eui.Util', {
     localeStoreValueField: 'MSG_ID',
     localeStoreDisplayField: 'MSG_CONTENTS',
 
-    UrlPrefix: null,// "http://211.196.150.66:18080/",
-//    HurlPrefix: "http://103.168.0.58:8080/",
-//	HurlPrefix : "http://127.0.0.1:8080/",
+    UrlPrefix: null,
     localeLang: "ko",
     webosShowWindowId: null,
     currentAjaxButtonId: null,  // 통신을 일으키는 버튼 아이디.
@@ -333,9 +331,7 @@ Ext.define('eui.Util', {
             height: height,
             width: width,
 //            modal: true,
-            options: params,
-            listeners: {
-            }
+            options: params
         };
         config.items = null;
         if (!Ext.isEmpty(windowOption)) {

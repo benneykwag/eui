@@ -9,7 +9,6 @@ Ext.application({
 
     extend: 'Eui.sample.Application',
     requires: [
-//        'Eui.sample.*'
     ],
     init: function () {
         eui.Config.initLocaleMessage();

@@ -6,7 +6,9 @@
     limit your changes to this file.
     -->
     <import file="${basedir}/.sencha/app/build-impl.xml"/>
-
+    <!--<property name="skip.page" value="1" />-->
+    <!--<property name="skip.sass" value="1" />-->
+    <property name="skip.slice" value="1" />
     <!--
     The following targets can be provided to inject logic before and/or after key steps
     of the build process:
@@ -38,5 +40,13 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
-
+    <target name="-before-init">
+        <property name="build.operations">
+            include
+            -tag=package-core,package-classic,package-charts,package-eui-core <!-- core를 모두 포함하도록 한다. -->
+            and
+            include
+            -namespace=Ext.ux.exporter,Eui
+        </property>
+    </target>
 </project>

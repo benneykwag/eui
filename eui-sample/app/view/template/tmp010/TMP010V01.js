@@ -8,6 +8,19 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
         'Eui.sample.view.common.AddressField'
     ],
     items: [
+
+        {
+            bindVar : {
+                FIELD1 : '{FORMRECORD.BIZ_NO}',
+                FIELD2 : '{FORMRECORD.BIZ_NAME}'
+            },
+            xtype: 'bizfield'
+
+        },
+        {
+            fieldLabel: 'TEXT',
+            xtype: 'euitext'
+        },
         {
             xtype: 'euipopuppicker',
             fieldLabel: '이름',

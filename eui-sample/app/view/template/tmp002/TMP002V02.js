@@ -50,6 +50,11 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             }
         },
         {
+            xtype: 'euicheckcolumn',
+            text: 'To-do List항목',
+            dataIndex:'CHK_ITEM'
+        },
+        {
             text: '조건',
             dataIndex: 'CNDT',
             editor: {
@@ -69,6 +74,13 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             editor: {
                 xtype: 'euitext'
             }
+        },
+        {
+            text:'날자',
+            dataIndex:'MSG_DATE',
+            editor: {
+                xtype: 'euidate'
+            }
         }
     ]
-})
+});

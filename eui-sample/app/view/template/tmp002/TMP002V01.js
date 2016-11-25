@@ -47,4 +47,4 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V01',{
         ]
     },
     title: '데이터기초관리'
-})
+});

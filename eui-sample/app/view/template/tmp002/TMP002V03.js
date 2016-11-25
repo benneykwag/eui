@@ -3,16 +3,49 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
     xtype: 'TMP002V03',
     margin: 5,
     tableColumns: 1,
+    defaultListenerScope: true,
+
     viewModel: {
-        radioValue222: {
-            bind: '{customerRecord.field5}',
-            get: function (value) {
-                return {
-                    field5: value
-                };
+        formulas: {
+            formStatus: {
+                bind: {
+                    bindTo: '{customerRecord}',
+                    deep: true
+                },
+                get: function (user) {
+                    if (!user) {
+                        return {
+                            dirty: true,
+                            valid: false,
+                            phantom: true,
+                            validAndDirty: false,
+                            disabled: true
+                        }
+                    }
+                    var status = {
+                        dirty: user ? user.dirty : true,
+                        valid: user ? user.isValid() : false,
+                        phantom: user.phantom,
+                        disabled: false
+                    };
+                    status.validAndDirty = status.dirty && status.valid;
+                    console.log('status:', status);
+                    return status;
+                }
             }
         }
     },
+
+    onSaveForm: function () {
+        var rec = this.getViewModel().get('customerRecord');//.getData();
+        this.fireEvent('onsaveform', rec);
+    },
+
+    onDelFormRecord: function () {
+        var rec = this.getViewModel().get('customerRecord');//.getData();
+        this.fireEvent('ondeleteform', rec);
+    },
+
     items: [
 
         {
@@ -26,7 +59,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
             bind: '{customerRecord.ITEM}'
         },
         {
-        	allowBlank: false,
+            allowBlank: false,
             fieldLabel: '내용',
             xtype: 'euitext',
             bind: '{customerRecord.CNDT}'
@@ -34,7 +67,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
         {
             fieldLabel: '기준일자',
             xtype: 'euitext',
-            bind:'{customerRecord.STD_DT}'
+            bind: '{customerRecord.STD_DT}'
         },
         {
             fieldLabel: '결과',
@@ -65,10 +98,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
                 value: '{customerRecord.field6}'
             }
         }
-
     ],
-    listeners: {
-    },
     bbar: [
         '->',
         {

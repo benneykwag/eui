@@ -15,19 +15,31 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
         });
     },
 
-    /***
-     * 로우를 추가한다.
-     * @param grid
-     */
-    onRowAdd: function (grid) {
-        grid.onRowAdd(grid, {
-            field1: '홍길동'
-        }, 1, function () {    // callback이 필요할 경우 구현한다.
-            console.log(' 콜백처리...', arguments)
+    openWindow: function (record) {
+        var popup = Util.commonPopup(this.getView(), '고객약속 수정', 'Eui.sample.view.template.tmp002.TMP002V03', 530, 320, {
+            customerRecord: record
+        }, {
+            modal: true
+        }, false);
+
+        popup.down('TMP002V03').on('onsaveform', function (rec) {
+            this.onSaveForm(rec, popup, function () {
+                popup.close();
+            });
+        }, this);
+
+        popup.down('TMP002V03').on('ondeleteform', function (rec) {
+            this.onDelFormRecord(rec, popup, function () {
+                popup.close();
+            });
+        }, this);
+
+        popup.down('TMP002V03').on('render', function (rec) {
+            var rec = this.__PARAMS.customerRecord;
+            this.getViewModel().set('customerRecord', rec);
         });
+        popup.show();
     },
-
-
 
     onRowMod: function (grid) {
         var me = this,
@@ -41,29 +53,21 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
             return;
         }
 
-        Util.commonPopup(this.getView(), '고객약속 수정', 'template.view.tmp002.TMP002V03', 530, 320, null, {
-            modal: true
-        }, true).show();
+        this.openWindow(this.getViewModel().get('customerRecord').copy());
+
     },
 
     onRowReg: function () {
-        var record = Ext.create('template.model.Base', {
-            // 초기 설정될 필요가 있는 값은 직접 넣는다.
-            field1: 'A99'
-        })
-        this.getViewModel().set('customerRecord', record);
-
-        Util.commonPopup(this.getView(), '고객약속 등록', 'template.view.tmp002.TMP002V03', 530, 320, null, {
-            modal: true
-        }, true).show();
+        var rec = Ext.create('Ext.data.Model')
+        this.openWindow(rec);
     },
 
-    onDelFormRecord: function (button) {
-        var grid = this.lookupReference('cusGrid'),
-            rec = this.getViewModel().get('customerRecord');
+    onDelFormRecord: function (rec, popup, callback) {
+        var grid = this.lookupReference('cusGrid');
         grid.onRowDelete(grid, function (store, records) {
             store.remove(rec);
-            button.up('window').close();
+
+            Ext.callback(callback);
         }, grid);
     },
 
@@ -79,11 +83,11 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
     },
 
     onRowSave: function (grid) {
-    	// validation check
-    	if(!grid.store.recordsValidationCheck()){
-    		return;
-    	}
-    	
+        // validation check
+        if (!grid.store.recordsValidationCheck()) {
+            return;
+        }
+
         Ext.Msg.show({
             title: '확인',
             buttons: Ext.Msg.YESNO,
@@ -91,11 +95,10 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
             message: '저장하시겠습니까?',
             fn: function (btn) {
                 if (btn === 'yes') {
-                	
                     Util.CommonAjax({
                         method: 'POST',
-                        url: 'TMP002W.do',
-                        params:  Util.getDatasetParam(grid.store),
+                        url: 'resources/data/success.json',
+                        params: Util.getDatasetParam(grid.store),
                         pCallback: function (v, params, result) {
                             if (result.success) {
                                 Ext.Msg.alert('저장성공', result.message);
@@ -114,11 +117,24 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
         this.getViewModel().set("customerRecord", record);
     },
 
-    onSaveForm: function (button) {
+    /***
+     * 폼으로 부터 레코드를 넘겨 받아 저장 또는 수정한다.
+     * @param rec
+     */
+    onSaveForm: function (rec, popup, callback) {
         var me = this;
-        var rec = this.getViewModel().get("customerRecord");
+
+        // 윈도우를 닫는다.
+        Ext.callback(callback);
+
+        if (rec.crudState == 'U') {      // 수정된 레코드.
+            var originRec = me.getViewModel().getStore('STORE01').findRecord('id', rec.getId());
+            originRec.set(rec.getData());
+            return;
+        }
+        // 입력할 레코드.
         me.getViewModel().getStore('STORE01').add(rec);
-        button.up('window').close();
+
     }
 
 });

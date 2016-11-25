@@ -16,32 +16,6 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
                     field5: value
                 };
             }
-        },
-        formStatus: {
-            bind: {
-                bindTo: '{customerRecord}',
-                deep: true
-            },
-            get: function (user) {
-                if (!user) {
-                    return {
-                        dirty: true,
-                        valid: false,
-                        phantom: true,
-                        validAndDirty: false,
-                        disabled: true
-                    }
-                }
-                var status = {
-                    dirty: user ? user.dirty : true,
-                    valid: user ? user.isValid() : false,
-                    phantom: user.phantom,
-                    disabled: false
-                };
-                status.validAndDirty = status.dirty && status.valid;
-
-                return status;
-            }
         }
     },
     stores: {

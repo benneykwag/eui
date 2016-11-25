@@ -22,9 +22,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V',{
         {
             reference: 'cusGrid',
             xtype: 'TMP002V02',
-            bind: {
-                store: '{STORE01}'
-            }
+            bind: '{STORE01}'
         }
     ]
 

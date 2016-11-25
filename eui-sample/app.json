@@ -220,7 +220,7 @@
      */
     "js": [
         {
-            "path": "${framework.dir}/build/ext-all.js"
+            "path": "${framework.dir}/build/ext-all-debug.js"
         },
         {
             "path": "app.js",

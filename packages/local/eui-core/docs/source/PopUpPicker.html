@@ -43,6 +43,27 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
 </span>
 <span id='eui-form-field-PopUpPicker-property-matchFieldWidth'>    matchFieldWidth: false,
 </span>
+<span id='eui-form-field-PopUpPicker-method-doAlign'>    doAlign: function () {
+</span>        var me = this,
+            picker = me.picker,
+            aboveSfx = &#39;-above&#39;,
+            isAbove;
+
+        // Align to the trigger wrap because the border isn&#39;t always on the input element, which
+        // can cause the offset to be off
+        if (me.simpleMode) {
+            me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        }
+
+        // add the {openCls}-above class if the picker was aligned above
+        // the field due to hitting the bottom of the viewport
+        isAbove = picker.el.getY() &lt; me.inputEl.getY();
+        me.bodyEl[isAbove ? &#39;addCls&#39; : &#39;removeCls&#39;](me.openCls + aboveSfx);
+        picker[isAbove ? &#39;addCls&#39; : &#39;removeCls&#39;](picker.baseCls + aboveSfx);
+    },
+
+
+
 <span id='eui-form-field-PopUpPicker-method-createPicker'>    createPicker: function (C) {        // #4
 </span>        var me = this;
         if (!me.picker) {
@@ -55,7 +76,6 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
                 layout: &#39;fit&#39;,
                 items: [
                     {
-                        margin: 10,
                         xtype: me.popupConfig.popupWidget,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
@@ -70,6 +90,12 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
                 ]
             });
         }
+//        me.picker.on(&#39;show&#39;, function () {
+////            Ext.defer(function () {
+//            me.fireEvent(&#39;pickerbeforeshow&#39;, me, me.picker);
+////            },00)
+//
+//        })
         return me.picker;
     }
 });</pre>

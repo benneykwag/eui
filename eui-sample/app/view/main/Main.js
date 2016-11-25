@@ -58,7 +58,7 @@ Ext.define('Eui.sample.view.main.Main', {
                     items: [
                         {
                             title: 'HOME',
-                            xtype: 'TMP008V'
+                            xtype: 'TMP010V'
                         }
                     ]
                 }
