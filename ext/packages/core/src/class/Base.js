@@ -388,11 +388,11 @@ var noArgs = [],
          * @private
          * @static
          * @inheritable
-         * @param config
+         * @param parentClass
          */
-        extend: function(parent) {
+        extend: function (parentClass) {
             var me = this,
-                parentPrototype = parent.prototype,
+                parentPrototype = parentClass.prototype,
                 prototype, name, statics;
 
             prototype = me.prototype = Ext.Object.chain(parentPrototype);
@@ -400,7 +400,7 @@ var noArgs = [],
 
             me.superclass = prototype.superclass = parentPrototype;
 
-            if (!parent.$isClass) {
+            if (!parentClass.$isClass) {
                 for (name in BasePrototype) {
                     if (name in prototype) {
                         prototype[name] = BasePrototype[name];
@@ -415,14 +415,14 @@ var noArgs = [],
             if (statics) {
                 for (name in statics) {
                     if (!me.hasOwnProperty(name)) {
-                        me[name] = parent[name];
+                        me[name] = parentClass[name];
                     }
                 }
             }
             //</feature>
 
-            if (parent.$onExtended) {
-                me.$onExtended = parent.$onExtended.slice();
+            if (parentClass.$onExtended) {
+                me.$onExtended = parentClass.$onExtended.slice();
             }
 
             //<feature classSystem.config>
@@ -952,7 +952,7 @@ var noArgs = [],
             var me = this,
                 mixin, prototype, key, statics, i, ln, 
                 mixinName, name, mixinValue, mixins,
-                mixinStatics;
+                mixinStatics, staticName;
 
             if (typeof name !== 'string') {
                 mixins = name;
@@ -1015,9 +1015,9 @@ var noArgs = [],
 
             if (statics) {
                 mixinStatics = {};
-                for (name in statics) {
-                    if (!me.hasOwnProperty(name)) {
-                        mixinStatics[name] = mixinClass[name];
+                for (staticName in statics) {
+                    if (!me.hasOwnProperty(staticName)) {
+                        mixinStatics[staticName] = mixinClass[staticName];
                     }
                 }
                 me.addInheritableStatics(mixinStatics);
@@ -1577,8 +1577,9 @@ var noArgs = [],
          *     alert(awesome.getName()); // 'Super Awesome'
          *
          * @protected
-         * @param {Object} config
+         * @param {Object} instanceConfig
          * @return {Ext.Base} this
+         * @chainable
          */
         initConfig: function(instanceConfig) {
             var me = this,
@@ -1596,21 +1597,21 @@ var noArgs = [],
         /**
          * Returns a specified config property value. If the name parameter is not passed,
          * all current configuration options will be returned as key value pairs.
-         * @method
          * @param {String} [name] The name of the config property to get.
          * @param {Boolean} [peek=false] `true` to peek at the raw value without calling the getter.
          * @return {Object} The config property value.
+         * @method
          */
         getConfig: getConfig,
 
         /**
          * Sets a single/multiple configuration options.
-         * @method
          * @param {String/Object} name The name of the property to set, or a set of key value pairs to set.
          * @param {Object} [value] The value to set for the name parameter.
+         * @param {Object} [options] (private)
          * @return {Ext.Base} this
          */
-        setConfig: function(name, value, /* private */ options) {
+        setConfig: function (name, value, options) {
             // options can have the following properties:
             // - defaults `true` to only set the config(s) that have not been already set on
             // this instance.
@@ -1643,8 +1644,8 @@ var noArgs = [],
         },
 
         /**
+         * @param {String} name
          * @private
-         * @param config
          */
         hasConfig: function(name) {
             return name in this.defaultConfig;
@@ -1698,7 +1699,7 @@ var noArgs = [],
 
         /**
          * Adds a "destroyable" object to an internal list of objects that will be destroyed
-         * when this instance is destroyed (via `{@link #destroy}`).
+         * when this instance is destroyed (via `{@link #method!destroy}`).
          * @param {String} name
          * @param {Object} value
          * @return {Object} The `value` passed.
@@ -1847,8 +1848,8 @@ var noArgs = [],
      * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
      * from the current method, for example: `this.callOverridden(arguments)`
      * @return {Object} Returns the result of calling the overridden method
+     * @deprecated 4.1.0 Use {@link #method-callParent} instead.
      * @protected
-     * @deprecated Use {@link #callParent} instead.
      */
     BasePrototype.callOverridden = BasePrototype.callParent;
 

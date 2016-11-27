@@ -287,9 +287,18 @@ Ext.define('Ext.data.proxy.Proxy', {
      * @param {Object} [options.scope] The scope in which to execute any callbacks (i.e. the `this` object inside
      * the callback, success and/or failure functions). Defaults to the proxy.
      *
+     * @param {Object} [listeners] (deprecated) If `options` is the `operations`, this
+     * parameter is the listeners. Instead of passing these two arguments, the proper form
+     * is to pass them as:
+     *
+     *      batch({
+     *          operations: ...
+     *          listeners: ...
+     *      });
+     *
      * @return {Ext.data.Batch} The newly created Batch
      */
-    batch: function(options, /* deprecated */listeners) {
+    batch: function (options, listeners) {
         var me = this,
             useBatch = me.getBatchActions(),
             batch,

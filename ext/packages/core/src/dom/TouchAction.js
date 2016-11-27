@@ -203,7 +203,7 @@ Ext.define('Ext.dom.TouchAction', {
     },
 
     /**
-     * @private Accepts a touch action in the object form accepted by
+     * Accepts a touch action in the object form accepted by
      * {@link Ext.Component}, and converts it to a number representing the desired touch action(s).
      *
      * All touchActions absent from the passed object are defaulted to true.

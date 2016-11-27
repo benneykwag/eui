@@ -10,7 +10,7 @@
  * using {@link #getSelection}.
  */
 Ext.define('Ext.toolbar.Breadcrumb', {
-    extend: 'Ext.Container',
+    extend: 'Ext.container.Container',
     xtype: 'breadcrumb',
     requires: [
         'Ext.data.TreeStore',

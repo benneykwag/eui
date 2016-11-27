@@ -1,3 +1,5 @@
+/* global Ext, expect, jasmine, spyOn */
+
 describe("Ext-more", function() {
     describe("Ext.id", function(){
         var el;
@@ -55,12 +57,12 @@ describe("Ext-more", function() {
         });
     }
     if (!Ext.isWindows && !Ext.isMac && !Ext.isLinux) {
-        describe("Ext.getOrientation", function() {
+        describe("Ext.dom.Element.getOrientation", function() {
             it("should return the current orientation of the mobile device", function() {
                 if (window.innerHeight <= window.innerWidth) {
-                    expect(Ext.getOrientation()).toEqual("landscape");
+                    expect(Ext.dom.Element.getOrientation()).toEqual("landscape");
                 } else {
-                    expect(Ext.getOrientation()).toEqual("portrait");
+                    expect(Ext.dom.Element.getOrientation()).toEqual("portrait");
                 }
             });
         });
@@ -210,6 +212,7 @@ describe("Ext-more", function() {
 
             el.on('mouseup', listener);
             Ext.removeNode(dom);
+            jasmine.fireMouseEvent(document, 'mousedown');
             jasmine.fireMouseEvent(dom, 'mouseup');
             expect(listener).not.toHaveBeenCalled();
         });
@@ -245,8 +248,12 @@ describe("Ext-more", function() {
                 'span @mouseup': listener
             });
 
+            // Touch platforms won't fire a touch end without a touch start.
+            jasmine.fireMouseEvent(span1.dom, 'mousedown');
             jasmine.fireMouseEvent(span1.dom, 'mouseup');
+            jasmine.fireMouseEvent(span2.dom, 'mousedown');
             jasmine.fireMouseEvent(span2.dom, 'mouseup');
+            jasmine.fireMouseEvent(div1.dom, 'mousedown');
             jasmine.fireMouseEvent(div1.dom, 'mouseup');
 
             expect(listener.calls.length).toEqual(2);
@@ -256,9 +263,12 @@ describe("Ext-more", function() {
             Ext.addBehaviors({
                 'span, div.foo @mouseup': listener
             });
-
+            // Touch platforms won't fire a touch end without a touch start.
+            jasmine.fireMouseEvent(span1.dom, 'mousedown');
             jasmine.fireMouseEvent(span1.dom, 'mouseup');
+            jasmine.fireMouseEvent(span2.dom, 'mousedown');
             jasmine.fireMouseEvent(span2.dom, 'mouseup');
+            jasmine.fireMouseEvent(div1.dom, 'mousedown');
             jasmine.fireMouseEvent(div1.dom, 'mouseup');
 
             expect(listener.calls.length).toEqual(3);
@@ -444,7 +454,7 @@ describe("Ext-more", function() {
         
         describe('including prototype properties', function() {
             var CopyToSource = function(obj){
-                Ext.apply(this, obj)
+                Ext.apply(this, obj);
             };
 
             CopyToSource.prototype = {

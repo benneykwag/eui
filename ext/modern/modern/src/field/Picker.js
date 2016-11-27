@@ -10,8 +10,11 @@ Ext.define('Ext.field.Picker', {
     extend: 'Ext.field.Text',
     xtype: 'pickerfield',
 
-    config: {
+    requires: [
+        'Ext.field.trigger.Expand'
+    ],
 
+    config: {
         /**
          * @cfg {Object} component
          * @accessor
@@ -120,16 +123,17 @@ Ext.define('Ext.field.Picker', {
     /**
      * @private
      */
-    onMaskTap: function() {
+    onMaskTap: function(e) {
+        this.onExpandTap(e);
+    },
+
+    onExpandTap: function() {
         if (!this.getDisabled()) {
             this.onFocus();
         }
 
         return false;
     },
-
-    // TODO make expand trigger interactive
-    onExpandTap: Ext.emptyFn,
 
     onFocus: function(e) {
         if (this.getDisabled()) {

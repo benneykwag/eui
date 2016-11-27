@@ -36,6 +36,15 @@ Ext.define('Ext.dataview.component.Container', {
      */
 
     /**
+     * @event itemtouchcancel
+     * Fires whenever an item is touch is cancelled.
+     * @param {Ext.dataview.component.Container} this
+     * @param {Ext.dataview.component.DataItem} item The item touched
+     * @param {Number} index The index of the item touched
+     * @param {Ext.event.Event} e The event object
+     */
+
+    /**
      * @event itemtap
      * Fires whenever an item is tapped
      * @param {Ext.dataview.component.Container} this
@@ -114,6 +123,7 @@ Ext.define('Ext.dataview.component.Container', {
         this.innerElement.on({
             touchstart: 'onItemTouchStart',
             touchend: 'onItemTouchEnd',
+            touchcancel: 'onItemTouchCancel',
             tap: 'onItemTap',
             taphold: 'onItemTapHold',
             touchmove: 'onItemTouchMove',
@@ -153,6 +163,7 @@ Ext.define('Ext.dataview.component.Container', {
         var me = this,
             target = e.currentTarget,
             item = Ext.getCmp(target.id);
+
         me.fireEvent('itemtouchmove', me, item, me.indexOf(item), e);
     },
 
@@ -161,12 +172,17 @@ Ext.define('Ext.dataview.component.Container', {
             target = e.currentTarget,
             item = Ext.getCmp(target.id);
 
-        item.un({
-            touchmove: 'onItemTouchMove',
-            scope   : me
-        });
-
+        item.un('touchmove', 'onItemTouchMove', me);
         me.fireEvent('itemtouchend', me, item, me.indexOf(item), e);
+    },
+
+    onItemTouchCancel: function(e) {
+        var me = this,
+            target = e.currentTarget,
+            item = Ext.getCmp(target.id);
+
+        item.un('touchmove', 'onItemTouchMove', me);
+        me.fireEvent('itemtouchcancel', me, item, me.indexOf(item), e);
     },
 
     onItemTap: function(e) {
@@ -245,7 +261,7 @@ Ext.define('Ext.dataview.component.Container', {
             }
         }
 
-        if (me.getViewItems().length == 0) {
+        if (me.getViewItems().length === 0) {
             this.dataview.showEmptyText();
         }
     },

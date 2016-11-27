@@ -27,6 +27,18 @@ $radiofield-checkbox-font-size: dynamic($radiofield-checkbox-size);
 $radiofield-checkbox-font-size-big: dynamic($radiofield-checkbox-size-big);
 
 /**
+ * @var {number}
+ * Radio checkbox margin
+ */
+$radiofield-checkbox-margin: dynamic(null);
+
+/**
+ * @var {number}
+ * Radio checkbox margin in the {@link Global_CSS#$enable-big big} sizing scheme
+ */
+$radiofield-checkbox-margin-big: dynamic(null);
+
+/**
  * @var {string/list}
  * Radio Field checkbox icon
  */
@@ -78,6 +90,12 @@ $radiofield-disabled-checkbox-color: dynamic(null);
  * @param {number} $checkbox-font-size-big
  * Radio checkbox font size in the {@link Global_CSS#$enable-big big} sizing scheme
  *
+ * @param {number} $checkbox-margin
+ * Radio checkbox margin
+ *
+ * @param {number} $checkbox-margin-big
+ * Radio checkbox margin in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
  * @param {string/list} $checkbox-icon
  * Radio Field checkbox icon
  *
@@ -100,6 +118,8 @@ $radiofield-disabled-checkbox-color: dynamic(null);
     $checkbox-size-big: null,
     $checkbox-font-size: null,
     $checkbox-font-size-big: null,
+    $checkbox-margin: null,
+    $checkbox-margin-big: null,
     $checkbox-icon: null,
     $checked-checkbox-icon: null,
     $checkbox-color: null,
@@ -113,6 +133,8 @@ $radiofield-disabled-checkbox-color: dynamic(null);
         $checkbox-size-big: $checkbox-size-big,
         $checkbox-font-size: $checkbox-font-size,
         $checkbox-font-size-big: $checkbox-font-size-big,
+        $checkbox-margin: $checkbox-margin,
+        $checkbox-margin-big: $checkbox-margin-big,
         $checkbox-icon: $checkbox-icon,
         $checked-checkbox-icon: $checked-checkbox-icon,
         $checkbox-color: $checkbox-color,

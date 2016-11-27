@@ -1,49 +1,57 @@
 /**
- * @class Ext.grid.cell.Base
+ * @class Ext.grid.cell.Summary
  */
 
+//# fashion replaces $grid-summary-row-cell-font-weight
 /**
  * @var {string/number}
  * Summary cell font-weight
  */
 $summarycell-font-weight: dynamic($font-weight-bold);
 
+//# fashion replaces $grid-summary-row-cell-font-size
 /**
  * @var {number}
  * Summary cell font-size
  */
 $summarycell-font-size: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-font-size-big
 /**
  * @var {number}
  * Summary cell font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $summarycell-font-size-big: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-line-height
 /**
  * @var {number}
  * Summary cell line-height
  */
 $summarycell-line-height: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-line-height-big
 /**
  * @var {number}
  * Summary cell line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $summarycell-line-height-big: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-font-family
 /**
  * @var {string}
  * Summary cell font-family
  */
 $summarycell-font-family: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-padding
 /**
  * @var {number/list}
  * Summary cell padding
  */
 $summarycell-padding: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-padding-big
 /**
  * @var {number/list}
  * Summary cell padding in the {@link Global_CSS#$enable-big big} sizing scheme

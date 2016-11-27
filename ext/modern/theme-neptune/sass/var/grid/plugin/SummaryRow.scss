@@ -2,13 +2,14 @@
  * @class Ext.grid.plugin.SummaryRow
  */
 
-
+//# fashion replaces $grid-summary-row-cell-color
 /**
  * @var {color}
  * Summary row text color
  */
 $summaryrow-color: dynamic(null);
 
+//# fashion replaces $grid-summary-row-background-color
 /**
  * @var {color}
  * Summary row background-color
@@ -27,6 +28,7 @@ $summaryrow-border-width: dynamic(null);
  */
 $summaryrow-border-style: dynamic(null);
 
+//# fashion replaces $grid-summary-row-cell-border-color
 /**
  * @var {color}
  * Summary row border-color

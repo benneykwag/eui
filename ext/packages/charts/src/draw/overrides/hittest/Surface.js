@@ -38,7 +38,7 @@ Ext.define('Ext.draw.overrides.hittest.Surface', {
      * Performs a hit test on all sprites in the surface, returning the first matching one.
      * Since hit testing is typically performed on mouse events, this convenience method
      * converts event's page coordinates to surface coordinates before calling {@link #hitTest}.
-     * @param {Array} point An event object.
+     * @param {Object} event An event object.
      * @param {Object} options Hit testing options.
      * @return {Object} A hit result object that contains more information about what
      * exactly was hit or null if nothing was hit.

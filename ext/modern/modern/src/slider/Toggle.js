@@ -25,6 +25,7 @@ Ext.define('Ext.slider.Toggle', {
         this.callParent();
 
         this.on({
+            scope: this,
             change: 'onChange'
         });
     },

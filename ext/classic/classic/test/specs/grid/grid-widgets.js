@@ -216,28 +216,49 @@ describe("grid-widgets", function(){
 
     describe("buffered rendering", function() {
         it('should not create new widgets when scrolling', function() {
-            var widgetCount = Ext.Object.getSize(Ext.ComponentMgr.all);
-            makeGrid(500, {
-                plugins: 'bufferedrenderer'
-            }, null, true);
-            
-            waits(100);
+            var widgetCount,
+                lockedView,
+                normalView,
+                lastRow,
+                timer,
+                readyToScroll = true;
+
+            makeGrid(500, null, null, true);
+
+            // Lots of widgets to render;
+            waits(50);
+
             runs(function() {
-                var widgetCount = Ext.Object.getSize(Ext.ComponentMgr.all);
-
-                view.bufferedRenderer.scrollTo(100, false, function() {
-                    view.bufferedRenderer.scrollTo(200, false, function() {
-                        view.bufferedRenderer.scrollTo(300, false, function() {
-                            view.bufferedRenderer.scrollTo(400, false, function() {
-                                // No widgets should have been created during scroll through the whole dataset
-                                expect(Ext.Object.getSize(Ext.ComponentMgr.all)).toBe(widgetCount);
-
-                                // Only need the requisite number of contexts to map the rendered size
-                                expect(getRowContextCount()).toBe(view.bufferedRenderer.viewSize);
-                            });
+                widgetCount = Ext.Object.getSize(Ext.ComponentMgr.all);
+                normalView = grid.normalGrid.getView();
+                lockedView = grid.lockedGrid.getView();
+                lastRow = normalView.bufferedRenderer.getLastVisibleRowIndex();
+            });
+            
+            jasmine.waitsForScroll(grid.getScrollable(), function scrollIt(scroller, x, y) {
+                if (view.all.endIndex >= 100) {
+                    clearTimeout(timer);
+                    return true;
+                }
+                
+                // Only scroll again when both have caught up with rendering..
+                if (readyToScroll) {
+                    readyToScroll = 0;
+                    timer = setTimeout(function() {
+                        normalView.bufferedRenderer.scrollTo(lastRow + 3, false, function(success, record, item) {
+                            scroller.scrollIntoView(item);
+                            readyToScroll = true;
+                            lastRow = normalView.bufferedRenderer.getLastVisibleRowIndex();
+                            scrollIt(scroller);
                         });
-                    });
-                });
+                    }, 50);
+                }
+            }, 'scroll to complete', 20000);
+            runs(function() {
+                expect(Ext.Object.getSize(Ext.ComponentMgr.all)).toBe(widgetCount);
+
+                // Only need the requisite number of contexts to map the rendered size
+                expect(getRowContextCount()).toBe(view.bufferedRenderer.viewSize);
             });
         });
     });

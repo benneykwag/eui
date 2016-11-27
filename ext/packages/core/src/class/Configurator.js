@@ -759,6 +759,7 @@ Ext.Configurator.prototype = {
      * `{@link #configure}` when it receives an `instanceConfig` containing a
      * `platformConfig` property.
      *
+     * @param {Ext.Base} instance
      * @param {Object} instanceConfig The instance config parameter.
      * @return {Object} The new instance config object with platformConfig results applied.
      * @private

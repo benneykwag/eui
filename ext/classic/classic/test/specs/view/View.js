@@ -441,7 +441,7 @@ describe("Ext.view.View", function() {
             });
         });
 
-        describe("getRecord", function() {
+        describe("getRecord/getRecords", function() {
             it("should accept a DOM element", function() {
                 createSimpleView();
                 var node = view.getNode(3);
@@ -459,6 +459,18 @@ describe("Ext.view.View", function() {
                 var el = Ext.getBody().createChild();
                 expect(view.getRecord(el)).toBeNull();
                 el.destroy();
+            });
+
+            it("should return an array of records when using getRecords", function() {
+                createSimpleView();
+                var nodes = view.getNodes(0, 2),
+                    records = view.getRecords(nodes),
+                    i;
+
+                expect(records.length).toBe(3);
+                for (i = 0; i < records.length; i++) {
+                    expect(records[i]).toBe(store.getAt(i));
+                }
             });
         });
 

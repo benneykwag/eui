@@ -191,7 +191,7 @@ Ext.define('Ext.dom.Helper', function() {
                     if (spec.hasOwnProperty(attr)) {
                         val = spec[attr];
                         if (val !== undefined && !me.confRe.test(attr)) {
-                            if (val.join) {
+                            if (val && val.join) {
                                 val = val.join(' ');
                             }
                             if (typeof val === "object") {

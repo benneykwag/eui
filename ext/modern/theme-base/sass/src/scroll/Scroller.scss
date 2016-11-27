@@ -16,5 +16,11 @@
     &:before, &:after {
         content: '';
         display: table;
+
+        // Safari gives this 2 pixels width and it participates in a box layout!
+        // This was causing unit test failures.
+        // Force it to be zero sized.
+        -webkit-box-flex: 0;
+        flex: 0 0 0;
     }
 }

@@ -270,6 +270,13 @@ Ext.define('Ext.direct.RemotingProvider', {
         me.callBuffer = [];
     },
     
+    destroy: function() {
+        if (this.callTask) {
+            this.callTask.cancel();
+        }
+        this.callParent();
+    },
+    
     /**
      * @inheritdoc
      */

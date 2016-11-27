@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect, MockAjaxManager, spyOn, MockAjax */
+
 describe("Ext.data.Connection", function() {
     var originalExtAsap,
         makeConnection, connection, request;
@@ -8,23 +10,22 @@ describe("Ext.data.Connection", function() {
             cfg = cfg || {};
             connection = new Ext.data.Connection(cfg);
         };
-        
-        // Synchronous callbacks are so much easier to test
-        originalExtAsap = Ext.asap;
-        
+
+        originalExtAsap = Ext.asap; // Synchronous callbacks are so much easier to test
         Ext.asap = function(fn, scope, parameters) {
             if (scope != null || parameters != null) {
                 fn = Ext.Function.bind(fn, scope, parameters);
             }
             
             fn();
-        }
+        };
     }); 
 
     afterEach(function() {
         Ext.asap = originalExtAsap;
-        MockAjaxManager.removeMethods();    
-        request = connection = makeConnection = originalExtAsap = null;
+        MockAjaxManager.removeMethods();   
+        connection.abortAll();
+        request = connection = makeConnection = null;
     });
 
     describe("beforerequest", function(){

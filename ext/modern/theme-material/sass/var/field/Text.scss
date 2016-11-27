@@ -17,11 +17,3 @@ $textfield-input-border-width: dynamic(0 0 1px 0);
 $textfield-invalid-input-border-color: dynamic($alert-color);
 $textfield-focused-input-border-color: dynamic($base-color);
 $textfield-focused-input-border-width: dynamic(0 0 2px 0);
-
-$textfield-clear-icon-font-size: dynamic(px-to-em(16px, 13px));
-$textfield-clear-icon-font-size-big: dynamic(px-to-em(16px, 16px));
-$textfield-clear-icon-size: dynamic(null);
-$textfield-clear-icon-pressing-background-color: dynamic($base-pressed-color);
-$textfield-clear-icon-pressing-color: dynamic($reverse-color);
-
-$textfield-clear-icon-border-radius: dynamic(50%);

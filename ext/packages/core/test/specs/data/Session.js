@@ -1412,7 +1412,7 @@ describe("Ext.data.Session", function() {
                     name: 'userId',
                     reference: 'User'
                 }]
-            })
+            });
         });
 
         afterEach(function() {
@@ -1800,7 +1800,7 @@ describe("Ext.data.Session", function() {
                                     addressId: 3
                                 }]
                             }
-                        })
+                        });
                     });
 
                     it("should read the non key holder when nulling out a reference", function() {
@@ -1812,7 +1812,7 @@ describe("Ext.data.Session", function() {
                                     addressId: null
                                 }]
                             }
-                        })
+                        });
                     });
                 });
 
@@ -1893,7 +1893,7 @@ describe("Ext.data.Session", function() {
                                     userId: 1
                                 }]
                             }
-                        })
+                        });
                     });
                 });
 
@@ -2967,7 +2967,7 @@ describe("Ext.data.Session", function() {
                                 expect(posts.getAt(0)).toBe(session.peekRecord('Post', 102));
                                 expect(posts.getAt(1)).toBe(session.peekRecord('Post', 103));
                             });
-                        })
+                        });
                     }); 
                     
                 });
@@ -3871,7 +3871,7 @@ describe("Ext.data.Session", function() {
                         getAndComplete('User', 1, parent);
                         getAndComplete('Post', 101, parent, {
                             userId: 1
-                        })
+                        });
 
                         session = parent.spawn();
 
@@ -4625,6 +4625,32 @@ describe("Ext.data.Session", function() {
                         user = getAndComplete('User', 101);
                         expect(user.groups().indexOf(group)).toBe(0);
 
+                    });
+                });
+
+                describe("setting state", function() {
+                    it("should ignore a removal and add in the child", function() {
+                        group = getAndComplete('Group', 1, session, {
+                            id: 1,
+                            users: [{
+                                id: 101
+                            }, {
+                                id: 102
+                            }, {
+                                id: 103
+                            }]
+                        });
+                        child = session.spawn();
+
+                        var group = child.getRecord('Group', 1),
+                            users = group.users(),
+                            user = users.getById(102);
+
+                        users.remove(user);
+                        users.add(user);
+
+                        child.save();
+                        expect(session.getChanges()).toBeNull();
                     });
                 });
 

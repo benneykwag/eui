@@ -41,7 +41,7 @@ Ext.define('Ext.ux.CellDragDrop', {
     applyEmptyText: false,
 
     /**
-     * @cfg {Boolean} emptyText
+     * @cfg {String} emptyText
      * If {@link #applyEmptyText} is `true`, then this value as the drag record's value after a node drop.
      *
      * Defaults to an empty string.
@@ -49,7 +49,7 @@ Ext.define('Ext.ux.CellDragDrop', {
     emptyText: '',
 
     /**
-     * @cfg {Boolean} dropBackgroundColor
+     * @cfg {String} dropBackgroundColor
      * The default background color for when a drop is allowed.
      *
      * Defaults to green.
@@ -57,7 +57,7 @@ Ext.define('Ext.ux.CellDragDrop', {
     dropBackgroundColor: 'green',
 
     /**
-     * @cfg {Boolean} noDropBackgroundColor
+     * @cfg {String} noDropBackgroundColor
      * The default background color for when a drop is not allowed.
      *
      * Defaults to red.

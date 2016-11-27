@@ -327,27 +327,27 @@ Ext.define('Ext.ProgressBar', {
      * duration and fn are both passed).
      * @return {Ext.ProgressBar} this
      */
-    wait: function(o) {
+    wait: function(config) {
         var me = this, scope;
             
         if (!me.waitTimer) {
             scope = me;
-            o = o || {};
-            if (o.text != null) {
+            config = config || {};
+            if (config.text != null) {
                 me.autoText = false;
             }
-            me.updateText(o.text);
+            me.updateText(config.text);
             me.waitTimer = Ext.TaskManager.start({
                 run: function(i){
-                    var inc = o.increment || 10;
+                    var inc = config.increment || 10;
                     i -= 1;
-                    me.updateProgress(((((i+inc)%inc)+1)*(100/inc))*0.01, null, o.animate);
+                    me.updateProgress(((((i+inc)%inc)+1)*(100/inc))*0.01, null, config.animate);
                 },
-                interval: o.interval || 1000,
-                duration: o.duration,
+                interval: config.interval || 1000,
+                duration: config.duration,
                 onStop: function(){
-                    if (o.fn) {
-                        o.fn.apply(o.scope || me);
+                    if (config.fn) {
+                        config.fn.apply(config.scope || me);
                     }
                     me.reset();
                 },

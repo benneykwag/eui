@@ -1,0 +1,12 @@
+.#{$prefix}textfield.#{$prefix}label-align-placeholder .#{$prefix}label-el {
+    position: relative;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.#{$prefix}ie .#{$prefix}field.#{$prefix}textfield {
+    .#{$prefix}mask-el {
+        z-index: -1;
+    }
+}

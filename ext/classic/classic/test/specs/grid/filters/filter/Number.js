@@ -67,18 +67,19 @@ describe("Ext.grid.filters.filter.Number", function () {
     }
 
     function showMenu() {
-        var header = grid.getColumnManager().getLast();
+        // Show the main grid menu.
+        Ext.testHelper.showHeaderMenu(grid.getColumnManager().getLast());
+        
+        runs(function() {
+            headerCt = grid.headerCt;
 
-        // Show the grid menu.
-        headerCt = grid.headerCt;
-        headerCt.showMenuBy(null, header.triggerEl.dom, header);
+            // Show the filter menu.
+            rootMenuItem = headerCt.menu.items.last();
+            rootMenuItem.activated = true;
+            rootMenuItem.expandMenu(null, 0);
 
-        // Show the filter menu.
-        rootMenuItem = headerCt.menu.items.last();
-        rootMenuItem.activated = true;
-        rootMenuItem.expandMenu(null, 0);
-
-        menu = rootMenuItem.menu;
+            menu = rootMenuItem.menu;
+        });
     }
 
     beforeEach(function() {
@@ -99,7 +100,9 @@ describe("Ext.grid.filters.filter.Number", function () {
             createGrid();
             showMenu();
 
-            expect(menu.down('menuseparator')).not.toBeNull();
+            runs(function() {
+                expect(menu.down('menuseparator')).not.toBeNull();
+            });
         });
     });
 
@@ -220,9 +223,11 @@ describe("Ext.grid.filters.filter.Number", function () {
             });
             showMenu();
 
-            field = columnFilter.fields.eq;
-            startTime = new Date().getTime();
-            jasmine.fireKeyEvent(field.inputEl, 'keyup', 83);
+            runs(function() {
+                field = columnFilter.fields.eq;
+                startTime = new Date().getTime();
+                jasmine.fireKeyEvent(field.inputEl, 'keyup', 83);
+            });
 
             waitsFor(function () {
                 return endTime;
@@ -246,9 +251,11 @@ describe("Ext.grid.filters.filter.Number", function () {
             expect(columnFilter.getUpdateBuffer()).toBe(ms);
             showMenu();
 
-            field = columnFilter.fields.eq;
-            startTime = new Date().getTime();
-            jasmine.fireKeyEvent(field.inputEl, 'keyup', 83);
+            runs(function() {
+                field = columnFilter.fields.eq;
+                startTime = new Date().getTime();
+                jasmine.fireKeyEvent(field.inputEl, 'keyup', 83);
+            });
 
             waitsFor(function () {
                 return endTime;
@@ -276,7 +283,10 @@ describe("Ext.grid.filters.filter.Number", function () {
                 spyOn(columnFilter, 'addStoreFilter');
 
                 showMenu();
-                expect(columnFilter.addStoreFilter).not.toHaveBeenCalled();
+                
+                runs(function() {
+                    expect(columnFilter.addStoreFilter).not.toHaveBeenCalled();
+                });
             });
         }
 
@@ -289,16 +299,21 @@ describe("Ext.grid.filters.filter.Number", function () {
             createGrid();
             showMenu();
 
-            columnFilter.setValue({eq: 44});
-            expect(rootMenuItem.checked).toBe(true);
+            runs(function() {
+                columnFilter.setValue({eq: 44});
+                expect(rootMenuItem.checked).toBe(true);
 
-            // Now, let's hide the menu and clear the filters, which will deactivate all the filters.
-            // Note that it's not enough to check the root menu item's checked state, we must show the menu again.
-            headerCt.getMenu().hide();
-            plugin.clearFilters();
+                // Now, let's hide the menu and clear the filters, which will deactivate all the filters.
+                // Note that it's not enough to check the root menu item's checked state, we must show the menu again.
+                headerCt.getMenu().hide();
+                plugin.clearFilters();
+            });
+
             showMenu();
 
-            expect(rootMenuItem.checked).toBe(false);
+            runs(function() {
+                expect(rootMenuItem.checked).toBe(false);
+            });
         });
     });
 
@@ -309,20 +324,22 @@ describe("Ext.grid.filters.filter.Number", function () {
             createGrid();
             showMenu();
 
-            filterCollection = grid.getStore().getFilters();
-            field = columnFilter.fields.lt;
+            runs(function() {
+                filterCollection = grid.getStore().getFilters();
+                field = columnFilter.fields.lt;
 
-            // Sanity.
-            expect(filterCollection.length).toBe(0);
-            expect(columnFilter.active).toBe(false);
+                // Sanity.
+                expect(filterCollection.length).toBe(0);
+                expect(columnFilter.active).toBe(false);
 
-            // Simulate a paste.
-            field.setRawValue('invalid text');
-            // Simulate C-v.
-            jasmine.fireKeyEvent(field.inputEl.dom, 'keyup', 86, null, true);
+                // Simulate a paste.
+                field.setRawValue('invalid text');
+                // Simulate C-v.
+                jasmine.fireKeyEvent(field.inputEl.dom, 'keyup', 86, null, true);
 
-            expect(filterCollection.length).toBe(0);
-            expect(columnFilter.active).toBe(false);
+                expect(filterCollection.length).toBe(0);
+                expect(columnFilter.active).toBe(false);
+            });
         });
     });
 
@@ -338,7 +355,9 @@ describe("Ext.grid.filters.filter.Number", function () {
 
                     showMenu();
 
-                    expect(rootMenuItem.checked).toBe(active);
+                    runs(function() {
+                        expect(rootMenuItem.checked).toBe(active);
+                    });
                 });
 
                 it("should set any field values that map to a configured value", function () {
@@ -353,11 +372,13 @@ describe("Ext.grid.filters.filter.Number", function () {
                     });
 
                     showMenu();
-                    fields = columnFilter.fields;
-
-                    expect(fields.gt.inputEl.getValue()).toBe('10');
-                    expect(fields.lt.inputEl.getValue()).toBe('20');
-                    expect(fields.eq.inputEl.getValue()).toBe('');
+                    
+                    runs(function() {
+                        fields = columnFilter.fields;
+                        expect(fields.gt.inputEl.getValue()).toBe('10');
+                        expect(fields.lt.inputEl.getValue()).toBe('20');
+                        expect(fields.eq.inputEl.getValue()).toBe('');
+                    });
                 });
 
                 describe("when a store filter is created", function () {
@@ -375,11 +396,13 @@ describe("Ext.grid.filters.filter.Number", function () {
                         });
 
                         showMenu();
-                        columnFilter.setValue({
-                            eq: 5
+                        
+                        runs(function() {
+                            columnFilter.setValue({
+                                eq: 5
+                            });
+                            expect(called).toBe(1);
                         });
-
-                        expect(called).toBe(1);
                     });
                 });
             });
@@ -405,11 +428,12 @@ describe("Ext.grid.filters.filter.Number", function () {
 
                         len = store.data.length;
                         showMenu();
-                        expect(store.data.length).toBe(len);
-
-                        columnFilter.setActive(true);
-
-                        expect(store.data.length).toBe(0);
+                        
+                        runs(function() {
+                            expect(store.data.length).toBe(len);
+                            columnFilter.setActive(true);
+                            expect(store.data.length).toBe(0);
+                        });
                     });
                 }
 
@@ -424,14 +448,14 @@ describe("Ext.grid.filters.filter.Number", function () {
 
                         showMenu();
 
-                        columnFilter.setValue({
-                            eq: val
+                        runs(function() {
+                            columnFilter.setValue({
+                                eq: val
+                            });
+                            columnFilter.setActive(false);
+                            columnFilter.setActive(true);
+                            expect(store.data.length).toBe(0);
                         });
-
-                        columnFilter.setActive(false);
-                        columnFilter.setActive(true);
-
-                        expect(store.data.length).toBe(0);
                     });
                 }
 
@@ -451,11 +475,12 @@ describe("Ext.grid.filters.filter.Number", function () {
                         });
 
                         showMenu();
-                        expect(store.data.length).toBe(0);
-
-                        columnFilter.setActive(false);
-
-                        expect(store.data.length > 0).toBe(true);
+                        
+                        runs(function() {
+                            expect(store.data.length).toBe(0);
+                            columnFilter.setActive(false);
+                            expect(store.data.length > 0).toBe(true);
+                        });
                     });
                 }
 
@@ -473,15 +498,14 @@ describe("Ext.grid.filters.filter.Number", function () {
                         len = store.data.length;
                         showMenu();
 
-                        columnFilter.setValue({
-                            eq: val
+                        runs(function() {
+                            columnFilter.setValue({
+                                eq: val
+                            });
+                            expect(store.data.length).toBe(0);
+                            columnFilter.setActive(false);
+                            expect(store.data.length).toBe(len);
                         });
-
-                        expect(store.data.length).toBe(0);
-
-                        columnFilter.setActive(false);
-
-                        expect(store.data.length).toBe(len);
                     });
                 }
 

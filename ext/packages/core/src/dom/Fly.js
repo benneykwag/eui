@@ -117,7 +117,7 @@ Ext.define('Ext.dom.Fly', {
             nodeType, data;
 
         // name the flyweight after the calling method name if possible.
-        named = named || (fn.caller && fn.caller.$name) || '_global';
+        named = named || (fn.caller && (fn.caller.$name || fn.caller.name)) || '_global';
 
         dom = Ext.getDom(dom);
 

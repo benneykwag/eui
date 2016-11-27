@@ -3,6 +3,7 @@
  */
 
 /**
+ * @method brightness
  * @ignore
  * Returns the brightness (out of 100) of a specified color.
  * @param {color} $color The color you want the brightness value of
@@ -19,6 +20,9 @@
 }
 
 /**
+ * @method color-difference
+ * @param {color} $sc1
+ * @param {color} $sc1
  * @private
  * @ignore
  */
@@ -27,6 +31,8 @@
 }
 
 /**
+ * @method color-luminance
+ * @param {color} $value
  * @private
  * @ignore
  */
@@ -39,6 +45,7 @@
 }
 
 /**
+ * @method luminosity
  * @ignore
  * Returns the luminosity for a specified color
  * @param {color} color The color to check
@@ -54,10 +61,11 @@
 }
 
 /**
+ * @method contrast-ratio
  * @ignore
  * Returns the contrast ratio between two colors
- * @param {color} color1 The color to check
- * @param {color} color2 The color to check against
+ * @param {color} $color1 The color to check
+ * @param {color} $color2 The color to check against
  * @return {number}
  */
 @function contrast-ratio($color1, $color2) {

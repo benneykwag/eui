@@ -732,12 +732,6 @@
  * @param {number/list} [$ui-tab-border-width-active=$tab-border-width-active]
  * The border-width of active Tabs
  *
- * @param {number/list} [$ui-tab-border-width-focus-over=$tab-border-width-focus-over]
- * The border-width of focused hovered Tabs
- *
- * @param {number/list} [$ui-tab-border-width-focus-active=$tab-border-width-focus-active]
- * The border-width of active Tabs when focused
- *
  * @param {number/list} [$ui-tab-border-width-disabled=$tab-border-width-disabled]
  * The border-width of disabled Tabs
  *
@@ -1293,6 +1287,10 @@
 
     $ui-tab-border-radius: $tab-border-radius,
     $ui-tab-border-width: $tab-border-width,
+    $ui-tab-border-width-focus: $tab-border-width-focus,
+    $ui-tab-border-width-over: $tab-border-width-over,
+    $ui-tab-border-width-active: $tab-border-width-active,
+    $ui-tab-border-width-disabled: $tab-border-width-disabled,
     $ui-tab-margin: $tab-margin,
     $ui-tab-padding: $tab-padding,
     $ui-tab-text-padding: $tab-text-padding,

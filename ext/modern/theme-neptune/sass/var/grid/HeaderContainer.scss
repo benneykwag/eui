@@ -40,11 +40,22 @@ $headercontainer-border-color: dynamic(null);
     $ui: null,
     $border-width: null,
     $border-style: null,
-    $border-color: null
+    $border-color: null,
+
+    // This is a private parameter.
+    // It exists purely to enable the column header background color
+    // to be propagated into the column header container because
+    // of https://sencha.jira.com/browse/EXTJS-22515
+    $background-color: null
 ) {
     $ui-suffix: ui-suffix($ui);
 
     .#{$prefix}headercontainer#{$ui-suffix} {
+        // In Safari, stretched box items can not fill container height leaving
+        // a small margin of transparency through which scrolling content can be seen.
+        // So extend the view background into the header
+        // https://sencha.jira.com/browse/EXTJS-22515
+        background-color: $background-color;
         @include border($border-width, $border-style, $border-color);
     }
 }

@@ -1,0 +1,176 @@
+/**
+ * @class Ext.plugin.PullRefresh
+ */
+
+$pullrefresh-width: dynamic(null);
+$pullrefresh-min-height: dynamic(4em);
+$pullrefresh-min-height-big: dynamic(4.5em);
+$pullrefresh-color: dynamic($color);
+$pullrefresh-background-color: dynamic($neutral-light-color);
+$pullrefresh-font-size: dynamic($font-size * 2);
+$pullrefresh-font-size-big: dynamic($font-size-big * 2);
+$pullrefresh-padding: dynamic(null);
+$pullrefresh-padding-big: dynamic($pullrefresh-padding);
+$pullrefresh-border-width: dynamic(null);
+$pullrefresh-border-style: dynamic(null);
+$pullrefresh-border-color: dynamic(null);
+
+$pullrefresh-arrow-width: dynamic(1em);
+$pullrefresh-arrow-icon: dynamic($fa-var-long-arrow-down);
+$pullrefresh-arrow-icon-color: dynamic($base-color);
+$pullrefresh-arrow-icon-font-size: dynamic(250%);
+$pullrefresh-arrow-icon-font-size-big: dynamic($pullrefresh-arrow-icon-font-size);
+$pullrefresh-text-margin: dynamic(0 0 0 2em);
+$pullrefresh-text-margin-big: dynamic($pullrefresh-text-margin);
+
+$pullrefresh-spinner-font-size: dynamic(null);
+$pullrefresh-spinner-font-size-big: dynamic($pullrefresh-spinner-font-size);
+$pullrefresh-spinner-padding: dynamic(null);
+$pullrefresh-spinner-padding-big: dynamic(null);
+$pullrefresh-spinner-background-color: dynamic(null);
+$pullrefresh-spinner-border-radius: dynamic(null);
+$pullrefresh-spinner-border-radius-big: dynamic(null);
+
+@mixin pullrefresh-default-ui {
+    @include pullrefresh-ui(
+        $ui: null,
+
+        $width: $pullrefresh-width,
+        $min-height: $pullrefresh-min-height,
+        $min-height-big: $pullrefresh-min-height-big,
+        $color: $pullrefresh-color,
+        $background-color: $pullrefresh-background-color,
+        $font-size: $pullrefresh-font-size,
+        $font-size-big: $pullrefresh-font-size-big,
+        $padding: $pullrefresh-padding,
+        $padding-big: $pullrefresh-padding-big,
+        $border-width: $pullrefresh-border-width,
+        $border-style: $pullrefresh-border-style,
+        $border-color: $pullrefresh-border-color,
+
+        $arrow-width: $pullrefresh-arrow-width,
+
+        $arrow-icon: $pullrefresh-arrow-icon,
+        $arrow-icon-color: $pullrefresh-arrow-icon-color,
+        $arrow-icon-font-size: $pullrefresh-arrow-icon-font-size,
+        $arrow-icon-font-size-big: $pullrefresh-arrow-icon-font-size-big,
+
+        $text-margin: $pullrefresh-text-margin,
+        $text-margin-big: $pullrefresh-text-margin-big,
+
+        $spinner-font-size: $pullrefresh-spinner-font-size,
+        $spinner-font-size-big: $pullrefresh-spinner-font-size-big,
+        $spinner-padding: $pullrefresh-spinner-padding,
+        $spinner-padding-big: $pullrefresh-spinner-padding-big,
+        $spinner-background-color: $pullrefresh-spinner-background-color,
+        $spinner-border-radius: $pullrefresh-spinner-border-radius,
+        $spinner-border-radius-big: $pullrefresh-spinner-border-radius-big
+    );
+}
+
+@mixin pullrefresh-ui(
+    $ui: null,
+
+    $width: null,
+    $min-height: null,
+    $min-height-big: null,
+    $color: null,
+    $background-color: null,
+    $font-size: null,
+    $font-size-big: null,
+    $padding: null,
+    $padding-big: null,
+    $border-width: null,
+    $border-style: null,
+    $border-color: null,
+
+    $arrow-width: null,
+
+    $arrow-icon: null,
+    $arrow-icon-color: null,
+    $arrow-icon-font-size: null,
+    $arrow-icon-font-size-big: null,
+
+    $text-margin: null,
+    $text-margin-big: null,
+
+    $spinner-font-size: null,
+    $spinner-font-size-big: null,
+    $spinner-padding: null,
+    $spinner-padding-big: null,
+    $spinner-background-color: null,
+    $spinner-border-radius: null,
+    $spinner-border-radius-big: null
+) {
+    $ui-suffix: ui-suffix($ui);
+
+    .#{$prefix}pullrefresh#{$ui-suffix} {
+        width: $width;
+        min-height: $min-height;
+        padding: $padding;
+        background-color: $background-color;
+        @include border($border-width, $border-style, $border-color);
+
+        @if $enable-big {
+            .#{$prefix}big & {
+                padding: $padding-big;
+                min-height: $min-height-big;
+            }
+        }
+
+        .#{$prefix}pullrefresh-loading-wrap {
+            padding: $spinner-padding;
+            background-color: $spinner-background-color;
+            @include border-radius($spinner-border-radius);
+
+            .#{$prefix}pullrefresh-loading {
+                font-size: $spinner-font-size;
+            }
+
+            @if $enable-big {
+                .#{$prefix}big & {
+                    font-size: $spinner-font-size-big;
+                    padding: $spinner-padding-big;
+                    @include border-radius($spinner-border-radius-big);
+
+                    .#{$prefix}pullrefresh-loading {
+                        font-size: $spinner-font-size-big;
+                    }
+                }
+            }
+        }
+
+
+        .#{$prefix}pullrefresh-wrap {
+            margin: $text-margin;
+
+            @if $enable-big {
+                .#{$prefix}big & {
+                    margin: $text-margin-big;
+                }
+            }
+        }
+
+        @if $arrow-icon != null {
+            .#{$prefix}pullrefresh-arrow {
+                width: $arrow-width;
+                color: $arrow-icon-color;
+                font-size: $arrow-icon-font-size;
+                @include font-icon($arrow-icon);
+
+                @include rotate(0);
+                transition: all 0.5s;
+
+                @if $enable-big {
+                    .#{$prefix}big & {
+                        font-size: $arrow-icon-font-size-big;
+                    }
+                }
+            }
+
+            &.#{$prefix}holding .#{$prefix}pullrefresh-arrow {
+                @include rotate(180);
+            }
+        }
+    }
+}

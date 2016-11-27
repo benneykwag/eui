@@ -37,8 +37,29 @@ Ext.define('Ext.plugin.PullRefresh', {
     extend: 'Ext.Component',
     alias: 'plugin.pullrefresh',
 
+    baseCls: Ext.baseCSSPrefix + 'pullrefresh',
+
     config: {
-        width: '100%',
+        /**
+         * @cfg {Boolean} overlay
+         * `false` to move the list down to display the refresh indicator. `true` to float
+         * the indicator over the top of the list with no movement.
+         *
+         * @since 6.2.1
+         */
+        overlay: false,
+
+        /**
+         * @cfg {Boolean} mergeData
+         * `true` to insert new records into the store and to replace the data for
+         * any incoming records that exist.
+         *
+         * `false` to completely overwrite store data with the fetched response.
+         *
+         * @since 6.2.1
+         */
+        mergeData: true,
+
         /**
          * @cfg {Ext.dataview.List} list
          * The list to which this PullRefresh plugin is connected.
@@ -94,9 +115,21 @@ Ext.define('Ext.plugin.PullRefresh', {
         lastUpdatedDateFormat: 'm/d/Y h:iA',
 
         /**
-         * @cfg {Number} overpullSnapBackDuration The duration for snapping back when pulldown has been lowered further then its height.
+         * @cfg {Object} offsets
+         * The offsets used when dragging in {@link #cfg-overlay} `true` mode.
+         * @cfg {Number/String} offsets.maxPull The maximum distance the refresh indicator
+         * can be pulled from the top of the list. If a number, in pixels, or a percentage as a string.
+         * @cfg {Number/String} offsets.activate The distance the refresh indicator must be pulled to trigger
+         * a refresh. If a number, in pixels, or a percentage as a string.
+         * @cfg {Number/String} offsets.loading The distance from the top of the list to display the refresh indicator
+         * while a load is taking place. If a number, in pixels, or a percentage as a string.
+         * @since 6.2.1
          */
-        overpullSnapBackDuration: 300,
+        offsets: {
+            maxPull: null,
+            activate: null,
+            loading: null
+        },
 
         /**
          * @cfg {Ext.XTemplate/String/Array} pullTpl The template being used for the pull to refresh markup.
@@ -105,61 +138,49 @@ Ext.define('Ext.plugin.PullRefresh', {
          * @accessor
          */
         pullTpl: [
-            '<div class="' + Ext.baseCSSPrefix + 'list-pullrefresh-arrow"></div>',
-            '<div class="' + Ext.baseCSSPrefix + 'loading-spinner">',
-                '<span class="' + Ext.baseCSSPrefix + 'loading-top"></span>',
-                '<span class="' + Ext.baseCSSPrefix + 'loading-right"></span>',
-                '<span class="' + Ext.baseCSSPrefix + 'loading-bottom"></span>',
-                '<span class="' + Ext.baseCSSPrefix + 'loading-left"></span>',
+            '<div class="' + Ext.baseCSSPrefix + 'font-icon ' + Ext.baseCSSPrefix + 'pullrefresh-arrow"></div>',
+            '<div class="' + Ext.baseCSSPrefix + 'pullrefresh-loading-wrap">',
+                '<div class="' + Ext.baseCSSPrefix + 'pullrefresh-loading ' + Ext.baseCSSPrefix + 'loading-spinner">',
+                    '<span class="' + Ext.baseCSSPrefix + 'loading-top"></span>',
+                    '<span class="' + Ext.baseCSSPrefix + 'loading-right"></span>',
+                    '<span class="' + Ext.baseCSSPrefix + 'loading-bottom"></span>',
+                    '<span class="' + Ext.baseCSSPrefix + 'loading-left"></span>',
+                '</div>',
             '</div>',
-            '<div class="' + Ext.baseCSSPrefix + 'list-pullrefresh-wrap">',
-            '<h3 class="' + Ext.baseCSSPrefix + 'list-pullrefresh-message">{message}</h3>',
-            '<div class="' + Ext.baseCSSPrefix + 'list-pullrefresh-updated">{updated}</div>',
+            '<div class="' + Ext.baseCSSPrefix + 'pullrefresh-wrap">',
+                '<div class="' + Ext.baseCSSPrefix + 'pullrefresh-message">{message}</div>',
+                '<div class="' + Ext.baseCSSPrefix + 'pullrefresh-updated">{updated}</div>',
             '</div>'
         ].join(''),
 
-        translatable: true
+        translatable: {
+            // Use css positioning because we want to use a transform when hiding
+            // if we're in overlay mode.
+            type: 'cssposition'
+        }
     },
+
+    animateOverlayHide: false,
+    updateContent: true,
+    hidden: true,
 
     /**
      * @private
      */
-    $state: 'pull',
-
-    refreshCls: Ext.baseCSSPrefix + 'list-pullrefresh',
-
-    /**
-     * @private
-     */
-    getState: function() {
-        return this.$state
-    },
+    $state: 'pulling',
 
     /**
      * @private
      */
     setState: function(value) {
-        this.$state = value;
-        this.updateView();
-    },
+        var me = this;
 
-    /**
-     * @private
-     */
-    $isSnappingBack: false,
-
-    /**
-     * @private
-     */
-    getIsSnappingBack: function() {
-        return this.$isSnappingBack;
-    },
-
-    /**
-     * @private
-     */
-    setIsSnappingBack: function(value) {
-        this.$isSnappingBack = value;
+        if (me.$state !== value) {
+            me.$state = value;
+            if (me.updateContent) {
+                me.updateView();
+            }
+        }
     },
 
     /**
@@ -167,83 +188,61 @@ Ext.define('Ext.plugin.PullRefresh', {
      */
     init: function(list) {
         this.setList(list);
-        this.initScrollable();
+        this.lastUpdated = new Date();
+        this.updateView();
     },
 
     getElementConfig: function() {
         return {
             reference: 'element',
-            classList: ['x-unsized'],
-            children: [{
-                reference: 'innerElement',
-                className: this.refreshCls
-            }]
+            classList: ['x-unsized']
         };
     },
 
     /**
      * @private
      */
-    initScrollable: function() {
-        var me = this,
-            list = me.getList(),
-            scroller = list.getScrollable();
-
-        if (!scroller) {
-            return;
+    applyPullTpl: function(pullTpl) {
+        if (pullTpl && !pullTpl.isXTemplate) {
+            pullTpl = new Ext.XTemplate(pullTpl);
         }
-
-        me.lastUpdated = new Date();
-
-        list.insert(0, me);
-
-        scroller.on({
-            scroll: me.onScrollChange,
-            scope: me
-        });
-
-        me.updateView();
+        return pullTpl;
     },
 
     /**
      * @private
      */
-    applyPullTpl: function(config) {
-        if (config instanceof Ext.XTemplate) {
-            return config
-        } else {
-            return new Ext.XTemplate(config);
-        }
-    },
-
-    /**
-     * @private
-     */
-    updateList: function(newList, oldList) {
+    updateList: function(list, oldList) {
         var me = this;
 
-        if (newList) {
-            newList.on({
-                order: 'after',
-                scrollablechange: me.initScrollable,
-                scope: me
+        if (oldList) {
+            oldList.element.un({
+                scope: me,
+                touchstart: 'onTouchStart',
+                dragstart: 'onDragStart',
+                drag: 'onDragMove',
+                dragend: 'onDragEnd'
             });
+            me.translatable = Ext.destroy(me.translatable);
         }
 
-        if (oldList) {
-            oldList.un({
-                order: 'after',
-                scrollablechange: me.initScrollable,
-                scope: me
+        if (list) {
+            list.element.on({
+                scope: me,
+                touchstart: 'onTouchStart',
+                dragstart: 'onDragStart',
+                drag: 'onDragMove',
+                dragend: 'onDragEnd'
+            });
+            list.insert(0, me);
+            me.translatable = Ext.Factory.translatable({
+                element: list.container.element
             });
         }
     },
 
-    /**
-     * @private
-     */
-    getPullHeight: function() {
-        return this.innerElement.getHeight();
+    updateOverlay: function(overlay) {
+        this.element.toggleCls(Ext.baseCSSPrefix + 'overlay', overlay);
     },
 
     /**
@@ -266,33 +265,39 @@ Ext.define('Ext.plugin.PullRefresh', {
      * front of the Store. If there is no overlap, insert the new records anyway and record that there's a break in the
      * timeline between the new and the old records.
      */
-    onLatestFetched: function(newRecords) {
+    onLatestFetched: function(newRecords, operation, success) {
         var me = this,
             store = me.getList().getStore(),
-            oldRecords = store.getData(),
-            length = newRecords.length,
-            toInsert = [],
-            newRecord, oldRecord, i;
+            length, toInsert,
+            oldRecords, newRecord, oldRecord, i;
 
-        for (i = 0; i < length; i++) {
-            newRecord = newRecords[i];
-            oldRecord = oldRecords.getByKey(newRecord.getId());
+        if (success) {
+            if (me.getMergeData()) {
+                oldRecords = store.getData();
+                toInsert = [];
+                length = newRecords.length;
 
-            if (oldRecord) {
-                oldRecord.set(newRecord.getData());
+                for (i = 0; i < length; i++) {
+                    newRecord = newRecords[i];
+                    oldRecord = oldRecords.getByKey(newRecord.getId());
+
+                    if (oldRecord) {
+                        oldRecord.set(newRecord.getData());
+                    } else {
+                        toInsert.push(newRecord);
+                    }
+                }
+
+                store.insert(0, toInsert);
             } else {
-                toInsert.push(newRecord);
+                store.loadRecords(newRecords);
             }
-
-            oldRecord = undefined;
         }
-
-        store.insert(0, toInsert);
         me.setState('loaded');
-        me.fireEvent('latestfetched', me, toInsert);
+        me.fireEvent('latestfetched', me, toInsert || newRecords);
 
         if (me.getAutoSnapBack()) {
-            me.snapBack();
+            me.snapBack(true);
         }
     },
 
@@ -300,112 +305,62 @@ Ext.define('Ext.plugin.PullRefresh', {
      * Snaps the List back to the top after a pullrefresh is complete
      * @param {Boolean} force Force the snapback to occur regardless of state {optional}
      */
-    snapBack: function(force) {
+    snapBack: function(force, fullNotReached) {
         var me = this,
-            list, scroller;
+            duration = me.getSnappingAnimationDuration(),
+            translatable = me.translatable;
 
-        if (this.getState() !== 'loaded' && force !== true) {
+        if (me.$state !== 'loaded' && force !== true) {
             return;
         }
 
-        list = me.getList();
-        scroller = list.getScrollable();
+        if (me.getOverlay()) {
+            if (fullNotReached || !me.animateOverlayHide) {
+                me.translate(null, -me.getCalculatedPullHeight(), {
+                    duration: duration
+                });
+                translatable.on('animationend', function() {
+                    me.onSnapBackEnd(true);
+                }, me, {
+                    single: true,
+                    onFrame: true
+                });
+            } else {
+                me.onSnapBackEnd();
+            }
+        } else {
+            me.translate(null, -me.getCalculatedPullHeight(), {
+                duration: duration
+            });
 
-        me.setIsSnappingBack(true);
-        scroller.doScrollTo(null, 0, {
-            callback: Ext.bind(me.onSnapBackEnd, me),
-            duration: me.getSnappingAnimationDuration()
-        });
+            translatable.on('animationend', function() {
+                me.onSnapBackEnd();
+            }, me, {
+                single: true,
+                onFrame: true
+            });
+
+            translatable.translate(null, 0, {
+                duration: duration
+            });
+        }
     },
 
     /**
      * @private
      * Called when PullRefresh has been snapped back to the top
      */
-    onSnapBackEnd: function() {
-        var list = this.getList(),
-            scroller = list.getScrollable();
-
-        // TODO
-        //scroller.setMinUserPosition({x:0, y:0});
-        this.setState('pull');
-        this.setIsSnappingBack(false);
-    },
-
-    /**
-     * @private
-     * Called when the Scroller updates from the list
-     * @param scroller
-     * @param x
-     * @param y
-     */
-    onScrollChange: function(scroller, x, y) {
-        if (y > 0) {
-            return;
+    onSnapBackEnd: function(preventAnim) {
+        var me = this;
+        if (preventAnim) {
+            me.hide(null);
+            me.setState('pulling');
+        } else {
+            me.hide();
+            me.on('hide', function() {
+                me.setState('pulling');
+            }, me, {single: true});
         }
-
-        var me = this,
-            pullHeight = me.getPullHeight(),
-            isSnappingBack = me.getIsSnappingBack(),
-            state = me.getState();
-
-        if (state === 'loaded' && !isSnappingBack) {
-            me.snapBack();
-        }
-
-
-        if (state !== 'loading' && state !== 'loaded') {
-            if (-y >= pullHeight + 10) {
-                me.setState('release');
-                scroller.getElement().onBefore({
-                    dragend: 'onScrollerDragEnd',
-                    single: true,
-                    scope: me
-                });
-            } else if (state === "release" && (-y < pullHeight + 10)) {
-                me.setState('pull');
-                scroller.getElement().unBefore({
-                    dragend: 'onScrollerDragEnd',
-                    single: true,
-                    scope: me
-                });
-            }
-        }
-        me.getTranslatable().translate(0, -y);
-    },
-
-    /**
-     * @private
-     * Called when the user is done dragging, this listener is only added when the user has pulled far enough for a refresh
-     */
-    onScrollerDragEnd: function() {
-        var me = this,
-            pullHeight, list, scroller;
-
-        if (me.getState() === 'loading') {
-            return;
-        }
-
-        list = me.getList();
-        scroller = list.getScrollable();
-        pullHeight = me.getPullHeight();
-
-        me.setState('loading');
-
-        /*
-        TODO
-        scroller.setMinUserPosition({
-            x: 0,
-            y: -pullHeight
-        });
-
-        scroller.doScrollTo(0, -pullHeight, {
-            callback: Ext.bind(me.fetchLatest, me),
-            easingY: {
-                duration: me.getOverpullSnapBackDuration()
-            }
-        }, true);
-        */
     },
 
     /**
@@ -414,19 +369,163 @@ Ext.define('Ext.plugin.PullRefresh', {
      */
     updateView: function() {
         var me = this,
-            innerElement = me.innerElement,
-            state = me.getState(),
+            map = me.clsMap,
+            element = me.element,
+            state = me.$state,
             lastUpdatedText = me.getLastUpdatedText() + Ext.util.Format.date(me.lastUpdated, me.getLastUpdatedDateFormat()),
-            templateConfig = {state: state, updated: lastUpdatedText},
-            stateFn = state.charAt(0).toUpperCase() + state.slice(1).toLowerCase(),
-            fn = 'get' + stateFn + 'Text';
+            fn = me.textMap[state];
 
-        if (me[fn] && Ext.isFunction(me[fn])) {
-            templateConfig.message = me[fn].call(me);
+        element.removeCls([map.loaded, map.loading, map.pulling, map.holding]);
+        element.addCls(map[state]);
+        me.getPullTpl().overwrite(me.element, {
+            state: state, 
+            updated: lastUpdatedText,
+            message: me[fn]()
+        });
+    },
+
+    destroy: function() {
+        this.setList(null);
+        this.callParent();
+    },
+
+    privates: {
+        clsMap: {
+            loaded: Ext.baseCSSPrefix + 'loaded',
+            loading: Ext.baseCSSPrefix + 'loading',
+            pulling: Ext.baseCSSPrefix + 'pulling',
+            holding: Ext.baseCSSPrefix + 'holding'
+        },
+
+        textMap: {
+            loaded: 'getLoadedText',
+            loading: 'getLoadingText',
+            pulling: 'getPullText',
+            holding: 'getReleaseText'
+        },
+
+        calculateSize: function(offset) {
+            var h = this.element.getHeight();
+            if (this.getOverlay()) {
+                h += Math.min(offset, this.getList().element.getHeight());
+            }
+            return h;
+        },
+
+        getActivateOffset: function() {
+            return this.getOffset('activate', 0);
+        },
+
+        /**
+         * @private
+         */
+        getCalculatedPullHeight: function() {
+            return this.calculateSize(this.getMaxPullOffset());
+        },
+
+        /**
+         * @private
+         */
+        getCalculatedActivateOffset: function() {
+            return this.calculateSize(this.getActivateOffset());
+        },
+
+        getLoadingOffset: function() {
+            return this.getOffset('loading', 0);
+        },
+
+        getMaxPullOffset: function() {
+            return this.getOffset('maxPull', 0);
+        },
+
+        getOffset: function(key, defaultValue) {
+            var offsets = this.getOffsets(),
+                value = defaultValue,
+                offsetValue;
+
+            if (offsets) {
+                offsetValue = offsets[key];
+                if (offsetValue || offsetValue === 0) {
+                    value = offsetValue;
+                    if (typeof value === 'string') {
+                        value = parseFloat(value.replace('%', ''));
+                        value = this.getList().element.getHeight() * (value / 100);
+                    }
+                }
+            }
+            return value;
+        },
+
+        onDragStart: function(e) {
+            var me = this,
+                list = me.getList(),
+                dy;
+
+            if (me.running) {
+                e.stopEvent();
+                return;
+            }
+
+            dy = e.deltaY;
+            if (list.container.getScrollable().getPosition().y === 0 && dy > 0 && dy > e.deltaX) {
+                me.show();
+                me.running = true;
+                me.translate(null, -me.element.getHeight());
+                e.stopEvent();
+            }
+        },
+
+        onDragMove: function(e) {
+            var me = this,
+                activateOffset = me.getCalculatedActivateOffset(),
+                offset, pullHeight;
+
+            if (me.running) {
+                e.stopEvent();
+                offset = e.getXY()[1] - me.startY;
+                me.setHidden(offset <= 0);
+                pullHeight = me.getCalculatedPullHeight();
+                if (offset > 0 && offset < pullHeight) {
+                    me.setState('pulling');
+                    if (me.getOverlay()) {
+                        me.translate(null, offset - me.element.getHeight());
+                    } else {
+                        me.translatable.translate(null, offset);
+                        me.translate(null, offset - pullHeight);
+                    }
+                }
+
+                me.onMove(Math.min(1, offset / activateOffset));
+
+                if (offset >= activateOffset) {
+                    me.setState('holding');
+                }
+            }
+        },
+
+        onDragEnd: function() {
+            var me = this;
+
+            if (me.running) {
+                me.running = false;
+                if (me.$state === 'holding') {
+                    if (me.getOverlay()) {
+                        me.translate(null, me.getLoadingOffset(), {
+                            duration: 100
+                        });
+                    }
+                    me.setState('loading');
+                    me.fetchLatest();
+                } else {
+                    me.snapBack(true, true);
+                }
+            }
+        },
+
+        onMove: Ext.privateFn,
+
+        onTouchStart: function(e) {
+            this.startY = e.getXY()[1];
         }
-
-        innerElement.removeCls(['loaded', 'loading', 'release', 'pull'], me.refreshCls);
-        innerElement.addCls(state, me.refreshCls);
-        me.getPullTpl().overwrite(innerElement, templateConfig);
     }
 });

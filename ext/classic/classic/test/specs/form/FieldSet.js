@@ -165,8 +165,8 @@ describe("Ext.form.FieldSet", function() {
 
             var w = 180 + legend.getEl().getPadding('lr');
 
-            expect(legend.getWidth()).toBe(w);
-            expect(fs.getWidth()).toBe(w + fs.getEl().getPadding('lr') + fs.getEl().getBorderWidth('lr'));
+            expect(legend.getWidth()).toBeApprox(w, 1);
+            expect(fs.getWidth()).toBeApprox(w + fs.getEl().getPadding('lr') + fs.getEl().getBorderWidth('lr'), 1);
             ct.destroy();
         });
     });
@@ -389,6 +389,29 @@ describe("Ext.form.FieldSet", function() {
                     collapsed: true
                 });
                 expect(component.legend.down('checkboxfield').getValue()).toBeFalsy();
+            });
+
+            it("should default the checkbox value to 'on' when checked", function() {
+                makeComponent({
+                    checkboxToggle: true
+                });
+
+                expect(component.checkboxCmp.getSubmitValue()).toBe('on');
+            });
+
+            it("should be able to configure the values of the checkbox", function() {
+                makeComponent({
+                    checkboxToggle: true,
+                    collapsed: true,
+                    checkbox: {
+                        uncheckedValue: 'foo',
+                        inputValue: 'bar'
+                    }
+                });
+                
+                expect(component.checkboxCmp.getSubmitValue()).toBe('foo');
+                component.expand();
+                expect(component.checkboxCmp.getSubmitValue()).toBe('bar');
             });
             
             it("should set checkbox aria-label", function() {

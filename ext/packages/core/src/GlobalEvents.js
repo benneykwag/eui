@@ -91,6 +91,14 @@ Ext.define('Ext.GlobalEvents', {
      */
 
     /**
+     * @event onlinechange
+     * Fires when the online status of the page changes. See {@link Ext#method-isOnline}
+     * @param {Boolean} online `true` if in an online state.
+     *
+     * @since 6.2.1
+     */
+
+    /**
      * @event removed
      * Fires when a Component is removed from a Container.
      * @param {Ext.Component} component
@@ -159,10 +167,20 @@ Ext.define('Ext.GlobalEvents', {
     },
 
     attachListeners: function() {
-        Ext.get(window).on('resize', this.fireResize, this, {
-            buffer: this.resizeBuffer
+        var me = this;
+
+        me.onlineState = Ext.isOnline();
+
+        Ext.getWin().on({
+            scope: me,
+            resize: {
+                fn: 'fireResize',
+                buffer: me.resizeBuffer
+            },
+            online: 'handleOnlineChange',
+            offline: 'handleOnlineChange'
         });
-        Ext.getDoc().on('mousedown', this.fireMouseDown, this);
+        Ext.getDoc().on('mousedown', 'fireMouseDown', me);
     },
 
     fireMouseDown: function(e) {
@@ -181,6 +199,14 @@ Ext.define('Ext.GlobalEvents', {
              me.curWidth = w;
              me.fireEvent('resize', w, h);
          }
+    },
+
+    handleOnlineChange: function() {
+        var online = Ext.isOnline();
+        if (online !== this.onlineState) {
+            this.onlineState = online;
+            this.fireEvent('onlinechange', online);
+        }
     }
 
 }, function(GlobalEvents) {

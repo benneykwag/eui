@@ -1,7 +1,7 @@
 /**
  * Base Manager class
  * @private
- * @deprecated
+ * @deprecated 5.0.0 Will be removed in 7.0.
  */
 Ext.define('Ext.AbstractManager', {
 

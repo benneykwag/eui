@@ -136,17 +136,10 @@ Ext.define('Ext.layout.Default', {
             containerDom = container.innerElement.dom,
             itemDom = item.element.dom,
             nextSibling = index !== -1 ? container.getInnerAt(index + 1) : null,
-            nextSiblingDom = null,
-            translatable;
+            nextSiblingDom = null;
 
         if (nextSibling) {
-            translatable = nextSibling.getTranslatable();
-            if (translatable && translatable.getUseWrapper()) {
-                nextSiblingDom = translatable.getWrapper().dom;
-            }
-            else {
-                nextSiblingDom = nextSibling ? nextSibling.element.dom : null;
-            }
+            nextSiblingDom = nextSibling ? nextSibling.element.dom : null;
         }
 
         containerDom.insertBefore(itemDom, nextSiblingDom);
@@ -526,6 +519,10 @@ Ext.define('Ext.layout.Default', {
 
         for (i = 0, ln = docked.length; i < ln; i++) {
             item = docked[i];
+
+            if (item.getHidden()) {
+                continue;
+            }
 
             dock = item.getDocked();
             mask = edgesTouched = 0;

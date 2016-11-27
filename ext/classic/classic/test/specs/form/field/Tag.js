@@ -934,20 +934,28 @@ describe("Ext.form.field.Tag", function() {
             });
 
             it("should select a tag when clicking", function() {
-                clickTag(4);
-                fireInputKey(Ext.event.Event.DELETE);
-                expectValue([6, 10, 13, 2]);
-                expectChange([6, 10, 13, 2], [6, 4, 10, 13, 2]);
+                focusAndWait(tagField);
+                
+                runs(function() {
+                    clickTag(4);
+                    fireInputKey(Ext.event.Event.DELETE);
+                    expectValue([6, 10, 13, 2]);
+                    expectChange([6, 10, 13, 2], [6, 4, 10, 13, 2]);
+                });
             });
 
             describe('clicking the close icon', function () {
                 it('should remove an item', function () {
-                    clickTag(4, true);
-                    expectValue([6, 10, 13, 2]);
-                    expectChange([6, 10, 13, 2], [6, 4, 10, 13, 2]);
-                    clickTag(13, true);
-                    expectValue([6, 10, 2]);
-                    expectChange([6, 10, 2], [6, 10, 13, 2], 2);
+                    focusAndWait(tagField);
+
+                    runs(function() {
+                        clickTag(4, true);
+                        expectValue([6, 10, 13, 2]);
+                        expectChange([6, 10, 13, 2], [6, 4, 10, 13, 2]);
+                        clickTag(13, true);
+                        expectValue([6, 10, 2]);
+                        expectChange([6, 10, 2], [6, 10, 13, 2], 2);
+                    });
                 });
 
                 it('should be able to remove an item when used as an editor', function () {

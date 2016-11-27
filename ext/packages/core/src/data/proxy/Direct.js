@@ -53,7 +53,7 @@
  * or an object with format recognizable by the configured {@link Ext.data.reader.Reader}
  * instance.
  *
- * Example {@link Ext.directRemotingProvider#actions Direct API declaration}:
+ * Example {@link Ext.direct.RemotingProvider#cfg-actions Direct API declaration}:
  *
  *      actions: {
  *          MyApp: [{
@@ -83,7 +83,7 @@
  * or an array of objects for multiple records. Return an array of identifiers for actually
  * created records. See {@link Ext.data.Model#clientIdProperty} for more information.
  *
- * Example {@link Ext.directRemotingProvider#actions Direct API declaration}:
+ * Example {@link Ext.direct.RemotingProvider#cfg-actions Direct API declaration}:
  *
  *      actions: [
  *          MyApp: [{
@@ -112,7 +112,7 @@
  * record identifier, or an array of objects for multiple records. Return an array of
  * objects with updated record data.
  *
- * Example {@link Ext.directRemotingProvider#actions Direct API declaration}:
+ * Example {@link Ext.direct.RemotingProvider#cfg-actions Direct API declaration}:
  *
  *      actions: [
  *          MyApp: [{
@@ -142,7 +142,7 @@
  * property set to `true` or `false`, with more optional properties recognizable by configured
  * {@link Ext.data.reader.Reader} instance.
  *
- * Example {@link Ext.directRemotingProvider#actions Direct API declaration}:
+ * Example {@link Ext.direct.RemotingProvider#cfg-actions Direct API declaration}:
  *
  *      actions: [
  *          MyApp: [{

@@ -10,6 +10,6 @@
 
 .#{$prefix}field.#{$prefix}checkboxfield {
     .#{$prefix}input {
-        display: block;
+        @include st-box();
     }
 }

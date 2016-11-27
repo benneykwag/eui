@@ -118,7 +118,10 @@ Ext.define('Ext.draw.Container', {
      */
 
     config: {
-        cls: Ext.baseCSSPrefix + 'draw-container',
+        cls: [
+            Ext.baseCSSPrefix + 'draw-container',
+            Ext.baseCSSPrefix + 'unselectable'
+        ],
 
         /**
          * @cfg {Function} [resizeHandler]
@@ -192,7 +195,23 @@ Ext.define('Ext.draw.Container', {
          *         strokeStyle: 'url(#gradientId2)'
          *     });
          */
-        gradients: []
+        gradients: [],
+
+        touchAction: {
+            panX: false,
+            panY: false,
+            pinchZoom: false,
+            doubleTapZoom: false
+        },
+
+        /**
+         * @private
+         * @cfg {Object} surfaceZIndexes A map of surface type name to zIndex.
+         * The z-indexes to use for the various types of surfaces.
+         */
+        surfaceZIndexes: {
+            main: 1
+        }
     },
 
     /**
@@ -352,13 +371,21 @@ Ext.define('Ext.draw.Container', {
      * @param {String} [id="main"]
      * @return {Ext.draw.Surface}
      */
-    getSurface: function (id) {
+    getSurface: function (id, type) {
+        id = id || 'main';
+        type = type || id;
+
         var me = this,
             surfaces = me.getItems(),
             oldCount = surfaces.getCount(),
+            zIndexes = me.getSurfaceZIndexes(),
             surface;
 
         surface = me.createSurface(id);
+
+        if (type in zIndexes) {
+            surface.element.setStyle('zIndex', zIndexes[type]);
+        }
 
         if (surfaces.getCount() > oldCount) {
             // Immediately call resize handler of the draw container,
@@ -414,7 +441,7 @@ Ext.define('Ext.draw.Container', {
     getImage: function (format) {
         var size = this.innerElement.getSize(),
             surfaces = Array.prototype.slice.call(this.items.items),
-            zIndexes = this.surfaceZIndexes,
+            zIndexes = this.getSurfaceZIndexes(),
             image, imageElement,
             i, j, surface, zIndex;
 

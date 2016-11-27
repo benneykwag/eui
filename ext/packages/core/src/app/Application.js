@@ -28,9 +28,9 @@
  * # Telling Application about the rest of the app
  *
  * Because an Ext.app.Application represents an entire app, we should tell it about the other
- * parts of the app - namely the Models, Views and Controllers that are bundled with the application. Let's say we have a blog management app; we
- * might have Models and Controllers for Posts and Comments, and Views for listing, adding and editing Posts and Comments.
- * Here's how we'd tell our Application about all these things:
+ * parts of the app - namely the Models, Views and Controllers that are bundled with the application. Let's say we have
+ * a blog management app; we might have Models and Controllers for Posts and Comments, and Views for listing,
+ * adding and editing Posts and Comments. Here's how we'd tell our Application about all these things:
  *
  *     Ext.application({
  *         name: 'Blog',
@@ -46,7 +46,8 @@
  *
  * Note that we didn't actually list the Views directly in the Application itself. This is because Views are managed by
  * Controllers, so it makes sense to keep those dependencies there. The Application will load each of the specified
- * Controllers using the pathing conventions laid out in the [application architecture guide](../application_architecture/application_architecture.html) - in this case
+ * Controllers using the pathing conventions laid out in the
+ * [application architecture guide](../guides/application_architecture/application_architecture.html) - in this case
  * expecting the controllers to reside in app/controller/Posts.js and app/controller/Comments.js. In turn, each
  * Controller simply needs to list the Views it uses and they will be automatically loaded. Here's how our Posts
  * controller like be defined:
@@ -81,7 +82,8 @@
  *
  *     Ext.application('MyApp.Application');
  *
- * For more information about writing Ext JS applications, please see the [application architecture guide](../../../application_architecture/application_architecture.html).
+ * For more information about writing Ext JS applications, please see
+ * the [application architecture guide](../guides/application_architecture/application_architecture.html).
  */
 Ext.define('Ext.app.Application', {
     extend: 'Ext.app.Controller',
@@ -529,7 +531,9 @@ Ext.define('Ext.app.Application', {
         }
 
         // After launch we may as well cleanup the namespace cache
-        Ext.defer(Ext.ClassManager.clearNamespaceCache, 2000, Ext.ClassManager);
+        if (!me.cnsTimer) {
+            me.cnsTimer = Ext.defer(Ext.ClassManager.clearNamespaceCache, 2000, Ext.ClassManager);
+        }
     },
 
     getModuleClassName: function(name, kind) {
@@ -651,7 +655,8 @@ Ext.define('Ext.app.Application', {
             controllers = me.controllers,
             ns = Ext.namespace(me.getName()),
             appProp = me.getAppProperty();
-        
+
+        clearTimeout(me.cnsTimer);
         Ext.un('appupdate', me.onAppUpdate, me);
          
         Ext.destroy(me.viewport);

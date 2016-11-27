@@ -30,13 +30,13 @@ $checkcell-checkbox-size-big: dynamic($checkcolumn-checkbox-size-big);
  * @var {number}
  * Check cell checkbox font-size
  */
-$checkcell-checkbox-font-size: dynamic($checkcell-checkbox-size);
+$checkcell-checkbox-font-size: dynamic($checkcolumn-checkbox-font-size);
 
 /**
  * @var {number}
  * Check cell checkbox font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
-$checkcell-checkbox-font-size-big: dynamic($checkcell-checkbox-size-big);
+$checkcell-checkbox-font-size-big: dynamic($checkcolumn-checkbox-font-size-big);
 
 /**
  * @var {string/list}

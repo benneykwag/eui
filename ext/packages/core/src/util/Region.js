@@ -107,7 +107,6 @@ Ext.define('Ext.util.Region', function() {
                 isBefore,
                 overlapLine,
                 overlapLength,
-                beforeStart,
                 x, y;
 
             // target is out of bounds. We can't show an anchor
@@ -127,20 +126,10 @@ Ext.define('Ext.util.Region', function() {
                         overlapLength = overlapLine.getHeight();
 
                         // Not enough vertical intersection to make the anchor display correctly
-                        if (overlapLength < target.width && overlapLength < anchorSize.x + 4) {
+                        if (overlapLength < anchorSize.x + 4) {
                             if (overlapLength < minOverlap) {
-                                if (overlapLine.getAnchorPoint_c()[1] > target.getAnchorPoint_c()[1]) {
-                                    y = target.bottom - minOverlap;
-                                } else {
-                                    beforeStart = true;
-                                    y = target.top + minOverlap - result.getHeight();
-                                }
-                                if (inside) {
-                                    y = Math.min(Math.max(y, inside.top), inside.bottom - result.getHeight());
-                                }
-
                                 // Move result, within constraints to attempt to create enough overlap.
-                                result.setPosition(result.x, y);
+                                result.setPosition(result.x, Math.max(Math.min(target.bottom - minOverlap, result.y, inside.bottom - result.height), target.top + minOverlap - result.height, inside.top));
                                 overlapLine = new ExtUtil.Region(Math.max(result.top, target.top), x, Math.min(result.bottom, target.bottom), x);
                                 overlapLength = overlapLine.getHeight();
 
@@ -148,12 +137,9 @@ Ext.define('Ext.util.Region', function() {
                                 if (overlapLength < minOverlap) {
                                     return;
                                 }
-
-                                if (beforeStart) {
-                                    overlapLine.setPosition(x, target.y - anchorSize.x / 2 - 2);
-                                }
                             }
-                            overlapLine.setHeight(Math.max(overlapLength, anchorSize.x + 4));
+                            overlapLine.setPosition(overlapLine.x, Math.min(overlapLine.y, result.bottom - anchorSize.x - 2));
+                            overlapLine.setHeight(Math.max(overlapLength, anchorSize.x + 2));
 
                             // Arrow would be off the edge
                             if (inside && !inside.contains(overlapLine)) {
@@ -179,20 +165,10 @@ Ext.define('Ext.util.Region', function() {
                         overlapLength = overlapLine.getWidth();
 
                         // Not enough horizontal intersection to make the anchor display correctly
-                        if (overlapLength < target.height && overlapLength < anchorSize.x + 4) {
+                        if (overlapLength < anchorSize.x + 4) {
                             if (overlapLength < minOverlap) {
-                                if (overlapLine.getAnchorPoint_c()[0] > target.getAnchorPoint_c()[0]) {
-                                    x = target.right - minOverlap;
-                                } else {
-                                    beforeStart = true;
-                                    x = target.left + minOverlap - result.getWidth();
-                                }
-                                if (inside) {
-                                    x = Math.min(Math.max(x, inside.left), inside.right - result.getWidth());
-                                }
-
                                 // Move result, within constraints to attempt to create enough overlap.
-                                result.setPosition(x, result.y);
+                                result.setPosition(Math.max(Math.min(target.right - minOverlap, result.x, inside.right - result.width), target.left + minOverlap - result.width, inside.left), result.y);
                                 overlapLine = new ExtUtil.Region(y, Math.min(result.right, target.right), y, Math.max(result.left, target.left));
                                 overlapLength = overlapLine.getWidth();
 
@@ -200,12 +176,9 @@ Ext.define('Ext.util.Region', function() {
                                 if (overlapLength < minOverlap) {
                                     return;
                                 }
-
-                                if (beforeStart) {
-                                    overlapLine.setPosition(target.x - anchorSize.x / 2 - 2, y);
-                                }
                             }
-                            overlapLine.setWidth(Math.max(overlapLength, anchorSize.x + 4));
+                            overlapLine.setPosition(Math.min(overlapLine.x, result.right - anchorSize.x - 2), overlapLine.y);
+                            overlapLine.setWidth(Math.max(overlapLine.width, anchorSize.x + 2));
 
                             // Arrow would be off the edge
                             if (inside && !inside.contains(overlapLine)) {
@@ -392,8 +365,8 @@ Ext.define('Ext.util.Region', function() {
 
     /**
      * Translates this Region to the specified position
-     * @param {type} x The new X position.
-     * @param {type} y The new Y position.
+     * @param {Number} x The new X position.
+     * @param {Number} y The new Y position.
      * @returns {Ext.util.Region} This region after translation.
      */
     setPosition: function(x, y) {
@@ -467,6 +440,8 @@ Ext.define('Ext.util.Region', function() {
         me.bottom = constrain(me.bottom, targetRegion.y, targetRegion.bottom);
         me.left = me.x = constrain(me.left, targetRegion.x, targetRegion.right);
         me.right = constrain(me.right, targetRegion.x, targetRegion.right);
+        me.height = me.bottom - me.top;
+        me.width = me.right - me.left;
         return me;
     },
 
@@ -484,6 +459,8 @@ Ext.define('Ext.util.Region', function() {
         me.left = me.x += left||0;
         me.right += right||0;
         me.bottom += bottom||0;
+        me.height = me.bottom - me.top;
+        me.width = me.right - me.left;
         return me;
     },
 
@@ -726,8 +703,8 @@ Ext.define('Ext.util.Region', function() {
      * @param {Boolean} [options.overlap] Pass `true` to allow this rectangle to overlap
      * the target.
      * @param {Boolean} [options.rtl] Pass `true` to swap left/right alignment.
-     * @param {Ext.util.Region} [options.inside] The rectangle to which this rectangle is
-     * constrained.
+     * @param {Ext.util.Region/Ext.dom.Element} [options.inside] The rectangle to
+     * which this rectangle is constrained.
      * @param {Number} [options.minHeight] Used when this Region is to be aligned directly
      * below or above  the target. Gives the option to reduce the height to fit in the
      * available space.
@@ -771,6 +748,10 @@ Ext.define('Ext.util.Region', function() {
                 Ext.raise('anchorSize option must be an Ext.util.Offset');
             }
             //</debug>
+        }
+
+        if (inside && !inside.isRegion) {
+            inside = Ext.fly(inside).getRegion();
         }
 
         // Position the region using an exact position.
@@ -1162,11 +1143,13 @@ Ext.define('Ext.util.Region', function() {
     },
 
     setHeight: function(h) {
+        this.height = h;
         this.bottom = this.top + h;
         return this;
     },
 
     setWidth: function(w) {
+        this.width = w;
         this.right = this.left + w;
         return this;
     },

@@ -1,3 +1,5 @@
+/* global Ext, expect */
+
 describe("Ext.menu.Bar", function() {
     var menu;
     

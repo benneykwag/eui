@@ -103,8 +103,7 @@ Ext.define('Ext.direct.PollingProvider', {
     },
     
     destroy: function() {
-        this.pollTask = null;
-        
+        this.pollTask.stop(true);
         this.callParent();
     },
     

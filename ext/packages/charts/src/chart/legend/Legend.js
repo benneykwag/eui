@@ -27,6 +27,9 @@ Ext.define('Ext.chart.legend.Legend', {
         toggleable: true
     },
 
+    horizontalCls: Ext.baseCSSPrefix + 'legend-horizontal',
+    verticalCls: Ext.baseCSSPrefix + 'legend-vertical',
+
     toggleItem: function (index) {
         if (!this.getToggleable()) {
             return;

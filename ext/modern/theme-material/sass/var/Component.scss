@@ -60,12 +60,14 @@ $base-light-color: dynamic(material-color($base-color-name, '100'));
 $base-dark-color: dynamic(material-color($base-color-name, '700'));
 $base-pressed-color: dynamic(rgba($base-color, .8));
 $base-invisible-color: dynamic(rgba($base-color, 0));
+$base-foreground-color: dynamic(material-foreground-color($base-color-name));
 
 $accent-color: dynamic(material-color($accent-color-name, '500'));
 $accent-light-color: dynamic(material-color($accent-color-name, '100'));
 $accent-dark-color: dynamic(material-color($accent-color-name, '700'));
 $accent-pressed-color: dynamic(rgba($accent-color, .8));
 $accent-invisible-color: dynamic(rgba($accent-color, 0));
+$accent-foreground-color: dynamic(material-foreground-color($accent-color-name));
 
 $confirm-color: dynamic(material-color('light-green', '600'));
 $confirm-pressed-color: dynamic(rgba($confirm-color, .8));

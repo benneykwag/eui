@@ -32,14 +32,12 @@ describe('grid-moving-columns', function () {
 
     // Pass a reference to the cmp not an index!
     function dragColumn(from, to, onRight) {
-        var fromBox = from.el.getBox(),
+        var fromBox = from.titleEl.getBox(),
             fromMx = fromBox.x + fromBox.width/2,
             fromMy = fromBox.y + fromBox.height/2,
-            toBox = to.el.getBox(),
-            toMx = toBox.x,
+            toBox = to.titleEl.getBox(),
+            toMx = onRight ? toBox.right - 10 : toBox.left + 10,
             toMy = toBox.y + toBox.height/2,
-            offset = onRight ? toBox.width - 6 : 5,
-            moveOffset = toMx + offset,
             dragThresh = onRight ? Ext.dd.DragDropManager.clickPixelThresh + 1 : -Ext.dd.DragDropManager.clickPixelThresh - 1;
 
         // Mousedown on the header to drag
@@ -53,16 +51,14 @@ describe('grid-moving-columns', function () {
             // Locked grids need an additional mousemove because the drop won't be valid if the target headerCt isn't the same as
             // the target headerCt of the last mousemove event. So, we need to hack around this by firing an additional event so
             // the two mouseevents can be seen as having the same target headerCt.
-            //
-            // Note: Do not change the value stored in the moveOffset var!
-            jasmine.fireMouseEvent(to.el.dom, 'mousemove', (onRight ? moveOffset + 1 : moveOffset - 1), toMy);
+            jasmine.fireMouseEvent(to.el.dom, 'mousemove', (onRight ? toMx + 1 : toMx - 1), toMy);
         }
 
         // The move to left of the centre of the target element
-        jasmine.fireMouseEvent(to.el.dom, 'mousemove', moveOffset, toMy);
+        jasmine.fireMouseEvent(to.el.dom, 'mousemove', toMx, toMy);
 
         // Drop to left of centre of target element
-        jasmine.fireMouseEvent(to.el.dom, 'mouseup', moveOffset, toMy);
+        jasmine.fireMouseEvent(to.el.dom, 'mouseup', toMx, toMy);
 
         refreshHeaderCache();
     }
@@ -253,8 +249,8 @@ describe('grid-moving-columns', function () {
                 proxyEl;
 
             runs(function () {
-                jasmine.fireMouseEvent(c0.el.dom, 'mouseover', 5, 5);
-                jasmine.fireMouseEvent(c0.titleEl.dom, 'mousedown', 20, 5);
+                jasmine.fireMouseEvent(c0.el.dom, 'mouseover');
+                jasmine.fireMouseEvent(c0.titleEl.dom, 'mousedown');
                 jasmine.fireMouseEvent(document.body, 'mousemove', 100, 0);
             });
 
@@ -331,7 +327,7 @@ describe('grid-moving-columns', function () {
         it('should not try to complete the drag operation', function () {
             var dragZone,
                 errorSpy = jasmine.createSpy(),
-                old = window.onError;
+                old = window.onerror;
 
             makeGrid();
             dragZone = grid.headerCt.reorderer.dragZone;
@@ -392,15 +388,33 @@ describe('grid-moving-columns', function () {
             testSpies([1, 1]);
             testUI('1,5,2,4');
 
-            dragColumn(visibleColumns[3], visibleColumns[1]);
-            // [colChange, colMove]
-            testSpies([2, 2]);
-            testUI('1,4,5,2');
+            // Wait for the mouse event blocking set during drags within the headerCt to be lifted.
+            // Need to allow the asap timer to fire to expose https://sencha.jira.com/browse/EXTJS-22839
+            // which was that the mouse blocking was not being lifted the second time.
+            waits(100);
 
-            // For devices we know deal with focus, test that focus is preserved.
-            if (Ext.os.deviceType === 'Desktop' && !Ext.supports.AsyncFocusEvents) {
-                expect(Ext.Element.getActiveElement()).toBe(visibleColumns[1].el.dom);
-            };
+            runs(function() {
+                dragColumn(visibleColumns[3], visibleColumns[1]);
+                // [colChange, colMove]
+                testSpies([2, 2]);
+                testUI('1,4,5,2');
+
+                // For devices we know deal with focus, test that focus is preserved.
+                if (!jasmine.supportsTouch && !Ext.supports.AsyncFocusEvents) {
+                    expect(Ext.Element.getActiveElement()).toBe(visibleColumns[1].el.dom);
+                };
+            });
+
+            // Wait for the mouse event blocking set during drags within the headerCt to be lifted.
+            // We're testing https://sencha.jira.com/browse/EXTJS-22839 below
+            waits(100);
+
+            runs(function() {
+                // Tapping on a column header should still sort
+                var sortSpy = spyOn(store, 'sort');
+                Ext.testHelper.tap(visibleColumns[0].titleEl);
+                expect(sortSpy).toHaveBeenCalled();
+            });
         });
 
         it('should move columns to the end of the header container', function () {

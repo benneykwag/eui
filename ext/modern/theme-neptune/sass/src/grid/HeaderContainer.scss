@@ -1,5 +1,11 @@
 @include headercontainer-ui(
     $border-width: $headercontainer-border-width,
     $border-style: $headercontainer-border-style,
-    $border-color: $headercontainer-border-color
+    $border-color: $headercontainer-border-color,
+
+    // Due to subpixel font size calculations, some headers do not fill the height of
+    // the headercontainer on Safari, leaving a transparent zone into which grid content
+    // scrolls. Ensure the headercontainer occludes scrolled content.
+    // https://sencha.jira.com/browse/EXTJS-22515
+    $background-color: $gridcolumn-background-color
 );

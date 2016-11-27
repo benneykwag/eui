@@ -594,7 +594,6 @@ Ext.define('Ext.app.Controller', {
      *     ]
      *
      * @param {Array|Object} refs The refs to normalize
-     * @param {Array} newRefs An array to place the normalized refs on to
      * @return {Array} The normalized array of refs
      */
     normalizeRefs: function(refs) {
@@ -895,15 +894,15 @@ Ext.define('Ext.app.Controller', {
     /**
      * Returns a {@link Ext.data.Model Model} class with the given name.
      *
-     * @param {String} name
+     * @param {String} modelName
      * @return {Ext.Class} A class ultimately derived from `Ext.data.Model`.
      */
-    getModel: function(model) {
-        var name = Ext.app.Controller.getFullName(model, 'model', this.$namespace),
+    getModel: function (modelName) {
+        var name = Ext.app.Controller.getFullName(modelName, 'model', this.$namespace),
             ret = Ext.ClassManager.get(name.absoluteName);
 
         if (!ret) {
-            ret = Ext.data.schema.Schema.lookupEntity(model);
+            ret = Ext.data.schema.Schema.lookupEntity(modelName);
         }
 
         return ret;

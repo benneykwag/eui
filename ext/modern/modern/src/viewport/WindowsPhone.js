@@ -17,7 +17,7 @@ Ext.define('Ext.viewport.WindowsPhone', {
 
     config: {
         translatable: {
-            translationMethod: 'csstransform'
+            type: 'csstransform'
         }
     },
 

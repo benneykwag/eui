@@ -126,7 +126,9 @@ describe("Ext.grid.column.Action", function(){
             // Navigate and enter actionable mode
             pressKey(cellEl, 'enter');
             
-            waitForSpy(actionableSpy);
+            waitsFor(function() {
+                return actionableSpy.callCount === 1 && view.cellFocused;
+            }, 'actionable mode to start');
             
             runs(function() {
                 // Check that worked
@@ -137,7 +139,7 @@ describe("Ext.grid.column.Action", function(){
             // Activate the item.
             pressKey(actionItemEl, 'space');
             
-            waitForSpy(handlerSpy);
+            waitForSpy(handlerSpy, 'action handler to be called');
             
             runs(function() {
                 expect(msgBox).toBeDefined();
@@ -146,7 +148,7 @@ describe("Ext.grid.column.Action", function(){
             // MsgBox window must contains focus
             waitsFor(function() {
                 return msgBox.isVisible() === true && msgBox.containsFocus;
-            });
+            }, 'message box to show and focus');
 
             runs(function () {
                 expect(Ext.getCmp(msgBox.id)).toBe(msgBox);
@@ -160,7 +162,7 @@ describe("Ext.grid.column.Action", function(){
             // Should revert focus back into grid in same mode that it left.
             waitsFor(function() {
                 return grid.actionableMode;
-            });
+            }, 'grid to return to actionable mode');
             
             runs(function() {
                 // SHould revert focus back into grid in same mode that it left.
@@ -170,11 +172,7 @@ describe("Ext.grid.column.Action", function(){
             // Focus should have reverted back to the action item
             waitsFor(function() {
                 return Ext.Element.getActiveElement() === actionItemEl;
-            });
-            
-            runs(function() {
-                expect(document.activeElement).toBe(actionItemEl);
-            });
+            }, 'focus to return to the action item');
         });
     });
 
@@ -286,6 +284,8 @@ describe("Ext.grid.column.Action", function(){
         });
 
         it("should select the row & focus the cell when clicking the action with stopSelection: false", function() {
+            var isTouch;
+
             makeGrid({
                 columns: [{}, {
                     xtype: 'actioncolumn',
@@ -293,16 +293,25 @@ describe("Ext.grid.column.Action", function(){
                     dataIndex: 'actionCls',
                     header: 'Action',
                     items: [{
-                        handler: Ext.emptyFn
+                        handler: function(view, recordIndex, cellIndex, item, e, record, row) {
+                            isTouch = e.pointerType === 'touch';
+                        }
                     }]
                 }]
             });
 
             triggerAction();
             expect(grid.getSelectionModel().isSelected(store.first())).toBe(true);
+
             var pos = grid.view.actionPosition;
-            expect(pos.record).toBe(store.first());
-            expect(pos.column).toBe(grid.down('actioncolumn'));
+
+            // Touch events do not cause actionable mode
+            if (isTouch) {
+                expect(pos).not.toBeDefined();
+            } else {
+                expect(pos.record).toBe(store.first());
+                expect(pos.column).toBe(grid.down('actioncolumn'));
+            }
         });
     });
     
@@ -958,5 +967,15 @@ describe("Ext.grid.column.Action", function(){
                 expect(item2).toHaveAttr('role', 'throbbe');
             });
         });
+    });
+
+    it("should not fail when using contains()", function() {
+        makeGrid({
+            columns: [{
+                xtype: 'actioncolumn',
+                dataIndex: 'actionCls'
+            }]
+        });
+        expect(actionColumn.contains(grid)).toBe(false);
     });
 });

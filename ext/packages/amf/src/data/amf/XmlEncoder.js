@@ -518,8 +518,8 @@ Ext.define('Ext.data.amf.XmlEncoder', {
      * Writes an AMFX remoting message with the AMFX envelope to the string.
      * @param {Ext.data.amf.RemotingMessage} message the message to pass on to serialize.
      */
-    writeAmfxRemotingPacket: function(params) {
-        this.write(this.encodeAmfxRemotingPacket(params));
+    writeAmfxRemotingPacket: function(message) {
+        this.write(this.encodeAmfxRemotingPacket(message));
     },
 
     /**

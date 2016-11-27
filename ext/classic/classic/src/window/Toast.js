@@ -50,14 +50,49 @@ Ext.define('Ext.window.Toast', {
     
     isToast: true,
 
+    /**
+     * @cfg cls
+     * @inheritdoc
+     */
     cls: Ext.baseCSSPrefix + 'toast',
 
+    /**
+     * @cfg bodyPadding
+     * @inheritdoc
+     */
     bodyPadding: 10,
+
+    /**
+     * @cfg {Boolean} autoClose
+     * This config ensures that the Toast is closed automatically after a certain amount of time. If this is set to
+     * `false`, closing the Toast will have to be handled some other way (e.g., Setting `closable: true`).
+     */
     autoClose: true,
+
+    /**
+     * @cfg plain
+     * @inheritdoc
+     */
     plain: false,
+
+    /**
+     * @cfg draggable
+     * @inheritdoc
+     */
     draggable: false,
+
+    /**
+     * @cfg resizable
+     * @inheritdoc
+     */
     resizable: false,
+
+    /**
+     * @cfg shadow
+     * @inheritdoc
+     */
     shadow: false,
+        
     focus: Ext.emptyFn,
 
     /**
@@ -94,6 +129,10 @@ Ext.define('Ext.window.Toast', {
      */
     align: 't',
 
+    /**
+     * @cfg alwaysOnTop
+     * @inheritdoc
+     */
     alwaysOnTop: true,
 
     /**
@@ -111,6 +150,10 @@ Ext.define('Ext.window.Toast', {
      */
 
     // Pixels between each notification
+    /**
+     * @cfg {Number} spacing
+     * The number of pixels between each Toast notification.
+     */
     spacing: 6,
 
     //TODO There should be a way to control from and to positions for the introduction.
@@ -120,11 +163,40 @@ Ext.define('Ext.window.Toast', {
     paddingX: 30,
     paddingY: 10,
 
+    /**
+     * @cfg {String} slideInAnimation
+     * The animation used for the Toast to slide in.
+     */
     slideInAnimation: 'easeIn',
+
+    /**
+     * @cfg {String} slideBackAnimation
+     * The animation used for the Toast to slide back.
+     */
     slideBackAnimation: 'bounceOut',
+
+    /**
+     * @cfg {Number} slideInDuration
+     * The number of milliseconds it takes for a Toast to slide in.
+     */
     slideInDuration: 500,
+
+    /**
+     * @cfg {Number} slideBackDuration
+     * The number of milliseconds it takes for a Toast to slide back.
+     */
     slideBackDuration: 500,
+
+    /**
+     * @cfg {Number} hideDuration
+     * The number of milliseconds it takes for a Toast to hide.
+     */
     hideDuration: 500,
+
+    /**
+     * @cfg {Number} hideDuration
+     * The number of milliseconds a Toast waits before automatically closing.
+     */
     autoCloseDelay: 3000,
     
     /**
@@ -133,9 +205,28 @@ Ext.define('Ext.window.Toast', {
      * closing the Toast will have to be handled some other way (e.g., Setting `closable: true`).
      */
     stickOnClick: false,
+
+    /**
+     * @cfg {Boolean} [stickWhileHover]
+     * This config will prevent the Toast from closing while you're hovered over it.
+     */
     stickWhileHover: true,
+
+    /**
+     * @cfg {Boolean} [closeOnMouseDown]
+     * This config will prevent the Toast from closing when a user produces a mousedown event.
+     */
     closeOnMouseDown: false,
+
+    /**
+     * @cfg closable
+     * @inheritdoc
+     */
     closable: false,
+
+    /**
+     * @inheritdoc
+     */
     focusable: false,
 
     // Private. Do not override!

@@ -30,7 +30,6 @@ Ext.define('Ext.grid.plugin.RowExpander', {
     },
 
     expanderSelector: '.' + Ext.baseCSSPrefix + 'expandercell .' + Ext.baseCSSPrefix + 'icon-el',
-    expandedCls: Ext.baseCSSPrefix + 'expanded',
 
     init: function (grid) {
         this.setGrid(grid);
@@ -61,8 +60,6 @@ Ext.define('Ext.grid.plugin.RowExpander', {
         var el = event.getTarget(),
             cell = Ext.Component.fromElement(el),
             row = cell.getParent();
-
-        cell.toggleCls(this.expandedCls);
 
         row.toggleCollapsed();
     }

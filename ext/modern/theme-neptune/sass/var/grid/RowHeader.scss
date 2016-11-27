@@ -2,12 +2,14 @@
  * @class Ext.grid.RowHeader
  */
 
+//# fashion replaces $grid-group-header-color
 /**
  * @var {color}
  * Grid row header color
  */
 $rowheader-color: dynamic(null);
 
+//# fashion replaces $grid-group-header-background-color
 /**
  * @var {color}
  * Grid row header background-color
@@ -38,54 +40,63 @@ $rowheader-border-width: dynamic(null);
  */
 $rowheader-border-style: dynamic(null);
 
+//# fashion replaces $grid-group-header-border-color
 /**
  * @var {color}
  * Grid row header border-color
  */
 $rowheader-border-color: dynamic(null);
 
+//# fashion replaces $grid-group-header-font-weight
 /**
  * @var {string/number}
  * Grid row header font-weight
  */
 $rowheader-font-weight: dynamic(null);
 
+//# fashion replaces $grid-group-header-font-size
 /**
  * @var {number}
  * Grid row header font-size
  */
 $rowheader-font-size: dynamic(null);
 
+//# fashion replaces $grid-group-header-font-size-big
 /**
  * @var {number}
  * Grid row header font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $rowheader-font-size-big: dynamic(null);
 
+//# fashion replaces $grid-group-header-line-height
 /**
  * @var {number}
  * Grid row header line-height
  */
 $rowheader-line-height: dynamic(null);
 
+//# fashion replaces $grid-group-header-line-height-big
 /**
  * @var {number}
  * Grid row header line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $rowheader-line-height-big: dynamic(null);
 
+//# fashion replaces $grid-group-header-font-family
 /**
  * @var {string}
  * Grid row header font-family
  */
 $rowheader-font-family: dynamic(null);
 
+//# fashion replaces $grid-group-header-padding
 /**
  * @var {number/list}
  * Grid row header padding
  */
 $rowheader-padding: dynamic(null);
 
+//# fashion replaces $grid-group-header-padding-big
 /**
  * @var {number/list}
  * Grid row header padding in the {@link Global_CSS#$enable-big big} sizing scheme

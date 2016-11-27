@@ -1427,31 +1427,32 @@ Ext.define('Ext.data.TreeStore', {
      * Returning `false` aborts and exits the iteration.
      * @param {Object} [scope] The scope (`this` reference) in which the function is executed.
      * Defaults to the current {@link Ext.data.NodeInterface node} in the iteration.
-     * @param {Object} [includeOptions] An object which contains options which modify how the store is traversed.
-     * @param {Boolean} [includeOptions.filtered] Pass `true` to include filtered out nodes in the iteration.
-     * @param {Boolean} [includeOptions.collapsed] Pass `true` to include nodes which are descendants of collapsed nodes.
-     *
-     * Note that the `filtered` option can also be passed as a separate parameter for
-     * compatibility with previous versions.
-     *
+     * @param {Object/Boolean} [includeOptions] An object which contains options which
+     * modify how the store is traversed. Alternatively, this parameter can be just the
+     * `filtered` option.
+     * @param {Boolean} [includeOptions.filtered] Pass `true` to include filtered out
+     * nodes in the iteration.
+     * @param {Boolean} [includeOptions.collapsed] Pass `true` to include nodes which are
+     * descendants of collapsed nodes.
      */
-    each: function(fn, scope, bypassFilters) {
-        var includeCollapsed,
-            i = 0;
+    each: function(fn, scope, includeOptions) {
+        var i = 0,
+            filtered = includeOptions,
+            includeCollapsed;
 
-        if (bypassFilters && typeof bypassFilters === 'object') {
-            includeCollapsed = bypassFilters.collapsed;
-            bypassFilters = bypassFilters.filtered;
+        if (includeOptions && typeof includeOptions === 'object') {
+            includeCollapsed = includeOptions.collapsed;
+            filtered = includeOptions.filtered;
         }
 
         if (includeCollapsed) {
             this.getRoot().cascade(function(node) {
-                if (bypassFilters === true || node.get('visible')) {
+                if (filtered === true || node.get('visible')) {
                     return fn.call(scope || node, node, i++);
                 }
             });
         } else {
-            return this.callParent([fn, scope, bypassFilters]);
+            return this.callParent([fn, scope, filtered]);
         }
     },
 
@@ -1459,31 +1460,36 @@ Ext.define('Ext.data.TreeStore', {
      * Collects unique values for a particular dataIndex from this store.
      *
      * @param {String} dataIndex The property to collect
-     * @param {Object} [options] An object which contains options which modify how the store is traversed.
-     * @param {Boolean} [options.allowNull] Pass true to allow null, undefined or empty string values.
-     * @param {Boolean} [options.filtered] Pass `true` to collect from all records, even ones which are filtered.
-     * @param {Boolean} [options.collapsed] Pass `true` to include nodes which are descendants of collapsed nodes.
+     * @param {Object/Boolean} [options] An object which contains options which modify how
+     * the store is traversed. Or just the `allowNull` option.
+     * @param {Boolean} [options.allowNull] Pass true to allow null, undefined or empty
+     * string values.
+     * @param {Boolean} [options.filtered] Pass `true` to collect from all records, even
+     * ones which are filtered.
+     * @param {Boolean} [options.collapsed] Pass `true` to include nodes which are
+     * descendants of collapsed nodes.
      *
-     * Note that the `filtered` option can also be passed as a separate parameter for
-     * compatibility with previous versions.
+     * @param {Boolean} [filtered] If previous parameter (`options`) is just the
+     * `allowNull` value, this parameter is the `filtered` option.
      *
      * @return {Object[]} An array of the unique values
      */
-    collect: function(dataIndex, allowNull, bypassFilters) {
+    collect: function (dataIndex, options, filtered) {
         var includeCollapsed,
             map = {},
             result = [],
+            allowNull = options,
             strValue, value;
 
-        if (allowNull && typeof allowNull === 'object') {
-            includeCollapsed = allowNull.collapsed;
-            bypassFilters = allowNull.filtered;
-            allowNull = allowNull.allowNull;
+        if (options && typeof options === 'object') {
+            includeCollapsed = options.collapsed;
+            filtered = options.filtered;
+            allowNull = options.allowNull;
         }
 
-        if (includeCollapsed || bypassFilters) {
+        if (includeCollapsed || filtered) {
             this.getRoot().cascade(function(node) {
-                if (bypassFilters === true || node.get('visible')) {
+                if (filtered === true || node.get('visible')) {
                     value = node.get(dataIndex);
                     strValue = String(value);
 
@@ -1500,7 +1506,7 @@ Ext.define('Ext.data.TreeStore', {
                 }
             });
         } else {
-            result = this.callParent([dataIndex, allowNull, bypassFilters]);
+            result = this.callParent([dataIndex, allowNull, filtered]);
         }
 
         return result;
@@ -1523,27 +1529,30 @@ Ext.define('Ext.data.TreeStore', {
      * @param {String} fieldName The name of the Record field to test.
      * @param {String/RegExp} value Either a string that the field value
      * should begin with, or a RegExp to test against the field.
-     * @param {Boolean} [anyMatch=true] False to match any part of the string, not just 
-     * the beginning.
-     * @param {Boolean} [caseSensitive=false] True for case sensitive comparison
-     * @param {Boolean} [exactMatch=false] True to force exact match (^ and $ characters
-     * added to the regex). Ignored if `anyMatch` is `true`.
+     * @param {Boolean} [startsWith=true] Pass `false` to allow a match to start
+     * anywhere in the string. By default the `value` will match only at the start
+     * of the string.
+     * @param {Boolean} [endsWith=true] Pass `false` to allow the match to end before
+     * the end of the string. By default the `value` will match only at the end of the
+     * string.
+     * @param {Boolean} [ignoreCase=true] Pass `false` to make the `RegExp` case
+     * sensitive (removes the 'i' flag).
      * @return {Ext.data.NodeInterface} The matched node or null
      */
-    findNode: function(property, value, startsWith, endsWith, ignoreCase) {
+    findNode: function(fieldName, value, startsWith, endsWith, ignoreCase) {
         if (Ext.isEmpty(value, false)) {
             return null;
         }
 
         // If they are looking up by the idProperty, do it the fast way.
-        if (property === this.model.idProperty && arguments.length < 3) {
+        if (fieldName === this.model.idProperty && arguments.length < 3) {
             return this.byIdMap[value];
         }
         var regex = Ext.String.createRegex(value, startsWith, endsWith, ignoreCase),
             result = null;
 
         Ext.Object.eachValue(this.byIdMap, function(node) {
-            if (node && regex.test(node.get(property))) {
+            if (node && regex.test(node.get(fieldName))) {
                 result = node;
                 return false;
             }
@@ -2003,6 +2012,7 @@ Ext.define('Ext.data.TreeStore', {
         // Collect all nodes keyed by ID, so that regardless of order, they can all be linked to a parent.
         for (i = 0; i < len; i++) {
             node = records[i];
+            node.data.depth = 1;
             nodeMap[node.id] = node;
         }
 
@@ -2022,6 +2032,7 @@ Ext.define('Ext.data.TreeStore', {
                 parent = nodeMap[parentId];
                 parent.$children = parent.$children || [];
                 parent.$children.push(node);
+                node.data.depth = parent.data.depth + 1;
             }
         }
 

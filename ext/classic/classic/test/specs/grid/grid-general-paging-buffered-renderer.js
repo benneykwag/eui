@@ -52,7 +52,7 @@ describe("grid-general-paging-buffered-renderer", function() {
         });
 
         it("should refresh the view on each page change", function() {
-            var store, ptoolbar;
+            var store, ptoolbar, refreshCount = 0;
             
             runs(function() {
                 function getRandomDate() {
@@ -118,30 +118,27 @@ describe("grid-general-paging-buffered-renderer", function() {
             // Wait for first refresh.
             waitsFor(function() {
                 return grid.view.all.getCount() === 20;
-            });
+            }, 'first refresh');
             
             runs(function() {
-                var refreshCount = grid.view.refreshCounter;
+                refreshCount = grid.view.refreshCounter;
 
-                grid.view.scrollTo(0,100);
+                grid.view.scrollTo(0, 110);
+            });
 
                 // Wait for the scroll event to get into the BufferedRenderer                
-                waitsFor(function() {
-                    return grid.view.bufferedRenderer.scrollTop === 100;
-                });
+            waitsFor(function() {
+                return grid.view.getScrollable().getPosition().y >= 100;
+            }, 'view to scroll to scrollTop:100');
 
-                runs(function() {
-                    jasmine.fireMouseEvent(ptoolbar.down('#next').el, 'click');
+            runs(function() {
+                jasmine.fireMouseEvent(ptoolbar.down('#next').el, 'click');
 
-                    // Should be one more page refresh
-                    expect(grid.view.refreshCounter).toBe(refreshCount + 1);
+                // Should be one more page refresh
+                expect(grid.view.refreshCounter).toBe(refreshCount + 1);
 
-                    // A new full page of 20 records should be there
-                    expect(grid.view.all.getCount()).toBe(20);
-
-                    // Should have scrolled to top on view refresh
-                    expect(grid.view.getScrollY()).toBe(0);
-                });
+                // A new full page of 20 records should be there
+                expect(grid.view.all.getCount()).toBe(20);
             });
         });
     });

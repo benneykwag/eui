@@ -14,7 +14,7 @@
  * 2. Set the {@link #checkboxToggle} config to true; this is similar to using {@link #collapsible} but renders
  *    a {@link Ext.form.field.Checkbox checkbox} in place of the toggle button. The fieldset will be expanded when the
  *    checkbox is checked and collapsed when it is unchecked. The checkbox will also be included in the
- *    {@link Ext.form.Basic#submit form submit parameters} using the {@link #checkboxName} as its parameter name.
+ *    {@link Ext.form.Basic#submit form submit parameters} using {@link #checkbox}.
  *
  * # Example usage
  *
@@ -68,6 +68,7 @@ Ext.define('Ext.form.FieldSet', {
         fieldAncestor: 'Ext.form.FieldAncestor'
     },
     alias: 'widget.fieldset',
+
     uses: ['Ext.form.field.Checkbox', 'Ext.panel.Tool', 'Ext.layout.container.Anchor', 'Ext.layout.component.FieldSet'],
     
     /**
@@ -79,11 +80,12 @@ Ext.define('Ext.form.FieldSet', {
      * @cfg {Boolean} [checkboxToggle=false]
      * Set to true to render a checkbox into the fieldset frame just in front of the legend to expand/collapse the
      * fieldset when the checkbox is toggled.. This checkbox will be included in form submits using
-     * the {@link #checkboxName}.
+     * the {@link #checkbox} configuration.
      */
 
     /**
      * @cfg {String} checkboxName
+     * @deprecated 6.2.0 Use the name property in {@link #checkbox} instead.
      * The name to assign to the fieldset's checkbox if {@link #checkboxToggle} = true
      * (defaults to '[fieldset id]-checkbox').
      */
@@ -150,9 +152,19 @@ Ext.define('Ext.form.FieldSet', {
     componentLayout: 'fieldset',
     
     ariaRole: 'group',
+
     focusable: false,
 
     autoEl: 'fieldset',
+
+    /**
+     * @cfg {Object} checkbox
+     * A configuration for the generated checkbox that is adjacent to the {@link #title} in the header.
+     * This config is only effective when {@link #checkboxToggle} is true
+     *
+     * @since 6.2.0
+     */
+    checkbox: null,
 
     childEls: [
         'body'
@@ -379,7 +391,7 @@ Ext.define('Ext.form.FieldSet', {
 
         cls += ' ' + cls + '-' + me.ui;
 
-        me.checkboxCmp = checkboxCmp = new Ext.form.field.Checkbox({
+        me.checkboxCmp = checkboxCmp = new Ext.form.field.Checkbox(Ext.apply({
             hideEmptyLabel: true,
             name: me.checkboxName || me.id + suffix,
             cls: cls,
@@ -392,7 +404,7 @@ Ext.define('Ext.form.FieldSet', {
                 scope: me
             },
             ariaLabel: me.expandText
-        });
+        }, me.checkbox));
         
         return checkboxCmp;
     },

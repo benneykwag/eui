@@ -1,3 +1,5 @@
+/* global Ext, expect, xit */
+
 describe("Ext.Element.static", function() {
     var el, input, child1, child2, child3;
     

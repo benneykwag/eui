@@ -107,7 +107,7 @@ Ext.define('Ext.util.Event', function() {
                 // be done in Ext.Element's doAddListener override, but since there are
                 // multiple paths for listener removal (un, clearListeners), it is best
                 // to keep all subscribe/unsubscribe logic here.
-                observable._getPublisher(eventName).subscribe(
+                observable._getPublisher(eventName, options.translate === false).subscribe(
                     observable,
                     eventName,
                     options.delegated !== false,
@@ -164,6 +164,10 @@ Ext.define('Ext.util.Event', function() {
                 handler = me.createTargeted(handler, listener, o, scope, wrapped);
                 wrapped = true;
             }
+            if (o.onFrame) {
+                handler = me.createAnimFrame(handler, listener, o, scope, wrapped);
+                wrapped = true;
+            }
             if (o.delay) {
                 handler = me.createDelayed(handler, listener, o, scope, wrapped);
                 wrapped = true;
@@ -212,83 +216,91 @@ Ext.define('Ext.util.Event', function() {
             removed = false,
             observable = me.observable,
             eventName = me.name,
-            listener, highestNegativePriorityIndex, options,
-            k, manager, managedListeners, managedListener, i;
+            listener, options, manager, managedListeners, managedListener, i;
 
-        index = index || me.findListener(fn, scope);
+        index = index != null ? index : me.findListener(fn, scope);
 
         if (index !== -1) {
             listener = me.listeners[index];
-            options = listener.o;
-            highestNegativePriorityIndex = me._highestNegativePriorityIndex;
 
             if (me.firing) {
                 me.listeners = me.listeners.slice(0);
             }
 
-            // cancel and remove a buffered handler that hasn't fired yet.
-            // When the buffered listener is invoked, it must check whether
-            // it still has a task.
-            if (listener.task) {
-                listener.task.cancel();
-                delete listener.task;
-            }
-
-            // cancel and remove all delayed handlers that haven't fired yet
-            k = listener.tasks && listener.tasks.length;
-            if (k) {
-                while (k--) {
-                    listener.tasks[k].cancel();
-                }
-                delete listener.tasks;
-            }
-
-            // Remove this listener from the listeners array
-            // We can use splice directly. The IE8 bug which Ext.Array works around only affects *insertion*
+            // Remove this listener from the listeners array. We can use splice directly here.
+            // The IE8 bug which Ext.Array works around only affects *insertion*
             // http://social.msdn.microsoft.com/Forums/en-US/iewebdevelopment/thread/6e946d03-e09f-4b22-a4dd-cd5e276bf05a/
             me.listeners.splice(index, 1);
 
-            manager = listener.manager;
-            if (manager) {
-                // If this is a managed listener we need to remove it from the manager's
-                // managedListeners array.  This ensures that if we listen using mon
-                // and then remove without using mun, the managedListeners array is updated
-                // accordingly, for example
-                //
-                //     manager.on(target, 'foo', fn);
-                //
-                //     target.un('foo', fn);
-                managedListeners = manager.managedListeners;
-                if (managedListeners) {
-                    for (i = managedListeners.length; i--;) {
-                        managedListener = managedListeners[i];
-                        if (managedListener.item === me.observable && managedListener.ename === eventName &&
-                                managedListener.fn === fn && managedListener.scope === scope) {
-                            managedListeners.splice(i, 1);
-                        }
-                    }
-                }
-            }
-
             // if the listeners array contains negative priority listeners, adjust the
             // internal index if needed.
-            if (highestNegativePriorityIndex) {
-                if (index < highestNegativePriorityIndex) {
-                    me._highestNegativePriorityIndex --;
-                } else if (index === highestNegativePriorityIndex && index === me.listeners.length) {
+            if (me._highestNegativePriorityIndex) {
+                if (index < me._highestNegativePriorityIndex) {
+                    me._highestNegativePriorityIndex--;
+                }
+                else if (index === me._highestNegativePriorityIndex && index === me.listeners.length) {
                     delete me._highestNegativePriorityIndex;
                 }
             }
 
-            if (observable.isElement) {
-                observable._getPublisher(eventName).unsubscribe(
-                    observable,
-                    eventName,
-                    options.delegated !== false,
-                    options.capture
-                );
-            }
+            if (listener) {
+                options = listener.o;
+    
+                // cancel and remove a buffered handler that hasn't fired yet.
+                // When the buffered listener is invoked, it must check whether
+                // it still has a task.
+                if (listener.task) {
+                    listener.task.cancel();
+                    delete listener.task;
+                }
+    
+                // cancel and remove all delayed handlers that haven't fired yet
+                i = listener.tasks && listener.tasks.length;
 
+                if (i) {
+                    while (i--) {
+                        listener.tasks[i].cancel();
+                    }
+
+                    delete listener.tasks;
+                }
+    
+                manager = listener.manager;
+
+                if (manager) {
+                    // If this is a managed listener we need to remove it from the manager's
+                    // managedListeners array.  This ensures that if we listen using mon
+                    // and then remove without using mun, the managedListeners array is updated
+                    // accordingly, for example
+                    //
+                    //     manager.on(target, 'foo', fn);
+                    //
+                    //     target.un('foo', fn);
+                    managedListeners = manager.managedListeners;
+
+                    if (managedListeners) {
+                        for (i = managedListeners.length; i--;) {
+                            managedListener = managedListeners[i];
+
+                            if (managedListener.item === me.observable &&
+                                managedListener.ename === eventName &&
+                                managedListener.fn === fn && managedListener.scope === scope) {
+                                managedListeners.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+    
+                if (observable.isElement) {
+                    observable._getPublisher(eventName, options.translate === false).unsubscribe(
+                        observable,
+                        eventName,
+                        options.delegated !== false,
+                        options.capture
+                    );
+                }
+            }
+            
             removed = true;
         }
 
@@ -342,11 +354,21 @@ Ext.define('Ext.util.Event', function() {
             me.firing = true;
             args = arguments.length ? arraySlice.call(arguments, 0) : [];
             len = args.length;
+            
             if (isElement) {
                 e = args[0];
             }
+
             for (i = 0; i < count; i++) {
                 listener = listeners[i];
+                
+                // Listener may be undefined if one of the previous listeners
+                // destroyed the observable that was listening to these events.
+                // We'd be still in the middle of the loop here, unawares.
+                if (!listener) {
+                    continue;
+                }
+                
                 options = listener.o;
 
                 if (isElement) {
@@ -367,8 +389,10 @@ Ext.define('Ext.util.Event', function() {
                         // This is more efficient than creating a new event object, and we
                         // don't want to change the type of the original event because it may
                         // be used asynchronously by other handlers
+                        // Translated events are not gestures. They must appear to be
+                        // atomic events, so that they can be stopped.
                         chained = e;
-                        e = args[0] = chained.chain({ type: type });
+                        e = args[0] = chained.chain({ type: type, isGesture: false });
                     }
 
                     // In Ext4 Ext.EventObject was a singleton event object that was reused as events
@@ -445,12 +469,21 @@ Ext.define('Ext.util.Event', function() {
                     //</debug>
                     
                     me.removeListener(fireFn, fireScope, i);
+                    
+                    fireFn = null;
                 }
                 
-                if (fireFn.apply(fireScope, firingArgs) === false) {
+                // N.B. This is where actual listener code is called. Step boldly into!
+                if (fireFn && fireFn.apply(fireScope, firingArgs) === false) {
                     Ext.EventObject = null;
                     
                     return (me.firing = false);
+                }
+
+                // We should remove the last item here to avoid future listeners
+                // in the Array to inherit these options by mistake
+                if (options) {
+                    args.length--;
                 }
 
                 if (chained) {
@@ -540,6 +573,21 @@ Ext.define('Ext.util.Event', function() {
         return fireArgs;
     },
 
+    createAnimFrame: function (handler, listener, o, scope, wrapped) {
+        var fireInfo;
+
+        if (!wrapped) {
+            fireInfo = listener.ev.getFireInfo(listener, true);
+            handler = fireInfo.fn;
+            scope = fireInfo.scope;
+
+            // We don't want to keep closure and scope references on the Event prototype!
+            fireInfo.fn = fireInfo.scope = null;
+        }
+
+        return Ext.Function.createAnimationFrame(handler, scope, o.args);
+    },
+
     createTargeted: function (handler, listener, o, scope, wrapped) {
         return function(){
             if (o.target === arguments[0]) {
@@ -563,7 +611,7 @@ Ext.define('Ext.util.Event', function() {
         listener.task = new Ext.util.DelayedTask();
         return function() {
             // If the listener is removed during the event call, the listener stays in the
-            // list of listenes to be invoked in the fire method, but the task is deleted
+            // list of listeners to be invoked in the fire method, but the task is deleted
             // So if we get here with no task, it's because the listener has been removed.
             if (listener.task) {
                 var fireInfo;

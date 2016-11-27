@@ -10,11 +10,11 @@ Ext.define('Ext.TaskQueue', {
     pending: false,
 
     mode: true,
+    
+    readQueue: [],
+    writeQueue: [],
 
     constructor: function() {
-        this.readQueue = [];
-        this.writeQueue = [];
-
         this.run = Ext.Function.bind(this.run, this);
         // iOS has a nasty bug which causes pending requestAnimationFrame to not release
         // the callback when the WebView is switched back and forth from / to being background process
@@ -37,14 +37,16 @@ Ext.define('Ext.TaskQueue', {
     },
 
     request: function(mode) {
-        if (!this.pending) {
-            this.pendingTime = Date.now();
-            this.pending = true;
-            this.mode = mode;
+        var me = this;
+
+        if (!me.pending) {
+            me.pendingTime = Date.now();
+            me.pending = true;
+            me.mode = mode;
             if (mode) {
-                Ext.defer(this.run, 1, this);
+                me.timer = Ext.defer(me.run, 1, me);
             } else {
-                Ext.Function.requestAnimationFrame(this.run);
+                me.timer = Ext.Function.requestAnimationFrame(me.run);
             }
         }
     },
@@ -109,6 +111,14 @@ Ext.define('Ext.TaskQueue', {
         if (request !== null) {
             this.request(request);
         }
+    },
+    
+    clear: function() {
+        var me = this;
+
+        me.readQueue.length = me.writeQueue.length = 0;
+        clearTimeout(me.timer);
+        Ext.Function.cancelAnimationFrame(me.timer);
     }
 
     //<debug>

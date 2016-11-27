@@ -306,6 +306,10 @@ Ext.define('Ext.form.Panel', {
         enableSubmissionForm: true
     },
 
+    layout: {
+        type: 'vbox'
+    },
+
     classCls: Ext.baseCSSPrefix + 'formpanel',
 
     getElementConfig: function() {
@@ -389,15 +393,16 @@ Ext.define('Ext.form.Panel', {
     },
 
     updateSubmitOnAction: function(newSubmitOnAction) {
+        var me = this;
         if (newSubmitOnAction) {
-            this.on({
+            me.on({
                 action: 'onFieldAction',
-                scope: this
+                scope: me
             });
         } else {
-            this.un({
+            me.un({
                 action: 'onFieldAction',
-                scope: this
+                scope: me
             });
         }
     },
@@ -496,9 +501,6 @@ Ext.define('Ext.form.Panel', {
      *
      * @param {Ext.form.Panel} options.failure.result
      * The failed response or result object returned by the server which performed the operation.
-     *
-     * @param {Object} options.success.data
-     * The parsed data returned by the server.
      *
      * @param {Object} options.scope
      * The scope in which to call the callback functions (The `this` reference for the callback functions).

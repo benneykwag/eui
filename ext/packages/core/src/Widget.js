@@ -135,6 +135,15 @@ Ext.define('Ext.Widget', {
         baseCls: true,
 
         /**
+         * @cfg {String/String[]} cls The CSS class to add to this widget's element, in
+         * addition to the {@link #baseCls}. In many cases, this property will be specified
+         * by the derived widget class. See {@link #userCls} for adding additional CSS
+         * classes to widget instances (such as items in a {@link Ext.Container}).
+         * @accessor
+         */
+        cls: null,
+
+        /**
          * @cfg {String/Object} style
          * Additional CSS styles that will be rendered into an inline style attribute when
          * the widget is rendered.
@@ -424,7 +433,9 @@ Ext.define('Ext.Widget', {
     },
 
     addCls: function(cls) {
-        this.el.addCls(cls);
+        if (!this.destroyed) {
+            this.el.addCls(cls);
+        }
     },
 
     applyBaseCls: function(baseCls) {
@@ -438,6 +449,19 @@ Ext.define('Ext.Widget', {
         }
 
         return baseCls;
+    },
+
+    applyCls: function(cls) {
+        if (typeof cls == "string") {
+            cls = [cls];
+        }
+
+        //reset it back to null if there is nothing.
+        if (!cls || !cls.length) {
+            cls = null;
+        }
+
+        return cls;
     },
 
     applyHidden: function(hidden) {
@@ -461,7 +485,9 @@ Ext.define('Ext.Widget', {
     },
 
     updateBorder: function(border) {
-        this.el.toggleCls(this.noBorderCls, border === false);
+        // If the border is null it means we should not suppress the border
+        border = border || border === null;
+        this.el.toggleCls(this.noBorderCls, !border);
     },
 
     clearListeners: function() {
@@ -735,8 +761,9 @@ Ext.define('Ext.Widget', {
 
     /**
      * Returns `true` if this Component is currently hidden.
-     * @param {Boolean} [deep=false] `true` to check if this component
-     * is hidden because a parent container is hidden.
+     * @param {Boolean/Ext.Widget} [deep=false] `true` to check if this component
+     * is hidden because a parent container is hidden. Alternatively, a reference to the
+     * top-most parent at which to stop climbing.
      * @return {Boolean} `true` if currently hidden.
      */
     isHidden: function(deep) {
@@ -745,7 +772,7 @@ Ext.define('Ext.Widget', {
 
         if (!hidden && deep) {
             owner = this.getRefOwner();
-            while (owner) {
+            while (owner && owner !== deep) {
                 hidden = !!owner.getHidden();
                 if (hidden) {
                     break;
@@ -803,7 +830,9 @@ Ext.define('Ext.Widget', {
     },
 
     removeCls: function(cls) {
-        this.el.removeCls(cls);
+        if (!this.destroyed) {
+            this.el.removeCls(cls);
+        }
     },
 
     /**
@@ -859,6 +888,14 @@ Ext.define('Ext.Widget', {
         if (!me.isConfiguring) {
             me.syncUiCls();
         }
+    },
+
+    /**
+     * @private
+     * All cls methods directly report to the {@link #cls} configuration, so anytime it changes, {@link #updateCls} will be called
+     */
+    updateCls: function (newCls, oldCls) {
+        this.element.replaceCls(oldCls, newCls);
     },
 
     updateHidden: function(hidden) {
@@ -1094,7 +1131,7 @@ Ext.define('Ext.Widget', {
 
         detachFromBody: function() {
             // See reattachToBody
-            Ext.getDetachedBody().appendChild(this.element);
+            Ext.getDetachedBody().appendChild(this.element, true);
             this.isDetached = true;
         },
 

@@ -325,7 +325,14 @@ Ext.define('Ext.grid.Grid', {
          * @cfg {String} title
          * The title that will be displayed in the TitleBar at the top of this Grid.
          */
-        title: ''
+        title: '',
+
+        /**
+         * @cfg {Number} totalColumnWidth
+         * The total column width
+         * @private
+         */
+        totalColumnWidth: null
     },
 
     /**
@@ -416,15 +423,19 @@ Ext.define('Ext.grid.Grid', {
         me.add(headerContainer);
     },
 
-    applyTitleBar: function(titleBar) {
-        if (titleBar && !titleBar.isComponent) {
-            titleBar = Ext.factory(titleBar, Ext.TitleBar);
+    applyTitleBar: function(titleBar, oldTitleBar) {
+        return Ext.factory(titleBar, Ext.TitleBar, oldTitleBar);
+    },
+
+    updateTitleBar: function(titleBar) {
+        if (titleBar && !titleBar.getTitle()) {
+            titleBar.setTitle(this.getTitle());
         }
-        return titleBar;
     },
 
     updateTitle: function(title) {
         var titleBar = this.getTitleBar();
+
         if (titleBar) {
             if (title) {
                 titleBar.setTitle(title);
@@ -661,7 +672,7 @@ Ext.define('Ext.grid.Grid', {
         this.refreshScroller();
     },
 
-    getTotalColumnWidth: function() {
+    calculateTotalColumnWidth: function() {
         return this.getColumnsWidth(this.getColumns());
     },
 
@@ -701,10 +712,12 @@ Ext.define('Ext.grid.Grid', {
             scroller = me.getScrollable(),
             headerContainer = me.getHeaderContainer(),
             headerScroller = headerContainer.getScrollable(),
-            totalWidth = me.getTotalColumnWidth(),
+            totalWidth = me.calculateTotalColumnWidth(),
+            pinned = me.getPinnedHeader(),
             scrollbarSize;
 
         if (totalWidth && !isNaN(totalWidth)) {
+            me.setTotalColumnWidth(totalWidth);
             if (scroller) {
                 scroller.setSize({
                     x: totalWidth,
@@ -731,7 +744,16 @@ Ext.define('Ext.grid.Grid', {
                 });
             }
 
-            headerContainer.setScrollbarSpacer(scrollbarSize || 0);
+            scrollbarSize = scrollbarSize || 0;
+            headerContainer.setScrollbarSpacer(scrollbarSize);
+            // Because it's pinned it sits outside of the scrolling container, which is why we need this madness.
+            if (pinned) {
+                if (scrollbarSize) {
+                    pinned.setWidth(Ext.String.format('calc(100% - {0}px)', scrollbarSize + 1));
+                } else {
+                    pinned.setWidth('100%');
+                }
+            }
         }
 
         me.afterRefreshScroller(scroller, skipOnRefresh);
@@ -765,6 +787,26 @@ Ext.define('Ext.grid.Grid', {
                 ret = Ext.getCmp(target.id);
             }
             return ret || null;
+        },
+
+        applyTotalColumnWidth: function(totalColumnWidth) {
+            var rows = this.listItems;
+            // If we don't have any items yet, wait
+            return rows.length === 0 ? undefined : totalColumnWidth;
+        },
+
+        updateTotalColumnWidth: function(totalColumnWidth) {
+            var rows = this.listItems,
+                len = rows.length,
+                i, header;
+
+            for (i = 0; i < len; ++i) {
+                header = rows[i].getHeader();
+                if (header) {
+                    header.setMinWidth('100%');
+                    header.setWidth(totalColumnWidth);
+                }
+            }
         }
     }
 });

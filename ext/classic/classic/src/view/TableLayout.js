@@ -77,7 +77,7 @@ Ext.define('Ext.view.TableLayout', {
             state = ownerContext.state,
             columnFlusher, otherSynchronizer, synchronizer, rowHeightFlusher,
             bodyDom = owner.body.dom,
-            bodyHeight, ctSize, overflowY;
+            bodyHeight, ctSize, overflowY, overflowX;
 
         // Shortcut when empty grid - let the base handle it.
         // EXTJS-14844: Even when no data rows (all.getCount() === 0) there may be summary rows to size.
@@ -193,7 +193,12 @@ Ext.define('Ext.view.TableLayout', {
             // This eliminates "phantom" scrollbars which are only caused by other scrollbars.
             // Locking horizontal scrollbars are handled in Ext.grid.locking.Lockable#afterLayout
             if (!owner.lockingPartner) {
-                ownerContext.setProp('overflowX', !!ownerContext.headerContext.state.boxPlan.tooNarrow);
+                if (owner.isAutoTree) {
+                    overflowX = true;
+                } else {
+                    overflowX = !!ownerContext.headerContext.state.boxPlan.tooNarrow;
+                }
+                ownerContext.setProp('overflowX', overflowX);
             }
         }
     },

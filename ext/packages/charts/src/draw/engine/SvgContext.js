@@ -663,7 +663,7 @@ Ext.define('Ext.draw.engine.SvgContext', {
 });
 
 /**
- * @class Ext.draw.engine.SvgContext.Gradient.
+ * @class Ext.draw.engine.SvgContext.Gradient
  *
  * A class that implements native CanvasGradient interface
  * (https://developer.mozilla.org/en/docs/Web/API/CanvasGradient)

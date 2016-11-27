@@ -59,11 +59,13 @@ Ext.define('Ext.dom.Underlay', {
             el = me.el;
         
         if (el) {
-            el.hide();
-            me.getPool().checkIn(el);
+            if (el.dom) {
+                el.hide();
+                me.getPool().checkIn(el);
+            }
             me.el = null;
-            me.hidden = true;
         }
+        me.hidden = true;
     },
 
     /**

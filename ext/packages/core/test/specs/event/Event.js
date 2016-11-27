@@ -1,3 +1,5 @@
+/* global Ext, expect, jasmine */
+
 describe("Ext.event.Event", function() {
     var E = Ext.event.Event,
         e;
@@ -536,6 +538,39 @@ describe("Ext.event.Event", function() {
         }
         makeSuite(false);
         makeSuite(true);
+    });
+
+    describe("within", function() {
+        var target;
+
+        beforeEach(function() {
+            target = Ext.getBody().createChild();
+        });
+
+        afterEach(function() {
+            target.destroy();
+            target = null;
+        });
+
+        it("should return true by default if e.target === el.dom", function() {
+            target.on({
+                mousedown: function(e) {
+                    expect(e.within(target)).toBe(true);
+                }
+            });
+
+            jasmine.fireMouseEvent(target,'mousedown');
+        });
+
+        it("should return false if allowEl is false and e.target === el.dom", function() {
+            target.on({
+                mousedown: function(e) {
+                    expect(e.within(target, null, false)).toBe(false);
+                }
+            });
+
+            jasmine.fireMouseEvent(target,'mousedown');
+        });
     });
 
     describe("time stamp", function() {

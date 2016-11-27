@@ -38,10 +38,11 @@ Ext.define('Ext.data.ModelManager', {
                 },
 
                 /**
+                 * @method getModel
                  * Returns the {@link Ext.data.Model} class for a given model name
                  * @param {String/Object} id The classname of the model or the model class itself.
                  * @return {Ext.data.Model} a model class.
-                 * @deprecated Use {@link Ext.data.schema.Schema#lookupEntity} instead.
+                 * @deprecated 5.0 Use {@link Ext.data.schema.Schema#lookupEntity} instead.
                  */
                 getModel: function (id) {
                     return Ext.data.schema.Schema.lookupEntity(id);

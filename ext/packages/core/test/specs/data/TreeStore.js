@@ -1,4 +1,4 @@
-/* global Ext, spyOn, expect, MockAjaxManager, jasmine */
+/* global Ext, spyOn, expect, MockAjaxManager, jasmine, spyOnEvent */
 
 describe("Ext.data.TreeStore", function() {
     var store,
@@ -25,15 +25,6 @@ describe("Ext.data.TreeStore", function() {
                 {name: 'duration', type: 'string'}
             ]
         });
-
-    function spyOnEvent(object, eventName, fn) {
-        var obj = {
-            fn: fn || Ext.emptyFn
-        },
-        spy = spyOn(obj, "fn");
-        object.addListener(eventName, obj.fn);
-        return spy;
-    }
 
     function expandify(nodes) {
         if (Ext.isNumber(nodes[0])) {
@@ -4962,6 +4953,30 @@ describe("Ext.data.TreeStore", function() {
                 }
             });
             expect(dataChangeCount).toBe(1);
+        });
+    });
+
+    describe('linear data', function() {
+        it('should next correctly with depth values set', function() {
+            store = new Ext.data.TreeStore({
+                parentIdProperty: 'parent',
+                proxy: {
+                    type: 'memory',
+                    data: [
+                        {text: 'Aardvark', id: 'a'},
+                        {text: 'Bandicoot', id: 'b', parent: 'a'},
+                        {text: 'Crocodile', id: 'c', parent: 'b'}
+                    ]
+                },
+                root: {
+                    expanded: true
+                }
+            });
+            root = store.getRoot();
+            expect(root.data.depth).toBe(0);
+            expect(root.childNodes[0].data.depth).toBe(1);
+            expect(root.childNodes[0].childNodes[0].data.depth).toBe(2);
+            expect(root.childNodes[0].childNodes[0].childNodes[0].data.depth).toBe(3);
         });
     });
 });

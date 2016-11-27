@@ -2,6 +2,7 @@
  * @class Ext.dataview.IndexBar
  */
 
+//# fashion replaces $index-bar-width
 /**
  * @var {number}
  * Index bar width
@@ -38,6 +39,7 @@ $indexbar-color: dynamic($base-dark-color);
  */
 $indexbar-pressed-color: dynamic(null);
 
+//# fashion replaces $index-bar-bg-color
 /**
  * @var {color}
  * Index bar background-color

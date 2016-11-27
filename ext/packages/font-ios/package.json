@@ -5,7 +5,7 @@
     "creator": "Sencha",
     "summary": "iOS font icons",
     "detailedDescription": "Font icons used in the modern toolkit iOS theme",
-    "version": "6.2.0.839",
+    "version": "6.2.2.12",
     "compatVersion": "6.2.0",
     "format": "1",
     "output": "${framework.dir}/build/packages/${package.name}",

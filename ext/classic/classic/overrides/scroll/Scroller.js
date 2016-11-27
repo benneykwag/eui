@@ -28,7 +28,9 @@ Ext.define(null, {
                     }
                 }
 
-                x = me.convertX(x);
+                if (x !== null) {
+                    x = me.convertX(x);
+                }
 
                 if (animate) {
                     to = {};
@@ -77,6 +79,8 @@ Ext.define(null, {
                         // will fire the event.
                         +dom.scrollLeft;
                         dom.scrollLeft = x;
+                        +dom.scrollTop;
+                        dom.scrollTop = y;
                     }
                 }
 

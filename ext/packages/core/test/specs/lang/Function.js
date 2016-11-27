@@ -1,5 +1,6 @@
+/* global jasmine, Ext, expect, xit, xdescribe */
+
 describe("Ext.Function", function() {
-    
     var _setTimeout,
         _clearTimeout,
         timeouts,
@@ -35,6 +36,9 @@ describe("Ext.Function", function() {
             clearedTimeoutIds = undefined;
             window.setTimeout = _setTimeout;
             window.clearTimeout = _clearTimeout;
+        },
+        fakeScope = {
+            foo: 'baz'
         };
 
     
@@ -174,6 +178,17 @@ describe("Ext.Function", function() {
             expect(result).toBe('bar');
             expect(fn).toHaveBeenCalledWith('foo');
         });
+        
+        it("should clone own properies on the given function", function() {
+            var fn = function() {},
+                clone;
+            
+            fn.$prop = 'foo';
+            
+            clone = Ext.Function.clone(fn);
+            
+            expect(clone.$prop).toEqual('foo');
+        });
     });
 
     describe("createInterceptor", function() {
@@ -267,7 +282,7 @@ describe("Ext.Function", function() {
                 };
                  interceptor = Ext.Function.createInterceptor(interceptedFn, interceptorFn);
                 expect(interceptor()).toBe('Original');
-            })
+            });
         });
     });
     
@@ -289,7 +304,7 @@ describe("Ext.Function", function() {
        });
        it("should use the specified scope as 'this'", function() {
            var scope = { x: 'foo' },
-               fn = jasmine.createSpy().andCallFake(function() { this.x = 'bar' }),
+               fn = jasmine.createSpy().andCallFake(function() { this.x = 'bar'; }),
                delayedFn = Ext.Function.createDelayed(fn, 2, scope);
            delayedFn();
            expect(fn).not.toHaveBeenCalled();
@@ -384,7 +399,9 @@ describe("Ext.Function", function() {
         });
 
         it("should return a timeout number", function() {
-            expect(typeof Ext.defer(function() {}, 10) === 'number').toBe(true);
+            var timer = Ext.defer(function() {}, 10);
+            expect(typeof timer === 'number').toBe(true);
+            clearTimeout(timer);
         });
     });
 
@@ -532,7 +549,7 @@ describe("Ext.Function", function() {
             var monologue = {
                     phrases: [],
                     addPhrase: function(phrase) {
-                        this.phrases.push(phrase)
+                        this.phrases.push(phrase);
                     }
                 },
                 addMeToo = jasmine.createSpy().andCallFake(function(phrase) {
@@ -551,7 +568,7 @@ describe("Ext.Function", function() {
             var monologue = {
                     phrases: [],
                     addPhrase: function(phrase) {
-                        this.phrases.push(phrase)
+                        this.phrases.push(phrase);
                     }
                 },
                 transcription = {

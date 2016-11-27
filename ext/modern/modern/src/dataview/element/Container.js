@@ -32,6 +32,15 @@ Ext.define('Ext.dataview.element.Container', {
      */
 
     /**
+     * @event itemtouchcancel
+     * Fires whenever an item is touch is cancelled.
+     * @param {Ext.dataview.element.Container} this
+     * @param {Ext.dom.Element} item The item touched
+     * @param {Number} index The index of the item touched
+     * @param {Ext.event.Event} e The event object
+     */
+
+    /**
      * @event itemtap
      * Fires whenever an item is tapped
      * @param {Ext.dataview.element.Container} this
@@ -102,6 +111,7 @@ Ext.define('Ext.dataview.element.Container', {
         this.element.on({
             touchstart: 'onItemTouchStart',
             touchend: 'onItemTouchEnd',
+            touchcancel: 'onItemTouchCancel',
             tap: 'onItemTap',
             taphold: 'onItemTapHold',
             touchmove: 'onItemTouchMove',
@@ -142,12 +152,17 @@ Ext.define('Ext.dataview.element.Container', {
             target = e.currentTarget,
             index = me.getViewItems().indexOf(target);
 
-        Ext.get(target).un({
-            touchmove: 'onItemTouchMove',
-            scope   : me
-        });
-
+        Ext.get(target).un('touchmove', 'onItemTouchMove', me);
         me.fireEvent('itemtouchend', me, Ext.get(target), index, e);
+    },
+
+    onItemTouchCancel: function(e) {
+        var me = this,
+            target = e.currentTarget,
+            index = me.getViewItems().indexOf(target);
+
+        Ext.get(target).un('touchmove', 'onItemTouchMove', me);
+        me.fireEvent('itemtouchcancel', me, Ext.get(target), index, e);
     },
 
     onItemTouchMove: function(e) {
@@ -303,7 +318,7 @@ Ext.define('Ext.dataview.element.Container', {
             item = items[from + i];
             Ext.get(item).destroy();
         }
-        if (me.getViewItems().length == 0) {
+        if (me.getViewItems().length === 0) {
             this.dataview.showEmptyText();
         }
     },

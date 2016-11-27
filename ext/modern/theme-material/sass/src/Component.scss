@@ -10,11 +10,13 @@ require("../extensions/string.js");
     --base-dark-color: export;
     --base-pressed-color: export;
     --base-invisible-color: export;
+    --base-foreground-color: export;
     --accent-color: export;
     --accent-light-color: export;
     --accent-dark-color: export;
     --accent-pressed-color: export;
     --accent-invisible-color: export;
+    --accent-foreground-color: export;
     --confirm-color: export;
     --confirm-pressed-color: export;
     --alert-color: export;
@@ -34,6 +36,7 @@ require("../extensions/string.js");
     --faded-color: export;
     --overlay-color: export;
     --content-padding: export;
+    --listitem-selected-background-color: export;
   }
 }
 

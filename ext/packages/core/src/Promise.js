@@ -124,7 +124,7 @@ return {
          *  * Resolves or rejects when the specified promise (or third-party Promise or
          *    then()-able) is resolved or rejected.
          *
-         * @param {Mixed} promiseOrValue A Promise (or third-party Promise or then()-able)
+         * @param {Mixed} value A Promise (or third-party Promise or then()-able)
          * or value.
          * @return {Ext.Promise} A Promise of the specified Promise or value.
          * @static

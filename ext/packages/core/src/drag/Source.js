@@ -197,7 +197,7 @@ Ext.define('Ext.drag.Source', {
      * Fires before drag starts on this source. Return `false` to cancel the drag.
      * 
      * @param {Ext.drag.Source} this This source.
-     * @param {Ext.drag.Info} The drag info.
+     * @param {Ext.drag.Info} info The drag info.
      * @param {Ext.event.Event} event The event.
      */
     
@@ -206,7 +206,7 @@ Ext.define('Ext.drag.Source', {
      * Fires when the drag starts on this source.
      * 
      * @param {Ext.drag.Source} this This source.
-     * @param {Ext.drag.Info} The drag info.
+     * @param {Ext.drag.Info} info The drag info.
      * @param {Ext.event.Event} event The event.
      */
     
@@ -215,7 +215,7 @@ Ext.define('Ext.drag.Source', {
      * Fires continuously as this source is dragged.
      * 
      * @param {Ext.drag.Source} this This source.
-     * @param {Ext.drag.Info} The drag info.
+     * @param {Ext.drag.Info} info The drag info.
      * @param {Ext.event.Event} event The event.
      */
     
@@ -224,7 +224,7 @@ Ext.define('Ext.drag.Source', {
      * Fires when the drag ends on this source.
      * 
      * @param {Ext.drag.Source} this This source.
-     * @param {Ext.drag.Info} The drag info.
+     * @param {Ext.drag.Info} info The drag info.
      * @param {Ext.event.Event} event The event.
      */
     
@@ -233,7 +233,7 @@ Ext.define('Ext.drag.Source', {
      * Fires when a drag is cancelled.
      *
      * @param {Ext.drag.Source} this This source.
-     * @param {Ext.drag.Info} The drag info.
+     * @param {Ext.drag.Info} info The drag info.
      * @param {Ext.event.Event} event The event.
      */
     
@@ -383,11 +383,18 @@ Ext.define('Ext.drag.Source', {
     },
 
     updateElement: function(element, oldElement) {
+        // We can't bind/unbind these listeners with getElListeners because
+        // they will conflict with the dragstart gesture event
+        if (oldElement) {
+            oldElement.un('dragstart', 'stopNativeDrag', this);
+        }
+
         if (element && !this.getHandle()) {
             element.setTouchAction({
                 panX: false,
                 panY: false
             });
+            element.on('dragstart', 'stopNativeDrag', this, {translate: false});
         }
         this.callParent([element, oldElement]);
     },
@@ -690,6 +697,10 @@ Ext.define('Ext.drag.Source', {
          *
          * @private
          */
-        setup: Ext.privateFn
+        setup: Ext.privateFn,
+
+        stopNativeDrag: function(e) {
+            e.preventDefault();
+        }
     }
 });

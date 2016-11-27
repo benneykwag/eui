@@ -1,14 +1,15 @@
 /* global Ext, jasmine, expect, xit */
 
 describe('Ext.menu.Item', function () {
-    var menu, item;
+    var itNotTouch = jasmine.supportsTouch ? xit : it,
+        menu, item;
 
     function makeMenu(itemCfg, menuCfg) {
         menu = Ext.widget(Ext.apply({
             xtype: 'menu',
             items: itemCfg
         }, menuCfg));
-        menu.show();
+        menu.showAt(0, 0);
 
         item = menu.items.getAt(0);
     }
@@ -313,9 +314,13 @@ describe('Ext.menu.Item', function () {
                 }, {
                     text: 'menu item two'
                 }]);
-
-                menu.activeItem = menu.focusedItem = item;
-                clickItem(item, Ext.isIE9m);
+                item.focus();
+                
+                jasmine.waitsForFocus(item);
+                
+                runs(function() {
+                    clickItem(item, true);
+                });
 
                 waitsFor(function () {
                     return location.hash === '#ledzep';
@@ -326,8 +331,10 @@ describe('Ext.menu.Item', function () {
                 });
             });
             
-            // TODO This test does not work properly in IE10+ due to events being translated
-            (Ext.isIE10p ? xit : it)('should not follow the target link if the click listener stops the event', function () {
+            // TODO This test does not work properly due to events being translated
+            // TODO: Reinstate this for touch platforms when https://sencha.jira.com/browse/EXT-4 is fixed.
+            // We cannot now preventDefault on native click events on touch because of click event synthesis.
+            xit('should not follow the target link if the click listener stops the event', function () {
                 var hashValue = Ext.isIE ? '#' : '';
 
                 makeMenu([{
@@ -368,7 +375,7 @@ describe('Ext.menu.Item', function () {
             });
         });
 
-        it("should gain focus and activate on mouseover", function() {
+        itNotTouch("should gain focus and activate on mouseover", function() {
             makeMenu([{
                 text: 'Foo',
                 disabled: true
@@ -384,7 +391,7 @@ describe('Ext.menu.Item', function () {
         });
 
         describe("submenu", function() {
-            it("should not show a submenu on mouseover", function() {
+            itNotTouch("should not show a submenu on mouseover", function() {
                 makeMenu([{
                     text: 'Foo',
                     disabled: true,

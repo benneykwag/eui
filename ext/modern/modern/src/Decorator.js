@@ -44,10 +44,10 @@ Ext.define('Ext.Decorator', {
     isDecorator: true,
 
     config: {
+        // @cmd-auto-dependency { aliasPrefix: 'widget.', typeProperty: 'xtype' }
         /**
          * @cfg {Object} component
          * The config object to factory the Component that this Decorator wraps around.
-         * @cmd-auto-dependency { aliasPrefix: 'widget.', typeProperty: 'xtype' }
          */
         component: {
             xtype: 'component'

@@ -480,7 +480,18 @@
         .#{$prefix}btn-icon-left > & {
             // since calc is only supported in IE9+ ellipsis will not work in IE8 when
             // there is a left or right icon present
-            max-width: calc(100% - #{$icon-size});
+            @if $include-ie {
+                .#{$prefix}ie9 & {
+                    max-width: calc(100% - #{$icon-size});
+                }
+            }
+
+            // Safari calc() does not handle sub-pixel sizes correctly and therefore the max width
+            // can be larger than its parent and causes text-overflow. We remove 1px from the
+            // calculation to prevent overflow.
+            .#{$prefix}safari8m & {
+                max-width: calc(100% - #{$icon-size - 1px});
+            }
         }
 
         // Max-width interferes with the layout in IE11.  Fortunately we don't need the hack there

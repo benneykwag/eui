@@ -171,14 +171,18 @@ Ext.define('Ext.TitleBar', {
     },
 
     initialize: function () {
-        delete this.applyItems;
+        var me = this;
 
-        this.add(this.initialItems);
-        delete this.initialItems;
+        delete me.applyItems;
 
-        this.on({
+        me.add(me.initialItems);
+        delete me.initialItems;
+
+        me.on({
+            scope: me,
             painted: 'refreshTitlePosition',
-            single: true
+            single: true,
+            scope: this
         });
     },
 

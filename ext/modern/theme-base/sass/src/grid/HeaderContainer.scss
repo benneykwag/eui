@@ -1,3 +1,9 @@
 .#{$prefix}headercontainer {
     overflow: hidden;
+
+    // Must be relative due to Safari bugs:
+    //  So that box shadow overlays view.
+    //  So that the virtual scroll range is extended by the spacer.
+    // https://sencha.jira.com/browse/EXTJS-22515
+    position: relative;
 }

@@ -567,8 +567,11 @@ Ext.define('Ext.window.Window', {
      * @private
      */
     onEsc: function(e) {
-        e.stopEvent();
-        this.close();
+        if (this.closable) {
+            e.stopEvent();
+            this.close();
+            return false;
+        }
     },
 
     doDestroy: function() {
@@ -728,8 +731,9 @@ Ext.define('Ext.window.Window', {
 
         // Perform superclass's afterHide tasks.
         me.callParent(arguments);
-        
-        if (me.rendered && me.tabGuard) {
+
+        // Hide may have destroyed a Window.
+        if (!me.destroyed && me.rendered && me.tabGuard) {
             me.initTabGuards();
         }
     },

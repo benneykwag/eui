@@ -161,17 +161,21 @@ Ext.define('Ext.grid.feature.RowBody', {
             },
 
             syncContent: function(destRow, sourceRow, columnsToUpdate) {
-                var owner = this.owner,
-                    destRowBody = Ext.fly(destRow).down(owner.eventSelector, true),
-                    sourceRowBody;
+                if (this.doSync) {
+                    var owner = this.owner,
+                        destRowBody = Ext.fly(destRow).down(owner.eventSelector, true),
+                        sourceRowBody;
 
-                // Sync the heights of row body elements in each row if they need it.
-                if (destRowBody && (sourceRowBody = Ext.fly(sourceRow).down(owner.eventSelector, true))) {
-                    Ext.fly(destRowBody).syncContent(sourceRowBody);
+                    // Sync the heights of row body elements in each row if they need it.
+                    if (destRowBody && (sourceRowBody = Ext.fly(sourceRow).down(owner.eventSelector, true))) {
+                        Ext.fly(destRowBody).syncContent(sourceRowBody);
+                    }
                 }
             }
         }
     ],
+
+    doSync: true,
 
     init: function(grid) {
         var me = this,

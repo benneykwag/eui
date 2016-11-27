@@ -98,8 +98,9 @@ Ext.define('Ext.data.matrix.Slice', {
                     }
                     otherSlice.members[id] =  assoc;
                     call = 1;
-                } else if (state !== assoc[2] && state !== 0) {
-                    // If they aren't equal and we're setting it to 0, favour the current state
+                } else if (state !== assoc[2] && state !== 0 && !(state === 1 && assoc[2] === 0)) {
+                    // If they aren't equal and we're setting it to 0, favour the current state, except
+                    // in the case where it's trying to mark as added when we already have it as present
                     assoc[2] = state;
                     otherSlice = otherSlices[otherId];
                     // because the assoc exists the other side will have a slice

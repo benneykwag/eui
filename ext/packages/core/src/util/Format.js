@@ -943,7 +943,7 @@ Ext.define('Ext.util.Format', function () {
          *
          * @param {String} value The sentence to break into words.
          * @param {Number} index The 0-based word index.
-         * @param {String/RegExp} [sep="[\W\s]+"} The pattern by which to separate words.
+         * @param {String/RegExp} [sep="[\W\s]+"] The pattern by which to separate words.
          * @return {String} The requested word or empty string.
          */
         word: function (value, index, sep) {

@@ -411,13 +411,12 @@ Ext.define('Ext.form.Panel', {
      */
     startPolling: function(interval) {
         this.stopPolling();
-        var task = new Ext.util.TaskRunner(interval);
-        task.start({
-            interval: 0,
+
+        this.pollTask = Ext.util.TaskManager.start({
+            interval: interval,
             run: this.checkChange,
             scope: this
         });
-        this.pollTask = task;
     },
 
     /**
@@ -426,8 +425,8 @@ Ext.define('Ext.form.Panel', {
     stopPolling: function() {
         var task = this.pollTask;
         if (task) {
-            task.stopAll();
-            delete this.pollTask;
+            Ext.util.TaskManager.stop(task, true);
+            this.pollTask = null;
         }
     },
 

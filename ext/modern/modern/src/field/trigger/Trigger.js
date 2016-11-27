@@ -19,6 +19,8 @@ Ext.define('Ext.field.trigger.Trigger', {
         aliasPrefix: 'trigger.'
     },
 
+    isTrigger: true,
+
     config: {
         /**
          * @cfg {Ext.field.Text}
@@ -46,6 +48,12 @@ Ext.define('Ext.field.trigger.Trigger', {
         handler: null,
 
         /**
+         * @cfg {String}
+         * @inheritdoc Ext.Button#iconCls
+         */
+        iconCls: null,
+
+        /**
          * @cfg {Boolean/Object}
          * `true` to attach a {@link Ext.util.TapRepeater tap repeater} to the trigger,
          * or a config object for a tap repeater.
@@ -63,6 +71,13 @@ Ext.define('Ext.field.trigger.Trigger', {
          * Execution context for the {@link #handler} function.
          */
         scope: null,
+
+        /**
+         * @cfg {String}
+         * The key used to identify this trigger in the text field's triggers config.
+         * @private
+         */
+        name: null,
 
         /**
          * The triggers contained in this trigger (only applicable for trigger groups)
@@ -165,6 +180,10 @@ Ext.define('Ext.field.trigger.Trigger', {
         if (!this.isConfiguring) {
             this.getField().syncTriggers();
         }
+    },
+
+    updateIconCls: function(iconCls, oldIconCls) {
+        this.iconElement.replaceCls(oldIconCls, iconCls);
     },
 
     updateSide: function() {

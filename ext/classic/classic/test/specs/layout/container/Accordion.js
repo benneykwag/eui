@@ -1,3 +1,5 @@
+/* global expect, Ext, jasmine */
+
 describe("Ext.layout.container.Accordion", function() {
 
     describe("single item", function() {
@@ -11,6 +13,9 @@ describe("Ext.layout.container.Accordion", function() {
                     animate: false,
                     multi: multi,
                     fill: fill === false ? false : true
+                },
+                defaults: {
+                    animCollapseDuration: 100
                 },
                 items: [{
                     title: 'Child Panel'
@@ -793,7 +798,7 @@ describe("Ext.layout.container.Accordion", function() {
             ct.items.each(function(item) {
                 item.on('expand', function() {
                     ++count;
-                })
+                });
             });
             
             ct.destroy();
@@ -855,6 +860,9 @@ describe("Ext.layout.container.Accordion", function() {
                             type: 'accordion',
                             animate: !!animate
                         },
+                        defaults: {
+                            animCollapseDuration: 100
+                        },
                         items: [{
                             title: 'foo',
                             collapsible: true,
@@ -885,7 +893,9 @@ describe("Ext.layout.container.Accordion", function() {
                             foo.collapse();
                         });
                         
-                        waitsForSpy(collapseSpy, 'collapse', 1000);
+                        if (animate) {
+                            waitsForSpy(collapseSpy, 'collapse', 'foo panel to initially collapse');
+                        }
                     }
                     
                     if (options && options.expand) {
@@ -893,7 +903,9 @@ describe("Ext.layout.container.Accordion", function() {
                             foo.expand();
                         });
                         
-                        waitsForSpy(expandSpy, 'expand', 1000);
+                        if (animate) {
+                            waitsForSpy(expandSpy, 'expand', 'foo panel to expand after its initial collapse');
+                        }
                     }
                 });
                 
@@ -960,7 +972,7 @@ describe("Ext.layout.container.Accordion", function() {
                             
                             it("should be tabbable", function() {
                                 expect(pinTool.el.isTabbable()).toBe(true);
-                            })
+                            });
                         });
                     });
                     
@@ -1094,6 +1106,9 @@ describe("Ext.layout.container.Accordion", function() {
                             type: 'accordion',
                             animate: animate
                         },
+                        defaults: {
+                            animCollapseDuration: 100
+                        },
                         items: [{
                             title: 'foo',
                             collapsible: true,
@@ -1149,11 +1164,9 @@ describe("Ext.layout.container.Accordion", function() {
                 describe("pointer", function() {
                     describe("title collapse", function() {
                         beforeEach(function() {
-                            runs(function() {
-                                jasmine.fireMouseEvent(barHdr, 'click');
-                            });
+                            jasmine.fireMouseEvent(barHdr, 'click');
                         
-                            waitsForSpy(collapseSpy, 'collapse', 1000);
+                            waitsForSpy(collapseSpy, 'collapse');
                         });
                         
                         it("should collapse foo", function() {
@@ -1166,11 +1179,9 @@ describe("Ext.layout.container.Accordion", function() {
                         
                         describe("expand", function() {
                             beforeEach(function() {
-                                runs(function() {
-                                    jasmine.fireMouseEvent(barHdr, 'click');
-                                });
+                                jasmine.fireMouseEvent(barHdr, 'click');
                                 
-                                waitsForSpy(expandSpy, 'expand', 1000);
+                                waitsForSpy(expandSpy, 'expand');
                             });
                             
                             it("should expand foo", function() {
@@ -1185,11 +1196,9 @@ describe("Ext.layout.container.Accordion", function() {
                     
                     describe("tool collapse", function() {
                         beforeEach(function() {
-                            runs(function() {
-                                jasmine.fireMouseEvent(foo.collapseTool, 'click');
-                            });
+                            jasmine.fireMouseEvent(foo.collapseTool, 'click');
                             
-                            waitsForSpy(collapseSpy, 'collapse', 1000);
+                            waitsForSpy(collapseSpy, 'collapse');
                         });
                         
                         it("should collapse foo", function() {
@@ -1391,9 +1400,7 @@ describe("Ext.layout.container.Accordion", function() {
                             });
                             
                             it("should go to bar title from bar input", function() {
-                                runs(function() {
-                                    foo.collapse();
-                                });
+                                foo.collapse();
                                 
                                 waitForSpy(collapseSpy);
                                 
@@ -1440,11 +1447,9 @@ describe("Ext.layout.container.Accordion", function() {
                             
                             describe("foo collapsed", function() {
                                 beforeEach(function() {
-                                    runs(function() {
-                                        foo.collapse();
-                                    });
+                                    foo.collapse();
                                     
-                                    waitForSpy(collapseSpy, 'collapse', 1000);
+                                    waitForSpy(collapseSpy, 'collapse');
                                 });
                                 
                                 it("should go from before input to foo title", function() {
@@ -1514,11 +1519,9 @@ describe("Ext.layout.container.Accordion", function() {
                             
                             describe("foo collapsed", function() {
                                 beforeEach(function() {
-                                    runs(function() {
-                                        foo.collapse();
-                                    });
+                                    foo.collapse();
                                     
-                                    waitForSpy(collapseSpy, 'collapse', 1000);
+                                    waitForSpy(collapseSpy, 'collapse');
                                 });
                                 
                                 it("should go from after input to bar inner input", function() {

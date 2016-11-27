@@ -174,6 +174,7 @@ Ext.define('Ext.panel.Tool', {
             maximize:1,
             minimize:1,
             minus:1,
+            menu: 1,
             //move:1,
             next:1,
             pin:1,

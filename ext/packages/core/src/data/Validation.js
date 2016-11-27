@@ -3,10 +3,6 @@
  * `{@link Ext.data.Model#validators validators}` are stored as the field values of this
  * record. The first failed validation is all that is stored per field unless the Model
  * class has defined a `validationSeparator` config.
- *
- * Application code will not need to interact with this class specifically but rather just
- * view the validation as a record.
- * @private
  * @since 5.0.0
  */
 Ext.define('Ext.data.Validation', {

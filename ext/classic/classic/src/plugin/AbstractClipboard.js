@@ -192,7 +192,7 @@ Ext.define('Ext.plugin.AbstractClipboard', {
          * currently using this object.
          * @property {Object} shared.data The clipboard data for intra-page copy/paste. The
          * properties of the object are keyed by format.
-         * @property {Ext.dom.Element} textArea The shared textarea used to polyfill the
+         * @property {Ext.dom.Element} shared.textArea The shared textarea used to polyfill the
          * lack of HTML5 clipboard API.
          * @private
          */

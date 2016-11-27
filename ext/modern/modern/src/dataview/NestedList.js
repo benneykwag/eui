@@ -502,19 +502,13 @@ Ext.define('Ext.dataview.NestedList', {
     },
 
     onStoreBeforeLoad: function () {
-        var loadingText = this.getLoadingText(),
-            scroller = this.getScrollable();
+        var loadingText = this.getLoadingText();
 
         if (loadingText) {
             this.setMasked({
                 xtype: 'loadmask',
                 message: loadingText
             });
-
-            //disable scrolling while it is masked
-            if (scroller) {
-                scroller.setDisabled(true);
-            }
         }
 
         this.fireEvent.apply(this, [].concat('beforeload', this, Array.prototype.slice.call(arguments)));

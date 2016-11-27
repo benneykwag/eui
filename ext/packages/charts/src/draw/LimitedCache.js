@@ -45,7 +45,6 @@ Ext.define('Ext.draw.LimitedCache', {
     /**
      * Get a cached object.
      * @param {String} id
-     * @param {Mixed...} args Arguments appended to feeder.
      * @return {Object}
      */
     get: function (id) {

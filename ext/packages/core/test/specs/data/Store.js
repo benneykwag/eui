@@ -3253,6 +3253,16 @@ describe("Ext.data.Store", function() {
                         completeWithData(successData);
                         expect(eventFired).toBe(true);
                     });
+                    
+                    it("should allow destroying store in callback", function() {
+                        expect(function() {
+                            store.load({
+                                callback: function() {
+                                    store.destroy();
+                                }
+                            });
+                        }).not.toThrow();
+                    });
                 });
             });
             
@@ -3856,6 +3866,21 @@ describe("Ext.data.Store", function() {
                 });
                 
                 describe("sortType", function(){
+                    function createSortStore () {
+                        store = new Ext.data.Store({
+                            fields: [
+                                {name: 'name', sortType: 'asText'},
+                                {name: 'salary', sortType: 'asFloat'}
+                            ]
+                        });
+        
+                        store.add(
+                            {name: 'Marge', salary: '50,000'},
+                            {name: '<div>Lisa</div>', salary: '90000'},
+                            {name: 'Homer', salary: '25000'},
+                            {name: 'Bart', salary: '100,000'});
+                    }
+                    
                     it("should not pass the default sortType for the field", function(){
                         store.sort('name', 'ASC');
                         var sorter = store.getSorters().first();
@@ -3872,7 +3897,29 @@ describe("Ext.data.Store", function() {
                         store.sort('someUnknownField');
                         var sorter = store.getSorters().first();
                         expect(sorter.getTransform()).toBeNull();
-                    });   
+                    });
+    
+                    it('should ignore tags when sorting', function () {
+                        createSortStore();
+        
+                        store.sort('name');
+        
+                        expect(store.getAt(0).get('name')).toEqual('Bart');
+                        expect(store.getAt(1).get('name')).toEqual('Homer');
+                        expect(store.getAt(2).get('name')).toEqual('<div>Lisa</div>');
+                        expect(store.getAt(3).get('name')).toEqual('Marge');
+                    });
+    
+                    it('should ignore commas when sorting', function () {
+                        createSortStore();
+        
+                        store.sort('salary');
+        
+                        expect(store.getAt(0).get('salary')).toEqual('25000');
+                        expect(store.getAt(1).get('salary')).toEqual('50,000');
+                        expect(store.getAt(2).get('salary')).toEqual('90000');
+                        expect(store.getAt(3).get('salary')).toEqual('100,000');
+                    });
                 });
                 
                 describe("with loadData", function() {

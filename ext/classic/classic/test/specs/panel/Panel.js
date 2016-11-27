@@ -5,7 +5,8 @@ describe("Ext.panel.Panel", function() {
 
     function makePanel(cfg) {
         panel = new Ext.panel.Panel(Ext.apply({
-            renderTo: Ext.getBody()
+            renderTo: Ext.getBody(),
+            animCollapseDuration: 100
         }, cfg));
     }
 
@@ -647,6 +648,7 @@ describe("Ext.panel.Panel", function() {
                                         title: 'West',
                                         region: 'west',
                                         collapsible: true,
+                                        animCollapseDuration: 100,
                                         animCollapse: anim,
                                         width: 200
                                     }, {
@@ -979,23 +981,22 @@ describe("Ext.panel.Panel", function() {
         
             // https://sencha.jira.com/browse/EXTJSIV-8095
             it("should honor numeric animCollapse value", function() {
-                runs(function() {
-                    makePanel({
-                        title: 'Hello',
-                        animCollapse: 50,
-                        collapsible: true,
-                        width: 200,
-                        x: 100,
-                        y: 100,
-                        html: '<p>World!</p>'
-                    });
-                    
-                    panel.collapse();
+                var collapseSpy;
+
+                makePanel({
+                    title: 'Hello',
+                    animCollapse: 50,
+                    collapsible: true,
+                    width: 200,
+                    x: 100,
+                    y: 100,
+                    html: '<p>World!</p>'
                 });
+
+                collapseSpy = spyOnEvent(panel, 'collapse');
+                panel.collapse();
                 
-                waitsFor(function() {
-                    return panel.collapsed === 'top';
-                }, 'Never collapsed');
+                waitsForSpy(collapseSpy, 'panel to collapse');
                 
                 runs(function() {
                     expect(panel.collapsed).toBe('top');
@@ -1939,7 +1940,7 @@ describe("Ext.panel.Panel", function() {
                 jasmine.fireMouseEvent(placeholder.getEl(), 'click');
                 
                 expect(placeholder.hidden).toBe(true);
-                expect(westRegion.collapsed).toBe(false);             
+                expect(westRegion.collapsed).toBe(false);
             });
 
             it('should expand the region if titleCollapse=false but keep the placeholder visible', function () {
@@ -2033,20 +2034,13 @@ describe("Ext.panel.Panel", function() {
             });
 
             it('should hiding when floated from collapsed', function() {
-                var isFloated;
-
                 createViewport(null, true);
 
-                westRegion.on('float', function() {
-                    isFloated = true;
-                });
                 westRegion.collapse();
                 westRegion.floatCollapsedPanel();
 
                 // Wait until it's done
-                waitsFor(function() {
-                    return isFloated;
-                });
+                waitsForEvent(westRegion, 'float');
                 runs(function() {
                     westRegion.hide();
 
@@ -2105,6 +2099,9 @@ describe("Ext.panel.Panel", function() {
             });
 
             it('should correctly update the hidden state, animated', function () {
+                var expandSpy,
+                    collapseSpy;
+
                 createViewport({
                     items: [{
                         region: 'west',
@@ -2112,38 +2109,27 @@ describe("Ext.panel.Panel", function() {
                         collapsed: true,
                         collapsible: true,
                         animCollapse: 1,
-                        width: 150,
-                        listeners: {
-                            collapse: function () {
-                                wasCalled = true;
-                            },
-                            expand: function () {
-                                wasCalled = true;
-                            }
-                        }
+                        width: 150
                     }, {
                         region: 'center',
                         title: 'center',
                         items: []
                     }]
                 });
+                collapseSpy = spyOnEvent(westRegion, 'collapse');
+                expandSpy = spyOnEvent(westRegion, 'expand');
 
                 westRegion.expand(true);
 
-                waitsFor(function () {
-                    return wasCalled;
-                });
+                waitsForSpy(expandSpy);
 
                 runs(function () {
-                    wasCalled = false;
                     expect(placeholder.getInherited().hidden).toBe(true);
 
                     westRegion.collapse('left', true);
                 });
 
-                waitsFor(function () {
-                    return wasCalled;
-                });
+                waitsForSpy(collapseSpy);
 
                 runs(function () {
                     expect(placeholder.getInherited().hasOwnProperty('hidden')).toBe(false);
@@ -4863,11 +4849,12 @@ describe("Ext.panel.Panel", function() {
         - should correctly restore visibility of the new items
         */
         it('should restore its visibility when panel is expanded', function(){
-            var panelCollapsed = false,
-                panelExpanded = false;
+            var collapseSpy,
+                expandSpy;
 
             makePanel({
                 collapsible: true,
+                animCollapseDuration: 100,
                 collapseDirection: 'top',
                 title: 'Foo',
                 dockedItems: [{
@@ -4877,19 +4864,14 @@ describe("Ext.panel.Panel", function() {
                     dock: 'right',
                     width: 100,
                     html: 'Test'
-                }],
-
-                listeners: {
-                    collapse: function() { panelCollapsed = true; },
-                    expand: function() { panelExpanded = true; }
-                }
+                }]
             });
 
+            collapseSpy = spyOnEvent(panel, 'collapse');
+            expandSpy = spyOnEvent(panel, 'expand');
             panel.collapse();
 
-            waitsFor(function(){
-                return panelCollapsed;
-            });
+            waitsForSpy(collapseSpy, 'panel to collapse');
 
             runs(function(){
                 var docked = panel.down('#foo');
@@ -4907,16 +4889,13 @@ describe("Ext.panel.Panel", function() {
                 });
 
                 panel.expand();
-
-                waitsFor(function(){
-                    return panelExpanded;
-                });
-
-                runs(function(){
-                    expect(panel.down('#nofoo').el.isVisible()).toBe(true);
-                });
             });
 
+            waitsForSpy(expandSpy, 'panel to expand');
+
+            runs(function(){
+                expect(panel.down('#nofoo').el.isVisible()).toBe(true);
+            });
         });
 
     });

@@ -145,7 +145,7 @@ describe("Ext.data.reader.Reader", function() {
             
             var transformFn = function(data) {
                 expect(this).toEqual(mockScope);
-                data[0] = {id: 2}
+                data[0] = {id: 2};
                 return data;
             };
             
@@ -282,6 +282,42 @@ describe("Ext.data.reader.Reader", function() {
                 reader.onMetaChange(meta);
                 expect(reader.getModel()).toBe(model);
             });
+        });
+    });
+
+    describe("caching", function() {
+        function parseXml(str) {
+            if (window.ActiveXObject) {
+                var doc = new ActiveXObject('Microsoft.XMLDOM');
+                doc.loadXML(str);
+                return doc;
+            } else if (window.DOMParser) {
+                return (new DOMParser()).parseFromString(str, 'text/xml');
+            }
+            return '';
+        }
+
+        it("should read data correctly when using anonymous classes", function() {
+            var M = Ext.define(null, {
+                extend: 'Ext.data.Model'
+            });
+
+            var xml = new (Ext.define(null, {
+                extend: 'Ext.data.reader.Xml',
+                model: M,
+                record: 'foo'
+            }))();
+
+            var json = new (Ext.define(null, {
+                extend: 'Ext.data.reader.Json',
+                model: M
+            }))();
+
+            expect(json.read({
+                success: true
+            }).success).toBe(true);
+
+            expect(xml.read(parseXml('<success>true</success>')).success).toBe(true);
         });
     });
 });

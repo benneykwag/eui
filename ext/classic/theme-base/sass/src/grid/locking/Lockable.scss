@@ -26,8 +26,18 @@
     }
 }
 
-.#{$prefix}grid-scrollbar-clipper-locked .#{$prefix}grid-cell-last {
-    border-right-width: 0!important;
+.#{$prefix}grid-with-col-lines .#{$prefix}grid-scrollbar-clipper-locked .#{$prefix}grid-cell-last {
+    border-right-width: 0;
+}
+
+@if $include-rtl {
+    .#{$prefix}rtl.#{$prefix}grid-scrollbar-clipper {
+        left: auto;
+        right: 0;
+    }
+    .#{$prefix}grid-with-col-lines .#{$prefix}rtl.#{$prefix}grid-scrollbar-clipper-locked .#{$prefix}grid-cell-last {
+        border-left-width: 0;
+    }
 }
 
 .#{$prefix}grid-scrollbar {
@@ -37,12 +47,14 @@
     display: none;
 }
 
+@if $include-rtl {
+    .#{$prefix}rtl.#{$prefix}grid-scrollbar {
+        left: auto;
+        right: 0;
+    }
+}
 .#{$prefix}grid-scrollbar-visible {
     display: block;
-}
-
-.#{$prefix}grid-scrollbar-sizer {
-    height: 1px;
 }
 
 .#{$prefix}grid-locking-body {

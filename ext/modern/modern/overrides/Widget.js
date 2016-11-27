@@ -1,5 +1,5 @@
 /**
- *
+ * @class Ext.Widget
  */
 Ext.define('Ext.overrides.Widget', {
     override: 'Ext.Widget',
@@ -179,7 +179,16 @@ Ext.define('Ext.overrides.Widget', {
          * @private
          * @accessor
          */
-        translatable: null
+        translatable: null,
+
+        /**
+         * @cfg {Ext.dom.Element/Ext.util.Region} [constrainTo]
+         * The element into which floated or positioned items constrain their position.
+         *
+         * Defaults to the parent container for {@link #isPositioned positioned} components,
+         * and to the viewport for {@link #floated} components.
+         */
+        constrainTo: null
     },
 
     /**
@@ -241,11 +250,6 @@ Ext.define('Ext.overrides.Widget', {
      */
     isInner: true,
 
-    /**
-     * @private
-     */
-    alignmentRegex: /^([a-z]+)-([a-z]+)(\?)?$/,
-
     constructor: function(config) {
         this.callParent([config]);
         this.initBindable();
@@ -269,8 +273,15 @@ Ext.define('Ext.overrides.Widget', {
     beforeHide: Ext.emptyFn,
 
     afterHide: function() {
-        if (this.isFloated()) {
-            this.syncShim();
+        var me = this,
+            parent = me.getParent();
+
+        if (parent && parent.afterItemHide) {
+            parent.afterItemHide(me);
+        }
+
+        if (me.isFloated()) {
+            me.syncShim();
         }
     },
 
@@ -292,7 +303,14 @@ Ext.define('Ext.overrides.Widget', {
         }
     },
 
-    afterShow: Ext.emptyFn,
+    afterShow: function() {
+        var me = this,
+            parent = me.getParent();
+
+        if (parent && parent.afterItemShow) {
+            parent.afterItemShow(me);
+        }
+    },
 
     applyItemId: function(itemId) {
         return itemId || this.getId();
@@ -547,7 +565,9 @@ Ext.define('Ext.overrides.Widget', {
                 alignToHeight: alignToBox.height || 0,
 
                 width: box.width,
-                height: box.height
+                height: box.height,
+                
+                anchor: me.getAnchor()
             },
             currentAlignmentInfo = me.getCurrentAlignmentInfo(),
             isAligned = true;
@@ -635,7 +655,7 @@ Ext.define('Ext.overrides.Widget', {
     getAlignRegion: function(component, alignment, options) {
         var me = this,
             alignmentInfo = me.getAlignmentInfo(component, alignment),
-            matches,
+            constrainModifier,
             inside;
 
         if (alignmentInfo.isAligned) {
@@ -643,7 +663,6 @@ Ext.define('Ext.overrides.Widget', {
         }
 
         var alignToBox = alignmentInfo.stats.alignToBox,
-            // TODO: Allow configuration of constrain region
             constrainBox = me.getConstrainRegion(),
             height = alignmentInfo.stats.height,
             width = alignmentInfo.stats.width;
@@ -667,28 +686,26 @@ Ext.define('Ext.overrides.Widget', {
             }
         }
 
-        matches = alignment.match(me.alignmentRegex);
-        //<debug>
-        if (!matches) {
-            Ext.Logger.error("Invalid alignment value of '" + alignment + "'");
-        }
-        //</debug>
-        
-        // If position spec ended with a "?" or "!", then constraining is necessary
-        if (matches[3]) {
+        constrainModifier = alignment[alignment.length - 1];
+
+        if (me.getConstrainTo()) {
+            inside = constrainBox;
+        } else {
+            // If position spec ended with a "?" or "!", then constraining is necessary
             // Constrain to the correct enclosing object:
             // If the assertive form was used (like "tl-bl!"), constrain to the align to component.
-            if (matches[3] === '!') {
+            if (constrainModifier === '!') {
                 inside = component.el.getRegion();
-            }
-            else {
+                alignment = alignment.substr(0, alignment.length - 1);
+            } else if (constrainModifier === '?') {
                 inside = constrainBox;
+                alignment = alignment.substr(0, alignment.length - 1);
             }
         }
 
         return me.el.getRegion().alignTo(Ext.apply({
             target: Ext.util.Region.from(alignmentInfo.stats.alignToBox),
-            align: matches[1] + '-' + matches[2],
+            align: alignment,
             inside: inside,
             minWidth: me.getMinWidth && me.getMinWidth(),
             minHeight: me.getMinHeight && me.getMinHeight()
@@ -727,31 +744,33 @@ Ext.define('Ext.overrides.Widget', {
             return this.getParent();
         },
 
-        // TODO: Allow configuration of constrain region
         getConstrainRegion: function() {
             var me = this,
                 parent,
-                constrainEl,
-                constrainComponent;
+                constrainTo = me.getConstrainTo();
 
-            // If we're floated, find the owning Component's region if any.
-            // If we are owned by the global floatRoot, use the document body.
-            if (me.isFloated()) {
-                constrainEl = me.floatParentNode;
-                constrainComponent = constrainEl.getData().component;
-                if (constrainComponent) {
-                    constrainEl = constrainComponent.element;
-                } else {
-                    constrainEl = Ext.getBody();
+            if (!constrainTo) {
+                // If we're floated, find the owning Component's region if any.
+                // If we are owned by the global floatRoot, use the document body.
+                if (me.isFloated()) {
+                    constrainTo = me.floatParentNode.getData().component;
+                    if (constrainTo) {
+                        constrainTo = constrainTo.bodyElement;
+                    } else {
+                        constrainTo = Ext.getBody();
+                    }
+                }
+                // If not floated, use parent's element.
+                else {
+                    parent = me.getParent();
+                    constrainTo = parent ? parent.bodyElement : me.element.parent();
                 }
             }
-            // If not floated, use parent's element.
-            else {
-                parent = me.getParent();
-                constrainEl = parent ? parent.element : me.element.parent();
-            }
             
-            return constrainEl.getConstrainRegion();
+            if (!constrainTo.isRegion) {
+                constrainTo = constrainTo.getConstrainRegion();
+            }
+            return constrainTo;
         },
 
         /**

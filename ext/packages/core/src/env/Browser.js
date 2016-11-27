@@ -27,6 +27,7 @@
         engineVersion = '',
         majorVer = '',
         isWebView = false,
+        edgeRE = /(Edge\/)([\w.]+)/,
         i, prefix, mode, name, maxIEVersion;
 
     /**
@@ -83,7 +84,8 @@
     // Edge has a userAgent with All browsers so we manage it separately
     // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
     if (/Edge\//.test(userAgent)) {
-        browserMatch = userAgent.match(/(Edge\/)([\w.]+)/);
+        browserMatch = userAgent.match(edgeRE);
+        engineMatch = userAgent.match(edgeRE);
     }
 
     if (browserMatch) {
@@ -490,6 +492,7 @@ Ext.env.Browser.prototype = {
     constructor: Ext.env.Browser,
 
     engineNames: {
+        edge: 'Edge',
         webkit: 'WebKit',
         gecko: 'Gecko',
         presto: 'Presto',
@@ -498,6 +501,7 @@ Ext.env.Browser.prototype = {
     },
 
     enginePrefixes: {
+        edge: 'Edge/',
         webkit: 'AppleWebKit/',
         gecko: 'Gecko/',
         presto: 'Presto/',
@@ -603,16 +607,7 @@ Ext.env.Browser.prototype = {
         }
 
         return name;
-    },
-
-    getPreferredTranslationMethod: function(config) {
-        if (typeof config === 'object' && 'translationMethod' in config && config.translationMethod !== 'auto') {
-            return config.translationMethod;
-        } else {
-            return 'csstransform';
-        }
     }
-
 };
 
 /**

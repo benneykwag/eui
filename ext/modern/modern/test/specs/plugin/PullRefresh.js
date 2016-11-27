@@ -130,7 +130,7 @@ describe("Ext.plugin.PullRefresh", function() {
                     model: model
                 });
 
-                plugin.onLatestFetched(newRecords, operation);
+                plugin.onLatestFetched(newRecords, operation, true);
             });
 
             it("should have the correct number of items in the Store", function() {
@@ -168,7 +168,7 @@ describe("Ext.plugin.PullRefresh", function() {
             });
 
             it("should insert any new items at the front of the Store", function() {
-                plugin.onLatestFetched(newRecords, operation);
+                plugin.onLatestFetched(newRecords, operation, true);
 
                 expect(store.getCount()).toBe(10);
                 expect(store.getAt(0).getId()).toBe(1);

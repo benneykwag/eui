@@ -982,7 +982,7 @@ utilDate = {
      * @private
      */
     parseCodes : {
-        /**
+        /*
          * Notes:
          * g = {Number} calculation group (0 or 1. only group 1 contributes to date calculations.)
          * c = {String} calculation method (required for group 1. null for group 0. {0} = currentGroup - position in regex result array)
@@ -1596,9 +1596,11 @@ utilDate = {
      * @param {Date} date The date to modify
      * @param {String} interval A valid date interval enum value.
      * @param {Number} value The amount to add to the current date.
+     * @param {Boolean} [preventDstAdjust=false] `true` to prevent adjustments when crossing
+     * daylight savings boundaries.
      * @return {Date} The new Date instance.
      */
-    add : function(date, interval, value) {
+    add : function(date, interval, value, preventDstAdjust) {
         var d = utilDate.clone(date),
             base = 0,
             day, decimalValue;
@@ -1631,19 +1633,35 @@ utilDate = {
                 // ....
                 // 
                 case utilDate.MILLI:
-                    d.setTime(d.getTime() + value);
+                    if (preventDstAdjust) {
+                        d.setMilliseconds(d.getMilliseconds() + value);
+                    } else {
+                        d.setTime(d.getTime() + value);
+                    }
                     break;
                 case utilDate.SECOND:
-                    d.setTime(d.getTime() + value * 1000);
+                    if (preventDstAdjust) {
+                        d.setSeconds(d.getSeconds() + value);
+                    } else {
+                        d.setTime(d.getTime() + value * 1000);
+                    }
                     break;
                 case utilDate.MINUTE:
-                    d.setTime(d.getTime() + value * 60 * 1000);
+                    if (preventDstAdjust) {
+                        d.setMinutes(d.getMinutes() + value);
+                    } else {
+                        d.setTime(d.getTime() + value * 60 * 1000);
+                    }
                     break;
                 case utilDate.HOUR:
-                    d.setTime(d.getTime() + value * 60 * 60 * 1000);
+                    if (preventDstAdjust) {
+                        d.setHours(d.getHours() + value);
+                    } else {
+                        d.setTime(d.getTime() + value * 60 * 60 * 1000);
+                    }
                     break;
                 case utilDate.DAY:
-                    d.setTime(d.getTime() + value * 24 * 60 * 60 * 1000);
+                    d.setDate(d.getDate() + value);
                     break;
                 case utilDate.MONTH:
                     day = date.getDate();
@@ -1712,10 +1730,12 @@ utilDate = {
      * @param {Date} date The date to modify
      * @param {String} interval A valid date interval enum value.
      * @param {Number} value The amount to subtract from the current date.
+     * @param {Boolean} [preventDstAdjust=false] `true` to prevent adjustments when crossing
+     * daylight savings boundaries.
      * @return {Date} The new Date instance.
      */
-    subtract: function(date, interval, value){
-        return utilDate.add(date, interval, -value);
+    subtract: function(date, interval, value, preventDstAdjust){
+        return utilDate.add(date, interval, -value, preventDstAdjust);
     },
 
     /**

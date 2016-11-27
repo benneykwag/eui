@@ -1,3 +1,5 @@
+/* global expect, Ext, spyOn, xdescribe, jasmine */
+
 describe("Ext.slider.Multi", function() {
     var slider, createSlider;
 
@@ -738,8 +740,7 @@ describe("Ext.slider.Multi", function() {
                 slider.setValue(0, 10);
                 expect(fired).toBe(2);
             });
-            
-        })
+        });
     });
     
     describe("setMinValue/setMaxValue", function(){
@@ -890,7 +891,7 @@ describe("Ext.slider.Multi", function() {
                 maxValue: 100
             });
             slider.setValue([100,100]);
-            jasmine.fireMouseEvent(slider.el, 'click', 0, 0);
+            jasmine.fireMouseEvent(slider.el, 'click', Math.max(slider.el.getX(), 1), 0);
             waitsFor(function() {
                 return slider.getValue(0) === 0;
             }, "Slider value incorrect");

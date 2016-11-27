@@ -128,17 +128,19 @@ Ext.define('Ext.picker.Date', {
     },
 
     initialize: function() {
-        this.callParent();
+        var me = this;
 
-        this.on({
-            scope: this,
+        me.callParent();
+
+        me.on({
+            scope: me,
             delegate: '> slot',
-            slotpick: this.onSlotPick
+            slotpick: me.onSlotPick
         });
 
-        this.on({
-            scope: this,
-            show: this.onSlotPick
+        me.on({
+            scope: me,
+            show: me.onSlotPick
         });
     },
 
@@ -163,7 +165,7 @@ Ext.define('Ext.picker.Date', {
 
         for (i = 0; i < ln; i++) {
             item = items[i];
-            if (item instanceof Ext.picker.Slot) {
+            if (item.isSlot) {
                 values[item.getName()] = item.getValue(useDom);
             }
         }
@@ -326,6 +328,12 @@ Ext.define('Ext.picker.Date', {
         });
 
         me.setSlots(slots);
+
+        // if a value was set by the constructor config, we need 
+        // to adjust the slots after they have been created
+        if (!me.getValue() && me._value) {
+            me.setValue(me._value);
+        }
     },
 
     /**

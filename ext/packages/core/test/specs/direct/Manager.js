@@ -1,3 +1,5 @@
+/* global Ext, jasmine, expect, spyOn, provider */
+
 describe("Ext.direct.Manager", function() {
     var Manager = Ext.direct.Manager,
         provider, handler;
@@ -345,7 +347,11 @@ describe("Ext.direct.Manager", function() {
 
             Ext.undefine('test.Provider');
             Manager.providerClasses.test = provider = null;
-            test = undefined;
+            try {
+                delete Ext.global.test;
+            } catch (e) {
+                Ext.global.test = undefined;
+            }
             
             delete Ext.REMOTING_API;
         });
@@ -612,7 +618,7 @@ describe("Ext.direct.Manager", function() {
                     var error = [
                             'blerg',
                             Ext.isIE8    ? "TypeError: 'nonexistent' is undefined" :
-                            Ext.isIE     ? "ReferenceError: 'nonexistent' is undefined" :
+                            Ext.isIE || Ext.isEdge     ? "ReferenceError: 'nonexistent' is undefined" :
                             Ext.isSafari ? "ReferenceError: Can't find variable: nonexistent" :
                                            "ReferenceError: nonexistent is not defined"
                         ];

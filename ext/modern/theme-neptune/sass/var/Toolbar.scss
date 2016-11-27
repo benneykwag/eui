@@ -192,6 +192,9 @@ $toolbar-min-height-big: dynamic(2.9334em);
  * Toolbar background-gradient. Can be either the name of a gradient defined by
  * {@link Global_CSS#background-gradient} or a list of color stops.
  *
+ * @param {color} $color
+ * Toolbar color
+ *
  * @param {number/list} $border-width
  * Toolbar border-width
  *

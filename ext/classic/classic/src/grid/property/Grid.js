@@ -266,6 +266,11 @@ Ext.define('Ext.grid.property.Grid', {
             startEdit: function(record, column) {
                 // Maintainer: Do not change this 'this' to 'me'! It is the CellEditing object's own scope.
                 return this.self.prototype.startEdit.call(this, record, me.valueColumn);
+            },
+    
+            // Gets an editor based on the property name and not column itemId
+            getEditor: function (record, column) {
+                return this.getCachedEditor(record.get(me.nameField), record, column);
             }
         }));
 

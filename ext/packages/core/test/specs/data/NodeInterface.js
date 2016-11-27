@@ -1529,4 +1529,57 @@ describe('Ext.data.NodeInterface', function() {
             Ext.undefine('spec.PersistentIndexTreeNode');
         });
     });
+
+    describe('Setting depth on descendant nodes when branch node added', function() {
+        it('should cascade the new depth to all leaf nodes upon add', function() {
+            var root = new spec.TreeNode({
+                    text: 'l0'
+                }),
+                l1_0 = new spec.TreeNode({
+                    text: 'l1_0'
+                }),
+                l1_0_1 = new spec.TreeNode({
+                    text: 'l1_0'
+                }),
+                l1_1 = new spec.TreeNode({
+                    text: 'l1'
+                }),
+                branch = new spec.TreeNode({
+                    text: 'l2'
+                }),
+                l3 = new spec.TreeNode({
+                    text: 'l3'
+                }),
+                l4 = new spec.TreeNode({
+                    text: 'l4'
+                });
+
+            // Create two detached branches
+            l1_0.appendChild(l1_0_1);
+            root.appendChild(l1_0);
+            root.appendChild(l1_1);
+            l3.appendChild(l4);
+            branch.appendChild(l3);
+
+            // Both branches will start at depth 0
+            expect(root.data.depth).toBe(0);
+            expect(l1_0.data.depth).toBe(1);
+            expect(l1_0_1.data.depth).toBe(2);
+            expect(l1_1.data.depth).toBe(1);
+            expect(branch.data.depth).toBe(0);
+            expect(l3.data.depth).toBe(1);
+            expect(l4.data.depth).toBe(2);
+
+            l1_1.appendChild(branch);
+            
+            // After adding the branch, it and its descendants will have been redepthed.
+            expect(root.data.depth).toBe(0);
+            expect(l1_0.data.depth).toBe(1);
+            expect(l1_0_1.data.depth).toBe(2);
+            expect(l1_1.data.depth).toBe(1);
+            expect(branch.data.depth).toBe(2);
+            expect(l3.data.depth).toBe(3);
+            expect(l4.data.depth).toBe(4);
+        });
+    });
 });

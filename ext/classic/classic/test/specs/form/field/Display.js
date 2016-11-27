@@ -7,13 +7,11 @@ describe("Ext.form.field.Display", function() {
             renderTo: Ext.getBody()
         }, config);
         
-        return component = new Ext.form.field.Display(config);
-    };
+        component = new Ext.form.field.Display(config);
+    }
 
     afterEach(function() {
-        Ext.destroy(component);
-        
-        component = null;
+        component = Ext.destroy(component);
     });
 
     it("should be registered as xtype 'displayfield'", function() {
@@ -116,7 +114,7 @@ describe("Ext.form.field.Display", function() {
                 var o = {};
                 makeComponent({value: o});
                 expect(component.getValue()).toBe(o);
-            })
+            });
 
             it("should keep a numeric value", function() {
                 makeComponent({value: 50});
@@ -315,6 +313,25 @@ describe("Ext.form.field.Display", function() {
                 }
             });    
             expect(arg1).toBe('');
+        });
+
+        it("should be able to resolve to a controller", function() {
+            var controller = new Ext.app.ViewController();
+            controller.doIt = function() {
+                return 'ok';
+            };
+
+            var ct = new Ext.container.Container({
+                controller: controller,
+                renderTo: Ext.getBody(),
+                items: {
+                    xtype: 'displayfield',
+                    renderer: 'doIt'
+                }
+            });
+
+            expect(ct.items.first().inputEl.dom).hasHTML('ok');
+            ct.destroy();
         });
     });
 

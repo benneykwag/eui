@@ -75,10 +75,10 @@ Ext.define('Ext.event.gesture.Swipe', {
             absDeltaX = Math.abs(x - me.startX),
             absDeltaY = Math.abs(y - me.startY),
             duration = e.time - me.startTime,
-            minDistance = me.getMinDistance(),
-            direction, distance;
+            minDistance, direction, distance;
 
-        if (duration > me.getMaxDuration()) {
+        // If delta is 0 on both axes that's not swipe
+        if ((absDeltaX === 0 && absDeltaY === 0) || (duration > me.getMaxDuration())) {
             return me.cancel(e);
         }
 
@@ -91,6 +91,8 @@ Ext.define('Ext.event.gesture.Swipe', {
         }
 
         if (!me.isVertical || !me.isHorizontal) {
+            minDistance = me.getMinDistance();
+
             if (me.isHorizontal && absDeltaX < minDistance) {
                 direction = (deltaX < 0) ? 'left' : 'right';
                 distance = absDeltaX;

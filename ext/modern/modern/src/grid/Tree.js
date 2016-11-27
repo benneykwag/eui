@@ -256,16 +256,17 @@ Ext.define('Ext.grid.Tree', {
     /**
      * Sets root node of this tree. All trees *always* have a root node. It may be {@link #rootVisible hidden}.
      *
-     * If the passed node has not already been loaded with child nodes, and has its expanded field set, this triggers the {@link #cfg-store} to load the child nodes of the root.
+     * If the passed node has not already been loaded with child nodes, and has its expanded field set, this triggers
+     * the {@link #cfg-store} to load the child nodes of the root.
      * @param {Ext.data.TreeModel/Object} root
      * @return {Ext.data.TreeModel} The new root
      */
-    setRootNode: function(newRoot) {
+    setRootNode: function(root) {
         var store = this.getStore();
 
-        newRoot = store.setRoot(newRoot);
+        root = store.setRoot(root);
 
-        return newRoot;
+        return root;
     },
 
     /**

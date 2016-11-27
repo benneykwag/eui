@@ -199,17 +199,27 @@ Ext.define('Ext.dd.DragTracker', {
     initEl: function(el) {
         var me = this,
             delegate = me.delegate,
-            elCmp,
-            touchScrollable;
+            elCmp, touchScrollable, unselectable;
 
         me.el = el = Ext.get(el);
 
         // Disable drag to select. We must take over any drag selecting gestures.
-        el.addCls(Ext.baseCSSPrefix + 'unselectable');
 
         // The delegate option may also be an element on which to listen
-        if (delegate && delegate.isElement) {
-            me.handle = delegate;
+        if (delegate) {
+            if (delegate.isElement) {
+                me.handle = delegate;
+                unselectable = delegate;
+            }
+        } else {
+            unselectable = el;
+        }
+
+        // Only make the element unselectable if we have a known delegate, or this item is to be dragged.
+        // Otherwise it's too wide of a net to cast, callers will need to apply unselectable to the appropriate
+        // delegated elements to get the same effect.
+        if (unselectable) {
+            unselectable.addCls(Ext.baseCSSPrefix + 'unselectable');
         }
 
         // If delegate specified an actual element to listen on, we do not use the delegate listener option
@@ -294,12 +304,10 @@ Ext.define('Ext.dd.DragTracker', {
     },
 
     destroy: function() {
-        var me = this;
-
         // endDrag has a mandatory event parameter
-        me.endDrag({});
-        me.el = me.handle = me.onBeforeStart = me.onStart = me.onDrag = me.onEnd = me.onCancel = null;
-        me.callParent();
+        this.endDrag({});
+        Ext.destroy(this.keyNav);
+        this.callParent();
     },
 
     onWindowTouchStart: function(e) {

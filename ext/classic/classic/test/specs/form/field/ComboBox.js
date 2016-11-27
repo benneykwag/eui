@@ -15,15 +15,6 @@ describe("Ext.form.field.ComboBox", function() {
             return this;
         };
 
-    function spyOnEvent(object, eventName, fn) {
-        var obj = {
-            fn: fn || Ext.emptyFn
-        },
-        spy = spyOn(obj, "fn");
-        object.addListener(eventName, obj.fn);
-        return spy;
-    }
-
     // There's no simple way to simulate user typing, so going
     // to reach in too far here to call this method. Not ideal, but
     // the infrastructure to get typing simulation is fairly large
@@ -161,10 +152,10 @@ describe("Ext.form.field.ComboBox", function() {
         it("should respect the checkChangeBuffer when typing a value", function() {
             makeComponent({
                 renderTo: Ext.getBody(),
-                checkChangeBuffer: 500,
+                checkChangeBuffer: 1000,
                 forceSelection: false
             });
-            var spy = jasmine.createSpy();
+            var spy = jasmine.createSpy('change listener');
             component.on('change', spy);
             runType('t');
             waits(100);
@@ -173,16 +164,11 @@ describe("Ext.form.field.ComboBox", function() {
             runType('tex');
             waits(100);
             runType('text');
-            waits(100);
-            runs(function() {
-                expect(spy).not.toHaveBeenCalled();
-            });
             waits(200);
             runs(function() {
                 expect(spy).not.toHaveBeenCalled();
             });
-            // Give some leeway with the timer
-            waits(400);
+            waitsForSpy(spy);
             runs(function() {
                 expect(spy.callCount).toBe(1);
                 expect(spy.mostRecentCall.args[1]).toBe('text');
@@ -193,11 +179,11 @@ describe("Ext.form.field.ComboBox", function() {
         it("should respect checkChangeBuffer when deleting values", function() {
             makeComponent({
                 renderTo: Ext.getBody(),
-                checkChangeBuffer: 500,
+                checkChangeBuffer: 1000,
                 forceSelection: false,
                 value: 'text'
             });
-            var spy = jasmine.createSpy();
+            var spy = jasmine.createSpy('change listener');
             component.on('change', spy);
             runType('tex', true);
             waits(100);
@@ -208,18 +194,11 @@ describe("Ext.form.field.ComboBox", function() {
             runType('t', true);
             waits(100);
             runType('', true);
-            waits(100);
+            waits(200);
             runs(function() {
                 expect(spy).not.toHaveBeenCalled();
             });
-            waits(300);
-            runs(function() {
-                expect(spy).not.toHaveBeenCalled();
-            });
-            // Give some leeway with the timer
-            waitsFor(function(){
-                return spy.callCount;
-            });
+            waitsForSpy(spy);
             runs(function() {
                 expect(spy.mostRecentCall.args[1]).toBeNull();
                 expect(spy.mostRecentCall.args[2]).toBe('text');
@@ -795,21 +774,17 @@ describe("Ext.form.field.ComboBox", function() {
                         }
                     });
                     doTyping('a');                    
-                    waitsFor(function() {
-                        return spy.callCount === 1;
-                    }, 'first change event');
+                    waitsForSpy(spy, 'first change event');
                     runs(function() {
+                        spy.reset();
                         doTyping('', true);
                     });
-                    waitsFor(function() {
-                        return spy.callCount === 2;
-                    }, 'second change event');
+                    waitsForSpy(spy, 'second change event');
                     runs(function() {
+                        spy.reset();
                         doTyping('a');
                     });
-                    waitsFor(function() {
-                        return spy.callCount === 3;
-                    }, 'third change event');
+                    waitsForSpy(spy, 'third change event');
                 });
             });
         });
@@ -1812,17 +1787,15 @@ describe("Ext.form.field.ComboBox", function() {
             });
         });
         it("should not respond to special keys", function() {
-            runs(function() {
-                component.inputEl.dom.value = 'foob';
+            component.inputEl.dom.value = 'foob';
 
-                // Wait for async textinput event to fire on platforms where it fires.
-                // It's not universally supported so we cannot use waitsFor
-                waits(100);
-                
-                runs(function() {
-                    spyOn(component, 'doQuery');
-                    jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.DOWN);
-                });
+            // Wait for async textinput event to fire on platforms where it fires.
+            // It's not universally supported so we cannot use waitsFor
+            waits(100);
+
+            runs(function() {
+                spyOn(component, 'doQuery');
+                jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.DOWN);
             });
             waits(10);
             runs(function() {
@@ -1830,34 +1803,30 @@ describe("Ext.form.field.ComboBox", function() {
             });
         });
         it("should respond to backspace", function() {
-            runs(function() {
-                component.inputEl.dom.value = 'foob';
+            component.inputEl.dom.value = 'foob';
 
-                // Wait for async textinput event to fire on platforms where it fires.
-                // It's not universally supported so we cannot use waitsFor
-                waits(100);
-                
-                runs(function() {
-                    spyOn(component, 'doQuery');
-                    jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.BACKSPACE);
-                });
+            // Wait for async textinput event to fire on platforms where it fires.
+            // It's not universally supported so we cannot use waitsFor
+            waits(100);
+
+            runs(function() {
+                spyOn(component, 'doQuery');
+                jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.BACKSPACE);
             });
             waitsFor(function() {
                 return component.doQuery.callCount > 0;
             }, 'query not executed');
         });
         it("should respond to delete", function() {
-            runs(function() {
-                component.inputEl.dom.value = 'foob';
+            component.inputEl.dom.value = 'foob';
 
-                // Wait for async textinput event to fire on platforms where it fires.
-                // It's not universally supported so we cannot use waitsFor
-                waits(100);
-                
-                runs(function() {
-                    spyOn(component, 'doQuery');
-                    jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.DELETE);
-                });
+            // Wait for async textinput event to fire on platforms where it fires.
+            // It's not universally supported so we cannot use waitsFor
+            waits(100);
+
+            runs(function() {
+                spyOn(component, 'doQuery');
+                jasmine.fireKeyEvent(component.inputEl.dom, 'keyup', Ext.event.Event.DELETE);
             });
             waitsFor(function() {
                 return component.doQuery.callCount > 0;
@@ -1870,10 +1839,12 @@ describe("Ext.form.field.ComboBox", function() {
             // Expand the picker
             component.inputEl.dom.focus();
             jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.DOWN);
-            var selModel = component.picker.getSelectionModel();
+            var selModel = component.picker.getSelectionModel(),
+                hideSpy;
 
             // Picker should be visible
             expect(component.picker.isVisible()).toBe(true);
+            hideSpy = spyOnEvent(component.picker, 'hide');
 
             // But with no selection
             expect(selModel.getSelection().length).toBe(0);
@@ -1883,9 +1854,7 @@ describe("Ext.form.field.ComboBox", function() {
             jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.TAB);
 
             // We must wait until after the browser's TAB handling has blurred the field, and therefore hidden the picker
-            waitsFor(function() {
-                return component.picker.isVisible() === false;
-            });
+            waitsForSpy(hideSpy, 'hide', 'picker to hide');
             runs(function() {
 
                 // First record should be selected
@@ -1931,7 +1900,7 @@ describe("Ext.form.field.ComboBox", function() {
                 it("should expand on down arrow", function() {
                     pressKey('down');
                     
-                    waitForSpy(expandSpy, 'expand', 1000);
+                    waitForSpy(expandSpy, 'expand');
                     
                     runs(function() {
                         expect(component.isExpanded).toBe(true);
@@ -1941,7 +1910,7 @@ describe("Ext.form.field.ComboBox", function() {
                 it("should expand on alt-down arrow", function() {
                     pressKey('down', { alt: true });
                     
-                    waitForSpy(expandSpy, 'expand', 1000);
+                    waitForSpy(expandSpy, 'expand');
                     
                     runs(function() {
                         expect(component.isExpanded).toBe(true);
@@ -1953,13 +1922,13 @@ describe("Ext.form.field.ComboBox", function() {
                 beforeEach(function() {
                     pressKey('down');
                     
-                    waitForSpy(expandSpy, 'expand', 1000);
+                    waitForSpy(expandSpy, 'expand');
                 });
                 
                 it("should collapse on Esc", function() {
                     pressKey('esc');
                     
-                    waitForSpy(collapseSpy, 'collapse', 1000);
+                    waitForSpy(collapseSpy, 'collapse');
                     
                     runs(function() {
                         expect(component.isExpanded).toBe(false);
@@ -1969,7 +1938,7 @@ describe("Ext.form.field.ComboBox", function() {
                 it("should collapse on Alt-Up arrow", function() {
                     pressKey('up', { alt: true });
                     
-                    waitForSpy(collapseSpy, 'collapse', 1000);
+                    waitForSpy(collapseSpy, 'collapse');
                     
                     runs(function() {
                         expect(component.isExpanded).toBe(false);
@@ -1979,7 +1948,7 @@ describe("Ext.form.field.ComboBox", function() {
                 it("should remove aria-activedescendant", function() {
                     pressKey('esc');
                     
-                    waitForSpy(collapseSpy, 'collapse', 1000);
+                    waitForSpy(collapseSpy, 'collapse');
                     
                     runs(function() {
                         expect(component).not.toHaveAttr('aria-activedescendant');
@@ -1992,7 +1961,7 @@ describe("Ext.form.field.ComboBox", function() {
                     beforeEach(function() {
                         pressKey('down');
                         
-                        waitForSpy(expandSpy, 'expand', 1000);
+                        waitForSpy(expandSpy, 'expand');
                     });
                     
                     describe("initial", function() {
@@ -2125,13 +2094,15 @@ describe("Ext.form.field.ComboBox", function() {
         it('should select the value upon tab with multiSelect', function() {
             var sm,
                 selected,
-                rawVal = '';
+                rawVal = '',
+                hideSpy;
 
             // Expand the picker
             jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.DOWN);
 
             // Picker should be visible
             expect(component.picker.isVisible()).toBe(true);
+            hideSpy = spyOnEvent(component.picker, 'hide');
             sm = component.picker.selModel;
 
             // But with no selection
@@ -2161,9 +2132,7 @@ describe("Ext.form.field.ComboBox", function() {
             jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.TAB);
 
             // Wait for the browser's TAB handling to complete and the picker to hide
-            waitsFor(function() {
-                return component.picker.isVisible() === false;
-            });
+            waitsForSpy(hideSpy, 'picker to hide');
             runs(function() {
                 selected = sm.getSelection();
 
@@ -2289,26 +2258,15 @@ describe("Ext.form.field.ComboBox", function() {
                         renderTo: Ext.getBody(),
                         displayTpl: '<tpl for=".">Id= {val} - {text}</tpl>'
                     });
-                    jasmine.focusAndWait(component);
+                    jasmine.focusAndWait(component, null, 'component to focus for the first time');
                     runs(function() {
                         component.setValue('value 2');
                     });
-                    jasmine.blurAndWait(component);
+                    jasmine.blurAndWait(component, null, 'component to blur for the first time');
 
-                    waitsFor(function() {
-                        return !component.hasFocus;
-                    });
-                    jasmine.focusAndWait(component);
+                    jasmine.focusAndWait(component, null, 'component to focus for the second time');
 
-                    waitsFor(function() {
-                        return component.hasFocus;
-                    });
-
-                    jasmine.blurAndWait(component);
-
-                    waitsFor(function() {
-                        return !component.hasFocus;
-                    });
+                    jasmine.blurAndWait(component, null, 'component to blur for the second time');
 
                     runs(function() {
                         expect(component.inputEl.dom.value).not.toBe('');
@@ -2668,21 +2626,15 @@ describe("Ext.form.field.ComboBox", function() {
                         queryMode: 'remote',
                         renderTo: Ext.getBody()
                     });
-                    component.focus();
-                    waitsFor(function() {
-                        return component.hasFocus;
-                    }, "Never focused");
+                    jasmine.focusAndWait(component);
                     runs(function() {
                         // Simulate user typing
                         component.setRawValue('foobar');
                         component.doRawQuery();
                         // Collapse to prevent focus issues
                         component.collapse();
-                        component.blur();
                     });
-                    waitsFor(function() {
-                        return !component.hasFocus;
-                    }, "Never blurred");
+                    jasmine.blurAndWait(component);
                     runs(function() {
                         Ext.Ajax.mockComplete({
                             status: 200,
@@ -2728,20 +2680,14 @@ describe("Ext.form.field.ComboBox", function() {
                     queryMode: 'remote',
                     renderTo: Ext.getBody()
                 });
-                component.focus();
-                waitsFor(function() {
-                    return component.hasFocus;
-                }, 'Waiting for field focus');
+                jasmine.focusAndWait(component);
                 runs(function() {
                     // Simulate user typing
                     component.setRawValue('foobar');
                     component.doRawQuery();
                     component.collapse();
-                    component.blur();
                 });
-                waitsFor(function() {
-                    return !component.hasFocus;
-                }, 'Waiting for field blur');
+                jasmine.blurAndWait(component);
                 runs(function() {
                     completeWithData();
                     expect(component.getValue()).toBeNull();
@@ -4193,9 +4139,7 @@ describe("Ext.form.field.ComboBox", function() {
                 it("should update the display value when the store loads", function() {
                     component.setValue(1);
                     // Wait for autoLoad
-                    waitsFor(function() {
-                        return flushLoadSpy.callCount > 0;
-                    });
+                    waitsForSpy(flushLoadSpy);
                     runs(function() {
                         completeWithData();
                         expect(component.getRawValue()).toBe('Foo');
@@ -5017,10 +4961,6 @@ describe("Ext.form.field.ComboBox", function() {
             vm.notify();
 
             jasmine.focusAndWait(component);
-            
-            waitsFor(function(){
-                return component.hasFocus;
-            }, 'combobox to focus'); 
 
             runs(function(){
                 vm.set('foo', [1]);
@@ -5047,7 +4987,7 @@ describe("Ext.form.field.ComboBox", function() {
             jasmine.focusAndWait(component);
 
             runs(function() {
-                // Sshould narrow down to 3, 31, 32 etc
+                // Should narrow down to 3, 31, 32 etc
                 doTyping('text 3', false, true);
             });
 
@@ -5062,13 +5002,8 @@ describe("Ext.form.field.ComboBox", function() {
 
                 // Select 31 and blur
                 jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.TAB);
-
-                jasmine.blurAndWait(component);
             });
-
-            waitsFor(function() {
-                return !component.hasFocus;
-            }, 'combobox to blur');
+            jasmine.blurAndWait(component);
 
             runs(function() {
                 expect(component.getValue()).toBe('value 31');
@@ -5081,12 +5016,9 @@ describe("Ext.form.field.ComboBox", function() {
             runs(function() {
                 // Do not select a record
                 jasmine.fireKeyEvent(component.inputEl, 'keydown', Ext.event.Event.TAB);
-                jasmine.blurAndWait(component);
             });
 
-            waitsFor(function() {
-                return !component.hasFocus;
-            }, 'combobox to blur for the second time');
+            jasmine.blurAndWait(component);
 
             // The assertValue call on blur should NOT have imposed the last selected value
             // from the last time the field was used. The intervening setValue call clears it.
@@ -5244,10 +5176,6 @@ describe("Ext.form.field.ComboBox", function() {
 
                 jasmine.focusAndWait(component);
 
-                waitsFor(function() {
-                    return component.hasFocus;
-                });
-
                 runs(function() {
                     doTyping('tex');
                 });
@@ -5258,10 +5186,6 @@ describe("Ext.form.field.ComboBox", function() {
                 });
 
                 jasmine.blurAndWait(component);
-
-                waitsFor(function() {
-                    return !component.hasFocus;
-                });
 
                 runs(function() {
                     expect(component.getRawValue()).toBe('text 1');
@@ -5287,10 +5211,6 @@ describe("Ext.form.field.ComboBox", function() {
 
                 jasmine.focusAndWait(component);
 
-                waitsFor(function() {
-                    return component.hasFocus;
-                });
-
                 runs(function() {
                     doTyping('tex');
                 });
@@ -5305,10 +5225,6 @@ describe("Ext.form.field.ComboBox", function() {
                 });
 
                 jasmine.blurAndWait(component);
-
-                waitsFor(function() {
-                    return !component.hasFocus;
-                });
 
                 runs(function() {
                     expect(component.getValue()).toBeNull();
@@ -5333,15 +5249,7 @@ describe("Ext.form.field.ComboBox", function() {
                 component.on('select', spy);
                 jasmine.focusAndWait(component);
 
-                waitsFor(function() {
-                    return component.hasFocus;
-                });
-
                 jasmine.blurAndWait(component);
-
-                waitsFor(function() {
-                    return !component.hasFocus;
-                });
 
                 runs(function() {
                     expect(component.getValue()).toBe('value 1');
@@ -5426,10 +5334,7 @@ describe("Ext.form.field.ComboBox", function() {
             scroller.scrollBy(0, 10);
 
             // Any scroll should cause the picker should be hidden
-            waitsFor(function() {
-                // When the scroll event fires, the picker should hide
-                return combo1.getPicker().isVisible() === false;
-            });
+            waitsForEvent(combo1.getPicker(), 'hide');
         });
     });
 

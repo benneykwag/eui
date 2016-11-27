@@ -2,7 +2,7 @@
  * @class Ext.grid.Row
  */
 
-
+//# fashion replaces $grid-cell-color
 /**
  * @var {color}
  * Grid row text color
@@ -27,6 +27,7 @@ $gridrow-pressed-color: dynamic(null);
  */
 $gridrow-selected-color: dynamic(null);
 
+//# fashion replaces $grid-cell-background-color
 /**
  * @var {color}
  * Grid row background-color
@@ -45,12 +46,14 @@ $gridrow-alt-background-color: dynamic(null);
  */
 $gridrow-hovered-background-color: dynamic(null);
 
+//# fashion replaces $grid-cell-pressed-background-color
 /**
  * @var {color}
  * Grid row background-color when pressed
  */
 $gridrow-pressed-background-color: dynamic(null);
 
+//# fashion replaces $grid-cell-selected-background-color
 /**
  * @var {color}
  * Grid row background-color when selected
@@ -69,6 +72,7 @@ $gridrow-border-width: dynamic(null);
  */
 $gridrow-border-style: dynamic(null);
 
+//# fashion replaces $grid-cell-border-color
 /**
  * @var {color}
  * Grid row border-color

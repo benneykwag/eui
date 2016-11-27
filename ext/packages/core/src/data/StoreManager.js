@@ -151,21 +151,23 @@ Ext.define('Ext.data.StoreManager', {
      *         ... other config
      *     });
      *
-     * @param {String} id The id to set on the new store
-     * @param {Object} config The store config
+     * @param {String/Object} id The id to set on the new store, or the `config` object
+     * that contains the `storeId` property.
+     * @param {Object} config The store config if the first parameter (`id`) is just the
+     * id.
      * @member Ext
      * @method regStore
      */
-    Ext.regStore = function(name, config) {
+    Ext.regStore = function (id, config) {
         var store;
 
-        if (Ext.isObject(name)) {
-            config = name;
+        if (Ext.isObject(id)) {
+            config = id;
         } else {
-            if (Ext.data.StoreManager.containsKey(name)) {
-                return Ext.data.StoreManager.lookup(name);
+            if (Ext.data.StoreManager.containsKey(id)) {
+                return Ext.data.StoreManager.lookup(id);
             }
-            config.storeId = name;
+            config.storeId = id;
         }
 
         if (config instanceof Ext.data.Store) {

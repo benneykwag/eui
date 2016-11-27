@@ -169,6 +169,16 @@ Ext.define('Ext.dataview.DataView', {
      */
 
     /**
+     * @event itemtouchcancel
+     * Fires whenever an item touch is cancelled
+     * @param {Ext.dataview.DataView} this
+     * @param {Number} index The index of the item touched
+     * @param {Ext.Element/Ext.dataview.component.DataItem} target The element or DataItem touched
+     * @param {Ext.data.Model} record The record associated to the item
+     * @param {Ext.event.Event} e The event object
+     */
+
+    /**
      * @event itemtap
      * Fires whenever an item is tapped
      * @param {Ext.dataview.DataView} this
@@ -509,6 +519,7 @@ Ext.define('Ext.dataview.DataView', {
         container.on({
             itemtouchstart: 'onItemTouchStart',
             itemtouchend: 'onItemTouchEnd',
+            itemtouchcancel: 'onItemTouchCancel',
             itemtap: 'onItemTap',
             itemtaphold: 'onItemTapHold',
             itemtouchmove: 'onItemTouchMove',
@@ -527,7 +538,8 @@ Ext.define('Ext.dataview.DataView', {
             else {
                 me.on({
                     painted: 'refresh',
-                    single: true
+                    single: true,
+                    scope: me
                 });
             }
         }
@@ -586,6 +598,7 @@ Ext.define('Ext.dataview.DataView', {
     doAddPressedCls: function(record) {
         var me = this,
             item = me.getItemAt(me.getStore().indexOf(record));
+
         if (Ext.isElement(item)) {
             item = Ext.get(item);
         }
@@ -612,52 +625,22 @@ Ext.define('Ext.dataview.DataView', {
         if (record) {
             if (pressedDelay > 0) {
                 me.pressedTimeout = Ext.defer(me.doAddPressedCls, pressedDelay, me, [record]);
-            }
-            else {
+            } else {
                 me.doAddPressedCls(record);
             }
         }
     },
 
     onItemTouchEnd: function(container, target, index, e) {
-        var me = this,
-            store = me.getStore(),
-            record = store && store.getAt(index);
+        this.clearPressedCls('itemtouchend', target, index, e);
+    },
 
-        if (this.hasOwnProperty('pressedTimeout')) {
-            clearTimeout(this.pressedTimeout);
-            delete this.pressedTimeout;
-        }
-
-        if (record && target) {
-            if (target.isComponent) {
-                target.renderElement.removeCls(me.pressedCls);
-            } else {
-                target.removeCls(me.pressedCls);
-            }
-        }
-
-        me.fireEvent('itemtouchend', me, index, target, record, e);
+    onItemTouchCancel: function(container, target, index, e) {
+        this.clearPressedCls('itemtouchcancel', target, index, e);
     },
 
     onItemTouchMove: function(container, target, index, e) {
-        var me = this,
-            store = me.getStore(),
-            record = store && store.getAt(index);
-
-        if (me.hasOwnProperty('pressedTimeout')) {
-            clearTimeout(me.pressedTimeout);
-            delete me.pressedTimeout;
-        }
-
-        if (record && target) {
-            if (target.isComponent) {
-                target.renderElement.removeCls(me.pressedCls);
-            } else {
-                target.removeCls(me.pressedCls);
-            }
-        }
-        me.fireEvent('itemtouchmove', me, index, target, record, e);
+        this.clearPressedCls('itemtouchmove', target, index, e);
     },
 
     onItemTap: function(container, target, index, e) {
@@ -939,6 +922,8 @@ Ext.define('Ext.dataview.DataView', {
         }
         if (me.initialized && container) {
             me.fireAction('refresh', [me], 'doRefresh');
+        } else {
+           me.onInitialized(me.refresh, me);
         }
     },
 
@@ -1109,8 +1094,11 @@ Ext.define('Ext.dataview.DataView', {
      * @private
      * @param {Ext.data.Store} store
      * @param {Ext.data.Model} record
-     * @param {Number} newIndex
-     * @param {Number} oldIndex
+     * @param type
+     * @param modifiedFieldNames
+     * @param {Object} info
+     * @param {Number} info.newIndex
+     * @param {Number} info.oldIndex
      */
     onStoreUpdate: function(store, record, type, modifiedFieldNames, info) {
         var me = this,
@@ -1128,6 +1116,29 @@ Ext.define('Ext.dataview.DataView', {
                 // Bypassing setter because sometimes we pass the same record (different data)
                 container.updateListItem(record, item);
             }
+        }
+    },
+
+    privates: {
+        clearPressedCls: function(eventName, target, index, e) {
+            var me = this,
+                store = me.getStore(),
+                record = store && store.getAt(index);
+
+            if (me.hasOwnProperty('pressedTimeout')) {
+                clearTimeout(me.pressedTimeout);
+                delete me.pressedTimeout;
+        }
+
+            if (record && target) {
+                if (target.isComponent) {
+                    target.renderElement.removeCls(me.pressedCls);
+                } else {
+                    target.removeCls(me.pressedCls);
+                }
+            }
+
+            me.fireEvent(eventName, me, index, target, record, e);
         }
     }
 });

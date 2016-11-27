@@ -103,6 +103,7 @@ Ext.define('Ext.Glyph', {
 
         return {
             /**
+             * @method fly
              * @static
              * Returns a static, *singleton* `Glyph` instance encapsulating the passed configuration.
              * See {@link #method-setGlyph}

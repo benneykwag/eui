@@ -27,6 +27,18 @@ $checkboxfield-checkbox-font-size: dynamic($checkboxfield-checkbox-size);
 $checkboxfield-checkbox-font-size-big: dynamic($checkboxfield-checkbox-size-big);
 
 /**
+ * @var {number}
+ * CheckboxField checkbox margin
+ */
+$checkboxfield-checkbox-margin: dynamic(null);
+
+/**
+ * @var {number}
+ * CheckboxField checkbox margin in the {@link Global_CSS#$enable-big big} sizing scheme
+ */
+$checkboxfield-checkbox-margin-big: dynamic(null);
+
+/**
  * @var {string/list}
  * Checkbox Field checkbox icon
  */
@@ -78,6 +90,12 @@ $checkboxfield-disabled-checkbox-color: dynamic(null);
  * @param {number} $checkbox-font-size-big
  * CheckboxField checkbox font size in the {@link Global_CSS#$enable-big big} sizing scheme
  *
+ * @param {number} $checkbox-margin
+ * CheckboxField checkbox margin
+ *
+ * @param {number} $checkbox-margin-big
+ * CheckboxField checkbox margin in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
  * @param {string/list} $checkbox-icon
  * Checkbox Field checkbox icon
  *
@@ -100,6 +118,8 @@ $checkboxfield-disabled-checkbox-color: dynamic(null);
     $checkbox-size-big: null,
     $checkbox-font-size: null,
     $checkbox-font-size-big: null,
+    $checkbox-margin: null,
+    $checkbox-margin-big: null,
     $checkbox-icon: null,
     $checked-checkbox-icon: null,
     $checkbox-color: null,
@@ -109,7 +129,9 @@ $checkboxfield-disabled-checkbox-color: dynamic(null);
     $ui-suffix: ui-suffix($ui);
 
     .#{$prefix}#{$xtype}#{$ui-suffix} {
+
         .#{$prefix}input {
+            margin: $checkbox-margin;
             height: $checkbox-size;
             width: $checkbox-size;
             line-height: $checkbox-size;
@@ -117,6 +139,7 @@ $checkboxfield-disabled-checkbox-color: dynamic(null);
 
             @if $enable-big {
                 .#{$prefix}big & {
+                    margin: $checkbox-margin-big;
                     height: $checkbox-size-big;
                     width: $checkbox-size-big;
                 }
@@ -129,11 +152,16 @@ $checkboxfield-disabled-checkbox-color: dynamic(null);
             );
         }
 
+        .#{$prefix}input.#{$prefix}disabled {
+            color: $disabled-checkbox-color;
+        }
+
         &.#{$prefix}checked .#{$prefix}input {
             @include icon($checked-checkbox-icon);
             color: $checked-checkbox-color;
 
             &.#{$prefix}disabled {
+                // repeat disabled color here so it takes precedence
                 color: $disabled-checkbox-color;
             }
         }

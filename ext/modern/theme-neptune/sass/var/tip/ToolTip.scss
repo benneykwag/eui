@@ -1,5 +1,5 @@
 /**
- * @class Ext.tip.Tip
+ * @class Ext.tip.ToolTip
  */
 
 /**
@@ -159,4 +159,4 @@ $tip-tool-spacing: dynamic(4px);
  * @var {tip-tool-color}
  * Tool icon color
  */
-$tip-tool-color: dynamic($panel-tool-color);
+$tip-tool-color: dynamic($highlight-color);

@@ -32,12 +32,14 @@ $expandtrigger-hovered-background-color: dynamic(null);
  */
 $expandtrigger-pressed-background-color: dynamic(null);
 
+//# fashion replaces $selectfield-trigger-icon
 /**
  * @var {string}
  * Expand Trigger icon
  */
 $expandtrigger-icon: dynamic(null);
 
+//# fashion replaces $selectfield-trigger-color
 /**
  * @var {color}
  * Expand Trigger icon color
@@ -80,6 +82,7 @@ $expandtrigger-pressed-icon-background-color: dynamic(null);
  */
 $expandtrigger-icon-border-radius: dynamic(null);
 
+//# fashion replaces $selectfield-trigger-size
 /**
  * @var {number}
  * Expand Trigger icon size
@@ -92,12 +95,14 @@ $expandtrigger-icon-size: dynamic(null);
  */
 $expandtrigger-icon-size-big: dynamic(null);
 
+//# fashion replaces $selectfield-trigger-font-size
 /**
  * @var {number}
  * Expand Trigger icon font-size
  */
 $expandtrigger-icon-font-size: dynamic($expandtrigger-icon-size);
 
+//# fashion replaces $selectfield-trigger-font-size-big
 /**
  * @var {number}
  * Expand Trigger icon font-size in the {@link Global_CSS#$enable-big big} sizing scheme

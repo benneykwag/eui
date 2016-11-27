@@ -237,7 +237,7 @@ Ext.define('Ext.layout.container.Table', {
             dom = dom.parentNode;
         } 
         
-        Ext.getDetachedBody().appendChild(el);
+        Ext.getDetachedBody().appendChild(el, true);
     },
 
     calculate: function (ownerContext) {

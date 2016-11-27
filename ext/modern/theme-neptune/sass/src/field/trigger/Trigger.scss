@@ -42,6 +42,8 @@
 
             @if $trigger-grouped-align-big == vertical {
                 @include vertical-trigger();
+            } @else {
+                @include st-box-direction(normal, row);
             }
         }
     }

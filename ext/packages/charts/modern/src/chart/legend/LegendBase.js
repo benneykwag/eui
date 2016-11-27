@@ -5,14 +5,14 @@ Ext.define('Ext.chart.legend.LegendBase', {
     extend: 'Ext.dataview.DataView',
     config: {
         itemTpl: [
-            '<span class=\"', Ext.baseCSSPrefix, 'legend-item-marker {[ values.disabled ? Ext.baseCSSPrefix + \'legend-inactive\' : \'\' ]}\" style=\"background:{mark};\"></span>{name}'
+            '<span class=\"', Ext.baseCSSPrefix, 'legend-item-marker {[ values.disabled ? Ext.baseCSSPrefix + \'legend-item-inactive\' : \'\' ]}\" style=\"background:{mark};\"></span>{name}'
         ],
         inline: true,
 
-        horizontalHeight: 48,
+        horizontalHeight: 64,
         verticalWidth: 150,
 
-        position: ''
+        scrollable: false // for IE11 vertical align
     },
 
     constructor: function (config) {
@@ -20,47 +20,33 @@ Ext.define('Ext.chart.legend.LegendBase', {
 
         var scroller = this.getScrollable(),
             onDrag = scroller.onDrag;
+
         scroller.onDrag = function (e) {
             e.stopPropagation();
             onDrag.call(this, e);
         };
     },
 
-    //<debug>
-    applyPosition: function(position) {
-        if (!position) {
-            Ext.raise('Legend position must be "top", "right", "bottom" or "left".');
-        }
-        return position;
-    },
-    //</debug>
-
-    updatePosition: function(position) {
-        this.setDocked(position);
-    },
-
     updateDocked: function (docked, oldDocked) {
         var me = this;
 
         me.callParent([docked, oldDocked]);
-        if (docked === 'top' || docked === 'bottom') {
-            me.setLayout({type: 'hbox', pack: 'center'});
-            me.setInline(true);
-            // TODO: Remove this when possible
-            me.setWidth(null);
-            me.setHeight(me.getHorizontalHeight());
-            if (me.getScrollable()) {
-                me.setScrollable({direction: 'horizontal'});
-            }
-        } else {
-            me.setLayout({pack: 'center'});
-            me.setInline(false);
-            // TODO: Remove this when possible
-            me.setWidth(me.getVerticalWidth());
-            me.setHeight(null);
-            if (me.getScrollable()) {
-                me.setScrollable({direction: 'vertical'});
-            }
+
+        switch (docked) {
+            case 'top':
+            case 'bottom':
+                me.addCls(me.horizontalCls);
+                me.removeCls(me.verticalCls);
+                me.setWidth(null);
+                me.setHeight(me.getHorizontalHeight());
+                break;
+            case 'left':
+            case 'right':
+                me.addCls(me.verticalCls);
+                me.removeCls(me.horizontalCls);
+                me.setWidth(me.getVerticalWidth());
+                me.setHeight(null);
+                break;
         }
     },
 

@@ -1,3 +1,7 @@
+/**
+ * @class Ext.view.TagKeyNav
+ * @private
+ */
 Ext.define('Ext.view.TagKeyNav', {
     extend: 'Ext.view.BoundListKeyNav',
     

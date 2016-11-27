@@ -104,8 +104,9 @@ Ext.define('Ext.draw.Surface', {
         }
     },
 
+    cls: Ext.baseCSSPrefix + 'surface',
+
     config: {
-        cls: Ext.baseCSSPrefix + 'surface',
         /**
          * @cfg {Array}
          * The [x, y, width, height] rect of the surface related to its container.

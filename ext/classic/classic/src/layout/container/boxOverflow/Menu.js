@@ -448,7 +448,7 @@ Ext.define('Ext.layout.container.boxOverflow.Menu', {
                 // Because of that, we need to add a value getter/setter and an event listener that
                 // will fire the change event on click, making the menuitem behave as a 
                 // checkbox/radio field would have.
-            } else if (component instanceof Ext.form.field.Checkbox) {
+            } else if (component.isCheckbox) {
                 component.overflowClone = menu.add(me.createMenuConfig(component));
                 
                 Ext.apply(component.overflowClone,{
@@ -460,8 +460,8 @@ Ext.define('Ext.layout.container.boxOverflow.Menu', {
                     }
                 });
                 
-                component.overflowClone.on('click',function(item){
-                    item.setChecked(true);
+                component.overflowClone.on('click',function(item) {
+                    item.setChecked(item.masterComponent.isRadio ? true : !item.checked);
                     item.fireEvent('change', item, item.checked);
                 });
             } else {

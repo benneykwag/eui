@@ -259,7 +259,7 @@ Ext.define('Ext.form.field.Field', {
 
     /**
      * Returns the parameter(s) that would be included in a standard form submit for this field. Typically this will be
-     * an object with a single name-value pair, the name being this field's {@link #getName name} and the value being
+     * an object with a single name-value pair, the name being this field's {@link #method-getName name} and the value being
      * its current stringified value. More advanced field implementations may return more than one name-value pair.
      *
      * Note that the values returned from this method are not guaranteed to have been successfully {@link #validate
@@ -282,18 +282,20 @@ Ext.define('Ext.form.field.Field', {
     /**
      * Returns the value(s) that should be saved to the {@link Ext.data.Model} instance for this field, when {@link
      * Ext.form.Basic#updateRecord} is called. Typically this will be an object with a single name-value pair, the name
-     * being this field's {@link #getName name} and the value being its current data value. More advanced field
+     * being this field's {@link #method-getName name} and the value being its current data value. More advanced field
      * implementations may return more than one name-value pair. The returned values will be saved to the corresponding
      * field names in the Model.
      *
      * Note that the values returned from this method are not guaranteed to have been successfully {@link #validate
      * validated}.
      *
+     * @param {Boolean} includeEmptyText Whether or not to include empty text
+     * @param isSubmitting (private)
      * @return {Object} A mapping of submit parameter names to values; each value should be a string, or an array of
      * strings if that particular name has multiple values. It can also return null if there are no parameters to be
      * submitted.
      */
-    getModelData: function(includeEmptyText, /*private*/ isSubmitting) {
+    getModelData: function(includeEmptyText, isSubmitting) {
         var me = this,
             data = null;
         

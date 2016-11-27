@@ -167,6 +167,13 @@ Ext.define('Ext.event.Event', {
 
         /**
          * @private
+         * An amalgamation of pointerEvents/mouseEvents/touchEvents.
+         * Will be populated in class callback.
+         */
+        gestureEvents: {},
+
+        /**
+         * @private
          */
         pointerEvents: {
             pointerdown: 1,
@@ -317,16 +324,16 @@ Ext.define('Ext.event.Event', {
                 result[eventFlag] = true;
             }
             if (result.ctrlKey) {
-                result.push(me.modifierGlyphs.ctrlKey)
+                result.push(me.modifierGlyphs.ctrlKey);
             }
             if (result.altKey) {
-                result.push(me.modifierGlyphs.altKey)
+                result.push(me.modifierGlyphs.altKey);
             }
             if (result.shiftKey) {
-                result.push(me.modifierGlyphs.shiftKey)
+                result.push(me.modifierGlyphs.shiftKey);
             }
             if (result.metaKey) {
-                result.push(me.modifierGlyphs.metaKey)
+                result.push(me.modifierGlyphs.metaKey);
             }
             result.push(this.specialKeyGlyphs[rawKey] || rawKey);
             return result.join('');
@@ -830,7 +837,7 @@ Ext.define('Ext.event.Event', {
 
         me.claimed = true;
 
-        if (parentEvent && !me.hasOwnProperty('isGesture')) {
+        if (parentEvent && !me.isGesture) {
             parentEvent.claimGesture();
         } else {
             // Claiming a gesture should also prevent default browser actions like pan/zoom
@@ -844,8 +851,8 @@ Ext.define('Ext.event.Event', {
     },
 
     /**
-     * Returns true if the target of this event is a child of `el`.  Unless the allowEl
-     * parameter is set, it will return false if if the target is `el`.
+     * Returns true if the target of this event is a child of `el`. If the allowEl
+     * parameter is set to false, it will return false if the target is `el`.
      * Example usage:
      * 
      *     // Handle click on any child of an element
@@ -865,17 +872,22 @@ Ext.define('Ext.event.Event', {
      * @param {String/HTMLElement/Ext.dom.Element} el The id, DOM element or Ext.Element to check
      * @param {Boolean} [related] `true` to test if the related target is within el instead
      * of the target
-     * @param {Boolean} [allowEl] `true` to also check if the passed element is the target
-     * or related target
+     * @param {Boolean} [allowEl=true] `true` to allow the target to be considered "within" itself. 
+     * `false` to only allow child elements.
      * @return {Boolean}
      */
-    within: function(el, related, allowEl){
+    within: function(el, related, allowEl) {
         var t;
+
         if (el) {
             t = related ? this.getRelatedTarget() : this.getTarget();
         }
 
-        return t ? Ext.fly(el).contains(t) || !!(allowEl && t === Ext.getDom(el)) : false;
+        if (!t || (allowEl === false && t === Ext.getDom(el))) {
+            return false;
+        }
+
+        return Ext.fly(el).contains(t);
     },
 
     deprecated: {
@@ -883,16 +895,20 @@ Ext.define('Ext.event.Event', {
             methods: {
 
                 /**
+                 * @method getPageX
                  * Gets the x coordinate of the event.
                  * @return {Number}
                  * @deprecated 4.0 use {@link #getX} instead
+                 * @member Ext.event.Event
                  */
                 getPageX: 'getX',
                 
                 /**
+                 * @method getPageY
                  * Gets the y coordinate of the event.
                  * @return {Number}
                  * @deprecated 4.0 use {@link #getY} instead
+                 * @member Ext.event.Event
                  */
                 getPageY: 'getY'
             }
@@ -1126,7 +1142,12 @@ Ext.define('Ext.event.Event', {
         }())
     },
     keyCodes = {},
+    gestureEvents = Event.gestureEvents,
     keyName, keyCode;
+
+    Ext.apply(gestureEvents, Event.mouseEvents);
+    Ext.apply(gestureEvents, Event.pointerEvents);
+    Ext.apply(gestureEvents, Event.touchEvents);
 
     Ext.apply(Event, constants);
     Ext.apply(prototype, constants);

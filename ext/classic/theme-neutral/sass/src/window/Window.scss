@@ -113,8 +113,17 @@
  * @param {color} [$ui-body-color=$window-body-color]
  * The color of text inside the Window body
  *
+ * @param {Number} [$ui-body-font-size=$window-body-font-size]
+ * The body font size
+ *
+ * @param {Number} [$ui-body-font-weight=$window-body-font-weight]
+ * The body font weight
+ *
+ * @param {String} [$ui-body-font-family=$window-body-font-family]
+ * The body font family
+ *
  * @param {color} [$ui-background-color=$window-background-color]
- * The background-color of the Window
+ * The background color
  *
  * @param {boolean} [$ui-force-header-border=$window-force-header-border]
  * True to force the window header to have a border on the side facing

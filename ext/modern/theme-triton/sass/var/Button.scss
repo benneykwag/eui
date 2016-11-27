@@ -22,6 +22,7 @@ $button-icon-color: dynamic($neutral-dark-color);
     @include button-ui(
         $ui: 'alt',
         $background-color: $base-color,
-        $color: $light-color
+        $color: $light-color,
+        $border-width: 0
     );
 }

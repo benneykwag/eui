@@ -145,7 +145,7 @@ Ext.define('Ext.app.EventDomain', {
      *      }, controller);
      * 
      * @param {Object} selectors Config object containing selectors and listeners.
-     *
+     * @param {Ext.app.BaseController} [controller] (private)
      * @private
      */
     listen: function(selectors, controller) {

@@ -6,8 +6,9 @@ $tab-font-weight: dynamic($font-weight-normal);
 $tab-color: dynamic($highlight-color);
 $tab-active-color: dynamic($base-color);
 
-$tab-font-size: dynamic(0.7em);
-$tab-font-size-big: dynamic(.7em);
+$tab-font-size: dynamic(1rem);
+$tab-stacked-font-size: dynamic(px-to-em(10px, 14px));
+$tab-stacked-font-size-big: dynamic(px-to-em(10px, 16px));
 
 $tab-line-height: dynamic(1.23em);
 $tab-line-height-big: dynamic(1.25em);

@@ -213,7 +213,7 @@ $image-10: false) {
     }
 }
 
-@mixin st-box-flex($flex: 1, $preferredSize: null, $important: no) {
+@mixin st-box-flex($flex: 1, $preferredSize: auto, $important: no) {
     @if $important == important {
         -webkit-box-flex: $flex !important;
         flex: $flex $flex $preferredSize !important;

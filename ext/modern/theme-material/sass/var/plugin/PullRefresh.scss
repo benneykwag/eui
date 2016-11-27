@@ -1,0 +1,173 @@
+$pullrefresh-min-height: dynamic(2em);
+$pullrefresh-min-height-big: dynamic(2em);
+$pullrefresh-background-color: dynamic(transparent);
+
+$pullrefresh-border-radius: dynamic(50%);
+$pullrefresh-padding: dynamic(2em);
+
+$pullrefresh-arrow-width: dynamic(null);
+$pullrefresh-arrow-icon: dynamic(null);
+$pullrefresh-text-margin: dynamic(null);
+
+$pullrefresh-spinner-font-size: dynamic(150%);
+$pullrefresh-spinner-padding: dynamic(null);
+$pullrefresh-spinner-background-color: dynamic($background-color);
+$pullrefresh-spinner-border-radius: dynamic(50%);
+
+.#{$prefix}pullrefresh-md-main {
+    padding: 9px;
+    z-index: 10001;
+    overflow: hidden;
+    border-radius: 999px;
+    opacity: 0;
+    transform: scale(1);
+    transition: all 0.43s cubic-bezier(.08,.55,.81,1.8);
+}
+
+.#{$prefix}pullrefresh-md-loader-wrapper {
+    width:25px;
+    height:25px;
+}
+
+.#{$prefix}pullrefresh-md-arrow-wrapper {
+    transition: all 0.20s ease;
+}
+
+.#{$prefix}pullrefresh-md-half-circle, .#{$prefix}pullrefresh-md-arrow-main {
+    position: absolute;
+    top: 0;
+    width: 25px;
+    height: 25px;
+    @include border(3px, solid, black black transparent);
+    border-radius: 999px;
+}
+
+.#{$prefix}pullrefresh-md-arrow-main {
+    margin-top: 10px;
+    transform: rotate(-37deg);
+
+    border-color: $base-color $base-color transparent;
+    &:before {
+        border-color: $base-color transparent transparent transparent;
+    }
+
+    &:before {
+        content: '';
+        display: block;
+        position: relative;
+        top: 14px;
+        left: 0px;
+        width: 0;
+        height: 0;
+        border-width: 6px 6px;
+        border-style: solid;
+        transform: rotate(-56deg);
+    }
+}
+
+.#{$prefix}pullrefresh-md-spinner-main{
+    width: 25px;
+    height: 25px;
+    position: relative;
+
+    animation: #{$prefix}pullrefresh-spinner-sporadic-rotate 5.25s cubic-bezier(0.35, 0, 0.25, 1) infinite
+
+    .#{$prefix}pullrefresh-md-spinner-left, .#{$prefix}pullrefresh-md-spinner-right {
+        position: absolute;
+        top: 0;
+        height: 25px;
+        width: 13px;
+        overflow: hidden;
+
+        .#{$prefix}pullrefresh-md-half-circle {
+            border-top-color: $base-color;
+            animation-iteration-count: infinite;
+            animation-duration: 1.3125s;
+            animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1);
+        }
+    }
+
+    .#{$prefix}pullrefresh-md-spinner-left {
+        left: 0;
+        .#{$prefix}pullrefresh-md-half-circle {
+            left: 0;
+            border-right-color: transparent;
+            border-left-color: $base-color;
+            animation-name: #{$prefix}pullrefresh-spinner-left-wobble;
+        }
+    }
+
+    .#{$prefix}pullrefresh-md-spinner-right {
+        right: 0;
+        .#{$prefix}pullrefresh-md-half-circle {
+            right: 0;
+            border-left-color: transparent;
+            border-right-color: $base-color;
+            animation-name: #{$prefix}pullrefresh-spinner-right-wobble;
+        }
+    }
+}
+
+.#{$prefix}pullrefresh-md-spinner-wrapper {
+    animation: #{$prefix}pullrefresh-spinner-outer-rotate 2.91667s linear infinite;
+}
+
+@keyframes #{$prefix}pullrefresh-spinner-outer-rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+ }
+
+@keyframes #{$prefix}pullrefresh-spinner-left-wobble {
+    0%, 100% {
+        transform: rotate(130deg);
+    }
+
+    50% {
+        transform: rotate(-5deg);
+    }
+}
+
+@keyframes #{$prefix}pullrefresh-spinner-right-wobble {
+    0%, 100% {
+        transform: rotate(-130deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+ @keyframes #{$prefix}pullrefresh-spinner-sporadic-rotate {
+    12.5% {
+        transform: rotate(135deg);
+    }
+
+    25% {
+        transform: rotate(270deg);
+    }
+
+    37.5% {
+        transform: rotate(405deg);
+    }
+
+    50% {
+        transform: rotate(540deg);
+    }
+
+    62.5% {
+        transform: rotate(675deg);
+    }
+
+    75% {
+        transform: rotate(810deg);
+    }
+
+    87.5% {
+        transform: rotate(945deg);
+    }
+
+    100% {
+        transform: rotate(1080deg);
+    }
+}

@@ -155,10 +155,8 @@ Ext.define('Ext.chart.interactions.ItemEdit', {
             switch (type) {
                 case 'barSeries':
                     return me.onDragBar(e);
-                    break;
                 case 'scatterSeries':
                     return me.onDragScatter(e);
-                    break;
             }
         }
     },
@@ -336,7 +334,7 @@ Ext.define('Ext.chart.interactions.ItemEdit', {
                 // to configuration. trackMouse uses the pointerEvent
                 // If aligning to an element, it uses a currentTarget
                 // flyweight which may be attached to any DOM element.
-                tooltip.handleAfterShow();
+                tooltip.realignToTarget();
             } else {
                 tooltip.show();
             }

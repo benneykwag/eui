@@ -145,7 +145,8 @@ Ext.define('Ext.chart.interactions.Rotate', {
             axes = chart.getAxes(),
             series = chart.getSeries(),
             oldRotations = me.oldRotations,
-            axis, seriesItem, oldRotation,
+            rotation, oldRotation,
+            axis, seriesItem,
             i, ln;
 
         if (!animate) {
@@ -155,16 +156,21 @@ Ext.define('Ext.chart.interactions.Rotate', {
         for (i = 0, ln = axes.length; i < ln; i++) {
             axis = axes[i];
             oldRotation = oldRotations[axis.getId()] || (oldRotations[axis.getId()] = axis.getRotation());
-            axis.setRotation( angle + (relative ? oldRotation : 0) );
+            rotation = angle + (relative ? oldRotation : 0);
+
+            axis.setRotation(rotation);
         }
 
         for (i = 0, ln = series.length; i < ln; i++) {
             seriesItem = series[i];
             oldRotation = oldRotations[seriesItem.getId()] || (oldRotations[seriesItem.getId()] = seriesItem.getRotation());
-            seriesItem.setRotation( angle + (relative ? oldRotation : 0) );
+            // Unline axis's 'rotation', Polar series' 'rotation' is a public config and in degrees.
+            rotation = Ext.draw.Draw.degrees( angle + (relative ? oldRotation : 0) );
+
+            seriesItem.setRotation(rotation);
         }
 
-        me.setRotation(angle + (relative ? oldRotation : 0));
+        me.setRotation(rotation);
 
         me.fireEvent('rotate', me, me.getRotation());
 

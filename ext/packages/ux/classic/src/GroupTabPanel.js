@@ -2,7 +2,7 @@
  * A TabPanel with grouping support.
  */
 Ext.define('Ext.ux.GroupTabPanel', {
-    extend: 'Ext.Container',
+    extend: 'Ext.container.Container',
 
     alias: 'widget.grouptabpanel',
 

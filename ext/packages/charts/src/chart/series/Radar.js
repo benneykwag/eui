@@ -114,6 +114,17 @@ Ext.define('Ext.chart.series.Radar', {
     },
 
     updateRotation: function (rotation) {
+        // Overrides base class method.
+        var me = this,
+            chart = me.getChart(),
+            axes = chart.getAxes(),
+            i, ln, axis;
+
+        for (i = 0, ln = axes.length; i < ln; i++) {
+            axis = axes[i];
+            axis.setRotation(rotation);
+        }
+
         this.setStyle({
             rotationRads: rotation
         });

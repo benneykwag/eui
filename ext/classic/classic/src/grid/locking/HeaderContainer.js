@@ -77,15 +77,6 @@ Ext.define('Ext.grid.locking.HeaderContainer', {
         me.lockedEventRelayers = me.relayEvents(lockedGrid.headerCt, me.headerCtRelayEvents);
         me.normalEventRelayers = me.relayEvents(normalGrid.headerCt, me.headerCtRelayEvents);
     },
-    
-    destroy: function() {
-        var me = this;
-        
-        Ext.destroy(me.lockedEventRelayers, me.normalEventRelayers);
-        me.lockedEventRelayers = me.normalEventRelayers = null;
-        
-        me.callParent();
-    },
 
     getRefItems: function() {
         return this.lockable.lockedGrid.headerCt.getRefItems().concat(this.lockable.normalGrid.headerCt.getRefItems());

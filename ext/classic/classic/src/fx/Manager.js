@@ -296,7 +296,7 @@ Ext.define('Ext.fx.Manager', {
      * @private
      * Collect target attributes for the given Anim object at the given timestamp
      * @param {Ext.fx.Anim} anim The Anim instance
-     * @param {Number} timestamp Time after the anim's start time
+     * @param {Number} elapsedTime Time after the anim's start time
      * @param {Boolean} [useCSS3=false] True if using CSS3-based animation, else false
      * @param {Boolean} [isLastFrame=false] True if this is the last frame of animation to be run, else false
      * @return {Object} The animation target wrapper object containing the passed animation along with the
@@ -389,5 +389,16 @@ Ext.define('Ext.fx.Manager', {
                 }
             }
         }
+    },
+    
+    clear: function() {
+        var me = this;
+
+        if (me.taskRunner) {
+            me.taskRunner.stopAll(true);
+        }
+        me.targetArr = {};
+        me.items.clear();
+        me.targets.clear();
     }
 });

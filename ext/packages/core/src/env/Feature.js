@@ -1004,7 +1004,7 @@ Ext.feature = {
 
             if (Ext.getScrollbarSize().height) {
                 // must have space-consuming scrollbars for bug to be possible
-                el = this.getTestElement();
+                el = this.getTestElement('div', true);
                 style = el.style;
                 style.height = '50px';
                 style.width = '50px';
@@ -1145,7 +1145,15 @@ Ext.feature = {
             // If the bug is present, the 95 pixel wide inner div, encroaches into the
             // vertical scrollbar, but does NOT trigger horizontal overflow, so the clientHeight remains
             // equal to the offset height.
-            var outerBox = div.firstChild;
+            var outerBox = div.firstChild,
+                style = div.style,
+                pos = style.position;
+
+            // This issue seems to require a repaint to measure correctly
+            style.position = 'absolute';
+            outerBox.offsetHeight;
+            style.position = pos;
+
             return outerBox.clientHeight === outerBox.offsetHeight;
         }
     },
@@ -1197,7 +1205,7 @@ Ext.feature = {
         fn: function() {
             return Ext.isWebKit ?
                 parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 :
-                !(!(Ext.isGecko || Ext.isIE) || (Ext.isOpera && Ext.operaVersion < 12));
+                !(!(Ext.isGecko || Ext.isIE || Ext.isEdge) || (Ext.isOpera && Ext.operaVersion < 12));
         }
     },
     /**
@@ -1486,7 +1494,26 @@ Ext.feature = {
             return 'scrollSnapType' in style || 'webkitScrollSnapType' in style || 'msScrollSnapType' in style;
         }
     },
+        /**
+         * @property TranslateYCausesHorizontalScroll
+         * @private
+         * @type {Boolean}
+         *
+         * Bug for Edge logged here: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/9743268/
+         */
+    {
+        name: 'TranslateYCausesHorizontalScroll',
+        ready: true,
+        fn: function(doc, div) {
+            div.innerHTML = '<div style="position: relative; overflow: auto; height: 200px; width: 200px;">' +
+                             '<div>' +
+                               '<div style="transform: translateY(260px); width: 50px;">a</div>' +
+                             '</div>' +
+                           '</div>';
 
+            return div.firstChild.scrollWidth > div.firstChild.clientWidth;
+        }
+    },
     0] // placeholder so legacy browser detectors can come/go cleanly
 };
 

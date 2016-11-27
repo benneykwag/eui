@@ -808,6 +808,37 @@ describe("Ext.data.ChainedStore", function() {
                     expect(dataChangedSpy).toHaveBeenCalled();
                     expect(dataChangedSpy.mostRecentCall.args[0]).toBe(store);
                 });
+
+                it("should forward on beforeload/load events when the source is chained", function() {
+                    createStore();
+
+                    var readSpy = spyOn(User.getProxy(), 'read').andCallThrough();
+
+                    var beforeLoadSpy = jasmine.createSpy(),
+                        loadSpy = jasmine.createSpy(),
+                        child = new Ext.data.ChainedStore({
+                            source: store,
+                            listeners: {
+                                beforeload: beforeLoadSpy,
+                                load: loadSpy
+                            }
+                        });
+
+                    source.load();
+                    expect(beforeLoadSpy.callCount).toBe(1);
+                    expect(beforeLoadSpy.mostRecentCall.args[0]).toBe(child);
+                    expect(beforeLoadSpy.mostRecentCall.args[1]).toBe(readSpy.mostRecentCall.args[0]);
+
+                    completeWithData([abeRaw, tommyRaw, edRaw, aaronRaw]);
+                    expect(loadSpy.callCount).toBe(1);
+
+                    expect(loadSpy.mostRecentCall.args[0]).toBe(child);
+                    expect(loadSpy.mostRecentCall.args[1]).toEqual([source.getAt(0), source.getAt(1), source.getAt(2), source.getAt(3)]);
+                    expect(loadSpy.mostRecentCall.args[2]).toBe(true);
+                    expect(loadSpy.mostRecentCall.args[3]).toBe(readSpy.mostRecentCall.args[0]);
+
+                    child.destroy();
+                });
             });
         });
 

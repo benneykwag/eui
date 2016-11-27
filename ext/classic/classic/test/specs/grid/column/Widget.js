@@ -30,7 +30,8 @@ describe("Ext.grid.column.Widget", function() {
                 id: 'rec' + i,
                 a: i + 'a',
                 b: i + 'b',
-                c: i + 'c'
+                c: i + 'c',
+                d: i/10
             });
         }
 
@@ -120,6 +121,7 @@ describe("Ext.grid.column.Widget", function() {
             }]);
 
             var widget0 = getWidget(0),
+                widget1 = getWidget(1),
                 rec0 = store.getAt(0),
                 rec1 = store.getAt(1),
                 toDelete = widget0.getWidgetRecord(),
@@ -129,24 +131,30 @@ describe("Ext.grid.column.Widget", function() {
             expect(toDelete).toBe(rec0);
             expect(newTop).toBe(rec1);
 
-            // Focus the button, and enter actionable mode, then click the button.
-            jasmine.fireMouseEvent(widget0.focusEl, 'mousedown');
-            widget0.focusEl.focus();
-            jasmine.fireKeyEvent(widget0.focusEl, 'keydown', Ext.event.Event.SPACE);
+            // Focus the button, and enter actionable mode
+            grid.setActionableMode(true, new Ext.grid.CellContext(view).setPosition(0, 0));
 
-            // That should have deleted a record
-            expect(store.getCount()).toBe(storeCount - 1);
+            // Wait for the widget to be focused
+            waitsForFocus(widget0);
+            
+            runs(function() {
+                jasmine.fireKeyEvent(widget0.focusEl, 'keydown', Ext.event.Event.SPACE);
 
-            // The widget's record must have gone
-            expect(store.contains(toDelete)).toBe(false);
+                // That should have deleted a record
+                expect(store.getCount()).toBe(storeCount - 1);
 
-            // Widget 0 must receive focus when any async focus events have run their course
-            waitsFor(function() {
-                widget0 = getWidget(0);
-                return widget0.hasFocus;
+                // The widget's record must have gone
+                expect(store.contains(toDelete)).toBe(false);
             });
 
+            // The new widget 0 must receive focus when any async focus events have run their course
+            waitsForFocus(widget1);
+
             runs(function() {
+                widget0 = getWidget(0);
+
+                expect(widget0.el.contains(document.activeElement)).toBe(true);
+
                 // Widget 0 record must be what we got from widget 1 initially
                 expect(widget0.getWidgetRecord()).toBe(newTop);
             });
@@ -231,7 +239,10 @@ describe("Ext.grid.column.Widget", function() {
 
             // And focus should have jumped from the mousedowned button (which has gone)
             // to the button above it.
-            expect(colRef[0].getWidget(store.last()).hasFocus).toBe(true);
+            // NavigationModel does not enter actionable mode for touches.
+            if (!jasmine.supportsTouch) {
+                expect(colRef[0].getWidget(store.last()).hasFocus).toBe(true);
+            }
         });
     });
 
@@ -247,11 +258,9 @@ describe("Ext.grid.column.Widget", function() {
 
         it("should select the row on click of the widget with stopSelection: false", function() {
             colRef[0].stopSelection = false;
-            navModel.setPosition(new Ext.grid.CellContext(grid.view).setPosition(0, 0));
+            navModel.setPosition(new Ext.grid.CellContext(view).setPosition(0, 0));
             
-            waitsFor(function() {
-                return view.containsFocus;
-            });
+            waitsForFocus(view);
 
             // Wait for focus to be in the view.
             // Because IE has async focusing.
@@ -515,13 +524,11 @@ describe("Ext.grid.column.Widget", function() {
                     cfg.onWidgetAttach = spy;
                     makeGrid([cfg]);
                     spy.reset();
-                    var rec = store.insert(2, {})[0],
-                        spyCall = spy.mostRecentCall;
+                    var rec = store.insert(2, {})[0];
 
-                    expect(spy.callCount).toBe(1);
-                    expect(spyCall.args[0]).toBe(colRef[0]);
-                    expect(spyCall.args[1].isButton).toBe(true);
-                    expect(spyCall.args[2]).toBe(rec);
+                    expect(spy.calls[0].args[0]).toBe(colRef[0]);
+                    expect(spy.calls[0].args[1].isButton).toBe(true);
+                    expect(spy.calls[0].args[2]).toBe(rec);
                 });
                 
                 it("should be called after rendering the widget", function() {
@@ -1305,7 +1312,11 @@ describe("Ext.grid.column.Widget", function() {
 
                     jasmine.fireMouseEvent(getWidget(0).focusEl, 'click');
                     expect(getWidget(0).menu.isVisible()).toBe(true);
-                    expect(grid.actionableMode).toBe(true);
+
+                    // NavigationModel does not enter actionable mode for touches.
+                    if (!jasmine.supportsTouch) {
+                        expect(grid.actionableMode).toBe(true);
+                    }
 
                     jasmine.fireMouseEvent(getWidget(0).focusEl, 'click');
                     expect(getWidget(0).menu.isVisible()).toBe(false);
@@ -1317,9 +1328,56 @@ describe("Ext.grid.column.Widget", function() {
 
                     // Should focus the cell and exit actionable mode.
                     // Some browsers fire async focus events, so wait for it.
-                    waitsFor(function() {
-                        return grid.actionableMode === false;
+                    // NavigationModel does not enter actionable mode for touches.
+                    if (!jasmine.supportsTouch) {
+                        waitsFor(function() {
+                            return grid.actionableMode === false;
+                        });
+                    }
+                });
+            });
+
+            describe("in a tabpanel", function() {
+                var panel;
+
+                beforeEach(function() {
+                    createGrid([{
+                        xtype: 'widgetcolumn',
+                        width: 200,
+                        dataIndex: 'd',
+                        widget: {
+                            xtype: 'progressbarwidget',
+                            textTpl: '{value:percent}'
+                        }
+                    }], null, {
+                        renderTo: null
                     });
+
+                    panel = new Ext.tab.Panel({
+                        width: 800,
+                        height: 300,
+
+                        items: [
+                            grid, {
+                                xtype: 'panel',
+                                title: 'TAB2'
+                            }
+                        ],
+                        renderTo: document.body
+                    });    
+                });
+
+                afterEach(function() {
+                    panel.destroy();
+                    panel = null;
+                });
+
+                it("should display the widget if it's record was added while the grid was in an inactive panel", function() {
+                    panel.setActiveTab(1);
+                    store.add({ id: 'rec5', a: '5a',  b: '5b', c: '5c', d: 0.5 });
+                    panel.setActiveTab(0);
+
+                    expect(getWidget(4, 0).textEl.dom.innerHTML).toBe('50%');
                 });
             });
         });

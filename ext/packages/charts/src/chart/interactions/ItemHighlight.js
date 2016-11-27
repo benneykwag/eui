@@ -63,15 +63,30 @@ Ext.define('Ext.chart.interactions.ItemHighlight', {
             }
 
             if (isMousePointer) {
-                if ( tipItem && (!item || tipItem.field !== item.field || tipItem.record !== item.record) ) {
+                // If we detected a mouse hit, show/refresh the tooltip
+                if (item) {
+                    tooltip = item.series.getTooltip();
+
+                    if (tooltip) {
+                        // If there was a different previously active item, ask it to hide its tooltip.
+                        // Unless it's the same tooltip instance that we are about to show.
+                        // In which case, we are just going to reposition it.
+                        if (tipItem && tipItem !== item && tipItem.series.getTooltip() !== tooltip) {
+                            tipItem.series.hideTooltip(tipItem);
+                        }
+
+                        if (tooltip.getTrackMouse()) {
+                            item.series.showTooltip(item, e);
+                        }
+                        me.tipItem = item;
+                    }
+                }
+                // No mouse hit - schedule a hide for hideDelay ms.
+                // If pointer enters another item within that time,
+                // there will be no flickery reshow.
+                else if (tipItem) {
                     tipItem.series.hideTooltip(tipItem);
                     me.tipItem = tipItem = null;
-                }
-                if (item && (tooltip = item.series.getTooltip())) {
-                    if (tooltip.trackMouse || !tipItem) {
-                        item.series.showTooltip(item, e);
-                    }
-                    me.tipItem = item;
                 }
             }
             return false;
@@ -98,6 +113,10 @@ Ext.define('Ext.chart.interactions.ItemHighlight', {
         this.isDragging = false;
     },
 
+    isSameItem: function (a, b) {
+        return a && b && a.series === b.series && a.field === b.field && a.index === b.index;
+    },
+
     onTapGesture: function (e) {
         var me = this;
 
@@ -109,8 +128,8 @@ Ext.define('Ext.chart.interactions.ItemHighlight', {
 
         var item = me.getItemForEvent(e);
 
-        if (me.stickyHighlightItem && item && (me.stickyHighlightItem.index === item.index)) {
-            item = null;
+        if (me.isSameItem(me.stickyHighlightItem, item)) {
+            item = null; // toggle
         }
         me.stickyHighlightItem = item;
         me.highlight(item);

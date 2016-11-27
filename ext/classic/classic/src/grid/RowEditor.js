@@ -315,10 +315,13 @@ Ext.define('Ext.grid.RowEditor', {
         if (!me.completing) {
             // Recover our row node after a view refresh
             if (context && (row = view.getRow(context.record))) {
-                context.row = row;
-                me.reposition();
-                if (me.tooltip && me.tooltip.isVisible()) {
-                    me.tooltip.setTarget(context.row);
+                if (view === context.column.getView()) {
+                    context.row = row;
+                    context.view = view;
+                    me.reposition();
+                    if (me.tooltip && me.tooltip.isVisible()) {
+                        me.tooltip.setTarget(context.row);
+                    }
                 }
             } else {
                 me.editingPlugin.cancelEdit();
@@ -503,7 +506,7 @@ Ext.define('Ext.grid.RowEditor', {
         if (column.isGroupHeader) {
             column = column.getGridColumns();
         }
-        //this.preventReposition = true;
+        this.preventReposition = true;
         this.addFieldsForColumn(column);
         this.insertColumnEditor(column);
         this.preventReposition = false;
@@ -1363,7 +1366,7 @@ Ext.define('Ext.grid.RowEditor', {
             tip = me.getToolTip();
 
         if (tip.isVisible()) {
-            tip.handleAfterShow();
+            tip.realignToTarget();
         } else {
             tip.showBy(me.el);
         }
@@ -1405,8 +1408,9 @@ Ext.define('Ext.grid.RowEditor', {
             Ext.fx.Manager.removeAnim(me.wrapAnim);
             me.wrapAnim = null;
         }
-        
-        me.floatingButtons = me.tooltip = Ext.destroy(me.floatingButtons, me.tooltip);
+
+        // Properties must be cleared because class-specific getRefItems explicitly references them.
+        me.keyNav = me.floatingButtons = me.tooltip = Ext.destroy(me.keyNav, me.floatingButtons, me.tooltip);
         
         me.callParent();    
     }

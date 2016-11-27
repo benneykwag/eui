@@ -264,10 +264,12 @@ Ext.define('Ext.fx.runner.CssTransition', {
 
     run: function(animations) {
         var me = this,
+            Function = Ext.Function,
             isLengthPropertyMap = me.lengthProperties,
             fromData = {},
             toData = {},
             data = {},
+            transitionData = {},
             element, elementId, from, to, before,
             fromPropertyNames, toPropertyNames,
             doApplyTo, message,
@@ -283,7 +285,7 @@ Ext.define('Ext.fx.runner.CssTransition', {
 
         animations = Ext.Array.from(animations);
 
-        for (i = 0,ln = animations.length; i < ln; i++) {
+        for (i = 0, ln = animations.length; i < ln; i++) {
             animation = animations[i];
             animation = Ext.factory(animation, Ext.fx.Animation);
             me.activeElement = element = animation.getElement();
@@ -401,10 +403,12 @@ Ext.define('Ext.fx.runner.CssTransition', {
             fromData[elementId] = elementData;
             toData[elementId] = Ext.apply({}, to);
 
-            toData[elementId]['transition-property'] = toPropertyNames;
-            toData[elementId]['transition-duration'] = data.duration;
-            toData[elementId]['transition-timing-function'] = data.easing;
-            toData[elementId]['transition-delay'] = data.delay;
+            transitionData[elementId] = {
+                'transition-property': toPropertyNames,
+                'transition-duration': data.duration,
+                'transition-timing-function': data.easing,
+                'transition-delay': data.delay
+            };
 
             animation.startTime = Date.now();
         }
@@ -421,17 +425,29 @@ Ext.define('Ext.fx.runner.CssTransition', {
             }
         };
 
-        if (window.requestAnimationFrame) {
-            window.requestAnimationFrame(function() {
+
+        Function.requestAnimationFrame(function() {
+            if (Ext.isIE) {
+                // https://sencha.jira.com/browse/EXTJS-22362
+                // In some cases IE will fail to animate if the "to" and "transition" styles are added
+                // simultaneously.  That is the reason for the multi-delay below.  The first one
+                // defines the transition parameters ('transition-property', 'transition-delay' etc)
+                // and the second delay sets the values of the animating properties, or, the "to"
+                // properties.  The second delay is what actually starts the animation.
+                me.applyStyles(transitionData);
+
+                Function.requestAnimationFrame(function () {
+                    window.addEventListener('message', doApplyTo, false);
+                    window.postMessage(message, '*');
+                });
+             } else {
+                // In non-IE browsers the above approach can cause a flicker,
+                // so in these browsers we apply all the styles at the same time.
+                Ext.merge(toData, transitionData);
                 window.addEventListener('message', doApplyTo, false);
                 window.postMessage(message, '*');
-            });
-        }else {
-            Ext.defer(function() {
-                window.addEventListener('message', doApplyTo, false);
-                window.postMessage(message, '*');
-            }, 1);
-        }
+             }
+        });
     },
 
     onAnimationStop: function(animation) {
@@ -446,7 +462,11 @@ Ext.define('Ext.fx.runner.CssTransition', {
                 for (i = 0,ln = sessions.length; i < ln; i++) {
                     session = sessions[i];
                     if (session.animation === animation) {
-                        this.refreshRunningAnimationsData(session.element, session.list.slice(), false);
+                        if (!animation.destroying) {
+                            this.refreshRunningAnimationsData(session.element, session.list.slice(), false);
+                        } else {
+                            this.onAnimationEnd(session.element, session.data, session.animation, false);
+                        }
                     }
                 }
             }

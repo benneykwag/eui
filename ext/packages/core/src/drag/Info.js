@@ -546,15 +546,15 @@ Ext.define('Ext.drag.Info', {
 
         /**
          * Update with the current position information.
-         * @param {Ext.event.Event} The event.
+         * @param {Ext.event.Event} event The event.
          * @param {Boolean} beforeStart `true` if the update is occurring
          * before the drag starts.
          *
          * @private
          */
-        update: function(e, beforeStart) {
+        update: function(event, beforeStart) {
             var me = this,
-                xy = e.getXY(),
+                xy = event.getXY(),
                 x = xy[0],
                 y = xy[1],
                 alignXY = me.getAlignXY(x, y),

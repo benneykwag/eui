@@ -274,7 +274,12 @@
         left($ui-header-padding) + left($ui-header-border-width);
 
     .#{$prefix}panel-#{$ui} {
-        @if not is-null($ui-border-color) { border-color: $ui-border-color; }
+        @if not is-null($ui-border-color) { 
+            border-color: $ui-border-color;
+            &.#{$prefix}masked {
+                border-color: mix(#fff, $ui-border-color, $loadmask-opacity * 100);
+            }
+        }
         padding: $ui-padding;
     }
 

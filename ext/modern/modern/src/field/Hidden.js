@@ -65,5 +65,13 @@ Ext.define('Ext.field.Hidden', {
         tabIndex: -1
     },
 
-    classCls: Ext.baseCSSPrefix + 'hiddenfield'
+    classCls: Ext.baseCSSPrefix + 'hiddenfield',
+
+    applyClearIcon: function() {
+        return false;
+    },
+
+    applyTriggers: function() {
+        return null;
+    }
 });

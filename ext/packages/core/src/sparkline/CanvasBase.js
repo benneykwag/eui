@@ -13,6 +13,7 @@ Ext.define('Ext.sparkline.CanvasBase', {
 
     constructor: function(ownerSparkLine) {
         this.owner = ownerSparkLine;
+        this.rtl = this.owner.getInherited().rtl;
     },
 
     setWidth: function(width) {

@@ -100,7 +100,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             exit: 'right',
             modal: true,
             translatable: {
-                translationMethod: 'csstransform'
+                type: 'csstransform'
             },
             right: 0,
             layout: 'fit',
@@ -112,7 +112,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
          */
         columnList: {
             xtype: 'nestedlist',
-            title: 'Column',
+            title: 'Columns',
             listConfig: {
                 plugins: [{
                     type: 'sortablelist',
@@ -188,13 +188,16 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
     updateGrid: function(grid, oldGrid) {
         if (oldGrid) {
             oldGrid.getHeaderContainer().renderElement.un({
+                contextmenu: 'onHeaderContextMenu',
                 longpress: 'onHeaderLongPress',
                 scope: this
             });
-            oldGrid.getHeaderContainer().un({
+            oldGrid.un({
                 columnadd: 'onColumnAdd',
                 columnmove: 'onColumnMove',
                 columnremove: 'onColumnRemove',
+                columnhide: 'onColumnHide',
+                columnshow: 'onColumnShow',
                 scope: this
             });
         }
@@ -203,14 +206,6 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             grid.getHeaderContainer().renderElement.on({
                 contextmenu: 'onHeaderContextMenu',
                 longpress: 'onHeaderLongPress',
-                scope: this
-            });
-            grid.getHeaderContainer().on({
-                columnadd: 'onColumnAdd',
-                columnmove: 'onColumnMove',
-                columnremove: 'onColumnRemove',
-                columnhide: 'onColumnHide',
-                columnshow: 'onColumnShow',
                 scope: this
             });
         }
@@ -335,23 +330,20 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
     onGroupIndicatorTap: function(row, record) {
         var me = this,
             grouped = !record.get('grouped'),
-            store = me.getGrid().getStore(),
-            groupedRecord = me._groupedRecord;
+            store = me.getGrid().getStore();
 
-        if (groupedRecord) {
-            groupedRecord.set('grouped', false);
-        }
+        // Clear everything
+        this.getListRoot().cascade(function(node) {
+            node.set('grouped', false);
+        });
 
         if (grouped) {
             store.setGrouper({
                 property: record.get('dataIndex')
             });
-            me._groupedRecord = record;
             record.set('grouped', true);
         } else {
             store.setGrouper(null);
-            me._groupedRecord = null;
-            record.set('grouped', false);
         }
     },
 
@@ -377,17 +369,18 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
         }
     },
 
-    onColumnAdd: function(headerContainer, column, header) {
+    onColumnAdd: function(grid, column) {
         if (column.getIgnore() || this.isMoving) {
             return;
         }
 
         var me = this,
             nestedList = me.getColumnList(),
+            mainHeaderCt = grid.getHeaderContainer(),
+            header = column.getParent(),
             store = nestedList.getStore(),
             parentNode = store.getRoot(),
             hiddenCls = me._hiddenColumnCls,
-            grid = me.getGrid(),
             isGridGrouped = grid.getGrouped(),
             grouper = grid.getStore().getGrouper(),
             dataIndex = column.getDataIndex(),
@@ -403,7 +396,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
                 leaf: true
             }, idx, headerNode;
 
-        if (header) {
+        if (header !== mainHeaderCt) {
             headerNode = parentNode.findChild('id', header.getId());
             if (!headerNode) {
                 idx = header.getParent().indexOf(header);
@@ -419,7 +412,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             idx = header.indexOf(column);
             parentNode = headerNode;
         } else {
-            idx = headerContainer.indexOf(column);
+            idx = mainHeaderCt.indexOf(column);
         }
 
         parentNode.insertChild(idx, data);
@@ -435,7 +428,7 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             return;
         }
 
-        var root = this.getColumnList().getStore().getRoot(),
+        var root = this.getListRoot(),
             record = root.findChild('id', column.getId(), true);
 
         if (record) {
@@ -490,17 +483,42 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
     },
 
     privates: {
+        getListRoot: function() {
+            return this.getColumnList().getStore().getRoot();
+        },
+
         setup: function() {
             var me = this,
-                sheet;
+                grid = me.getGrid(),
+                sheet, root;
 
             if (me.doneSetup) {
                 return;
             }
             me.doneSetup = true;
 
+            root = this.getListRoot();
+
+            root.removeAll();
+
+            grid.getColumns().forEach(function(leaf) {
+                me.onColumnAdd(grid, leaf);
+            });
+
+            // Don't track the events until the first show, it's easier to
+            // build it from scratch.
+            grid.on({
+                columnadd: 'onColumnAdd',
+                columnmove: 'onColumnMove',
+                columnremove: 'onColumnRemove',
+                columnhide: 'onColumnHide',
+                columnshow: 'onColumnShow',
+                scope: me
+            });
+
+
             sheet = me.getSheet();
-            me.getGrid().add(sheet);
+            grid.add(sheet);
             sheet.translate(me.getSheetWidth());
 
             sheet.down('button[role=donebutton]').on({
@@ -513,12 +531,19 @@ Ext.define('Ext.grid.plugin.ViewOptions', {
             var grid = this.getGrid(),
                 store = grid.getStore(),
                 grouper = store.getGrouper(),
+                isGridGrouped = grid.getGrouped(),
                 grouperProp = grouper && grouper.getProperty(),
                 headerContainer = grid.getHeaderContainer();
 
             this.getColumnList().getStore().getRoot().cascade(function(node) {
-                var dataIndex = node.get('dataIndex');
-                node.set('grouped', dataIndex && dataIndex === grouperProp);
+                var grouped = false,
+                    dataIndex;
+
+                if (isGridGrouped) {
+                    dataIndex = node.get('dataIndex');
+                    grouped = dataIndex && dataIndex === grouperProp;
+                }
+                node.set('grouped', dataIndex && grouped);
             });
         }
     }

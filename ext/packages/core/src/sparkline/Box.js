@@ -69,7 +69,7 @@ Ext.define('Ext.sparkline.Box', {
         target: null,
         
         /**
-         * @cfg {Number} [targetColor=#4a2] The color of the crosshair drawn at the pointe specified by {@link #target}.
+         * @cfg {String} [targetColor=#4a2] The color of the crosshair drawn at the point specified by {@link #target}.
          */
         targetColor: '#4a2',
         
@@ -305,7 +305,7 @@ Ext.define('Ext.sparkline.Box', {
         }
 
         // If mouse is over, re-apply the highlight
-        if (me.currentPageXY && me.el.getRegion().contains(me.currentPageXY)) {
+        if (me.currentPageXY && me.canvasRegion.contains(me.currentPageXY)) {
             me.currentRegion = null;
             me.updateDisplay();
         }

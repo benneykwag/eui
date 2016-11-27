@@ -375,7 +375,7 @@ describe('Ext.grid.plugin.CellEditing', function () {
                 var i, len;
 
                 if (arguments.length === 1) {
-                    if (typeof rec == 'number') {
+                    if (typeof rec === 'number') {
                         rec = store.getAt(rec);
                     }
                     expect(selModel.isSelected(rec)).toBe(true);
@@ -390,49 +390,52 @@ describe('Ext.grid.plugin.CellEditing', function () {
                 selModel = null;
             });
 
-            function selectRange(eventName) {
-                describe('MULTI, on event: ' + eventName, function () {
-                    beforeEach(function () {
-                        makeGrid({
-                            clicksToEdit: eventName === 'click' ? 1: 2
-                        }, {
-                            selModel: {
-                                type: 'rowmodel',
-                                mode: 'MULTI'
-                            }
+            // No SHIFT+touch on tablets, and this test uses shiftKey: true
+            if (!jasmine.supportsTouch) {
+                function selectRange(eventName) {
+                    describe('MULTI, on event: ' + eventName, function () {
+                        beforeEach(function () {
+                            makeGrid({
+                                clicksToEdit: eventName === 'click' ? 1: 2
+                            }, {
+                                selModel: {
+                                    type: 'rowmodel',
+                                    mode: 'MULTI'
+                                }
+                            });
+
+                            selModel = grid.selModel;
                         });
 
-                        selModel = grid.selModel;
-                    });
+                        it('should select a range if we have a selection start point and shift is pressed', function () {
+                            fireEvent(0, eventName);
+                            fireEvent(3, eventName, true);
+                            expectSelected(0, 1, 2, 3);
+                        });
 
-                    it('should select a range if we have a selection start point and shift is pressed', function () {
-                        fireEvent(0, eventName);
-                        fireEvent(3, eventName, true);
-                        expectSelected(0, 1, 2, 3);
-                    });
+                        it('should maintain selection with a complex sequence', function() {
+                            fireEvent(0, eventName);
+                            expectSelected(0);
+                            fireEvent(2, eventName, true);
+                            expectSelected(0, 1, 2);
+                            fireEvent(3, eventName);
+                            expectSelected(3);
+                            fireEvent(1, eventName, true);
+                            expectSelected(1, 2, 3);
 
-                    it('should maintain selection with a complex sequence', function() {
-                        fireEvent(0, eventName);
-                        expectSelected(0);
-                        fireEvent(2, eventName, true);
-                        expectSelected(0, 1, 2);
-                        fireEvent(3, eventName);
-                        expectSelected(3);
-                        fireEvent(1, eventName, true);
-                        expectSelected(1, 2, 3);
-
-                        fireEvent(2, eventName);
-                        expectSelected(2);
-                        fireEvent(0, eventName, true);
-                        expectSelected(0, 1, 2);
-                        fireEvent(3, eventName, true);
-                        expectSelected(2, 3);
+                            fireEvent(2, eventName);
+                            expectSelected(2);
+                            fireEvent(0, eventName, true);
+                            expectSelected(0, 1, 2);
+                            fireEvent(3, eventName, true);
+                            expectSelected(2, 3);
+                        });
                     });
-                });
+                }
+
+                selectRange('click');
+                selectRange('dblclick');
             }
-
-            selectRange('click');
-            selectRange('dblclick');
         });
     });
 
@@ -924,12 +927,12 @@ describe('Ext.grid.plugin.CellEditing', function () {
             });
 
             // Note: I'm disabling this for IE (and new IE!) b/c certain versions (esp. 10 & 11) could not distinguish
-            // between single- and double-click.
-            if (!Ext.isIE && !Ext.isEdge) {
+            // between single- and double-click. Double taps on touch devices also invoke tap handlers.
+            if (!Ext.isIE && !Ext.isEdge && !jasmine.supportsTouch && !Ext.isSafari7) {
                 it('should not begin editing when double-clicked', function () {
                     record = grid.store.getAt(0);
                     node = grid.view.getNodeByRecord(record);
-                    jasmine.fireMouseEvent(Ext.fly(node).down('.x-grid-cell'), 'dblclick');
+                    jasmine.doFireMouseEvent(Ext.fly(node).down('.x-grid-cell'), 'dblclick');
 
                     // We expect nothing to happen
                     waits(50);
@@ -1389,7 +1392,7 @@ describe('Ext.grid.plugin.CellEditing', function () {
         // I could not get the following spec to pass in the following browsers, although the test case does work.
         // The dom.select() method in FF seems to be asynchronous (possibly for Opera as well), and IE 11 and Edge always
         // returned an empty string for the text selection even though it claims to support window.getSelection().
-        ((Ext.isGecko || Ext.isOpera || Ext.isIE11 || Ext.isEdge) ? xit : it)('should select the text in the cell when initiating an edit', function () {
+        ((Ext.isGecko || Ext.isOpera || Ext.isIE11 || Ext.isEdge || jasmine.supportsTouch) ? xit : it)('should select the text in the cell when initiating an edit', function () {
             // See EXTJS-12364.
             var node;
 

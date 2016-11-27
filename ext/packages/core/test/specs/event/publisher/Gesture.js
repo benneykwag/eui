@@ -1,3 +1,5 @@
+/* global Ext, expect, xdescribe, xit */
+
 describe("Ext.event.publisher.Gesture", function() {
     var helper = Ext.testHelper,
         targetEl;
@@ -64,7 +66,7 @@ describe("Ext.event.publisher.Gesture", function() {
 
             runs(function() {
                 expectCollected(true);
-            })
+            });
         });
     });
 

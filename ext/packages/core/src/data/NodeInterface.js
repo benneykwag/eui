@@ -160,7 +160,6 @@ Ext.define('Ext.data.NodeInterface', {
      */
 
     /**
-     * @cfg {String} glyph
      * @cfg {Number/String} glyph
      *
      * A numeric unicode character code to use as the icon.  The default font-family 
@@ -383,10 +382,12 @@ Ext.define('Ext.data.NodeInterface', {
 
     statics: {
         /**
-         * This method allows you to decorate a Model's class to implement the NodeInterface.
-         * This adds a set of methods, new events, new properties and new fields on every Record.
-         * @param {Ext.Class/Ext.data.Model} model The Model class or an instance of the Model class you want to
-         * decorate the prototype of.
+         * This method decorates a Model class such that it implements the interface of
+         * a tree node. That is, it adds a set of methods, events, properties and fields
+         * on every record.
+         * @param {Ext.Class/Ext.data.Model} modelClass The Model class or an instance of
+         * the Model class you want to decorate. In either case, this method decorates
+         * the class so all instances of that type will have the new capabilities.
          * @static
          */
         decorate: function (modelClass) {
@@ -689,16 +690,16 @@ Ext.define('Ext.data.NodeInterface', {
                     };
 
                     // The only way child data can be influenced is if this node has changed level in this update.
-                    if (info.depth !== me.data.depth) {
+                    if (info.depth != null && info.depth !== me.data.depth) {
                         var childInfo = {
-                                depth: me.data.depth + 1
+                                depth: info.depth + 1
                             },
                             children = me.childNodes,
                             childCount = children.length,
                             i;
 
                         for (i = 0; i < childCount; i++) {
-                            children[i].set(childInfo);
+                            children[i].updateInfo(commit, childInfo);
                         }
                     }
                     
@@ -936,13 +937,10 @@ Ext.define('Ext.data.NodeInterface', {
                 /**
                 * Returns the tree this node is in.
                 * @return {Ext.tree.Panel} The tree panel which owns this node.
-                * @deprecated 6.2.0
                 */
                 getOwnerTree: function() {
                     var store = this.getTreeStore();
-                    if (store) {
-                        return store.ownerTree;
-                    }
+                    return store && store.ownerTree;
                 },
 
                 /**
@@ -963,6 +961,8 @@ Ext.define('Ext.data.NodeInterface', {
                  * @param {Ext.data.NodeInterface} node The node to remove
                  * @param {Boolean} [erase=false] True to erase the record using the
                  * configured proxy.
+                 * @param {Boolean} [suppressEvents] (private)
+                 * @param {Boolean} [isMove] (private)
                  * @return {Ext.data.NodeInterface} The removed node
                  */
                 removeChild: function(node, erase, suppressEvents, isMove) {
@@ -1099,10 +1099,11 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Creates a copy (clone) of this Node.
-                 * @param {String} [id] A new id, defaults to this Node's id.
-                 * @param {Ext.data.session.Session} [session] The session to which the new record belongs.
-                 * @param {Boolean} [deep=false] True to recursively copy all child Nodes into the new Node.
-                 * False to copy without child Nodes.
+                 * @param {String} [newId] A new id, defaults to this Node's id.
+                 * @param {Ext.data.session.Session} [session] The session to which the
+                 * new record belongs.
+                 * @param {Boolean} [deep=false] True to recursively copy all child nodes
+                 * into the new Node. False to copy without child Nodes.
                  * @return {Ext.data.NodeInterface} A copy of this Node.
                  */
                 copy: function(newId, session, deep) {
@@ -1209,6 +1210,7 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Destroys the node.
+                 * @param {Boolean} [options] (private)
                  */
                 erase: function(options) {
                     var me = this,
@@ -1240,6 +1242,7 @@ Ext.define('Ext.data.NodeInterface', {
                  * Inserts the first node before the second node in this nodes childNodes collection.
                  * @param {Ext.data.NodeInterface/Ext.data.NodeInterface[]/Object} node The node to insert
                  * @param {Ext.data.NodeInterface} refNode The node to insert before (if null the node is appended)
+                 * @param {Boolean} [suppressEvents] (private)
                  * @return {Ext.data.NodeInterface} The inserted node
                  */
                 insertBefore: function(node, refNode, suppressEvents) {
@@ -1396,10 +1399,10 @@ Ext.define('Ext.data.NodeInterface', {
                 },
 
                 /**
-                 * @private
                  * Used by {@link Ext.tree.Column#initTemplateRendererData} to determine whether a node is the last *visible*
                  * sibling.
-                 * 
+                 *
+                 * @private
                  */
                 isLastVisible: function() {
                     var me = this,
@@ -1435,6 +1438,7 @@ Ext.define('Ext.data.NodeInterface', {
                  * @param {Boolean} [erase=false] True to erase the node using the configured proxy. This is only needed when the
                  * owning {@link Ext.data.TreeStore tree store} is not taking care of synchronization operations.
                  *
+                 * @param {Boolean} [suppressEvents] (private)
                  * @return {Ext.data.NodeInterface} this
                  */
                 remove: function(erase, suppressEvents) {
@@ -1454,6 +1458,8 @@ Ext.define('Ext.data.NodeInterface', {
                  * Removes all child nodes from this node.
                  * @param {Boolean} [erase=false] True to erase the node using the configured
                  * proxy.
+                 * @param {Boolean} [suppressEvents] (private)
+                 * @param {Boolean} [fromParent] (private)
                  * @return {Ext.data.NodeInterface} this
                  */
                 removeAll: function(erase, suppressEvents, fromParent) {
@@ -1468,7 +1474,7 @@ Ext.define('Ext.data.NodeInterface', {
 
                     // Avoid all this if nothing to remove
                     if (!len) {
-                        return;
+                        return me;
                     }
 
                     // Inform the TreeStore so that descendant nodes can be removed.
@@ -1536,6 +1542,7 @@ Ext.define('Ext.data.NodeInterface', {
                  * Replaces one child node in this node with another.
                  * @param {Ext.data.NodeInterface} newChild The replacement node
                  * @param {Ext.data.NodeInterface} oldChild The node to replace
+                 * @param {Boolean} [suppressEvents] (private)
                  * @return {Ext.data.NodeInterface} The replaced node
                  */
                 replaceChild: function(newChild, oldChild, suppressEvents) {
@@ -1548,8 +1555,8 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Returns the index of a child node
-                 * @param {Ext.data.NodeInterface} node
-                 * @return {Number} The index of the node or -1 if it was not found
+                 * @param {Ext.data.NodeInterface} child
+                 * @return {Number} The index of the child node or -1 if it was not found.
                  */
                 indexOf: function(child) {
                     return Ext.Array.indexOf(this.childNodes, child);
@@ -1627,22 +1634,35 @@ Ext.define('Ext.data.NodeInterface', {
                  * Note that the 3 argument form passing `fn, scope, args` is still supported. The `fn` function is as before, called
                  * *before* cascading down into child nodes. If it returns `false`, the child nodes are not traversed.
                  *
-                 * @param {Object} spec An object containing before and after functions, scope and an argument list.
-                 * @param {Function} [spec.before] A function to call on a node *before* cascading down into child nodes.
-                 * If it returns `false`, the child nodes are not traversed.
-                 * @param {Function} [spec.after] A function to call on a node *after* cascading down into child nodes.
-                 * @param {Object} [spec.scope] The scope (this reference) in which the functions are executed. Defaults to the current Node.
-                 * @param {Array} [spec.args] The args to call the function with. Defaults to passing the current Node.
+                 * @param {Object/Function} spec An object containing `before` and `after`
+                 * functions, scope and an argument list or simply the `before` function.
+                 * @param {Function} [spec.before] A function to call on a node *before*
+                 * cascading down into child nodes. If it returns `false`, the child nodes
+                 * are not traversed.
+                 * @param {Function} [spec.after] A function to call on a node *after*
+                 * cascading down into child nodes.
+                 * @param {Object} [spec.scope] The scope (this reference) in which the
+                 * functions are executed. Defaults to the current Node.
+                 * @param {Array} [spec.args] The args to call the function with. Defaults
+                 * to passing the current Node.
+                 * @param {Object} [scope] If `spec` is the `before` function instead of
+                 * an object, this argument is the `this` pointer.
+                 * @param {Array} [args] If `spec` is the `before` function instead of
+                 * an object, this argument is the `args` to pass.
+                 * @param {Function} [after] If `spec` is the `before` function instead of
+                 * an object, this argument is the `after` function to call.
                  */
-                cascade: function(before, scope, args, after) {
-                    var me = this;
+                cascade: function (spec, scope, args, after) {
+                    var me = this,
+                        before = spec;
 
-                    if (arguments.length === 1 && !Ext.isFunction(before)) {
-                        after = before.after;
-                        scope = before.scope;
-                        args = before.args;
-                        before = before.before;
+                    if (arguments.length === 1 && !Ext.isFunction(spec)) {
+                        after = spec.after;
+                        scope = spec.scope;
+                        args = spec.args;
+                        before = spec.before;
                     }
+
                     if (!before || before.apply(scope || me, args || [me]) !== false) {
                         var childNodes = me.childNodes,
                             length     = childNodes.length,
@@ -2034,9 +2054,10 @@ Ext.define('Ext.data.NodeInterface', {
                  * Expand all the children of this node.
                  * @param {Boolean} [recursive=false] True to recursively expand all the children
                  * @param {Function} [callback] The function to execute once all the children are expanded
-                 * @param {Object} [scope] The scope to run the callback in
+                 * @param {Object} [scope] The `this` pointer for the callback.
+                 * @param {Boolean} [singleExpand] (private)
                  */
-                expandChildren: function(recursive, callback, scope, /* private */ singleExpand) {
+                expandChildren: function(recursive, callback, scope, singleExpand) {
                     var me = this,
                         origCallback, i, allNodes, expandNodes, ln, node, treeStore;
 

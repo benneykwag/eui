@@ -175,6 +175,11 @@ Ext.define('Ext.grid.CellContext', {
         return me;
     },
 
+    setView: function(view) {
+        this.view = view;
+        this.refresh();
+    },
+
     /**
      * Returns the cell object referenced *at the time of calling*. Note that grid DOM is transient, and 
      * the cell referenced may be removed from the DOM due to paging or buffered rendering or column or record removal.

@@ -1,3 +1,5 @@
+/* global Ext, spec, expect, jasmine, xdescribe */
+
 describe("Ext.Widget", function() {
     var widget;
 
@@ -3540,30 +3542,6 @@ describe("Ext.Widget", function() {
             expect(widget.element).toHaveCls('bar');
             expect(widget.element).toHaveCls('baz');
         });
-
-        it("should accept an array of classes", function() {
-            var Foo = Ext.define(null, {
-                extend: 'Ext.Widget',
-                classCls: ['foo', 'bar']
-            });
-
-            var Baz = Ext.define(null, {
-                extend: Foo,
-                classCls: 'baz'
-            });
-
-            widget = new Baz();
-
-            expect(widget.element).toHaveCls('foo');
-            expect(widget.element).toHaveCls('bar');
-            expect(widget.element).toHaveCls('baz');
-
-            widget.setUi('ui');
-
-            expect(widget.element).toHaveCls('foo-ui');
-            expect(widget.element).toHaveCls('bar-ui');
-            expect(widget.element).toHaveCls('baz-ui');
-        });
     });
 
     describe("baseCls", function() {
@@ -3701,50 +3679,6 @@ describe("Ext.Widget", function() {
             expect(widget.element).toHaveCls('foo-xyz');
             expect(widget.element).toHaveCls('bar-xyz');
             expect(widget.element).toHaveCls('baz-xyz');
-        });
-
-        it("should add multiple uis", function() {
-            var Foo = Ext.define(null, {
-                extend: 'Ext.Widget',
-                classCls: 'foo'
-            });
-
-            var Bar = Ext.define(null, {
-                extend: Foo,
-                classCls: 'bar'
-            });
-
-            widget = new Bar({
-                ui: 'abc xyz'
-            });
-
-            expect(widget.element).toHaveCls('foo-abc');
-            expect(widget.element).toHaveCls('bar-abc');
-            expect(widget.element).toHaveCls('foo-xyz');
-            expect(widget.element).toHaveCls('bar-xyz');
-        });
-
-        it("should remove multiple uis", function() {
-            var Foo = Ext.define(null, {
-                extend: 'Ext.Widget',
-                classCls: 'foo'
-            });
-
-            var Bar = Ext.define(null, {
-                extend: Foo,
-                classCls: 'bar'
-            });
-
-            widget = new Bar({
-                ui: 'abc xyz'
-            });
-
-            widget.setUi(null);
-
-            expect(widget.element).not.toHaveCls('foo-abc');
-            expect(widget.element).not.toHaveCls('bar-abc');
-            expect(widget.element).not.toHaveCls('foo-xyz');
-            expect(widget.element).not.toHaveCls('bar-xyz');
         });
     });
 });

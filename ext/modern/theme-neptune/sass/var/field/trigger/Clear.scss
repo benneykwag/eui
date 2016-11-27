@@ -32,12 +32,14 @@ $cleartrigger-hovered-background-color: dynamic(null);
  */
 $cleartrigger-pressed-background-color: dynamic(null);
 
+//# fashion replaces $textfield-clear-icon
 /**
  * @var {string}
  * Clear Trigger icon
  */
 $cleartrigger-icon: dynamic($fa-var-times-circle);
 
+//# fashion replaces $textfield-clear-icon-color
 /**
  * @var {color}
  * Clear Trigger icon color
@@ -80,6 +82,7 @@ $cleartrigger-pressed-icon-background-color: dynamic(null);
  */
 $cleartrigger-icon-border-radius: dynamic(null);
 
+//# fashion replaces $textfield-clear-icon-size
 /**
  * @var {number}
  * Clear Trigger icon size
@@ -92,12 +95,14 @@ $cleartrigger-icon-size: dynamic(null);
  */
 $cleartrigger-icon-size-big: dynamic(null);
 
+//# fashion replaces $textfield-clear-icon-font-size
 /**
  * @var {number}
  * Clear Trigger icon font-size
  */
 $cleartrigger-icon-font-size: dynamic($cleartrigger-icon-size);
 
+//# fashion replaces $textfield-clear-icon-font-size-big
 /**
  * @var {number}
  * Clear Trigger icon font-size in the {@link Global_CSS#$enable-big big} sizing scheme

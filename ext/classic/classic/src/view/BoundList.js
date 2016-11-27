@@ -206,10 +206,6 @@ Ext.define('Ext.view.BoundList', {
         });
     },
 
-    getNodeContainer: function() {
-        return this.listEl;
-    },
-
     refresh: function() {
         var me = this,
             tpl = me.tpl;
@@ -403,6 +399,14 @@ Ext.define('Ext.view.BoundList', {
     },
 
     privates: {
+        /*
+         * @private
+         * @inheritdoc
+         */
+        getNodeContainer: function() {
+            return this.listEl;
+        },
+
         getTargetEl: function() {
             return this.listEl;
         },

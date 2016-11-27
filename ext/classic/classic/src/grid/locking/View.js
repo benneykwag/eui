@@ -105,11 +105,6 @@ Ext.define('Ext.grid.locking.View', {
             itemmouseenter: me.onItemMouseEnter
         });
 
-        me.ownerGrid.on({
-            render: me.onPanelRender,
-            scope: me
-        });
-
         me.loadingText = normalView.loadingText;
         me.loadingCls = normalView.loadingCls;
         me.loadingUseMsg = normalView.loadingUseMsg;
@@ -156,7 +151,7 @@ Ext.define('Ext.grid.locking.View', {
         this.callParent();
     },
 
-    onPanelRender: function() {
+    onPanelRender: function(el) {
         var me = this,
             mask = me.loadMask,
             cfg = {
@@ -167,13 +162,10 @@ Ext.define('Ext.grid.locking.View', {
                 store: me.ownerGrid.store
             };
 
-        // Because this is used as a View, it should have an el. Use the owning Lockable's body.
+        // Because this is used as a View, it should have an el. Use the owning Lockable's scrolling el.
         // It also has to fire a render event so that Editing plugins can attach listeners
-        me.el = me.ownerGrid.getTargetEl();
+        me.el = el;
         me.rendered = true;
-
-        me.initFocusableEvents();
-
         me.fireEvent('render', me);
 
         if (mask) {
@@ -416,7 +408,7 @@ Ext.define('Ext.grid.locking.View', {
                 return false;
             }
         } else {
-            this.relayFn('setActionableMode', [false]);
+            this.relayFn('setActionableMode', [false, position]);
         }
     },
 
@@ -533,16 +525,6 @@ Ext.define('Ext.grid.locking.View', {
         return this.ownerGrid.isVisible(deep);
     },
 
-    getFocusEl: function() {
-        var view,
-            // Access lastFocused directly because getter nulls it if the record is no longer in view
-            // and all we are interested in is the lastFocused View.
-            lastFocused = this.getNavigationModel().lastFocused;
-    
-        view = lastFocused ? lastFocused.view : this.normalView;
-        return view.getFocusEl();
-    },
-
     // Old API. Used by tests now to test coercion of navigation from hidden column to closest visible.
     // Position.column includes all columns including hidden ones.
     getCellInclusive: function(pos, returnDom) {
@@ -653,8 +635,7 @@ Ext.define('Ext.grid.locking.View', {
         // Unbind from the dataSource we bound to in constructor
         me.bindStore(null, false, 'dataSource');
         
-        Ext.destroy(me.selModel, me.navigationModel, me.loadMask,
-                    me.lockedViewEventRelayers, me.normalViewEventRelayers);
+        Ext.destroy(me.selModel, me.navigationModel, me.loadMask);
         
         me.lockedView.lockingPartner = me.normalView.lockingPartner = null;
         

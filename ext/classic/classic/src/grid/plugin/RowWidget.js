@@ -119,6 +119,7 @@ Ext.define('Ext.grid.plugin.RowWidget', {
             featuresCfg = {
                 ftype: 'rowbody',
                 rowExpander: me,
+                doSync: false,
                 rowIdCls: me.rowIdCls,
                 bodyBefore: me.bodyBefore,
                 recordsExpanded: me.recordsExpanded,
@@ -250,7 +251,9 @@ Ext.define('Ext.grid.plugin.RowWidget', {
                 record = newRecords[i];
                 if (!record.isNonData && me.recordsExpanded[record.internalId]) {
                     // If any added items are expanded, we will need a syncRowHeights call on next layout
-                    ownerLockable && (me.grid.syncRowHeightOnNextLayout = true);
+                    if (ownerLockable) {
+                        me.grid.syncRowHeightOnNextLayout = true;
+                    }
                     me.addWidget(view, record);
                 }
             }
@@ -273,15 +276,6 @@ Ext.define('Ext.grid.plugin.RowWidget', {
             return false;
         },
 
-        // An injectable resolveListenerScope function for use by the widgets to
-        // link them to the owning view.
-        listenerScopeDecorator: function (defaultScope) {
-            if (defaultScope === 'this') {
-                return this;
-            }
-            return this.ownerCt.resolveListenerScope(defaultScope);
-        },
-
         /**
          * Returns if possible the widget currently associated with the passed record within the passed view.
          *
@@ -299,10 +293,8 @@ Ext.define('Ext.grid.plugin.RowWidget', {
             if (record) {
                 widget = me.grid.lockable && view === me.lockedView ? me.lockedWidget : me.widget;
                 if (widget) {
-                    result = me.grid.createManagedWidget(me.getId() + '-' + view.getId(), widget, record);
-                    result.resolveListenerScope = me.listenerScopeDecorator;
+                    result = me.grid.createManagedWidget(view, me.getId() + '-' + view.getId(), widget, record);
                     result.measurer = me;
-                    result.ownerCt = view;
                     result.ownerLayout = view.componentLayout;
                 }
             }
@@ -331,12 +323,6 @@ Ext.define('Ext.grid.plugin.RowWidget', {
             // Might be no widget if we are handling a lockable grid
             // and only one side has a widget definition.
             if (widget) {
-
-                // Bind widget to record unless it has declared a binding
-                if (widget.defaultBindProperty && !widget.getBind()) {
-                    widget.setConfig(widget.defaultBindProperty, record);
-                }
-
                 if (hasAttach) {
                     Ext.callback(me.onWidgetAttach, me.scope, [me, widget, record], 0, me);
                 }

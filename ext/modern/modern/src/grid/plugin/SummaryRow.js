@@ -19,7 +19,7 @@ Ext.define('Ext.grid.plugin.SummaryRow', {
         emptyText: '',
         docked: 'bottom',
         translatable: {
-            translationMethod: 'csstransform'
+            type: 'csstransform'
         }
     },
 
@@ -121,7 +121,7 @@ Ext.define('Ext.grid.plugin.SummaryRow', {
     },
 
     updateRowWidth: function() {
-        this.setWidth(this.getGrid().getTotalColumnWidth());
+        this.setWidth(this.getGrid().calculateTotalColumnWidth());
     },
 
     doUpdateSummary: function() {

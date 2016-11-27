@@ -430,6 +430,7 @@ Ext.define('Ext.app.BaseController', {
      * @param {String/Object} selectors If a String, the second argument is used as the
      * listeners, otherwise an object of selectors -> listeners is assumed
      * @param {Object} [listeners] Config for listeners.
+     * @param {Ext.app.BaseController} [controller] (private)
      */
     control: function(selectors, listeners, controller) {
         var me = this,

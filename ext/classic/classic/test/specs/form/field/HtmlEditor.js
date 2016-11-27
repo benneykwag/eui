@@ -1,8 +1,5 @@
-// This spec will always throw a JS error if we don't wait until the editor is initialized to destroy it.
-// However, even waiting 20 seconds it fails in 50% of the runs on IE, and, even worse, leaves some DIVs
-// in the document body, even cleaning it on afterEach(). So, by now, it's disabled on IE, not only
-// to avoid false positives, but to avoid side-effects in other specs, specially VBox and HBox, which are
-// very sensitive to any garbage left in the body.
+/* global expect, Ext */
+
 describe('Ext.form.field.HtmlEditor', function() {
     var editor;
 
@@ -23,9 +20,16 @@ describe('Ext.form.field.HtmlEditor', function() {
     describe("dirty state", function(){
         it("should not be dirty when rendered without a value", function(){
             createHtmlEditor();
-            expect(editor.isDirty()).toBe(false);    
+
+            // Should initialize 
+            waitsForEvent(editor, 'initialize');
+
+            runs(function() {
+                expect(editor.isDirty()).toBe(false);
+                expect(editor.getDoc().designMode.toLowerCase()).toBe('on');
+            });
         }); 
-    }); 
+    });
 
     it("should be able to set the value before rendering", function(){
         editor = new Ext.form.field.HtmlEditor();

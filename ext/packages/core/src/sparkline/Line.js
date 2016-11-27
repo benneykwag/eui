@@ -447,7 +447,7 @@ Ext.define('Ext.sparkline.Line', {
         me.canvasTop = canvasTop;
 
         // If mouse is over, apply the highlight
-        if (me.currentPageXY && me.el.getRegion().contains(me.currentPageXY)) {
+        if (me.currentPageXY && me.canvasRegion.contains(me.currentPageXY)) {
             me.updateDisplay();
         }
         canvas.render();

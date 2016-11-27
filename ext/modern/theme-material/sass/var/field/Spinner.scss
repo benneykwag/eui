@@ -8,12 +8,4 @@ $spinnerfield-button-color: dynamic($reverse-color);
 $spinnerfield-button-disabled-color: dynamic($reverse-color);
 $spinnerfield-button-disabled-background-color: dynamic($disabled-color);
 
-$spinnerfield-button-up-icon: dynamic('add' $spinnerfield-button-font-size);
-$spinnerfield-button-up-background-color: dynamic($confirm-color);
-$spinnerfield-button-up-pressed-background-color: dynamic($confirm-pressed-color);
-
-$spinnerfield-button-down-icon: dynamic('remove' $spinnerfield-button-font-size);
-$spinnerfield-button-down-background-color: dynamic($alert-color);
-$spinnerfield-button-down-pressed-background-color: dynamic($alert-pressed-color);
-
 $spinnerfield-button-spacing: dynamic(8px);

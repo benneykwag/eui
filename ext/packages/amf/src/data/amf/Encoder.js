@@ -946,7 +946,7 @@ Ext.define('Ext.data.amf.Encoder', {
      * @return {Array} byte array containing the encoded number
      * @private
      */
-    encodeDouble: function(v) {
+    encodeDouble: function(num) {
         var ebits = 11, fbits = 52; // double
         var bias = (1 << (ebits - 1)) - 1,
             s, e, f, ln,
@@ -959,31 +959,31 @@ Ext.define('Ext.data.amf.Encoder', {
 
 
         // Compute sign, exponent, fraction
-        if (isNaN(v)) {
+        if (isNaN(num)) {
             data = K_NAN;
-        } else if (v === Infinity) {
+        } else if (num === Infinity) {
             data = K_INFINITY;
-        } else if (v == -Infinity) {
+        } else if (num == -Infinity) {
             data = K_NINFINITY;
         } else {
             // not a special case, so encode
-            if (v === 0) {
-                e = 0; f = 0; s = (1 / v === -Infinity) ? 1 : 0;
+            if (num === 0) {
+                e = 0; f = 0; s = (1 / num === -Infinity) ? 1 : 0;
             }
             else {
-                s = v < 0;
-                v = Math.abs(v);
+                s = num < 0;
+                num = Math.abs(num);
 
-                if (v >= Math.pow(2, 1 - bias)) {
+                if (num >= Math.pow(2, 1 - bias)) {
                     // Normalized
-                    ln = Math.min(Math.floor(Math.log(v) / Math.LN2), bias);
+                    ln = Math.min(Math.floor(Math.log(num) / Math.LN2), bias);
                     e = ln + bias;
-                    f = Math.round(v * Math.pow(2, fbits - ln) - Math.pow(2, fbits));
+                    f = Math.round(num * Math.pow(2, fbits - ln) - Math.pow(2, fbits));
                 }
                 else {
                     // Denormalized
                     e = 0;
-                    f = Math.round(v / Math.pow(2, 1 - bias - fbits));
+                    f = Math.round(num / Math.pow(2, 1 - bias - fbits));
                 }
             }
 

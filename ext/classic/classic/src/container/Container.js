@@ -582,13 +582,13 @@ Ext.define('Ext.container.Container', {
      * Every Component class has its own {@link Ext.Component#xtype xtype}.
      *
      * If an {@link Ext.Component#xtype xtype} is not explicitly specified, the
-     * {@link #defaultType} for the Container is used, which by default is usually `panel`.
+     * {@link #cfg-defaultType} for the Container is used, which by default is usually `panel`.
      *
      * # Notes:
      *
      * Ext uses lazy rendering. Child Components will only be rendered
      * should it become necessary. Items are automatically laid out when they are first
-     * shown (no sizing is done while hidden), or in response to a {@link #updateLayout} call.
+     * shown (no sizing is done while hidden), or in response to a {@link #method-updateLayout} call.
      *
      * Do not specify {@link Ext.panel.Panel#contentEl contentEl} or
      * {@link Ext.panel.Panel#html html} with `items`.
@@ -965,6 +965,11 @@ Ext.define('Ext.container.Container', {
                     me.fireEvent('add', me, item, pos);
                 }
             }
+
+            // This flag may be set by onBeforeAdd to tell the layout system that any remove is temporary
+            // and that focus should not be reverted because Ext.layout.Layout#moveItem will be
+            // moving things into place soon, and that will handle keeping focus stable.
+            item.isLayoutMoving = false;
         }
 
         // We need to update our layout after adding all passed items
@@ -1702,10 +1707,14 @@ Ext.define('Ext.container.Container', {
      * @protected
      */
     onBeforeAdd: function(item) {
-        // Remove from current container if it's not us.
+        // Remove from current container without detaching it from the DOM if it's not us.
         var owner = item.ownerCt;
         if (owner && owner !== this) {
-            owner.remove(item, false);
+            item.isLayoutMoving = true;
+            owner.remove(item, {
+                destroy: false,
+                detach: false
+            });
         }
     },
 
@@ -2025,7 +2034,7 @@ Ext.define('Ext.container.Container', {
 
         // Detach a component from the DOM
         detachComponent: function(component){
-            Ext.getDetachedBody().appendChild(component.getEl());
+            Ext.getDetachedBody().appendChild(component.getEl(), true);
         },
 
         /**

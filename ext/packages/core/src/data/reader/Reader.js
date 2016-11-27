@@ -556,7 +556,7 @@ Ext.define('Ext.data.reader.Reader', {
         var data, result, responseText;
 
         if (response) {
-            responseText = response.responseText
+            responseText = response.responseText;
             if (responseText) {
                 result = this.getResponseData(response);
                 if (result && result.__$isError) {
@@ -608,9 +608,10 @@ Ext.define('Ext.data.reader.Reader', {
      * processing should not be needed.
      * @param {Object} data The raw data object
      * @param {Object} [readOptions] See {@link #read} for details.
+     * @param {Object} [internalReadOptions] (private)
      * @return {Ext.data.ResultSet} A ResultSet object
      */
-    readRecords: function(data, readOptions, /* private */ internalReadOptions) {
+    readRecords: function(data, readOptions, internalReadOptions) {
         var me = this,
             recordsOnly = internalReadOptions && internalReadOptions.recordsOnly,
             asRoot = internalReadOptions && internalReadOptions.asRoot,
@@ -1035,10 +1036,14 @@ Ext.define('Ext.data.reader.Reader', {
 
         if (typeof prop === 'string') {
             key = me.getAccessorKey(prop);
-            ret = cache.get(key);
+            if (key) {
+                ret = cache.get(key);
+            }
             if (!ret) {
                 ret = me.createAccessor(prop);
-                cache.add(key, ret);
+                if (key) {
+                    cache.add(key, ret);
+                }
             }
         } else {
             ret = me.createAccessor(prop);
@@ -1047,7 +1052,8 @@ Ext.define('Ext.data.reader.Reader', {
     },
 
     getAccessorKey: function(prop) {
-        return this.$className + prop;
+        var className = this.$className;
+        return className ? className + prop : '';
     },
     
     createAccessor: Ext.emptyFn,

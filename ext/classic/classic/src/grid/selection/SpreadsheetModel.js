@@ -261,7 +261,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      */
 
     /**
-     * @member Ext.panel.Table.
+     * @member Ext.panel.Table
      * @event beforeselectionextend An event fired when an extension block is extended 
      * using a drag gesture.  Only fired when the SpreadsheetSelectionModel is used and 
      * configured with the 
@@ -277,7 +277,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
      */
 
     /**
-     * @member Ext.panel.Table.
+     * @member Ext.panel.Table
      * @event selectionextenderdrag An event fired when an extension block is dragged to 
      * encompass a new range.  Only fired when the SpreadsheetSelectionModel is used and 
      * configured with the 
@@ -399,7 +399,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
     },
 
     renderEmpty: function() {
-        return '&#160;';
+        return '\u00a0';
     },
 
     /**
@@ -453,6 +453,20 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     me.selected.lastColumnSelected = header;
                 }
             }
+        }
+    },
+
+    selectByPosition: function(position) {
+        var me = this;
+
+        position = new Ext.grid.CellContext(me.view).setPosition(position.row, position.column);
+        
+        if (me.getCellSelect()) {
+            me.selectCells(position, position);
+        } else if (me.getRowSelect()) {
+            this.select(position.record);
+        } else if (me.getColumnSelect()) {
+            me.selectColumn(position.column);
         }
     },
 
@@ -897,6 +911,19 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             "true": 3 // reserved word MUST be quoted when used an a property name
         },
 
+        getNumbererColumnConfig: function() {
+            var me = this;
+
+            return {
+                xtype: 'rownumberer',
+                width: me.rowNumbererHeaderWidth,
+                editRenderer:  me.renderEmpty,
+                tdCls: me.rowNumbererTdCls,
+                cls: me.rowNumbererHeaderCls,
+                locked: me.hasLockedHeader
+            };
+        },
+
         /**
          * @return {Object}
          * @private
@@ -952,7 +979,8 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
          * @private
          */
         onColumnsChanged: function() {
-            var selData = this.selected,
+            var me = this,
+                selData = me.selected,
                 rowRange,
                 colCount,
                 colIdx,
@@ -970,12 +998,16 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     context = new Ext.grid.CellContext(view);
                     rowRange = selData.getRowRange();
                     colCount = view.getVisibleColumnManager().getColumns().length;
-                    for (rowIdx = rowRange[0]; rowIdx <= rowRange[1]; rowIdx++) {
-                        context.setRow(rowIdx);
-                        for (colIdx = 0; colIdx < colCount; colIdx++) {
-                            context.setColumn(colIdx);
-                            view.onCellDeselect(context);
+                    if (colCount) {
+                        for (rowIdx = rowRange[0]; rowIdx <= rowRange[1]; rowIdx++) {
+                            context.setRow(rowIdx);
+                            for (colIdx = 0; colIdx < colCount; colIdx++) {
+                                context.setColumn(colIdx);
+                                view.onCellDeselect(context);
+                            }
                         }
+                    } else {
+                        me.clearSelections();
                     }
                 }
 
@@ -984,7 +1016,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     selectionChanged = false;
                     selData.eachColumn(function(column, columnIdx) {
                         if (!column.isVisible() || !view.ownerGrid.isAncestor(column)) {
-                            this.remove(column);
+                            me.remove(column);
                             selectionChanged = true;
                         }
                     });
@@ -994,7 +1026,7 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
             // This event is fired directly from the HeaderContainer before the view updates.
             // So we have to wait until idle to update the selection UI.
             // NB: fireSelectionChange calls updateSelectionExtender after firing its event.
-            Ext.on('idle', selectionChanged ? this.fireSelectionChange : this.updateSelectionExtender, this, {
+            Ext.on('idle', selectionChanged ? me.fireSelectionChange : me.updateSelectionExtender, me, {
                 single: true
             });
         },
@@ -1310,8 +1342,8 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                     }
                 }
 
-                // Disable until a valid new selection is announced in fireSelectionChange
-                if (me.extensible) {
+                // Disable until a valid new selection is announced in fireSelectionChange unless it's a click
+                if (me.extensible && !e.position.isEqual(me.mousedownPosition)) {
                     me.extensible.disable();
                 }
 
@@ -1672,19 +1704,6 @@ Ext.define('Ext.grid.selection.SpreadsheetModel', {
                 result = me.numbererColumn = view.headerCt.down('rownumberer') || view.headerCt.add(0, me.getNumbererColumnConfig());
             }
             return result;
-        },
-
-        getNumbererColumnConfig: function() {
-            var me = this;
-
-            return {
-                xtype: 'rownumberer',
-                width: me.rowNumbererHeaderWidth,
-                editRenderer:  '&#160;',
-                tdCls: me.rowNumbererTdCls,
-                cls: me.rowNumbererHeaderCls,
-                locked: me.hasLockedHeader
-            };
         },
 
         /**

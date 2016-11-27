@@ -229,19 +229,41 @@ Ext.define('Ext.util.TaskRunner', {
 
     /**
      * Stops an existing running task.
-     * @param {Object} task The task to stop
+     * @param {Object} task The task to stop.
+     * @param {Boolean} andRemove Pass `true` to also remove the task from the queue.
      * @return {Object} The task
      */
-    stop: function(task) {
+    stop: function(task, andRemove) {
+        var me = this,
+            tasks = me.tasks,
+            pendingCount = 0,
+            i;
+
         // NOTE: we don't attempt to remove the task from me.tasks at this point because
         // this could be called from inside a task which would then corrupt the state of
         // the loop in onTick
         if (!task.stopped) {
             task.stopped = true;
+            task.pending = false;
 
             if (task.onStop) {
                 task.onStop.call(task.scope || task, task);
             }
+        }
+        if (andRemove) {
+            Ext.Array.remove(tasks, task);
+        }
+
+        // If there are now no pending tasks
+        // we shhuld stop the timer.
+        for (i = 0; !pendingCount && i < tasks.length; i++) {
+            if (!tasks[i].stopped) {
+                pendingCount++;
+            }
+        }
+        if (!pendingCount) {
+            clearTimeout(me.timerId);
+            me.timerId = null;
         }
 
         return task;
@@ -249,10 +271,16 @@ Ext.define('Ext.util.TaskRunner', {
 
     /**
      * Stops all tasks that are currently running.
+     * @param {Boolean} andRemove Pass `true` to also remove the tasks from the queue.
      */
-    stopAll: function() {
+    stopAll: function(andRemove) {
+        var me = this;
+
         // onTick will take care of cleaning up the mess after this point...
-        Ext.each(this.tasks, this.stop, this);
+        // must use reverse in case a task is removed.
+        Ext.each(this.tasks, function(task) {
+            me.stop(task, andRemove);
+        }, null, true);
     },
 
     //-------------------------------------------------------------------------
@@ -481,8 +509,12 @@ function () {
         /**
          * Stops this task.
          */
-        stop: function () {
-            this.manager.stop(this);
+        stop: function (andRemove) {
+            this.manager.stop(this, andRemove);
+        },
+
+        destroy: function() {
+            this.stop(true)
         }
     });
 

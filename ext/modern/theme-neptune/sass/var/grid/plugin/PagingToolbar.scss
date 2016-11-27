@@ -122,6 +122,9 @@ $pagingtoolbar-next-icon: dynamic($fa-var-angle-right FontAwesome);
  * Paging toolbar background-gradient. Can be either the name of a gradient defined by
  * {@link Global_CSS#background-gradient} or a list of color stops.
  *
+ * @param {color} $color
+ * Paging toolbar color
+ *
  * @param {number/list} $border-width
  * Paging toolbar border-width
  *

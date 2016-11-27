@@ -149,6 +149,8 @@ Ext.define('Ext.fx.animation.Abstract', {
     },
 
     destroy: function() {
+        // Event handlers need to know this.
+        this.destroying = true;
         this.stop();
         this.callParent();
     },

@@ -226,6 +226,9 @@ describe("Ext.plugin.Viewport", function() {
                 it('should only fire one global scroll event per scroll', function() {
                     c.scrollTo(null, 500);
 
+                    // Read to force synchronous layout
+                    document.body.offsetHeight;
+
                     // Wait for potentially asynchronous scroll events to fire.
                     waitsFor(function() {
                         return viewportScrollCount === 1;

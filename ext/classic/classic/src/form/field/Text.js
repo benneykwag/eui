@@ -467,7 +467,6 @@ Ext.define('Ext.form.field.Text', {
                 this.inputEl.dom.select();
             }
         },
-        translate: false,
         single: true,
         preventDefault: true
     },
@@ -547,6 +546,10 @@ Ext.define('Ext.form.field.Text', {
 
         if (me.allowOnlyWhitespace === false) {
             me.allowBlank = false;
+        }
+
+        if (me.grow) {
+            me.liquidLayout = false;
         }
 
         //<debug>
@@ -637,7 +640,7 @@ Ext.define('Ext.form.field.Text', {
         }
 
         if (me.emptyText) {
-            placeholder = me.emptyText;
+            placeholder = Ext.String.htmlEncode(me.emptyText);
         }
 
         data = Ext.apply(me.callParent([fieldData]), {
@@ -676,8 +679,10 @@ Ext.define('Ext.form.field.Text', {
 
         me.callParent();
 
+        me.emptyClsElements = [me.inputEl];
+
         if (triggers) {
-            this.invokeTriggers('onFieldRender');
+            me.invokeTriggers('onFieldRender');
 
             /**
              * @property {Ext.CompositeElement} triggerEl
@@ -701,13 +706,29 @@ Ext.define('Ext.form.field.Text', {
         me.inputCell = me.inputWrap;
     },
 
-    afterRender: function() {
+    onResize: function(width, height, oldWidth, oldHeight) {
         var me = this;
 
-        me.autoSize();
-        me.callParent();
-        me.invokeTriggers('afterFieldRender');
-        me.emptyClsElements = [me.inputEl];
+        if (me.rendered && me.grow) {
+            me.autoSize();
+        }
+        
+        me.callParent([width, height, oldWidth, oldHeight]);
+    },
+
+    afterRender: function() {
+        this.callParent();
+        this.invokeTriggers('afterFieldRender');
+    },
+
+    onBoxReady: function (width, height) {
+        var me = this;
+
+        me.callParent([width, height]);
+
+        if (!me.liquidLayout) {
+            this.autoSize();
+        }
     },
 
     onMouseDown: function(){
@@ -953,7 +974,7 @@ Ext.define('Ext.form.field.Text', {
     getEmptyText: function() {
         return this.emptyText;
     },
-    
+
     /**
      * Sets the default text to place into an empty field
      * @param {String} value The {@link #cfg-emptyText} value for this field
@@ -1041,21 +1062,31 @@ Ext.define('Ext.form.field.Text', {
 
     onFocus: function(e) {
         var me = this,
-            len;
+            inputEl = me.inputEl.dom,
+            startValue, value, len;
 
         me.callParent([e]);
         
         // This handler may be called when the focus has already shifted to another element;
         // calling inputEl.select() will forcibly focus again it which in turn might set up
         // a nasty circular race condition if focusEl !== inputEl.
-        Ext.asap(function() {
-            // This ensures the carret will be at the end of the input element
-            // while tabbing between editors.
-            if (!me.destroyed && document.activeElement === me.inputEl.dom) {
-                len = me.inputEl.dom.value.length;
-                me.selectText(me.selectOnFocus ? 0 : len, len);
-            }
-        });
+        if (!me.focusTimer) {
+            startValue = inputEl.value;
+            me.focusTimer = Ext.asap(function() {
+                me.focusTimer = null;
+                // This ensures the carret will be at the end of the input element
+                // while tabbing between editors.
+                if (!me.destroyed && document.activeElement === inputEl) {
+                    value = inputEl.value;
+                    len = value.length;
+                    
+                    // If focusing has fired an event which mutated the value,
+                    // place the caret at the end. Else select the initial text
+                    // as is the HTML default behaviour.
+                    me.selectText(value !== startValue ? len : 0, len);
+                }
+            });
+        }
 
         if (me.emptyText) {
             me.autoSize();
@@ -1296,6 +1327,7 @@ Ext.define('Ext.form.field.Text', {
     doDestroy: function() {
         var me = this;
 
+        Ext.asapCancel(me.focusTimer);
         me.invokeTriggers('destroy');
         Ext.destroy(me.triggerRepeater);
 
@@ -1317,6 +1349,7 @@ Ext.define('Ext.form.field.Text', {
         5: {
             methods: {
                 /**
+                 * @method getTriggerWidth
                  * Get the total width of the trigger button area.
                  * @return {Number} The total trigger width
                  * @deprecated 5.0

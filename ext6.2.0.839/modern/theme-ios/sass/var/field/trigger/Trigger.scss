@@ -1,0 +1,4 @@
+$trigger-width: dynamic(px-to-em(20px, 14px));
+$trigger-width-big: dynamic(px-to-em(30px, 16px));
+$trigger-icon: dynamic($ios-angle-down iOS);
+$trigger-icon-color: dynamic($base-color);

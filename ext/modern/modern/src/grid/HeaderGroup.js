@@ -83,18 +83,18 @@ Ext.define('Ext.grid.HeaderGroup', {
             show: 'onColumnShow',
             hide: 'onColumnHide',
             delegate: '> column',
-            scope: 'this'
+            scope: me
         });
         
         me.on({
             show: 'onShow',
-            scope: 'this'
+            scope: me
         });
 
         me.textElement.on({
             tap: 'onHeaderGroupTap',
             longpress: 'onHeaderGroupLongPress',
-            scope: this
+            scope: me
         });
 
         me.callParent();

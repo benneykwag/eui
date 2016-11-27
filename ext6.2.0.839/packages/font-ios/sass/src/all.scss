@@ -1,0 +1,117 @@
+$ios-font-path: get-resource-path('fonts');
+
+@font-face {
+    font-family: 'iOS';
+    src:
+        url('#{$ios-font-path}/iOS.ttf?z4ok3n') format('truetype'),
+        url('#{$ios-font-path}/iOS.woff?z4ok3n') format('woff'),
+        url('#{$ios-font-path}/iOS.svg?z4ok3n#iOS') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.x-ios {
+    font-family: 'iOS';
+}
+
+.ios-angle-down {
+    &:before {
+        content: $ios-angle-down;
+    }
+}
+.ios-angle-left {
+    &:before {
+        content: $ios-angle-left;
+    }
+}
+.ios-angle-right {
+    &:before {
+        content: $ios-angle-right;
+    }
+}
+.ios-angle-up {
+    &:before {
+        content: $ios-angle-up;
+    }
+}
+.ios-back {
+    &:before {
+        content: $ios-back;
+    }
+}
+.ios-check {
+    &:before {
+        content: $ios-check;
+    }
+}
+.ios-check-box-checked {
+    &:before {
+        content: $ios-check-box-checked;
+    }
+}
+.ios-check-box-unchecked {
+    &:before {
+        content: $ios-check-box-unchecked;
+    }
+}
+.ios-check-circle-checked {
+    &:before {
+        content: $ios-check-circle-checked;
+    }
+}
+.ios-check-cricle-unchecked {
+    &:before {
+        content: $ios-check-cricle-unchecked;
+    }
+}
+.ios-times-circle {
+    &:before {
+        content: $ios-times-circle;
+    }
+}
+.ios-sort-desc {
+    &:before {
+        content: $ios-sort-desc;
+    }
+}
+.ios-sort-asc {
+    &:before {
+        content: $ios-sort-asc;
+    }
+}
+.ios-radio-button-checked {
+    &:before {
+        content: $ios-radio-button-checked;
+    }
+}
+.ios-radio-button-unchecked {
+    &:before {
+        content: $ios-radio-button-unchecked;
+    }
+}
+.ios-row-expander-collapse {
+    &:before {
+        content: $ios-row-expander-collapse;
+    }
+}
+.ios-row-expander-expand {
+    &:before {
+        content: $ios-row-expander-expand;
+    }
+}
+.ios-spinner {
+    &:before {
+        content: $ios-spinner;
+    }
+}
+.ios-spinner-minus {
+    &:before {
+        content: $ios-spinner-minus;
+    }
+}
+.ios-spinner-plus {
+    &:before {
+        content: $ios-spinner-plus;
+    }
+}
+

@@ -10,7 +10,6 @@ Ext.define('Ext.list.TreeItem', {
 
     collapsedCls: Ext.baseCSSPrefix + 'treelist-item-collapsed',
     expandedCls: Ext.baseCSSPrefix + 'treelist-item-expanded',
-    floatedCls: [Ext.Widget.prototype.floatedCls, Ext.baseCSSPrefix + 'treelist-item-floated'],
     floatedToolCls: Ext.baseCSSPrefix + 'treelist-item-tool-floated',
     leafCls: Ext.baseCSSPrefix + 'treelist-item-leaf',
     expandableCls: Ext.baseCSSPrefix + 'treelist-item-expandable',
@@ -156,11 +155,15 @@ Ext.define('Ext.list.TreeItem', {
         var me = this,
             itemContainer = me.itemContainer;
 
-        me.collapsing = null;
-        itemContainer.dom.style.display = '';
-        itemContainer.setHeight(null);
+        // stopAnimation is called on destroy, so don't
+        // bother continuing if we don't need to
+        if (!me.destroying && !me.destroyed) {
+            me.collapsing = null;
+            itemContainer.dom.style.display = '';
+            itemContainer.setHeight(null);
 
-        me.nodeCollapseEnd(me.collapsingForExpand);
+            me.nodeCollapseEnd(me.collapsingForExpand);
+        }
     },
 
     nodeExpandBegin: function (animation) {
@@ -335,4 +338,9 @@ Ext.define('Ext.list.TreeItem', {
             this.callParent([ value, oldValue ]);
         }
     }
+}, function(TreeItem) {
+    TreeItem.prototype.floatedCls = [
+        Ext.Widget.prototype.floatedCls,
+        Ext.baseCSSPrefix + 'treelist-item-floated'
+    ];
 });

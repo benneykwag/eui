@@ -581,8 +581,6 @@ if (!document.createElement('canvas').getContext) {
    * be associated with
    * @private
    */
-  //
-
   function CanvasRenderingContext2D_(canvasElement) {
     this.m_ = createMatrixIdentity();
 

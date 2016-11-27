@@ -52,7 +52,7 @@
         @include st-box-align(center);
 
         .#{$prefix}body-el {
-            @include st-box-flex(1, 0px);
+            @include st-box-flex(1);
         }
     }
 
@@ -81,16 +81,6 @@
     &.#{$prefix}label-text-align-right {
         text-align: right;
     }
-}
-
-.#{$prefix}input-el {
-    display: block;
-    border-width: 0;
-    -webkit-appearance: none;
-}
-
-.#{$prefix}input .#{$prefix}mask-el {
-    @include absolute-fit();
 }
 
 // Required fields

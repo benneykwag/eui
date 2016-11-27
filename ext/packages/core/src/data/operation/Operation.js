@@ -368,7 +368,8 @@ Ext.define('Ext.data.operation.Operation', {
         
         me.triggerCallbacks();
         
-        if (proxy) {
+        // Store and proxy could be destroyed in callbacks
+        if (proxy && !proxy.destroyed) {
             proxy.completeOperation(me);
         }
     },

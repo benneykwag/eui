@@ -90,9 +90,21 @@ $tab-font-size: dynamic(1rem);
 
 /**
  * @var {number}
+ * Tab font-size when {@link #iconAlign} is `'top'` or `'bottom'`
+ */
+$tab-stacked-font-size: dynamic(null);
+
+/**
+ * @var {number}
  * Tab font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
-$tab-font-size-big: dynamic($tab-font-size);
+$tab-font-size-big: dynamic(null);
+
+/**
+ * @var {number}
+ * Tab font-size in the {@link Global_CSS#$enable-big big} sizing scheme when {@link #iconAlign} is `'top'` or `'bottom'`
+ */
+$tab-stacked-font-size-big: dynamic(null);
 
 /**
  * @var {number}
@@ -367,8 +379,14 @@ $tab-active-box-shadow: dynamic(null);
  * @param {number} $font-size
  * Tab font-size
  *
+ * @param {number} $stacked-font-size
+ * Tab font-size when {@link #iconAlign} is `'top'` or `'bottom'`
+ *
  * @param {number} $font-size-big
  * Tab font-size in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
+ * @param {number} $stacked-font-size-big
+ * Tab font-size in the {@link Global_CSS#$enable-big big} sizing scheme when {@link #iconAlign} is `'top'` or `'bottom'`
  *
  * @param {number} $line-height
  * Tab line-height
@@ -503,7 +521,9 @@ $tab-active-box-shadow: dynamic(null);
 
     $font-weight: null,
     $font-size: null,
+    $stacked-font-size: null,
     $font-size-big: null,
+    $stacked-font-size-big: null,
     $line-height: null,
     $line-height-big: null,
     $font-family: null,
@@ -574,6 +594,19 @@ $tab-active-box-shadow: dynamic(null);
         }
 
         @include background-gradient($background-color, $background-gradient);
+
+        &.#{$prefix}iconalign-top,
+        &.#{$prefix}iconalign-bottom {
+            &:not(.#{$prefix}button-no-icon) {
+                font-size: $stacked-font-size;
+
+                @if $enable-big {
+                    .#{$prefix}big & {
+                        font-size: $tab-stacked-font-size-big;
+                    }
+                }
+            }
+        }
 
         &.x-tab-active {
             color: $active-color;

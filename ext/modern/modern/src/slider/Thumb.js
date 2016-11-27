@@ -21,7 +21,7 @@ Ext.define('Ext.slider.Thumb', {
             translatable: {
                 // use cssposition instead of csstransform so that themes can use transform
                 // scale to style the pressed state of the thumb (material)
-                translationMethod: 'cssposition'
+                type: 'cssposition'
             }
         },
 
@@ -44,18 +44,6 @@ Ext.define('Ext.slider.Thumb', {
          * been set to `true`, otherwise the fill element will be invisible.
          */
         fillCls: null
-    },
-
-    // Strange issue where the thumbs translation value is not being set when it is not visible. Happens when the thumb 
-    // is contained within a modal panel.
-    platformConfig: {
-        ie10: {
-            draggable: {
-                translatable: {
-                    translationMethod: 'csstransform'
-                }
-            }
-        }
     },
 
     template: [{
@@ -200,7 +188,7 @@ Ext.define('Ext.slider.Thumb', {
             sizerElement = me.sizerElement;
 
         if (oldUi) {
-            sizerElement.removeCls(oldUi, sizerCls)
+            sizerElement.removeCls(oldUi, sizerCls);
         }
 
         if (ui) {

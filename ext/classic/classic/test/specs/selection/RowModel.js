@@ -1,5 +1,6 @@
 describe('Ext.selection.RowModel', function () {
-    var grid, view, selModel, navModel, store, columns, cell, rawData,
+    var itNotTouch = jasmine.supportsTouch ? xit : it,
+        grid, view, selModel, navModel, store, columns, cell, rawData,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
         loadStore = function() {
@@ -111,7 +112,8 @@ describe('Ext.selection.RowModel', function () {
         expect(grid.getView().getNode(2).firstChild).not.toHaveCls(cellSelectedCls);
     });
 
-    it('SINGLE select mode should not select on CTRL/click (EXTJS-18592)', function() {
+    itNotTouch = jasmine.supportsTouch ? xit : it,
+        ('SINGLE select mode should not select on CTRL/click (EXTJS-18592)', function() {
         createGrid({}, {
             selType: 'rowmodel', // rowmodel is the default selection model
             mode: 'SINGLE',
@@ -376,7 +378,13 @@ describe('Ext.selection.RowModel', function () {
             });
         });
 
-        it('should not deselect the range when right-clicking over a previously selected record', function () {
+        function triggerCellContextMenu(row, col) {
+            var cell = new Ext.grid.CellContext(grid.view).setPosition(row, col).getCell(true);
+            jasmine.fireMouseEvent(cell, 'mousedown', 0, 0, 2);
+            jasmine.doFireMouseEvent(cell, 'contextmenu');
+        }
+
+        itNotTouch('should not deselect the range when right-clicking over a previously selected record', function () {
             // See EXTJSIV-11378.
             selModel.select(4);
 
@@ -385,14 +393,13 @@ describe('Ext.selection.RowModel', function () {
             });
 
             // Right-click on a row in the range.
-            var cell = grid.view.getCell(2, columns[0]);
-            jasmine.fireMouseEvent(cell, 'mousedown', null, null, 2);
+            triggerCellContextMenu(2, 0);
 
             // Length should be the previously-selected rows.
             expect(selModel.selected.length).toBe(5);
         });
 
-        it('should deselect the range when right-clicking over a record not previously selected', function () {
+        itNotTouch('should deselect the range when right-clicking over a record not previously selected', function () {
             // See EXTJSIV-11378.
             selModel.select(4);
 
@@ -401,8 +408,7 @@ describe('Ext.selection.RowModel', function () {
             });
 
             // Right-click on a row not in the range.
-            var cell = grid.view.getCell(5, grid.view.getVisibleColumnManager().getColumns()[0]);
-            jasmine.fireMouseEvent(cell, 'mousedown', null, null, 2);
+            triggerCellContextMenu(5, 0);
 
             // Length should only be the row that was right-clicked.
             expect(selModel.selected.length).toBe(1);

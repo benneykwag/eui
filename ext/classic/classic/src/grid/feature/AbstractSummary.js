@@ -9,6 +9,7 @@ Ext.define('Ext.grid.feature.AbstractSummary', {
     alias: 'feature.abstractsummary',
 
     summaryRowCls: Ext.baseCSSPrefix + 'grid-row-summary',
+    summaryRowSelector: '.' + Ext.baseCSSPrefix + 'grid-row-summary',
 
     readDataOptions: {
         recordCreator: Ext.identityFn
@@ -54,7 +55,10 @@ Ext.define('Ext.grid.feature.AbstractSummary', {
             me.summaryTableCls = Ext.baseCSSPrefix + 'grid-item';
         }
 
-        me.summaryRowSelector = '.' + me.summaryRowCls;
+        // We have been configured with another class. Revert to building the selector
+        if (me.hasOwnProperty('summaryRowCls')) {
+            me.summaryRowSelector = '.' + me.summaryRowCls;
+        }
     },
     
     bindStore: function(grid, store) {
@@ -80,8 +84,9 @@ Ext.define('Ext.grid.feature.AbstractSummary', {
     /**
      * Toggle whether or not to show the summary row.
      * @param {Boolean} visible True to show the summary row
+     * @param fromLockingPartner (private)
      */
-    toggleSummaryRow: function(visible /* private */, fromLockingPartner) {
+    toggleSummaryRow: function(visible, fromLockingPartner) {
         var me = this,
             prev = me.showSummaryRow,
             doRefresh;

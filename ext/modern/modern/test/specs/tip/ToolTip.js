@@ -3,13 +3,14 @@
 describe("Ext.tip.ToolTip", function() {
     var tip,
         target,
-        describeDesktop = Ext.is.Desktop ? describe : xdescribe,
-        itDesktop = Ext.is.Desktop ? it : xit;
+        describeNotTouch = jasmine.supportsTouch ? xdescribe : describe,
+        itNotTouch = jasmine.supportsTouch ? xit : it,
+        triggerEvent = jasmine.supportsTouch && !Ext.os.is.Desktop ? 'click' : 'mouseover';
 
     function createTip(config) {
         config = Ext.apply({}, config, {target: target, width: 50, height: 50, html: 'X'});
         tip = new Ext.tip.ToolTip(Ext.apply({
-            showOnTap: true
+            showOnTap: triggerEvent === 'click'
         }, config));
         return tip;
     }
@@ -36,17 +37,12 @@ describe("Ext.tip.ToolTip", function() {
         target.destroy();
     });
 
-    function mouseOverTarget(targetEl) {
-        targetEl = Ext.get(targetEl || target);
-
-        var xy = targetEl.getXY();
-
-        jasmine.fireMouseEvent(targetEl, 'mouseover', xy[0], xy[1]);
-
-        // Ensure we also trigger show on platforms which have no mouseover event.
-        if (Ext.supports.Touch) {
-            Ext.testHelper.tap(targetEl, {x:xy[0], y:xy[1]});
-        }
+    function mouseOverTarget(t) {
+        t = Ext.fly(t || target);
+        jasmine.fireMouseEvent(t, triggerEvent, t.getX(), t.getY(), 0, false, false, false, document.body);
+    }
+    function mouseOutTarget(targetEl) {
+        jasmine.fireMouseEvent(targetEl || target, 'mouseout', 1000, 1000);
     }
 
     describe("basic", function() {
@@ -63,6 +59,15 @@ describe("Ext.tip.ToolTip", function() {
         it("should accept an HTMLElement for the 'target' config", function() {
             createTip({target: target.dom});
             expect(tip.getTarget().dom).toBe(target.dom);
+        });
+
+        it('should show with no errors thrown', function() {
+            createTip({
+                target: null
+            });
+            expect(function() {
+                tip.show();
+            }).not.toThrow();
         });
     });
 
@@ -107,7 +112,7 @@ describe("Ext.tip.ToolTip", function() {
             }, "ToolTip was never shown");
         });
 
-        itDesktop("should hide the tooltip after mousing out of the target element", function() {
+        itNotTouch("should hide the tooltip after mousing out of the target element", function() {
             runs(function() {
                 createTip({showDelay: 1, hideDelay: 15});
                 mouseOverTarget();
@@ -196,7 +201,7 @@ describe("Ext.tip.ToolTip", function() {
         });
     });
 
-    describeDesktop("trackMouse", function() {
+    describeNotTouch("trackMouse", function() {
         it("should move the tooltip along with the mouse if 'trackMouse' is true", function() {
             var x = target.getX(),
                 y = target.getY();
@@ -373,7 +378,21 @@ describe("Ext.tip.ToolTip", function() {
         var delegatedTarget;
 
         beforeEach(function() {
-            target.insertHtml('beforeEnd', '<span class="hasTip" id="delegatedTarget">x</span><span class="noTip">x</span>');
+            target.insertHtml('beforeEnd',
+                '<span class="hasTip" id="delegatedTarget">' +
+                    '<span id="delegate-child-1">' +
+                        'x' +
+                    '</span>' +
+                    '<span id="delegate-child-2">' +
+                        'x' +
+                        '<span id="delegate-child-2-2">' +
+                            'x' +
+                        '</span>' +
+                    '</span>' +
+                '</span>' +
+                '<span class="noTip">' +
+                    'x' +
+                '</span>');
             delegatedTarget = Ext.get('delegatedTarget');
         });
 
@@ -382,10 +401,18 @@ describe("Ext.tip.ToolTip", function() {
         });
 
         it("should show the tooltip for descendants matching the selector", function() {
-            createTip({delegate: '.hasTip'});
-            var spy = spyOn(tip, 'delayShow');
-            mouseOverTarget(delegatedTarget);
-            expect(spy).toHaveBeenCalled();
+            createTip({delegate: '.hasTip', showDelay: 0});
+            runs(function() {
+                mouseOverTarget(delegatedTarget);
+
+                // Click-shown tips are not subject to a delay, so if visible, do not wait on an event
+                if (!tip.isVisible()) {
+                    waitsForEvent(tip, 'show');
+                }
+            });
+            runs(function() {
+                expect(tip.isVisible()).toBe(true);
+            });
         });
 
         it("should not show the tooltip for descendants that do not match the selector", function() {
@@ -402,10 +429,112 @@ describe("Ext.tip.ToolTip", function() {
         });
 
         it("should unset the triggerElement property when hiding", function() {
-            createTip({delegate: '.hasTip'});
-            mouseOverTarget(delegatedTarget);
-            tip.hide();
-            expect(tip.currentTarget.dom).toBeNull();
+            createTip({
+                delegate: '.hasTip',
+                dismissDelay: 1
+            });
+            runs(function() {
+                mouseOverTarget(delegatedTarget);
+
+                // Click-shown tips are not subject to a delay, so if visible, do not wait on an event
+                if (!tip.isVisible()) {
+                    waitsForEvent(tip, 'show');
+                }
+            });
+
+            waitsForEvent(tip, 'hide', 'tooltip to hide');
+            
+            runs(function() {
+                expect(tip.currentTarget.dom).toBe(null);
+            });
+        });
+
+        // This test tests whether a mouseMOVE's related target is in the same delegate as the target.
+        // If we're moving WITHIN a delegate, then mousemoves element to element within, should not
+        // trigger a tooltip show.
+        // Tap to show does noyt have this issue.
+        itNotTouch("should not reshow an autohidden tip when moving to a different child of a delegated starget", function() {
+            var showSpy;
+
+            createTip({
+                delegate: '.hasTip',
+                showDelay: 0,
+                dismissDelay: 1
+            });
+            delegatedTarget = Ext.get('delegate-child-1');
+
+            runs(function() {
+                jasmine.fireMouseEvent(delegatedTarget, triggerEvent, null, null, 0, false, false, false, document.body);
+
+                // Click-shown tips are not subject to a delay, so if visible, do not wait on an event
+                if (!tip.isVisible()) {
+                    waitsForEvent(tip, 'show');
+                }
+            });
+
+            // autoDismiss in 1ms
+            waitsForEvent(tip, 'hide', 'tooltip to dismiss');
+
+            // Wait until we're past quickShowInterval
+            waits(500);
+
+            runs(function() {
+                expect(tip.currentTarget.dom).toBe(null);
+                
+                showSpy = spyOnEvent(tip, 'show');
+
+                // Now move from delegate-child-1 into delegate-child-2
+                // This is within the same .x-hasTip target, so should not trigger a new show
+                jasmine.fireMouseEvent(Ext.get('delegate-child-2'), triggerEvent, null, null, 0, false, false, false, Ext.get('delegate-child-1'));
+            });
+
+            // Nothing should happen, so we can't wait for anything
+            waits(100);
+
+            // After 100ms, there should have been no show
+            runs(function() {
+                expect(showSpy).not.toHaveBeenCalled();
+
+                expect(tip.currentTarget.dom).toBe(null);
+
+                // Now move from delegate-child-2 into delegate-child-2-2
+                // This is within the same .x-hasTip target, so should not trigger a new show
+                jasmine.fireMouseEvent(Ext.get('delegate-child-2-2'), triggerEvent, null, null, 0, false, false, false, Ext.get('delegate-child-2'));
+            });
+
+            // Nothing should happen, so we can't wait for anything
+            waits(100);
+
+            // After 100ms, there should have been no show
+            runs(function() {
+                expect(showSpy).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('cancel show', function() {
+        it('should show when rehovering after a show has been canceled', function() {
+            createTip({
+                target: document.body,
+                delegate: '#tipTarget',
+                showDelay: 1000
+            });
+            runs(function() {
+                mouseOverTarget();
+
+                // Click-shown tips are not subject to a delay, so if visible, do not wait on an event
+                if (!tip.isVisible()) {
+                    waitsForEvent(tip, 'show');
+                }
+            });
+
+            runs(function() {
+                mouseOutTarget();
+                tip.setShowDelay(1);
+                mouseOverTarget();
+            });
+            
+            waitsForEvent(tip, 'show', 'tooltip to reshow');
         });
     });
 });

@@ -68,6 +68,9 @@ Ext.define('Ext.tip.Manager', {
 
         me._fly = new Ext.dom.Fly();
         me.tip = tip = Ext.create(me.createTooltip());
+        // Prevent auto alignment on config changes since we'll be
+        // doing then in bulk
+        tip.allowRealign = false;
 
         tip.on({
             beforeshow: 'onBeforeShow',
@@ -120,9 +123,16 @@ Ext.define('Ext.tip.Manager', {
             config = me.getTooltip();
 
         return Ext.apply({
+            id: 'ext-global-tooltip',
             delegate: me.delegateQuickTip.bind(me),
             target: Ext.getBody()
         }, config);
+    },
+
+    hide: function() {
+        if (this.tip) {
+            this.tip.hide();
+        }
     },
 
     privates: {
@@ -310,6 +320,7 @@ Ext.define('Ext.tip.Manager', {
 
             if (dom) {
                 data = me.getTipConfig(dom);
+                data.anchorToTarget = !!(data.align || data.anchor);
                 tip.setConfig(data);
                 header = tip.getHeader();
                 if (header) {
@@ -329,6 +340,7 @@ Ext.define('Ext.tip.Manager', {
                 this.priorityConfigs.forEach(function(name) {
                     cfg[name] = this.getTipConfig(dom, name);
                 }, this);
+                cfg.anchorToTarget = !!(cfg.align || cfg.anchor);
                 tip.setConfig(cfg);
             }
         }

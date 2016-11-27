@@ -882,12 +882,14 @@ Ext.define('Ext.data.ProxyStore', {
     },
 
     /**
-     * @private
-     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
-     * @param {Ext.data.Model} record The model instance that was edited
+     * A model instance should call this method on the Store it has been
+     * {@link Ext.data.Model#join joined} to.
+     * @param {Ext.data.Model} record The model instance that was edited.
+     * @param {String[]} [modifiedFieldNames] (private)
      * @since 3.4.0
+     * @private
      */
-    afterCommit: function(record, modifiedFieldNames) {
+    afterCommit: function (record, modifiedFieldNames) {
         var me = this;
         if (!modifiedFieldNames) {
             modifiedFieldNames = null;

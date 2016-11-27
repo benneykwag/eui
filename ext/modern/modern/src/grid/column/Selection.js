@@ -26,21 +26,25 @@ Ext.define('Ext.grid.column.Selection', {
     },
 
     onSelect: function(grid, record) {
-        var row = grid.getItem(record);
+        var me = this,
+            row = grid.getItem(record);
 
-        if (row) {
-            row.getCellByColumn(this).addCls(this.checkedCls);
+        if (row && !row.destroyed) {
+            row.getCellByColumn(me).addCls(me.checkedCls);
         }
-        this.updateHeaderState();
+
+        me.updateHeaderState();
     },
 
     onDeselect: function(grid, record) {
-        var row = grid.getItem(record);
+        var me = this,
+            row = grid.getItem(record);
 
-        if (row) {
-            row.getCellByColumn(this).removeCls(this.checkedCls);
+        if (row && !row.destroyed) {
+            row.getCellByColumn(me).removeCls(me.checkedCls);
         }
-        this.updateHeaderState();
+
+        me.updateHeaderState();
     },
 
     doToggleAll: function(checked) {

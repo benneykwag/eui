@@ -58,6 +58,24 @@ Ext.define('Ext.AnimationQueue', {
         }
     },
 
+    clear: function() {
+        var me = this;
+
+        clearTimeout(me.idleTimer);
+        clearTimeout(me.idleQueueTimer);
+        Ext.Function.cancelAnimationFrame(me.animationFrameId);
+        me.animationFrameId = null;
+        delete me.idleTimer;
+        delete me.idleQueueTimer;
+        me.queue.length = me.taskQueue.length = me.runningQueue.length = me.idleQueue.length = 0;
+        me.isRunning = false;
+        me.isIdle = true;
+        //<debug>
+        me.startCountTime = Ext.now();
+        me.count = 0;
+        //</debug>
+    },
+
     watch: function() {
         if (this.isRunning && Ext.now() - this.lastRunTime >= 500) {
             this.run();
@@ -66,6 +84,9 @@ Ext.define('Ext.AnimationQueue', {
 
     run: function() {
         var me = this;
+
+        // When asked to start or iterate, it will now create a new one
+        me.animationFrameId = null;
 
         if (!me.isRunning) {
             return;
@@ -107,16 +128,21 @@ Ext.define('Ext.AnimationQueue', {
     //</debug>
 
     doStart: function() {
-        this.animationFrameId = Ext.Function.requestAnimationFrame(this.run);
+        if (!this.animationFrameId) {
+            this.animationFrameId = Ext.Function.requestAnimationFrame(this.run);
+        }
         this.lastRunTime = Ext.now();
     },
 
     doIterate: function() {
-        this.animationFrameId = Ext.Function.requestAnimationFrame(this.run);
+        if (!this.animationFrameId) {
+            this.animationFrameId = Ext.Function.requestAnimationFrame(this.run);
+        }
     },
 
     doStop: function() {
         Ext.Function.cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
     },
 
     /**

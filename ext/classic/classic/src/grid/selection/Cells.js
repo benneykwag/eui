@@ -141,9 +141,11 @@ Ext.define('Ext.grid.selection.Cells', {
             var me = this,
                 view = me.view;
 
-            me.eachCell(function(cellContext) {
-                view.onCellDeselect(cellContext);
-            });
+            if (view.getVisibleColumnManager().getColumns().length) {
+                me.eachCell(function(cellContext) {
+                    view.onCellDeselect(cellContext);
+                });
+            }
             me.startCell = me.endCell = null;
         },
 

@@ -220,6 +220,7 @@ Ext.define('Ext.Panel', {
     },
 
     applyHeader: function (newHeader, oldHeader) {
+        // This method should never call any getters here doing so will cause re-entry into this method. Extra Headers will be created
         var me = this,
             header = oldHeader;
 
@@ -283,6 +284,8 @@ Ext.define('Ext.Panel', {
             },
             icon, title;
 
+        me._isCreatingHeader = true;
+
         if (config && config !== true) {
             Ext.merge(ret, config);
         }
@@ -316,6 +319,7 @@ Ext.define('Ext.Panel', {
             }
         }
 
+        me._isCreatingHeader = false;
         return ret;
     },
 
@@ -517,14 +521,16 @@ Ext.define('Ext.Panel', {
             var me = this,
                 header;
 
-            me.getViewModel();
-            me.getItems();
+            if (!me._isCreatingHeader) {
+                me.getViewModel();
+                me.getItems();
 
-            header = me.getHeader();
-
-            if (!header && me.allowHeader) {
-                me.setHeader(true);
                 header = me.getHeader();
+
+                if (!header && me.allowHeader) {
+                    me.setHeader(true);
+                    header = me.getHeader();
+                }
             }
 
             return header;

@@ -246,7 +246,8 @@ Ext.define('Ext.app.bind.Stub', {
             parent = me.parent,
             name = me.name,
             formula = me.formula,
-            parentData, associations, association, formulaStub;
+            parentData, associations,
+            association, formulaStub, setterName;
 
         if (formula && !formula.settingValue && formula.set) {
             formula.setValue(value);
@@ -273,7 +274,10 @@ Ext.define('Ext.app.bind.Stub', {
 
             if (associations && (name in associations)) {
                 association = associations[name];
-                parentData[association.setterName](value);
+                setterName = association.setterName;
+                if (setterName) {
+                    parentData[setterName](value);
+                }
                 // We may be setting a record here, force the value to recalculate
                 me.invalidate(true);
             } else {
@@ -543,7 +547,7 @@ Ext.define('Ext.app.bind.Stub', {
             var me = this,
                 current = me.boundValue;
 
-            if (current) {
+            if (current && !current.destroyed) {
                 if (current.isModel) {
                     current.unjoin(me);
                 } else {

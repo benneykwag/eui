@@ -106,7 +106,9 @@ Ext.define('Ext.field.DatePicker', {
     extend: 'Ext.field.Picker',
     alternateClassName: 'Ext.form.DatePicker',
     xtype: 'datepickerfield',
+
     requires: [
+        'Ext.field.trigger.Date',
         'Ext.picker.Date'
     ],
 

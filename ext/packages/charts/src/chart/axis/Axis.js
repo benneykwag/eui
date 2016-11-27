@@ -320,7 +320,7 @@ Ext.define('Ext.chart.axis.Axis', {
         /**
          * @private
          * @cfg {Number} rotation
-         * Rotation of the polar axis.
+         * Rotation of the polar axis in radians.
          * WARNING: Meant to be set automatically by chart. Do not set it manually.
          */
         rotation: null,
@@ -725,7 +725,9 @@ Ext.define('Ext.chart.axis.Axis', {
     },
 
     updateChart: function (newChart, oldChart) {
-        var me = this, surface;
+        var me = this,
+            surface;
+
         if (oldChart) {
             oldChart.unregister(me);
             oldChart.un('serieschange', me.onSeriesChange, me);
@@ -808,13 +810,16 @@ Ext.define('Ext.chart.axis.Axis', {
     onSeriesChange: function (chart) {
         var me = this,
             series = chart.getSeries(),
-            getAxisMethod = 'get' + me.getDirection() + 'Axis',
-            boundSeries = [], i, ln = series.length,
-            linkedTo, masterAxis;
+            boundSeries = [],
+            linkedTo, masterAxis, getAxisMethod,
+            i, ln;
 
-        for (i = 0; i < ln; i++) {
-            if (this === series[i][getAxisMethod]()) {
-                boundSeries.push(series[i]);
+        if (series) {
+            getAxisMethod = 'get' + me.getDirection() + 'Axis';
+            for (i = 0, ln = series.length; i < ln; i++) {
+                if (this === series[i][getAxisMethod]()) {
+                    boundSeries.push(series[i]);
+                }
             }
         }
 
@@ -985,7 +990,7 @@ Ext.define('Ext.chart.axis.Axis', {
 
                 attr.min = me.range[0];
                 attr.max = me.range[1];
-                delete context.majorTicks;
+                context.majorTicks = null;
                 layout.calculateLayout(context);
                 majorTicks = context.majorTicks;
                 segmenter.adjustByMajorUnit(majorTicks.step, majorTicks.unit.scale, me.range);
@@ -1007,7 +1012,7 @@ Ext.define('Ext.chart.axis.Axis', {
      * @private
      */
     clearRange: function () {
-        delete this.hasClearRangePending;
+        this.hasClearRangePending = null;
         this.range = null;
     },
 

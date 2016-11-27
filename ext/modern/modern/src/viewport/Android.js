@@ -7,7 +7,7 @@ Ext.define('Ext.viewport.Android', {
 
     config: {
         translatable: {
-            translationMethod: 'csstransform'
+            type: 'csstransform'
         }
     },
 

@@ -119,7 +119,7 @@ Ext.define('Ext.slider.Slider', {
         animation: true,
 
         /**
-         * Will make this field read only, meaning it cannot be changed with used interaction.
+         * Will make this field read only, meaning it cannot be changed from the user interface.
          * @cfg {Boolean} readOnly
          * @accessor
          */
@@ -210,7 +210,7 @@ Ext.define('Ext.slider.Slider', {
      * @return {Ext.slider.Thumb} The thumb instance
      */
     getThumb: function(index) {
-        if (typeof index != 'number') {
+        if (typeof index !== 'number') {
             index = 0;
         }
 

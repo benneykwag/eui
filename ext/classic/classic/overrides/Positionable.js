@@ -1,5 +1,5 @@
 /**
- *
+ * @class Ext.util.Positionable
  */
 Ext.define('Ext.overrides.util.Positionable', {
     override: 'Ext.util.Positionable',

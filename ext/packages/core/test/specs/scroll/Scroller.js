@@ -1,3 +1,5 @@
+/* global Ext, expect, Infinity, jasmine, spyOn */
+
 describe("Ext.scroll.Scroller", function() {
     var scroller, el;
 
@@ -947,7 +949,7 @@ describe("Ext.scroll.Scroller", function() {
                 makeScroller({
                     x: false,
                     y: true
-                })
+                });
             });
 
             it("should return the maxPosition", function() {
@@ -1242,8 +1244,28 @@ describe("Ext.scroll.Scroller", function() {
                 });
             });
 
-            it("should sync scroll position when a partner is scrolled", function() {
-                scroller3.scrollTo(50, 60);
+            it("should sync multiple partners when the first partner scroller is scrolled", function() {
+                scroller2.scrollTo(20, 30);
+
+                waitsFor(function() {
+                    return scrollSpy2.wasCalled;
+                });
+
+                runs(function() {
+                    expect(scroller.getPosition()).toEqual({
+                        x: 20,
+                        y: 30
+                    });
+
+                    expect(scroller3.getPosition()).toEqual({
+                        x: 20,
+                        y: 30
+                    });
+                });
+            });
+
+            it("should sync multiple partners when the second partner scroller is scrolled", function() {
+                scroller3.scrollTo(30, 60);
 
                 waitsFor(function() {
                     return scrollSpy3.wasCalled;
@@ -1251,7 +1273,11 @@ describe("Ext.scroll.Scroller", function() {
 
                 runs(function() {
                     expect(scroller.getPosition()).toEqual({
-                        x: 50,
+                        x: 30,
+                        y: 60
+                    });
+                    expect(scroller2.getPosition()).toEqual({
+                        x: 30,
                         y: 60
                     });
                 });

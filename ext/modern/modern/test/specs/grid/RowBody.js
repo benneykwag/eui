@@ -327,14 +327,16 @@ describe("Ext.grid.RowBody", function () {
                             count = grid.getStore().getCount(), i, row, padding, y;
 
                         top.expand();
-                        // Widget height is set to 42
-                        rowBodyHeight = 42;
+
+                        rowBodyHeight = top.getBody().el.getHeight();
 
                         for (i = 1; i < count; ++i) {
                             row = grid.getItemAt(i);
                             padding = row.getBody().contentElement.getPadding('tb');
-                            y = headerHeight + (i * (padding + rowHeight + rowBodyHeight));
-                            expect(row.el.getY()).toBe(Math.round(y));
+                            y = headerHeight + (i * (rowHeight + rowBodyHeight));
+                            
+                            // Allow 1px tolerance for older browsers
+                            expect(row.el.getY()).toBeApprox(Math.round(y));
                             row.expand();
                         }
                     });

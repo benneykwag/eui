@@ -9,15 +9,31 @@ Ext.define('Ext.sparkline.CanvasCanvas', {
             var ratio = window.devicePixelRatio || 1;
             return {
                 moveTo: function (x, y) {
+                    // Convert to RTL
+                    if (this.rtl) {
+                        x = this.canvas.width - x - 1;
+                    }
                     this.$moveTo(x * ratio, y * ratio);
                 },
                 lineTo: function (x, y) {
+                    // Convert to RTL
+                    if (this.rtl) {
+                        x = this.canvas.width - x - 1;
+                    }
                     this.$lineTo(x * ratio, y * ratio);
                 },
                 arc: function (x, y, radius, startAngle, endAngle, counterclockwise) {
+                    // Convert to RTL
+                    if (this.rtl) {
+                        x = this.canvas.width - x - 1;
+                    }
                     this.$arc(x * ratio, y * ratio, radius * ratio, startAngle, endAngle, counterclockwise);
                 },
                 clearRect: function (x, y, width, height) {
+                    // Convert to RTL
+                    if (this.rtl) {
+                        x = this.canvas.width - x - width;
+                    }
                     this.$clearRect(x * ratio, y * ratio, width * ratio, height * ratio);
                 }
             };
@@ -54,6 +70,7 @@ Ext.define('Ext.sparkline.CanvasCanvas', {
                 context['$' + name] = context[name];
             }
             Ext.apply(context, overrides);
+            context.rtl = this.rtl;
             this.context = context;
         }
         if (lineColor != null) {
@@ -76,12 +93,13 @@ Ext.define('Ext.sparkline.CanvasCanvas', {
 
     _drawShape: function (shapeid, path, lineColor, fillColor, lineWidth) {
         var context = this._getContext(lineColor, fillColor, lineWidth),
+            xIncr = this.rtl ? -0.5 : 0.5,
             i, plen;
 
         context.beginPath();
-        context.moveTo(path[0][0] + 0.5, path[0][1] + 0.5);
+        context.moveTo(path[0][0] + xIncr, path[0][1] + 0.5);
         for (i = 1, plen = path.length; i < plen; i++) {
-            context.lineTo(path[i][0] + 0.5, path[i][1] + 0.5); // the 0.5 offset gives us crisp pixel-width lines
+            context.lineTo(path[i][0] + xIncr, path[i][1] + 0.5); // the 0.5 offset gives us crisp pixel-width lines
         }
         if (lineColor != null) {
             context.stroke();
@@ -201,6 +219,10 @@ Ext.define('Ext.sparkline.CanvasCanvas', {
     },
 
     getShapeAt: function (x, y) {
+        // Convert to RTL
+        if (this.rtl) {
+            x = this.el.dom.width - x - 1;
+        }
         this.targetX = x;
         this.targetY = y;
         this.render();

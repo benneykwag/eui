@@ -391,6 +391,17 @@ Ext.apply(Ext, {
     }()),
 
     /**
+     * Indicates if the page is currently running in online or offline mode, according
+     * to the `navigator.onLine` property.
+     * @return {Boolean} `true` if the page is currently running in an online mode.
+     *
+     * @since 6.2.1
+     */
+    isOnline: function() {
+        return Ext.global.navigator.onLine;
+    },
+
+    /**
      * @method iterate
      * @member Ext
      * Iterates either an array or an object. This method delegates to

@@ -93,12 +93,14 @@ $tabbar-padding: dynamic(null);
  */
 $tabbar-padding-big: dynamic(null);
 
+//# fashion replaces $tabbar-tab-spacing
 /**
  * @var {number}
  * The space in between horizontally aligned Tab Bar items
  */
 $tabbar-horizontal-spacing: dynamic(.4em);
 
+//# fashion replaces $tabbar-tab-spacing-big
 /**
  * @var {number}
  * The space in between horizontally aligned Tab Bar items in the
@@ -154,13 +156,13 @@ $tabbar-title-font-family: dynamic(null);
  * @var {number}
  * Tab Bar min-height
  */
-$tabbar-min-height: dynamic(null);
+$tabbar-min-height: dynamic($toolbar-min-height);
 
 /**
  * @var {number}
  * Tab Bar min-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
-$tabbar-min-height-big: dynamic(null);
+$tabbar-min-height-big: dynamic($toolbar-min-height-big);
 
 /**
  * Creates a visual theme for a Tab Bar.
@@ -178,6 +180,9 @@ $tabbar-min-height-big: dynamic(null);
  * @param {string/list} $background-gradient
  * Tab Bar background-gradient. Can be either the name of a gradient defined by
  * {@link Global_CSS#background-gradient} or a list of color stops.
+ *
+ * @param {color} $color
+ * Tab Bar border-width
  *
  * @param {number/list} $border-width
  * Tab Bar border-width

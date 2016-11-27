@@ -176,10 +176,12 @@ Ext.define('Ext.data.ChainedStore', {
 
     onSourceBeforeLoad: function(source, operation) {
         this.fireEvent('beforeload', this, operation);
+        this.callObservers('BeforeLoad', [operation]);
     },
 
     onSourceAfterLoad: function(source, records, successful, operation) {
         this.fireEvent('load', this, records, successful, operation);
+        this.callObservers('AfterLoad', [records, successful, operation]);
     },
 
     onFilterEndUpdate: function() {

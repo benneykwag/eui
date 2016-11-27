@@ -1,7 +1,7 @@
 /**
  */
 Ext.define('Ext.grid.plugin.PagingToolbar', {
-    extend: 'Ext.AbstractPlugin',
+    extend: 'Ext.plugin.Abstract',
     alias: ['plugin.pagingtoolbar', 'plugin.gridpagingtoolbar'],
     mixins: ['Ext.mixin.Hookable'],
 
@@ -117,9 +117,9 @@ Ext.define('Ext.grid.plugin.PagingToolbar', {
             pageSize = me.getPageSize(),
             currentPage = me.getCurrentPage(),
             topVisibleIndex = grid.topVisibleIndex,
-            newPage = Math.ceil(grid.topVisibleIndex / pageSize);
+            newPage = Math.ceil( (topVisibleIndex + pageSize) / pageSize); // on the first page topVisibleIndex is 0
 
-        if (grid.getStore() && !me.getLoadPages() && topVisibleIndex && newPage !== currentPage) {
+        if (grid.getStore() && !me.getLoadPages() && newPage > 0 && newPage !== currentPage) {
             me.preventGridScroll = true;
             me.setCurrentPage(newPage);
             me.preventGridScroll = false;
@@ -192,7 +192,7 @@ Ext.define('Ext.grid.plugin.PagingToolbar', {
             visibleCount -= 1;
             this.setPageSize(visibleCount);
             totalCount = store.getTotalCount() || store.getCount();
-            this.setTotalPages( Math.floor(totalCount / visibleCount) );
+            this.setTotalPages( Math.ceil(totalCount / visibleCount) );
         }
     },
 

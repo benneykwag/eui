@@ -226,10 +226,10 @@ Ext.define('Ext.layout.FlexBox', {
         if (Ext.isWebKit) {
             style.setProperty('-webkit-box-flex', flex ? flex : '', null);
         } else if (Ext.isIE) {
-            style.setProperty('-ms-flex', (flex ? flex + ' 0 0px' : ''), null);
+            style.setProperty('-ms-flex', (flex ? flex + ' ' + flex + ' 0px' : ''), null);
         }
 
-        style.setProperty('flex', (flex ? flex + ' 0 0px' : ''), null);
+        style.setProperty('flex', (flex ? flex + ' ' + flex + ' 0px' : ''), null);
     },
 
     convertPosition: function(position) {

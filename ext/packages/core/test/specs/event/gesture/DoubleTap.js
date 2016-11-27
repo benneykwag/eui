@@ -1,3 +1,5 @@
+/* global expect, Ext, xdescribe, jasmine, describe */
+
 // describe("Ext.event.gesture.DoubleTap", function () {});
 // The above appeases Cmd's parser to associate spec run results with files.
 
@@ -9,7 +11,7 @@
         recognizer = Ext.event.gesture.DoubleTap.instance,
         moveDistance = recognizer.getMoveDistance(),
         tapDistance = recognizer.getTapDistance(),
-        maxDuration = 130,
+        maxDuration = 500, // Need some leeway on slower browsers
         offset = 60,
         originalMaxDuration, targetEl, singleTapHandler, doubleTapHandler, e;
 
@@ -33,8 +35,8 @@
         originalMaxDuration = recognizer.getMaxDuration();
         recognizer.setMaxDuration(maxDuration);
         targetEl = Ext.getBody().createChild({});
-        singleTapHandler = jasmine.createSpy();
-        doubleTapHandler = jasmine.createSpy();
+        singleTapHandler = jasmine.createSpy('singleTapSpy');
+        doubleTapHandler = jasmine.createSpy('doubleTapSpy');
 
         singleTapHandler.andCallFake(function(event) {
             e = event;
@@ -58,7 +60,6 @@
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 10, y: 10 });
         });
-        waits(maxDuration - offset);
         runs(function() {
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 10, y: 10 });
@@ -120,7 +121,7 @@
         runs(function() {
             // The second tap should actually trigger the single tap event
             expect(singleTapHandler).toHaveBeenCalled();
-        })
+        });
     });
 
     it("should fire singletap if movement of the first pointer is within moveDistance", function() {
@@ -141,7 +142,6 @@
             move({ id: 1, x: 9 + moveDistance, y: 10 });
             end({ id: 1, x: 9 + moveDistance, y: 10 });
         });
-        waits(maxDuration - offset);
         runs(function() {
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 11, y: 11 });
@@ -167,7 +167,6 @@
             start({ id: 2, x: 10, y: 10 });
             end({ id: 2, x: 10, y: 10 });
         });
-        waits(maxDuration - 60);
         runs(function() {
             expect(doubleTapHandler).not.toHaveBeenCalled();
             start({ id: 3, x: 10, y: 10 });
@@ -184,7 +183,6 @@
             start({ id: 1, x: 10, y: 10 });
             end({ id: 1, x: 10, y: 10 });
         });
-        waits(maxDuration - offset);
         runs(function() {
             start({ id: 1, x: 10 + tapDistance, y: 10 });
             end({ id: 1, x: 10 + tapDistance, y: 10 });

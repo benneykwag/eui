@@ -63,6 +63,7 @@
     /**
      * @cfg {Object} [pickerCfg] Date picker configuration. This config
      * takes priority over {@link #pickerId}.
+     */
 
     /**
      * @cfg {Number} maxHeight

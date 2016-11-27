@@ -1,6 +1,6 @@
 describe('Ext.plugin.Responsive', function () {
     var Responsive,
-        oldGetOrientation, oldGetViewWidth, oldGetViewHeight,
+        oldGetOrientation, oldGetViewWidth, oldGetViewHeight, oldResponsiveContext,
         environments = {
             ipad: {
                 landscape: {
@@ -23,6 +23,8 @@ describe('Ext.plugin.Responsive', function () {
         oldGetOrientation = Ext.dom.Element.getOrientation;
         oldGetViewWidth = Ext.dom.Element.getViewportWidth;
         oldGetViewHeight = Ext.dom.Element.getViewportHeight;
+        
+        oldResponsiveContext = Responsive.context;
 
         Ext.dom.Element.getOrientation = function () {
             return env.orientation;
@@ -41,6 +43,8 @@ describe('Ext.plugin.Responsive', function () {
         Ext.dom.Element.getOrientation = oldGetOrientation;
         Ext.dom.Element.getViewportWidth = oldGetViewWidth;
         Ext.dom.Element.getViewportHeight = oldGetViewHeight;
+        
+        Responsive.context = oldResponsiveContext;
 
         expect(Responsive.active).toBe(false);
         expect(Responsive.count).toBe(0);
@@ -55,7 +59,7 @@ describe('Ext.plugin.Responsive', function () {
                 platform: {
                     tablet: true
                 }
-            }
+            };
         });
         afterEach(function () {
             panel = Ext.destroy(panel);

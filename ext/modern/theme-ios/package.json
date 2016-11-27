@@ -7,10 +7,10 @@
     "creator": "Sencha",
     "summary": "Ext JS iOS Theme",
     "detailedDescription": "A modern-toolkit theme that emulates the native look and feel of iOS",
-    "version": "6.2.0.839",
+    "version": "6.2.2.12",
     "compatVersion": "6.2.0",
     "format": "1",
-    "output": "${package.dir}/build",
+    "output": "${workspace.subpkg.prefix}/${package.name}",
     "local": true,
     "sass": {
         "namespace": "Ext",

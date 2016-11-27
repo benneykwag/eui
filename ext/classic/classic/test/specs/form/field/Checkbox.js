@@ -510,36 +510,44 @@ describe("Ext.form.field.Checkbox", function() {
     });
 
     describe('getModelData', function() {
-        it("should return 'on' when checked and no inputValue is defined", function() {
-            makeComponent({
-                name: 'cb-name',
-                checked: true
+        describe("without custom modelValues", function() {
+            function makeBox(checked) {
+                makeComponent({
+                    checked: checked,
+                    name: 'foo'
+                });
+            }
+
+            it("should return false when not checked", function() {
+                makeBox(false);
+                expect(component.getModelData().foo).toBe(false);
             });
-            expect(component.getModelData()['cb-name']).toBe('on');
+
+            it("should return true when checked", function() {
+                makeBox(true);
+                expect(component.getModelData().foo).toBe(true);
+            });
         });
-        it("should return the inputValue when checked and inputValue is defined", function() {
-            makeComponent({
-                name: 'cb-name',
-                inputValue: 'the-input-value',
-                checked: true
+
+        describe("with custom modelValues", function() {
+            function makeBox(checked) {
+                makeComponent({
+                    checked: checked,
+                    name: 'foo',
+                    modelValue: 'yes',
+                    modelValueUnchecked: 'no'
+                });
+            }
+
+            it("should return the unchecked value when not checked", function() {
+                makeBox(false);
+                expect(component.getModelData().foo).toBe('no');
             });
-            expect(component.getModelData()['cb-name']).toBe('the-input-value');
-        });
-        it("should return null when unchecked and no uncheckedValue is defined", function() {
-            makeComponent({
-                name: 'cb-name',
-                checked: false
+
+            it("should return the checked value when checked", function() {
+                makeBox(true);
+                expect(component.getModelData().foo).toBe('yes');
             });
-            expect(component.getModelData()['cb-name']).toBeNull();
-        });
-        it("should return uncheckedValue when unchecked and uncheckedValue is defined", function() {
-            makeComponent({
-                name: 'cb-name',
-                inputValue: 'the-input-value',
-                uncheckedValue: 'the-unchecked-value',
-                checked: false
-            });
-            expect(component.getModelData()['cb-name']).toBe('the-unchecked-value');
         });
     });
     

@@ -140,6 +140,7 @@ describe("Ext.data.proxy.Direct", function() {
         
         if (provider) {
             Ext.direct.Manager.removeProvider(provider);
+            provider.destroy();
         }
         
         provider = proxy = Writer = writer = Model = null;

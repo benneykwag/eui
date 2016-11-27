@@ -1300,23 +1300,24 @@ Ext.define('Ext.data.Model', {
 
     /**
      * Tells this model instance that an observer is looking at it.
-     * @param {Ext.data.Store} item The store to which this model has been added.
+     * @param {Ext.data.Store} owner The store or other owner object to which this model
+     * has been added.
      */
-    join: function (item) {
+    join: function (owner) {
         var me = this,
             joined = me.joined;
 
         // Optimize this, gets called a lot
         if (!joined) {
-            joined = me.joined = [item];
+            joined = me.joined = [owner];
         } else if (!joined.length) {
-            joined[0] = item;
+            joined[0] = owner;
         } else {
             // TODO: do we need joined here? Perhaps push will do.
-            Ext.Array.include(joined, item);
+            Ext.Array.include(joined, owner);
         }
 
-        if (item.isStore && !me.store) {
+        if (owner.isStore && !me.store) {
             /**
             * @property {Ext.data.Store} store
             * The {@link Ext.data.Store Store} to which this instance belongs.
@@ -1324,15 +1325,16 @@ Ext.define('Ext.data.Model', {
             * **Note:** If this instance is bound to multiple stores, this property
             * will reference only the first.
             */
-            me.store = item;
+            me.store = owner;
         }
     },
 
     /**
      * Tells this model instance that it has been removed from the store.
-     * @param {Ext.data.Store} store The store from which this model has been removed.
+     * @param {Ext.data.Store} owner The store or other owner object from which this
+     * model has been removed.
      */
-    unjoin: function (item) {
+    unjoin: function (owner) {
         var me = this,
             joined = me.joined,
             
@@ -1342,22 +1344,22 @@ Ext.define('Ext.data.Model', {
             store = me.store,
             i;
 
-        if (item === me.session) {
+        if (owner === me.session) {
             me.session = null;
         } else {
-            if (len === 1 && joined[0] === item) {
+            if (len === 1 && joined[0] === owner) {
                 joined.length = 0;
             } else if (len) {
-                Ext.Array.remove(joined, item);
+                Ext.Array.remove(joined, owner);
             }
 
-            if (store === item) {
+            if (store === owner) {
                 store = null;
                 if (joined) {
                     for (i = 0, len = joined.length; i < len; ++i) {
-                        item = joined[i];
-                        if (item.isStore) {
-                            store = item;
+                        owner = joined[i];
+                        if (owner.isStore) {
+                            store = owner;
                             break;
                         }
                     }
@@ -2158,6 +2160,22 @@ Ext.define('Ext.data.Model', {
     //-------------------------------------------------------------------------
     // Statics
 
+    statics: {
+        /**
+         * @property {String/Object}
+         * The default proxy to use for instances of this Model when no proxy is configured
+         * on the instance.  When specified, the model will use this proxy instead of
+         * requesting one from the {@link Ext.data.Session Session}.
+         *
+         * Can be a string "type", or a {@link Ext.data.proxy.Proxy Proxy} config object.
+         *
+         * This proxy is not inherited by subclasses.
+         * @static
+         * @protected
+         */
+        defaultProxy: 'memory'
+    },
+
     inheritableStatics: {
         /**
          * This method adds the given set of fields to this model class.
@@ -2200,12 +2218,13 @@ Ext.define('Ext.data.Model', {
                 fields = me.fields,
                 fieldsMap = me.fieldsMap,
                 ordinals = me.fieldOrdinals,
-                field, i, idField, len, name, ordinal;
+                field, i, idField, len, name, ordinal, cleared;
 
             if (removeFields === true) {
                 fields.length = 0;
                 me.fieldsMap = fieldsMap = {};
                 me.fieldOrdinals = ordinals = {};
+                cleared = true;
             } else if (removeFields) {
                 for (i = removeFields.length; i-- > 0; ) {
                     name = removeFields[i];
@@ -2241,6 +2260,14 @@ Ext.define('Ext.data.Model', {
                     fieldsMap[name] = field;
                     field.ordinal = ordinal;
                     field.definedBy = field.owner = this; // Ext.data.NodeInterface
+                }
+            }
+
+            // Reset all ranks if we didn't get cleared, since this could
+            // alter the dependencies
+            if (!cleared) {
+                for (i = 0, len = fields.length; i < len; ++i) {
+                    fields[i].rank = null;
                 }
             }
 
@@ -2733,6 +2760,7 @@ Ext.define('Ext.data.Model', {
          * example dates.
          * @param {Object} lhs The first value.
          * @param {Object} rhs The second value.
+         * @param {String/Ext.data.Field} [field] The field name or instance.
          * @return {Boolean} True if the values are equal.
          * @private
          */
@@ -2760,8 +2788,9 @@ Ext.define('Ext.data.Model', {
              * @static
              * @private
              * @readonly
-             * @deprecated
-             * The update operation of type 'edit'. Used by {@link Ext.data.Store#event-update Store.update} event.
+             * @deprecated 5.0 Use the string `"edit"` directly.
+             * The update operation of type 'edit'. Used by the
+             * {@link Ext.data.Store#event-update Store.update} event.
              */
             EDIT   : 'edit',
             /**
@@ -2769,8 +2798,9 @@ Ext.define('Ext.data.Model', {
              * @static
              * @private
              * @readonly
-             * @deprecated
-             * The update operation of type 'reject'. Used by {@link Ext.data.Store#event-update Store.update} event.
+             * @deprecated 5.0 Use the string `"reject"` directly.
+             * The update operation of type 'reject'. Used by the
+             * {@link Ext.data.Store#event-update Store.update} event.
              */
             REJECT : 'reject',
             /**
@@ -2778,24 +2808,11 @@ Ext.define('Ext.data.Model', {
              * @static
              * @private
              * @readonly
-             * @deprecated
-             * The update operation of type 'commit'. Used by {@link Ext.data.Store#event-update Store.update} event.
+             * @deprecated 5.0 Use the string `"commit"` directly.
+             * The update operation of type 'commit'. Used by the
+             * {@link Ext.data.Store#event-update Store.update} event.
              */
             COMMIT : 'commit',
-
-            /**
-             * @property {String/Object}
-             * @static
-             * @protected
-             * The default proxy to use for instances of this Model when no proxy is configured
-             * on the instance.  When specified, the model will use this proxy instead of
-             * requesting one from the {@link Ext.data.Session Session}.
-             *
-             * Can be a string "type", or a {@link Ext.data.proxy.Proxy Proxy} config object.
-             *
-             * This proxy is not inherited by subclasses.
-             */
-            defaultProxy: 'memory',
 
             rankFields: function () {
                 var cls = this,

@@ -249,6 +249,13 @@ Ext.define('Ext.chart.legend.SpriteLegend', {
             case 'bottom':
             case 'top':
 
+                // surface must have a width before we can proceed to layout top/bottom
+                // docked legend.  width may be 0 if we are rendered into an inactive tab.
+                // see https://sencha.jira.com/browse/EXTJS-22454
+                if (!surfaceWidth) {
+                    return false;
+                }
+
                 columnSize = 0;
 
                 // Split legend items into columns until the width is suitable.
@@ -311,6 +318,13 @@ Ext.define('Ext.chart.legend.SpriteLegend', {
 
             case 'right':
             case 'left':
+
+                // surface must have a height before we can proceed to layout right/left
+                // docked legend.  height may be 0 if we are rendered into an inactive tab.
+                // see https://sencha.jira.com/browse/EXTJS-22454
+                if (!surfaceHeight) {
+                    return false;
+                }
 
                 columnSize = ln * 2;
 

@@ -22,22 +22,22 @@ Ext.define('Ext.dataview.ItemHeader', {
 
     classCls: Ext.baseCSSPrefix + 'itemheader',
     pinnedCls: Ext.baseCSSPrefix + 'pinned',
+    manageWidth: true,
 
     updatePinned: function(pinned) {
         var me = this;
 
         me.element.toggleCls(me.pinnedCls, !!pinned);
 
-        if (pinned) {
+        if (me.manageWidth && pinned) {
             me.getList().on({
                 updateVisibleCount: 'refreshWidth',
                 refresh: 'refreshWidth',
                 resize: 'refreshWidth',
                 scope: me
             });
+            me.refreshWidth();
         }
-
-        me.refreshWidth();
     },
 
     privates: {

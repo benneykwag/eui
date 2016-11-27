@@ -5,5 +5,7 @@
 Ext.define('Ext.grid.RowHeader', {
     extend: 'Ext.dataview.ItemHeader',
     xtype: 'rowheader',
-    classCls: Ext.baseCSSPrefix + 'rowheader'
+    classCls: Ext.baseCSSPrefix + 'rowheader',
+
+    manageWidth: false
 });

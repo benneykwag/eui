@@ -150,6 +150,7 @@ Ext.define('Ext.Container', {
          * @removed 2.0.0 Please use {@link Ext.layout.Card#animation} instead
          */
 
+        // @cmd-auto-dependency { aliasPrefix : "layout."}
         /**
          * @cfg {Object/String} layout Configuration for this Container's layout. Example:
          *
@@ -173,7 +174,6 @@ Ext.define('Ext.Container', {
          *     });
          *
          * @accessor
-         * @cmd-auto-dependency { aliasPrefix : "layout."}
          */
         layout: 'default',
 
@@ -257,6 +257,7 @@ Ext.define('Ext.Container', {
          */
         defaultType: null,
 
+        // @cmd-auto-dependency {defaultType: "Ext.Mask"}
         /**
          * @cfg {Boolean/Object/Ext.Mask/Ext.LoadMask} masked
          * A configuration to allow you to mask this container.
@@ -285,7 +286,6 @@ Ext.define('Ext.Container', {
          *     });
          *
          * @accessor
-         * @cmd-auto-dependency {defaultType: "Ext.Mask"}
          */
         masked: null
     },
@@ -406,6 +406,26 @@ Ext.define('Ext.Container', {
     onRemoved: function(destroying) {
         this.containerOnRemoved(destroying);
         this.callParent([destroying]);
+    },
+
+    afterItemShow: function(item) {
+        var layout;
+
+        if (item.getDocked()) {
+            layout = this.getLayout();
+            this.items.generation++;
+            layout.handleDockedItemBorders();
+        }
+    },
+
+    afterItemHide: function(item) {
+        var layout;
+
+        if (item.getDocked()) {
+            layout = this.getLayout();
+            this.items.generation++;
+            layout.handleDockedItemBorders();
+        }
     },
 
     updateBaseCls: function(newBaseCls, oldBaseCls) {
@@ -632,21 +652,28 @@ Ext.define('Ext.Container', {
 
         for (i = 0, ln = newItems.length; i < ln; i++) {
             item = newItems[i];
-            instanced = item.isWidget;
+            if (item) {
+                instanced = item.isWidget;
 
-            if (!instanced) {
-                item.$initParent = me;
+                if (!instanced) {
+                    item.$initParent = me;
+                }
+
+                item = me.factoryItem(item);
+                me.doAdd(item, instanced);
+                delete item.$initParent;
+
+                if (!newActiveItem && !me.getActiveItem() && me.innerItems.length > 0 && item.isInnerItem()) {
+                    newActiveItem = item;
+                }
+
+                addedItems.push(item);
             }
-
-            item = me.factoryItem(item);
-            me.doAdd(item, instanced);
-            delete item.$initParent;
-
-            if (!newActiveItem && !me.getActiveItem() && me.innerItems.length > 0 && item.isInnerItem()) {
-                newActiveItem = item;
+            //<debug>
+            else {
+                Ext.raise('Invalid item passed to add');
             }
-
-            addedItems.push(item);
+            //</debug>
         }
 
         if (newActiveItem) {
@@ -1066,7 +1093,7 @@ Ext.define('Ext.Container', {
         var layout = this.getLayout();
 
         if (this.isRendered() && item.setRendered(true)) {
-            item.fireAction('renderedchange', [this, item, true], 'onItemAdd', layout, { args: [item, index] });
+            item.fireAction('renderedchange', [this, item, true], 'onItemAdd', layout, {args: [item, index]});
         } else {
             layout.onItemAdd(item, index);
         }
@@ -1092,7 +1119,7 @@ Ext.define('Ext.Container', {
         var layout = this.getLayout();
 
         if (this.isRendered() && item.setRendered(false)) {
-            item.fireAction('renderedchange', [this, item, false], 'onItemRemove', layout, { args: [item, index, destroying] });
+            item.fireAction('renderedchange', [this, item, false], 'onItemRemove', layout, {args: [item, index, destroying]});
         }
         else {
             layout.onItemRemove(item, index, destroying);
@@ -1202,7 +1229,7 @@ Ext.define('Ext.Container', {
                 item = me.child(activeItem);
 
                 activeItem = {
-                    xtype : activeItem
+                    xtype: activeItem
                 };
             }
 
@@ -1280,7 +1307,7 @@ Ext.define('Ext.Container', {
             var items = this.items.items,
                 i, ln;
 
-            for (i = 0,ln = items.length; i < ln; i++) {
+            for (i = 0, ln = items.length; i < ln; i++) {
                 items[i].setRendered(rendered);
             }
 
@@ -1380,8 +1407,8 @@ Ext.define('Ext.Container', {
     },
 
     privates: {
-        applyReference: function (reference) {
-          // Need to call like this because applyReference from container comes via a mixin
+        applyReference: function(reference) {
+            // Need to call like this because applyReference from container comes via a mixin
             return this.setupReference(reference);
         },
 
@@ -1391,7 +1418,7 @@ Ext.define('Ext.Container', {
          * prior to the lookup.
          * @private
          */
-        getFirstReferences: function () {
+        getFirstReferences: function() {
             var me = this;
 
             delete me.getReferences;

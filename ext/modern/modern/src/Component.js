@@ -279,15 +279,6 @@ Ext.define('Ext.Component', {
 
     cachedConfig: {
         /**
-         * @cfg {String/String[]} cls The CSS class to add to this component's element, in
-         * addition to the {@link #baseCls}. In many cases, this property will be specified
-         * by the derived component class. See {@link #userCls} for adding additional CSS
-         * classes to component instances (such as items in a {@link Ext.Container}).
-         * @accessor
-         */
-        cls: null,
-
-        /**
          * @cfg {Number/String} margin The margin to use on this Component. Can be specified as a number (in which case
          * all edges get the same margin) or a CSS string like '5 10 10 10'
          * @accessor
@@ -468,10 +459,10 @@ Ext.define('Ext.Component', {
          */
         html: null,
 
+        // @cmd-auto-dependency {defaultType: "Ext.behavior.Draggable"}
         /**
          * @cfg {Object} [draggable] Configuration options to make this Component draggable
          * @accessor
-         * @cmd-auto-dependency {defaultType: "Ext.behavior.Draggable"}
          */
         draggable: null,
 
@@ -579,6 +570,7 @@ Ext.define('Ext.Component', {
          */
         useBodyElement: null,
 
+        // @cmd-auto-dependency {defaultType: "Ext.tip.ToolTip"}
         /**
          * @cfg {String/Object} tooltip
          * The tooltip for this component - can be a string to be used as innerHTML
@@ -590,7 +582,8 @@ Ext.define('Ext.Component', {
          *
          * To force a unique tooltip instance to be created, specify `autoCreate: true` on this configuration.
          *
-         * @cmd-auto-dependency {defaultType: "Ext.tip.ToolTip"}
+         * Configuring this with `autoHide: false` implies `autoCreate: true` so that the desired persistent
+         * behavior can be obtained with other targets still showing the singleton instance.
          */
         tooltip: null,
 
@@ -603,17 +596,17 @@ Ext.define('Ext.Component', {
          */
         axisLock: null,
 
+        // @cmd-auto-dependency {defaultType: "Ext.Mask"}
         /**
          * @cfg {Boolean} modal `true` to make this Componenrt modal. This will create a mask underneath the Component
          * that covers its parent and does not allow the user to interact with any other Components until this
          * Component is dismissed.
          * @accessor
-         * @cmd-auto-dependency {defaultType: "Ext.Mask"}
          */
         modal: null,
 
         /**
-         * @cfg {Boolean} hideOnMaskTap When using a {@link #modal} Component, setting this to `true` will hide the modal
+         * @cfg {Boolean} hideOnMaskTap When using a {@link #cfg!modal} Component, setting this to `true` will hide the modal
          * mask and the Container when the mask is tapped on.
          * @accessor
          */
@@ -775,13 +768,18 @@ Ext.define('Ext.Component', {
 
     element: {
         reference: 'element',
-        classList: ['x-unsized']
+        classList: [Ext.baseCSSPrefix + 'unsized']
     },
 
     classCls: Ext.baseCSSPrefix + 'component',
     floatingCls: Ext.baseCSSPrefix + 'floating',
     hiddenCls: Ext.baseCSSPrefix + 'hidden',
     disabledCls: Ext.baseCSSPrefix + 'disabled',
+    heightedCls: Ext.baseCSSPrefix + 'heighted',
+    widthedCls: Ext.baseCSSPrefix + 'widthed',
+
+    widthed: false,
+    heighted: false,
 
     widthLayoutSized: false,
 
@@ -906,7 +904,7 @@ Ext.define('Ext.Component', {
     },
 
     /**
-     * Center this *{@link #cfg-floated}* Component in its parent.
+     * Center this {@link #cfg-floated} or {@link #isPositioned positioned} Component in its parent.
      * @return {Ext.Component} this
      */
     center: function() {
@@ -915,12 +913,17 @@ Ext.define('Ext.Component', {
 
         if (me.el.isVisible()) {
             parent = me.getParent();
-            parent = parent ? parent.element : Ext.getBody();
+            parent = parent ? parent.bodyElement : Ext.getBody();
             parentBox = parent.getConstrainRegion();
             xy = [(parentBox.getWidth() - me.el.getWidth()) / 2, (parentBox.getHeight() - me.el.getHeight()) / 2];
 
-            me.setX(xy[0]);
-            me.setY(xy[1]);
+            if (me.isPositioned()) {
+                me.setLeft(xy[0]);
+                me.setTop(xy[1]);
+            } else {
+                me.setX(xy[0]);
+                me.setY(xy[1]);
+            }
         } else {
             me.needsCenter = true;
         }
@@ -1264,38 +1267,6 @@ Ext.define('Ext.Component', {
     },
 
     /**
-     * @private
-     * Checks if the `cls` is a string. If it is, changed it into an array.
-     * @param {String/Array} cls
-     * @return {Array/null}
-     */
-    applyCls: function(cls) {
-        if (typeof cls == "string") {
-            cls = [cls];
-        }
-
-        //reset it back to null if there is nothing.
-        if (!cls || !cls.length) {
-            cls = null;
-        }
-
-        return cls;
-    },
-
-    /**
-     * @private
-     * All cls methods directly report to the {@link #cls} configuration, so anytime it changes, {@link #updateCls} will be called
-     */
-    updateCls: function (newCls, oldCls) {
-        var el = this.element;
-
-        if (el && ((newCls && !oldCls) || (!newCls && oldCls) || newCls.length != oldCls.length || Ext.Array.difference(newCls,
-            oldCls).length > 0)) {
-            el.replaceCls(oldCls, newCls);
-        }
-    },
-
-    /**
      * Updates the {@link #styleHtmlCls} configuration
      */
     updateStyleHtmlCls: function(newHtmlCls, oldHtmlCls) {
@@ -1354,10 +1325,16 @@ Ext.define('Ext.Component', {
     },
 
     updateUseBodyElement: function(useBodyElement) {
+        var me = this,
+            bodyEl;
+
         if (useBodyElement) {
-            this.link('bodyElement', this.innerElement.wrap({
-                cls: 'x-body'
+            bodyEl = me.link('bodyElement', me.innerElement.wrap({
+                cls: Ext.baseCSSPrefix + 'body'
             }));
+
+            bodyEl.toggleCls(me.widthedCls, me.widthed);
+            bodyEl.toggleCls(me.heightedCls, me.heighted);
         }
     },
 
@@ -1474,18 +1451,33 @@ Ext.define('Ext.Component', {
     setSizeFlags: function(flags) {
         var me = this,
             el = me.element,
-            hasWidth, hasHeight, stretched;
+            innerEl = me.innerElement,
+            heightedCls = me.heightedCls,
+            widthedCls = me.widthedCls,
+            bodyEl, hasWidth, hasHeight, stretched;
 
         if (flags !== this.sizeFlags) {
             me.sizeFlags = flags;
 
-            hasWidth = !!(flags & this.LAYOUT_WIDTH);
-            hasHeight = !!(flags & this.LAYOUT_HEIGHT);
+            me.widthed = hasWidth = !!(flags & this.LAYOUT_WIDTH);
+            me.heighted = hasHeight = !!(flags & this.LAYOUT_HEIGHT);
             stretched = !!(flags & this.LAYOUT_STRETCHED);
-
 
             el.toggleCls(Ext.baseCSSPrefix + 'has-width', hasWidth && !stretched && !hasHeight);
             el.toggleCls(Ext.baseCSSPrefix + 'has-height', hasHeight && !stretched && !hasWidth);
+
+            el.toggleCls(widthedCls, hasWidth);
+            el.toggleCls(heightedCls, hasHeight);
+
+            innerEl.toggleCls(widthedCls, hasWidth);
+            innerEl.toggleCls(heightedCls, hasHeight);
+
+            if (me.getUseBodyElement()) {
+                bodyEl = me.bodyElement;
+
+                bodyEl.toggleCls(widthedCls, hasWidth);
+                bodyEl.toggleCls(heightedCls, hasHeight);
+            }
 
             if (me.initialized) {
                 me.fireEvent('sizeflagschange', me, flags);
@@ -1762,7 +1754,7 @@ Ext.define('Ext.Component', {
             styleHtmlCls;
 
         if (!innerHtmlElement || !innerHtmlElement.dom || !innerHtmlElement.dom.parentNode) {
-            this.innerHtmlElement = innerHtmlElement = Ext.Element.create({ cls: 'x-innerhtml' });
+            this.innerHtmlElement = innerHtmlElement = Ext.Element.create({ cls: Ext.baseCSSPrefix + 'innerhtml' });
 
             if (this.getStyleHtmlContent()) {
                 styleHtmlCls = this.getStyleHtmlCls();
@@ -1818,7 +1810,7 @@ Ext.define('Ext.Component', {
 
         me.callParent([hidden, oldHidden]);
 
-        if (element && !element.destroyed) {
+        if (!me.destroying && element && !element.destroyed) {
             element.toggleCls(me.hiddenCls, hidden);
 
             // Updating to hidden during config should not fire events
@@ -1866,7 +1858,7 @@ Ext.define('Ext.Component', {
                 }
                 me.on({
                     beforehiddenchange: 'animateFn',
-                    scope: this,
+                    scope: me,
                     single: true,
                     args: [animation]
                 });
@@ -2263,7 +2255,10 @@ Ext.define('Ext.Component', {
                 tooltip = Ext.apply({}, tooltip);
             }
 
-            if (tooltip.autoCreate) {
+            // autocreate means we own an instance.
+            // autoHide: false implies that too, otherwise
+            // any other component's use of the singleton would defeat autoHide: false
+            if (tooltip.autoCreate || tooltip.autoHide === false) {
                 delete tooltip.autoCreate;
                 tooltip.target = this;
                 tooltip.xtype = tooltip.xtype || 'tooltip';
@@ -2442,7 +2437,7 @@ Ext.define('Ext.Component', {
     privates: {
         doAddListener: function(name, fn, scope, options, order, caller, manager) {
             if (name == 'painted' || name == 'resize') {
-                this.element.doAddListener(name, fn, scope || this, options, order);
+                this.element.doAddListener(name, fn, scope, options, order);
             }
 
             this.callParent([name, fn, scope, options, order, caller, manager]);
@@ -2472,7 +2467,7 @@ Ext.define('Ext.Component', {
 }, function() {
     //<debug>
     if (!document.querySelector('meta[name=viewport]')) {
-        Ext.log.warn('Ext JS requires a viewport meta tag in order to function correctly on mobile devices.  Please add the following tag to the <head> of your html page: \n <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">');
+        Ext.log.warn('Ext JS requires a viewport meta tag in order to function correctly on mobile devices.  Please add the following tag to the <head> of your html page: \n <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">');
     }
     //</debug>
 });

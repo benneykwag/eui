@@ -231,7 +231,7 @@ Ext.define('Ext.tree.ViewDropZone', {
             for (i = 0, len = records.length; i < len; i++) {
                 record = records[i];
                 if (record.isNode) {
-                    data.records.push(record.copy());
+                    data.records.push(record.copy(undefined, true));
                 } else {
                     // If it's not a node, make a node copy
                     data.records.push(new Model(Ext.apply({}, record.data)));
@@ -340,5 +340,5 @@ Ext.define('Ext.tree.ViewDropZone', {
         else {
             transferData();
         }
-    }    
+    }
 });

@@ -336,7 +336,7 @@ Ext.define('Ext.container.DockingContainer', {
                 // temporarily append the item to the detached body while updating framing
                 // elements.  This is so the framing els won't get detected as garbage
                 // by element.getById
-                Ext.getDetachedBody().appendChild(item.el);
+                Ext.getDetachedBody().appendChild(item.el, true);
                 item.updateFrame();
             }
             Ext.resumeLayouts(true);

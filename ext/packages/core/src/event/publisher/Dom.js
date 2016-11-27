@@ -48,7 +48,9 @@ Ext.define('Ext.event.publisher.Dom', {
         // Scroll can be captured, but it is listed here as one of directEvents instead of
         // captureEvents because in some browsers capturing the scroll event does not work
         // if the window object itself fired the scroll event.
-        scroll: 1
+        scroll: 1,
+        online: 1,
+        offline: 1
     },
 
     /**
@@ -149,7 +151,12 @@ Ext.define('Ext.event.publisher.Dom', {
             }
         }
 
-        Ext.getWin().on('unload', me.destroy, me);
+        // DOM publishers should be the last thing to go since they are used
+        // to remove any element listeners which is typically part
+        // of the unload destroy process.
+        Ext.getWin().on('unload', me.destroy, me, {
+            priority: -10000
+        });
     },
 
     initHandlers: function() {

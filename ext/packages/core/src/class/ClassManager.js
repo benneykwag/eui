@@ -514,7 +514,7 @@ var makeCtor = Ext.Class.makeCtor,
          *
          *     alert(MyCompany.pkg.Example === someObject); // alerts true
          *
-         * @param {String} name
+         * @param {String} namespace
          * @param {Object} value
          */
         setNamespace: function (namespace, value) {
@@ -653,7 +653,7 @@ var makeCtor = Ext.Class.makeCtor,
          * @param {Ext.Class/Object} object
          * @return {String} className
          */
-        getName: function(object) {
+        getName: function (object) {
             return object && object.$className || '';
         },
 
@@ -669,16 +669,16 @@ var makeCtor = Ext.Class.makeCtor,
          * @param {Object} object
          * @return {Ext.Class} class
          */
-        getClass: function(object) {
+        getClass: function (object) {
             return object && object.self || null;
         },
 
         /**
          * Defines a class.
-         * @deprecated Use {@link Ext#define} instead, as that also supports creating overrides.
+         * @deprecated 4.1 Use {@link Ext#define} instead.
          * @private
          */
-        create: function(className, data, createdFn) {
+        create: function (className, data, createdFn) {
             //<debug>
             if (className != null && typeof className !== 'string') {
                 throw new Error("[Ext.define] Invalid class name '" + className + "' specified, must be a non-empty string");
@@ -993,9 +993,12 @@ var makeCtor = Ext.Class.makeCtor,
         /**
          * Register a post-processor function.
          *
-         * @private
          * @param {String} name
-         * @param {Function} postprocessor
+         * @param {Function} fn
+         * @param {String/String[]} properties
+         * @param {String} position
+         * @param {String} relativeTo
+         * @private
          */
         registerPostprocessor: function(name, fn, properties, position, relativeTo) {
             if (!position) {
@@ -1849,6 +1852,9 @@ var makeCtor = Ext.Class.makeCtor,
             delete Manager.classState[className];
 
             Manager.removeName(className);
+            // Indiscriminately clear all factory caches here. It might be slightly inefficient however undefine
+            // is typically only called during unit testing.
+            Ext.Factory.clearCaches();
 
             var entry = Manager.getNamespaceEntry(className),
                 scope = entry.parent ? Manager.lookupName(entry.parent, false) : Ext.global;
@@ -1969,7 +1975,7 @@ var makeCtor = Ext.Class.makeCtor,
 
     /**
      * Old name for {@link Ext#widget}.
-     * @deprecated Use {@link Ext#widget} instead.
+     * @deprecated 5.0 Use {@link Ext#widget} instead.
      * @method createWidget
      * @member Ext
      * @private

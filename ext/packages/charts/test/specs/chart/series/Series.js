@@ -1,3 +1,5 @@
+/* global Ext, expect */
+
 describe('Ext.chart.series.Series', function() {
 
     var proto = Ext.chart.series.Series.prototype,
@@ -22,51 +24,52 @@ describe('Ext.chart.series.Series', function() {
     });
 
     describe('label', function () {
+        var chart, seriesSprite, performLayoutSpy;
+
+        afterEach(function() {
+            Ext.destroy(chart);
+        });
+
         it('should allow for dynamic updates of the "field" config', function () {
-            var chart;
-
-            runs(function () {
-                chart = Ext.create({
-                    xtype: 'polar',
-                    animation: false,
-                    renderTo: document.body,
-                    width: 400,
-                    height: 400,
-                    theme: 'green',
-                    store: {
-                        fields: ['name', 'data1'],
-                        data: [{
-                            name: 'metric one',
-                            name2: 'metric 1',
-                            data1: 14
-                        }, {
-                            name: 'metric two',
-                            name2: 'metric 2',
-                            data1: 16
-                        }]
+            chart = Ext.create({
+                xtype: 'polar',
+                animation: false,
+                renderTo: document.body,
+                width: 400,
+                height: 400,
+                theme: 'green',
+                store: {
+                    fields: ['name', 'data1'],
+                    data: [{
+                        name: 'metric one',
+                        name2: 'metric 1',
+                        data1: 14
+                    }, {
+                        name: 'metric two',
+                        name2: 'metric 2',
+                        data1: 16
+                    }]
+                },
+                series: {
+                    id: 'mySeries',
+                    type: 'pie',
+                    highlight: true,
+                    angleField: 'data1',
+                    label: {
+                        field: 'name',
+                        display: 'rotate'
                     },
-                    series: {
-                        id: 'mySeries',
-                        type: 'pie',
-                        highlight: true,
-                        angleField: 'data1',
-                        label: {
-                            field: 'name',
-                            display: 'rotate'
-                        },
-                        donut: 30
-                    }
-                });
+                    donut: 30
+                }
             });
+            seriesSprite = chart.getSeries()[0].getSprites()[0];
+            performLayoutSpy = spyOn(chart, 'performLayout').andCallThrough();
 
-            waitsFor(function () {
-                // wait till sprites have rendered
-                return !chart.getSeries()[0].getSprites()[0].getDirty();
-            });
+            waitsForSpy(performLayoutSpy, "initial layout to finish");
 
             runs(function () {
-                var series = chart.get('mySeries');
-                var label = series.getLabel();
+                var series = chart.get('mySeries'),
+                    label = series.getLabel();
 
                 expect(label.get(0).text).toBe('metric one');
                 expect(label.get(1).text).toBe('metric two');
@@ -77,8 +80,6 @@ describe('Ext.chart.series.Series', function() {
 
                 expect(label.get(0).text).toBe('metric 1');
                 expect(label.get(1).text).toBe('metric 2');
-
-                Ext.destroy(chart);
             });
         });
     });

@@ -295,12 +295,18 @@ Ext.define('Ext.grid.feature.Grouping', {
                         '{%',
                             // Group title is visible if not locking, or we are the locked side, or the locked side has no columns/
                             // Use visibility to keep row heights synced without intervention.
-                            'var groupTitleStyle = (!values.view.lockingPartner || (values.view.ownerCt === values.view.ownerCt.ownerLockable.lockedGrid) || (values.view.lockingPartner.headerCt.getVisibleGridColumns().length === 0)) ? "" : "visibility:hidden";',
+                            'var groupTitleStyle = (!values.view.lockingPartner || (values.view.ownerCt === values.view.ownerCt.ownerLockable.lockedGrid) || (values.view.lockingPartner.headerCt.getVisibleGridColumns().length === 0)) ? "" : "visibility:hidden",',
+                                'tooltip = "";',
+        
+                            // Only display a tooltip if the group is collapsible
+                            'if (me.collapsible) {',
+                                'tooltip = Ext.String.format(\'data-qtip="{0}"\', values.isCollapsedGroup ? me.expandTip : me.collapseTip);',
+                            '}',
                         '%}',
                         // TODO. Make the group header tabbable with tabIndex="0" and enable grid navigation "Action Mode"
                         // to activate it.
                         '<div data-groupname="{groupName:htmlEncode}" class="', Ext.baseCSSPrefix, 'grid-group-hd {collapsibleCls}" nottabindex="0" hidefocus="on" {ariaCellInnerAttr}>',
-                            '<div class="', Ext.baseCSSPrefix, 'grid-group-title" style="{[groupTitleStyle]}" {ariaGroupTitleAttr} data-qtip="{[values.isCollapsedGroup ? me.expandTip : me.collapseTip]}">',
+                            '<div class="', Ext.baseCSSPrefix, 'grid-group-title" style="{[groupTitleStyle]}" {ariaGroupTitleAttr} {[tooltip]}>',
                                 '{[values.groupHeaderTpl.apply(values.groupRenderInfo, parent) || "&#160;"]}',
                             '</div>',
                         '</div>',
@@ -879,7 +885,7 @@ Ext.define('Ext.grid.feature.Grouping', {
     /**
      * Expand a group
      * @param {String} groupName The group name.
-     * @param {Object} [options]. Pass when the group should be scrolled into view.
+     * @param {Object} [options] Pass when the group should be scrolled into view.
      * This contains flags for postprocessing the group's first row after
      * expansion. See {@link Ext.panel.Table#ensureVisible} for details. *note:*
      * a boolean may be passed to indicate whether to focus the target group after expand.
@@ -1113,9 +1119,7 @@ Ext.define('Ext.grid.feature.Grouping', {
      * @private
      */
     onGroupMousedown: function(view, rowElement, groupName, e) {
-        if (e.pointerType === 'mouse') {
-            e.preventDefault();
-        }
+        e.preventDefault();
     },
 
     /**

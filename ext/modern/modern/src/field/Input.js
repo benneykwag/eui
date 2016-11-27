@@ -248,15 +248,19 @@ Ext.define('Ext.field.Input', {
         }
 
         template.push({
-            reference: 'inputElement',
-            tag: this.tag,
-            cls: Ext.baseCSSPrefix + 'input-el'
-        }, {
-            reference: 'maskElement',
-            classList: [
-                Ext.baseCSSPrefix + 'mask-el',
-                Ext.baseCSSPrefix + 'hidden-display'
-            ]
+            reference: 'inputBodyElement',
+            cls: Ext.baseCSSPrefix + 'input-body-el',
+            children: [{
+                reference: 'inputElement',
+                tag: this.tag,
+                cls: Ext.baseCSSPrefix + 'input-el'
+            }, {
+                reference: 'maskElement',
+                classList: [
+                    Ext.baseCSSPrefix + 'mask-el',
+                    Ext.baseCSSPrefix + 'hidden-display'
+                ]
+            }]
         });
 
         if (afterTemplate) {
@@ -477,9 +481,7 @@ Ext.define('Ext.field.Input', {
      * @private
      */
     updateMaxLength: function(newMaxLength) {
-        if (!this.useManualMaxLength()) {
-            this.updateFieldAttribute('maxlength', newMaxLength);
-        }
+        this.updateFieldAttribute('maxlength', newMaxLength);
     },
 
     /**

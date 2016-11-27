@@ -299,7 +299,8 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         isObservable: true,
         
         /**
-         * @private We don't want the base destructor to clear the prototype because
+         * @private
+         * We don't want the base destructor to clear the prototype because
          * our destroyObservable handler must be called the very last. It will take care
          * of the prototype after completing Observable destruction sequence.
          */
@@ -1183,25 +1184,25 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
          *         click: 'onBodyCLick'
          *     });
          */
-        removeListener: function(ename, fn, scope, /* private */ eventOptions) {
+        removeListener: function(eventName, fn, scope, /* private */ eventOptions) {
             var me = this,
                 config, options;
 
-            if (typeof ename !== 'string') {
-                options = ename;
+            if (typeof eventName !== 'string') {
+                options = eventName;
                 // give subclasses the opportunity to switch the valid eventOptions
                 // (Ext.Component uses this when the "element" option is used)
                 eventOptions = eventOptions || me.$eventOptions;
-                for (ename in options) {
-                    if (options.hasOwnProperty(ename)) {
-                        config = options[ename];
-                        if (!me.$eventOptions[ename]) {
-                            me.doRemoveListener(ename, config.fn || config, config.scope || options.scope);
+                for (eventName in options) {
+                    if (options.hasOwnProperty(eventName)) {
+                        config = options[eventName];
+                        if (!me.$eventOptions[eventName]) {
+                            me.doRemoveListener(eventName, config.fn || config, config.scope || options.scope);
                         }
                     }
                 }
             } else {
-                me.doRemoveListener(ename, fn, scope);
+                me.doRemoveListener(eventName, fn, scope);
             }
 
             return me;
@@ -1331,15 +1332,20 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         */
         clearManagedListeners: function() {
             var me = this,
-                managedListeners = me.managedListeners ? me.managedListeners.slice() : [],
-                i = 0,
-                len = managedListeners.length;
+                managedListeners = me.managedListeners,
+                i, len;
 
-            for (; i < len; i++) {
-                me.removeManagedListenerItem(true, managedListeners[i]);
+            if (managedListeners) {
+                // So that Event#removeListener doesn't find a managedListeners array from which to remove
+                // the listener it is removing. It iterates the array to find a match, and splices it.
+                me.managedListeners = null;
+                for (i = 0, len = managedListeners.length; i < len; i++) {
+                    me.removeManagedListenerItem(true, managedListeners[i]);
+                }
+                managedListeners.length = 0;
             }
 
-            me.managedListeners = [];
+            me.managedListeners = managedListeners;
         },
 
         /**
@@ -1534,7 +1540,7 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         * or
         *     this.store.relayers.destroy();
         */
-        relayEvents : function(origin, events, prefix) {
+        relayEvents: function(origin, events, prefix) {
             var me = this,
                 len = events.length,
                 i = 0,
@@ -1641,7 +1647,8 @@ Ext.define('Ext.mixin.Observable', function(Observable) {
         },
         
         /**
-         * @private Destructor for classes that extend Observable.
+         * @private
+         * Destructor for classes that extend Observable.
          */
         destroy: function() {
             this.clearListeners();

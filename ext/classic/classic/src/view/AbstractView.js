@@ -44,7 +44,7 @@ Ext.define('Ext.view.AbstractView', {
      * @private
      * Used for buffered rendering.
      */
-    renderBuffer: document.createElement('div'),
+    renderBuffer: new Ext.dom.Fly(document.createElement('div')),
 
     statics: {
         /**
@@ -588,10 +588,10 @@ Ext.define('Ext.view.AbstractView', {
         return result;
     },
 
-    onRender: function() {
+    onRender: function(parentNode , containerIdx) {
         var mask = this.loadMask;
 
-        this.callParent(arguments);
+        this.callParent([parentNode , containerIdx]);
         if (mask) {
             this.createMask(mask);
         }
@@ -600,9 +600,8 @@ Ext.define('Ext.view.AbstractView', {
     beforeLayout: function() {
         var me = this;
 
-        me.callParent(arguments);
+        me.callParent();
 
-        // If a refresh is needed, just before the layout is the time to apply it.
         // If there is a deferred refresh timer running, allow that to do the refresh.
         if (me.refreshNeeded && !me.pendingRefresh) {
             // If we have refreshed before, just call a refresh now.
@@ -638,12 +637,12 @@ Ext.define('Ext.view.AbstractView', {
     },
 
     beforeRender: function() {
-        this.callParent(arguments);
+        this.callParent();
         this.getSelectionModel().beforeViewRender(this);
     },
 
     afterRender: function() {
-        this.callParent(arguments);
+        this.callParent();
 
         // Subclasses may set focusable to false.
         // BoundList is not focusable.
@@ -870,7 +869,6 @@ Ext.define('Ext.view.AbstractView', {
             prevItemCount = items.getCount(),
             refreshCounter = me.refreshCounter,
             targetEl,
-            dom,
             records,
             selModel = me.getSelectionModel(),
             restoreFocus,
@@ -893,7 +891,6 @@ Ext.define('Ext.view.AbstractView', {
 
             targetEl = me.getTargetEl();
             records = me.getViewRange();
-            dom = targetEl.dom;
 
             if (scroller) {
                 scrollPos = scroller.getPosition();
@@ -1018,8 +1015,7 @@ Ext.define('Ext.view.AbstractView', {
      */
     refreshSize: function(forceLayout) {
         var me = this,
-            sizeModel = me.getSizeModel(),
-            scroller = me.getScrollable();
+            sizeModel = me.getSizeModel();
 
         if (sizeModel.height.shrinkWrap || sizeModel.width.shrinkWrap || forceLayout) {
             me.updateLayout();
@@ -1186,7 +1182,7 @@ Ext.define('Ext.view.AbstractView', {
             nodes, len, i;
 
         me.tpl.overwrite(div, me.collectData(records, index));
-        nodes = Ext.fly(div).query(me.getItemSelector());
+        nodes = div.query(me.getItemSelector());
         for (i = 0, len = nodes.length; i < len; i++) {
             result.appendChild(nodes[i]);
         }
@@ -1198,12 +1194,6 @@ Ext.define('Ext.view.AbstractView', {
 
     // Element which contains rows
     nodeContainerSelector: null,
-
-    getNodeContainer: function() {
-        var target = this.getTargetEl(),
-            selector = this.nodeContainerSelector;
-        return selector ? target.down(selector, true) : target;
-    },
 
     /**
      * For use by the {@link Ext.view.DragZone} plugin on platforms which use the
@@ -1709,7 +1699,7 @@ Ext.define('Ext.view.AbstractView', {
 
         // If this refresh event is fire from a store load, then use the 
         // preserveScrollOnReload setting to decide whether to preserve scroll position
-        if (store.loadCount > me.lastRefreshLoadCount) {
+        if (store.loadCount > (me.lastRefreshLoadCount || 0)) {
             me.preserveScrollOnRefresh = me.preserveScrollOnReload;
         }
         me.refreshView();
@@ -1719,9 +1709,9 @@ Ext.define('Ext.view.AbstractView', {
 
     refreshView: function(startIndex) {
         var me = this,
-            // If we have an ancestor in a non-boxready state (collapsed or in-transition, or hidden), then block the
+            // If we have an ancestor in a non-boxready state (collapsed or about to collapse, or hidden), then block the
             // refresh because the next layout will trigger the refresh
-            blocked = me.blockRefresh || !me.rendered || me.up('[collapsed],[isCollapsingOrExpanding],[hidden]'),
+            blocked = me.blockRefresh || !me.rendered || me.up('[collapsed],[isCollapsingOrExpanding=1],[hidden]'),
             bufferedRenderer = me.bufferedRenderer;
 
         // If we are blocked in any way due to either a setting, or hidden or collapsed, or animating ancestor, then
@@ -1780,13 +1770,12 @@ Ext.define('Ext.view.AbstractView', {
      * @since 2.3.0
      */
     getRecords: function(nodes) {
-        var records = [],
-            i = 0,
-            len = nodes.length,
-            data = this.dataSource.data;
+        var me = this,
+            records = [],
+            i;
 
-        for (; i < len; i++) {
-            records[records.length] = data.getByKey(nodes[i].getAttribute('data-recordId'));
+        for (i=0; i < nodes.length; i++) {
+            records.push(me.getRecord(nodes[i]));
         }
 
         return records;
@@ -1799,8 +1788,11 @@ Ext.define('Ext.view.AbstractView', {
      * @return {Ext.data.Model} record The {@link Ext.data.Model} object
      * @since 2.3.0
      */
-    getRecord: function(node){
-        return this.dataSource.getByInternalId(Ext.getDom(node).getAttribute('data-recordId'));
+    getRecord: function(node) {
+        var dom = Ext.getDom(node),
+            id = dom.getAttribute('data-recordId');
+
+        return this.dataSource.getByInternalId(id);
     },
 
 
@@ -2100,6 +2092,19 @@ Ext.define('Ext.view.AbstractView', {
             return me.loadMask;
         },
 
+        /*
+         * @private
+         * This method returns the inner node containing element. This is useful for the bufferedRenderer
+         * or for when the view contains extra elements and we need to point the exact element that will 
+         * contain the view nodes.
+         */
+        getNodeContainer: function() {
+            var target = this.getTargetEl(),
+                selector = this.nodeContainerSelector;
+            return selector ? target.down(selector, true) : target;
+        },
+
+
         getOverflowEl: function() {
             // The desired behavior here is just to inherit from the superclass.  However,
             // the superclass method calls this.getTargetEl, which sends us into an infinte
@@ -2118,21 +2123,21 @@ Ext.define('Ext.view.AbstractView', {
              * @cfg {Boolean} [multiSelect=false]
              * True to allow selection of more than one item at a time, false to allow selection of only a single item
              * at a time or no selection at all, depending on the value of {@link #singleSelect}.
-             * @deprecated 4.0 Use {@link Ext.selection.Model#mode} 'MULTI' instead.
+             * @deprecated 4.0 Use {@link Ext.selection.Model#cfg-mode} 'MULTI' instead.
              * @since 2.3.0
              */
             /**
              * @cfg {Boolean} [singleSelect]
              * Allows selection of exactly one item at a time. As this is the default selection mode anyway, this config
              * is completely ignored.
-             * @removed 4.0 Use {@link Ext.selection.Model#mode} 'SINGLE' instead.
+             * @removed 4.0 Use {@link Ext.selection.Model#cfg-mode} 'SINGLE' instead.
              * @since 2.3.0
              */
             /**
              * @cfg {Boolean} [simpleSelect=false]
              * True to enable multiselection by clicking on multiple items without requiring the user to hold Shift or Ctrl,
              * false to force the user to hold Ctrl or Shift to select more than on item.
-             * @deprecated 4.0 Use {@link Ext.selection.Model#mode} 'SIMPLE' instead.
+             * @deprecated 4.0 Use {@link Ext.selection.Model#cfg-mode} 'SIMPLE' instead.
              * @since 2.3.0
              */
 

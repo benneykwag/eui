@@ -67,7 +67,7 @@ require('icon');
 
         @if $rotation != null {
             $rotation-origin: 50% 50%;
-            $angle: rotate(#{$rotation}deg)
+            $angle: rotate(#{$rotation}deg);
 
             display: inline-block;
             -webkit-transform: $angle;

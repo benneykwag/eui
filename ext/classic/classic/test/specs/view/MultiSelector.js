@@ -255,7 +255,7 @@ describe("Ext.view.MultiSelector", function(){
                     expect(nodes[0]).toHaveCls('x-grid-item-selected');
                 });
 
-                if (Ext.supports.TouchEvents) {
+                if (jasmine.supportsTouch) {
                     it('should not hide the picker when the picker is tapped', function() {
                         multiSelector.onShowSearch();
 

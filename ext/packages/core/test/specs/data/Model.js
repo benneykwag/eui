@@ -83,6 +83,60 @@ describe("Ext.data.Model", function() {
             });
         });
     });
+
+    describe("replaceFields", function() {
+        describe("dependencies", function() {
+            it("should keep dependencies when replaced with the same fields", function() {
+                function getFields() {
+                    return [{
+                        name: 'a'
+                    }, {
+                        name: 'b',
+                        depends: ['a'],
+                        calculate: function(data) {
+                            return 'x' + data.a;
+                        }
+                    }];
+                }
+
+                var M = Ext.define(null, {
+                    extend: 'Ext.data.Model',
+                    fields: getFields()
+                });
+
+                var rec = new M();
+
+                M.replaceFields(getFields());
+                rec.set('a', 'foo');
+                expect(rec.get('b')).toBe('xfoo');
+            });
+
+            it("should calculate any new dependencies", function() {
+                function getFields() {
+                    return [{
+                        name: 'a'
+                    }];
+                }
+
+                var M = Ext.define(null, {
+                    extend: 'Ext.data.Model',
+                    fields: getFields()
+                });
+
+                var rec = new M();
+
+                M.replaceFields(getFields().concat([{
+                    name: 'b',
+                    depends: ['a'],
+                    calculate: function(data) {
+                        return 'x' + data.a;
+                    }
+                }]));
+                rec.set('a', 'foo');
+                expect(rec.get('b')).toBe('xfoo');
+            });
+        });
+    });
     
     describe("defining models", function() {
         var A, B;
@@ -632,7 +686,7 @@ describe("Ext.data.Model", function() {
                         });
                         expect(rec.get('bar')).toBe(40);
                     });
-                })
+                });
             });
         });
         
@@ -1148,7 +1202,7 @@ describe("Ext.data.Model", function() {
                             return 'Fail1';
                         },
                             fn2 = function(){
-                                return 'Fail2'
+                                return 'Fail2';
                             };
                             
                         defineA({
@@ -3512,7 +3566,7 @@ describe("Ext.data.Model", function() {
                 expect(function() {
                     o.set('addressId', 1);
                 }).not.toThrow();
-            })
+            });
         });
         
         it("should update the id property if the id changes", function() {
@@ -6705,7 +6759,7 @@ describe("Ext.data.Model", function() {
                     defineA(null, [{
                         name: 'name',
                         validators: ['presence', 'email']
-                    }])
+                    }]);
 
                     o = new A();
 
@@ -6721,7 +6775,7 @@ describe("Ext.data.Model", function() {
                     expect(name[1].field).toBe('name');
                     expect(name[1].message).toBe(emailMsg);
                 });
-            })
+            });
         });
         
         describe("isValid", function() {
@@ -7284,7 +7338,7 @@ describe("Ext.data.Model", function() {
             A = Ext.define('spec.A', {
                 extend: 'Ext.data.Model',
                 fields: ['id', 'name']
-            })
+            });
         });
 
         afterEach(function() {
@@ -7316,7 +7370,7 @@ describe("Ext.data.Model", function() {
             rec.drop();
             expect(rec.dropped).toBe(true);
             expect(rec.erased).toBe(true);
-        })
+        });
 
         it("should call afterDrop", function() {
             var rec = new A({
@@ -7414,7 +7468,7 @@ describe("Ext.data.Model", function() {
                 extend: 'Ext.data.Model',
                 fields: ['name'],
                 versionProperty: 'version'
-            })
+            });
         });
 
         afterEach(function() {

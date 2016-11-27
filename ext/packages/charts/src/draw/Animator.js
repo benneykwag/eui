@@ -155,7 +155,15 @@ Ext.define('Ext.draw.Animator', {
         if (Ext.draw.Animator.frameCallbacks[id] && Ext.draw.Animator.frameCallbacks[id].once) {
             this.scheduled--;
             delete Ext.draw.Animator.frameCallbacks[id];
+            Ext.draw.Draw.endUpdateIOS();
         }
+    },
+
+    clear: function() {
+        this.animations.length = 0;
+        this.running = false;
+        Ext.draw.Animator.frameCallbacks = {};
+        Ext.draw.Draw.endUpdateIOS();
     },
 
     /**

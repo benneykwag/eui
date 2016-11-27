@@ -158,23 +158,6 @@ Ext.define('Ext.chart.series.Cartesian', {
         return sprites;
     },
 
-    provideLegendInfo: function (target) {
-        var me = this,
-            style = me.getSubStyleWithTheme(),
-            fill = style.fillStyle;
-
-        if (Ext.isArray(fill)) {
-            fill = fill[0];
-        }
-        target.push({
-            name: me.getTitle() || me.getYField() || me.getId(),
-            mark: (Ext.isObject(fill) ? fill.stops && fill.stops[0].color : fill) || style.strokeStyle || 'black',
-            disabled: me.getHidden(),
-            series: me.getId(),
-            index: 0
-        });
-    },
-
     getXRange: function () {
         return [this.dataRange[0], this.dataRange[2]];
     },

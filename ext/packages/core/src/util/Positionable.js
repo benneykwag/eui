@@ -10,6 +10,12 @@ Ext.define('Ext.util.Positionable', {
 
     // Stub implementation called after positioning.
     // May be implemented in subclasses. Component has an implementation.
+
+    // Hardware acceleration due to the transform:translateZ(0) flickering
+    // when painting clipped elements. This class allows that to be turned off
+    // while elements are in a clipped state.
+    clippedCls: Ext.baseCSSPrefix + 'clipped',
+
     afterSetPosition: Ext.emptyFn,
 
     //<debug>
@@ -186,10 +192,6 @@ Ext.define('Ext.util.Positionable', {
      *
      * - **Blank**: Defaults to aligning the element's top-left corner to the target's
      *   bottom-left corner ("tl-bl").
-     * - **One anchor (deprecated)**: The passed anchor position is used as the target
-     *   element's anchor point.  The element being aligned will position its top-left
-     *   corner (tl) to that point. *This method has been deprecated in favor of the newer
-     *   two anchor syntax below*.
      * - **Two anchors**: If two values from the table below are passed separated by a dash,
      *   the first value is used as the element's anchor point, and the second value is
      *   used as the target's anchor point.
@@ -198,7 +200,7 @@ Ext.define('Ext.util.Positionable', {
      *   point to align with a similar point in the target. So `'t0-b0'` would be
      *   the same as `'tl-bl'`, `'l0-r50'` would place the top left corner of this item
      *   halfway down the right edge of the target item. This allows more flexibility
-     *   and also describes which two edges are considered adjacent when positioning an anchor. 
+     *   and also describes which two edges are considered adjacent when positioning a tip pointer. 
      *
      * In addition to the anchor points, the position parameter also supports the "?"
      * character. If "?" is passed at the end of the position string, the element will
@@ -227,7 +229,7 @@ Ext.define('Ext.util.Positionable', {
      *
      *     // align the top left corner of el with the top right corner of other-el
      *     // (constrained to viewport)
-     *     el.alignTo("other-el", "tr?");
+     *     el.alignTo("other-el", "tl-tr?");
      *
      *     // align the bottom right corner of el with the center left edge of other-el
      *     el.alignTo("other-el", "br-l?");
@@ -235,6 +237,10 @@ Ext.define('Ext.util.Positionable', {
      *     // align the center of el with the bottom left corner of other-el and
      *     // adjust the x position by -6 pixels (and the y position by 0)
      *     el.alignTo("other-el", "c-bl", [-6, 0]);
+     *
+     *     // align the 25% point on the bottom edge of this el
+     *     // with the 75% point on the top edge of other-el.
+     *     el.alignTo("other-el", 'b25-c75');
      *
      * @param {Ext.util.Positionable/HTMLElement/String} element The Positionable,
      * HTMLElement, or id of the element to align to.
@@ -264,14 +270,14 @@ Ext.define('Ext.util.Positionable', {
      * @return {Number[]} [x, y] An array containing the element's x and y coordinates
      * @private
      */
-    calculateAnchorXY: function(anchor, extraX, extraY, mySize) {
+    calculateAnchorXY: function(anchor, extraX, extraY, size) {
         var region = this.getRegion();
 
         region.setPosition(0, 0);
         region.translateBy(extraX || 0, extraY || 0);
-        if (mySize) {
-            region.setWidth(mySize.width);
-            region.setHeight(mySize.height);
+        if (size) {
+            region.setWidth(size.width);
+            region.setHeight(size.height);
         }
 
         return region.getAnchorPoint(anchor);
@@ -296,14 +302,14 @@ Ext.define('Ext.util.Positionable', {
     /**
      * Gets the x,y coordinates to align this element with another element. See
      * {@link #alignTo} for more info on the supported position values.
-     * @param {Ext.util.Positionable/HTMLElement/String} element The Positionable,
+     * @param {Ext.util.Positionable/HTMLElement/String} alignToEl The Positionable,
      * HTMLElement, or id of the element to align to.
      * @param {String} [position="tl-bl?"] The position to align to
      * @param {Number[]} [offsets] Offset the positioning by [x, y]
      * @return {Number[]} [x, y]
      */
-    getAlignToXY: function(alignToEl, posSpec, offset) {
-        var newRegion = this.getAlignToRegion(alignToEl, posSpec, offset);
+    getAlignToXY: function(alignToEl, position, offsets) {
+        var newRegion = this.getAlignToRegion(alignToEl, position, offsets);
         return [newRegion.x, newRegion.y];
     },
     
@@ -363,7 +369,7 @@ Ext.define('Ext.util.Positionable', {
      * element's current size)
      * @return {Number[]} [x, y] An array containing the element's x and y coordinates
      */
-    getAnchorXY: function(anchor, local, mySize) {
+    getAnchorXY: function(anchor, local, size) {
         var me = this,
             region = me.getRegion(),
             el = me.el,
@@ -375,9 +381,9 @@ Ext.define('Ext.util.Positionable', {
         } else if (isViewport) {
             region.setPosition(scroll.left, scroll.top);
         }
-        if (mySize) {
-            region.setWidth(mySize.width);
-            region.setHeight(mySize.height);
+        if (size) {
+            region.setWidth(size.width);
+            region.setHeight(size.height);
         }
 
         return region.getAnchorPoint(anchor);
@@ -517,6 +523,8 @@ Ext.define('Ext.util.Positionable', {
     /**
      * Returns the content region of this element for purposes of constraining or clipping floating
      * children.  That is the region within the borders and scrollbars, but not within the padding.
+     *
+     * @return {Ext.util.Region} A Region containing "top, left, bottom, right" properties.
      */
     getConstrainRegion: function() {
         var me = this,
@@ -660,26 +668,38 @@ Ext.define('Ext.util.Positionable', {
      */
     getClientRegion: function() {
         var me = this,
-            scrollbarSize,
-            viewContentBox = me.getBox(),
-            myDom = me.dom;
+            el = me.el,
+            dom = el.dom,
+            viewContentBox = me.getBox(true),
+            scrollbarHeight = dom.offsetHeight > dom.clientHeight,
+            scrollbarWidth =  dom.offsetWidth > dom.clientWidth,
+            padding, scrollSize, isRTL;
 
-        // Capture width taken by any vertical scrollbar.
-        // If there is a vertical scrollbar, shrink the box.
-        scrollbarSize = myDom.offsetWidth - myDom.clientWidth;
-        if (scrollbarSize) {
-            if (me.getStyle('direction') === 'rtl') {
-                viewContentBox.left += scrollbarSize;
-            } else {
-                viewContentBox.right -= scrollbarSize;
+        if (scrollbarHeight || scrollbarWidth) {
+            scrollSize = Ext.getScrollbarSize();
+
+            // Capture width taken by any vertical scrollbar.
+            // If there is a vertical scrollbar, shrink the box.
+            if (scrollbarWidth) {
+                scrollbarWidth = scrollSize.width;
+                isRTL = el.getStyle('direction') === 'rtl' && !Ext.supports.rtlVertScrollbarOnRight;
+                
+                if (isRTL) {
+                    padding = el.getPadding('l');
+                    viewContentBox.left -= padding + Math.max(padding, scrollbarWidth);
+                } else {
+                    padding = el.getPadding('r');
+                    viewContentBox.right += padding - Math.max(padding, scrollbarWidth);
+                }
             }
-        }
 
-        // Capture width taken by any horizontal scrollbar.
-        // If there is a vertical scrollbar, shrink the box.
-        scrollbarSize = myDom.offsetHeight - myDom.clientHeight;
-        if (scrollbarSize) {
-            viewContentBox.bottom -= scrollbarSize;
+            // Capture height taken by any horizontal scrollbar.
+            // If there is a horizontal scrollbar, shrink the box.
+            if (scrollbarHeight) {
+                scrollbarHeight = scrollSize.height;
+                padding = el.getPadding('b');
+                viewContentBox.bottom += padding - Math.max(padding, scrollbarHeight);
+            }
         }
 
         // The client region excluding any scrollbars.
@@ -714,28 +734,6 @@ Ext.define('Ext.util.Positionable', {
             height = me.getHeight(true);
         }
 
-        return new Ext.util.Region(top, left + width, top + height, left);
-    },
-    
-    /**
-     * @private
-     * Returns the **client** region of this element, i.e. the content region excluding
-     * horizontal and/or vertical scrollbars.
-     *
-     * @return {Ext.util.Region} Region containing "top, left, bottom, right" member data.
-     */
-    getClientRegion: function() {
-        var el = this.el,
-            borderPadding, pos, left, top, width, height;
-        
-        borderPadding = this.getBorderPadding();
-        pos = this.getXY();
-        
-        left = pos[0] + borderPadding.beforeX;
-        top = pos[1] + borderPadding.beforeY;
-        width = el.dom.clientWidth;
-        height = el.dom.clientHeight;
-        
         return new Ext.util.Region(top, left + width, top + height, left);
     },
 
@@ -937,6 +935,7 @@ Ext.define('Ext.util.Positionable', {
                 overflow,
                 i,
                 clipValues = [],
+                clippedCls = this.clippedCls,
                 clipStyle,
                 clipped,
                 shadow;
@@ -988,6 +987,10 @@ Ext.define('Ext.util.Positionable', {
             }
             el.dom.style.clip = clipStyle;
 
+            // hardware acceleration causes flickering problems on clipped elements.
+            // disable it while an element is clipped.
+            el.addCls(clippedCls);
+
             // Clip/unclip shadow too.
             // TODO: As SOON as IE8 retires, refactor Ext.dom.Shadow to use CSS3BoxShadow directly on its el
             // Then we won't have to bother clipping the shadow as well. We'll just have to adjust the clipping on the
@@ -1010,6 +1013,10 @@ Ext.define('Ext.util.Positionable', {
                     el.dom.style.display = 'none';
                 } else {
                     el.dom.style.display = '';
+
+                    // hardware acceleration causes flickering problems on clipped elements.
+                    // disable it while an element is clipped.
+                    el.addCls(clippedCls);
                 }
             }
         },
@@ -1019,9 +1026,14 @@ Ext.define('Ext.util.Positionable', {
          * @private
          */
         clearClip: function() {
-            var el = this.el;
+            var el = this.el,
+                clippedCls = this.clippedCls;
 
             el.dom.style.clip = Ext.isIE8 ? 'auto' : '';
+
+            // hardware acceleration causes flickering problems on clipped elements.
+            // re-enable it when an element is unclipped.
+            el.removeCls(clippedCls);
 
             // unclip shadow too.
             if (el.shadow && el.shadow.el && el.shadow.el.dom) {
@@ -1031,6 +1043,10 @@ Ext.define('Ext.util.Positionable', {
                 // TODO: As SOON as IE8 retires, refactor Ext.dom.Shadow to use CSS3BoxShadow directly on its el
                 if (!Ext.supports.CSS3BoxShadow) {
                     el.dom.style.display = '';
+
+                    // hardware acceleration causes flickering problems on clipped elements.
+                    // re-enable it when an element is unclipped.
+                    el.removeCls(clippedCls);
                 }
             }
         }

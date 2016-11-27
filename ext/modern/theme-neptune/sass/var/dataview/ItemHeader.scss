@@ -2,12 +2,14 @@
  * @class Ext.dataview.ItemHeader
  */
 
+//# fashion replaces $list-group-header-color
 /**
  * @var {color}
  * List item header color
  */
 $itemheader-color: dynamic($highlight-color);
 
+//# fashion replaces $list-group-header-background-color
 /**
  * @var {color}
  * List item header background-color
@@ -38,54 +40,63 @@ $itemheader-border-width: dynamic(1px);
  */
 $itemheader-border-style: dynamic(solid);
 
+//# fashion replaces $list-group-header-border-color
 /**
  * @var {color}
  * List item header border-color
  */
 $itemheader-border-color: dynamic($neutral-medium-dark-color);
 
+//# fashion replaces $list-group-header-font-weight
 /**
  * @var {string/number}
  * List item header font-weight
  */
 $itemheader-font-weight: dynamic($font-weight-bold);
 
+//# fashion replaces $list-group-header-font-size
 /**
  * @var {number}
  * List item header font-size
  */
 $itemheader-font-size: dynamic($listitem-font-size);
 
+//# fashion replaces $list-group-header-font-size-big
 /**
  * @var {number}
  * List item header font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $itemheader-font-size-big: dynamic($listitem-font-size-big);
 
+//# fashion replaces $list-group-header-line-height
 /**
  * @var {number}
  * List item header line-height
  */
 $itemheader-line-height: dynamic($listitem-line-height);
 
+//# fashion replaces $list-group-header-line-height-big
 /**
  * @var {number}
  * List item header line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $itemheader-line-height-big: dynamic($listitem-line-height-big);
 
+//# fashion replaces $list-group-header-font-family
 /**
  * @var {string}
  * List item header font-family
  */
 $itemheader-font-family: dynamic($listitem-font-family);
 
+//# fashion replaces $list-group-header-padding
 /**
  * @var {number/list}
  * List item header padding
  */
 $itemheader-padding: dynamic($listitem-padding);
 
+//# fashion replaces $list-group-header-padding-big
 /**
  * @var {number/list}
  * List item header padding in the {@link Global_CSS#$enable-big big} sizing scheme

@@ -135,6 +135,10 @@ Ext.define('Ext.ux.DataView.Draggable', {
             selected, dragData;
 
         if (target) {
+            // preventDefault is needed here to avoid the browser dragging the image
+            // instead of dragging the container like it's supposed to
+            e.preventDefault();
+            
             if (!dataview.isSelected(target)) {
                 selModel.select(dataview.getRecord(target));
             }

@@ -90,6 +90,10 @@ Ext.define('Ext.form.FieldSet', {
         instructions: null
     },
 
+    layout: {
+        type: 'vbox'
+    },
+
     /**
      * @private
      */

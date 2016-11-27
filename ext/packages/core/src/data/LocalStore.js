@@ -13,7 +13,7 @@ Ext.define('Ext.data.LocalStore', {
         extraKeys: null
     },
 
-    applyExtraKeys: function(extraKeys) {
+    applyExtraKeys: function (extraKeys) {
         var indexName,
             data = this.getData();
 
@@ -43,15 +43,15 @@ Ext.define('Ext.data.LocalStore', {
      * Note that if this Store is sorted, the new Model instances will be inserted
      * at the correct point in the Store to maintain the sort order.
      *
-     * @param {Ext.data.Model[]/Ext.data.Model.../Object[]/Object...} model An array of Model instances
-     * or Model configuration objects, or variable number of Model instance or config arguments.
-     * @return {Ext.data.Model[]} The model instances that were added
+     * @param {Ext.data.Model[]/Ext.data.Model.../Object[]/Object...} record An array of
+     * records or configuration objects, or variable number of record or config arguments.
+     * @return {Ext.data.Model[]} The record instances that were added.
      */
-    add: function(arg) {
-        return this.insert(this.getCount(), arguments.length === 1 ? arg : arguments);
+    add: function (record) {
+        return this.insert(this.getCount(), arguments.length === 1 ? record : arguments);
     },
 
-    constructDataCollection: function() {
+    constructDataCollection: function () {
         var result = new Ext.util.Collection({
             rootProperty: 'data'
         });
@@ -69,7 +69,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {Ext.data.Model/Object} record The record to create
      * @return {Ext.data.Model}
      */
-    createModel: function(record) {
+    createModel: function (record) {
         var session = this.getSession(),
             Model;
 
@@ -80,46 +80,46 @@ Ext.define('Ext.data.LocalStore', {
         return record;
     },
 
-    createFiltersCollection: function() {
+    createFiltersCollection: function () {
         return this.getData().getFilters();
     },
 
-    createSortersCollection: function() {
+    createSortersCollection: function () {
         var sorters = this.getData().getSorters();
         sorters.setSorterConfigure(this.addFieldTransform, this);
         return sorters;
     },
 
-    onCollectionBeginUpdate: function() {
+    onCollectionBeginUpdate: function () {
         this.beginUpdate();
     },
     
-    onCollectionEndUpdate: function() {
+    onCollectionEndUpdate: function () {
         this.endUpdate();
     },
 
     // When the collection informs us that it has sorted, this LocalStore must react.
     // AbstractStore#onSorterEndUpdate does the correct thing (fires a refresh) if remote sorting is false
-    onCollectionSort: function() {
+    onCollectionSort: function () {
         this.onSorterEndUpdate();
     },
 
     // When the collection informs us that it has filtered, this LocalStore must react.
     // AbstractStore#onFilterEndUpdate does the correct thing (fires a refresh) if remote sorting is false
-    onCollectionFilter: function() {
+    onCollectionFilter: function () {
         this.onFilterEndUpdate();
     },
 
-    notifySorterChange: function() {
+    notifySorterChange: function () {
         this.getData().onSorterChange();
     },
     
-    forceLocalSort: function() {
+    forceLocalSort: function () {
         this.getData().onSortChange();
     },
 
     // Inherit docs
-    contains: function(record) {
+    contains: function (record) {
         return this.indexOf(record) > -1;
     },
 
@@ -132,25 +132,24 @@ Ext.define('Ext.data.LocalStore', {
      * Returning `false` aborts and exits the iteration.
      * @param {Object} [scope] The scope (`this` reference) in which the function is executed.
      * Defaults to the current {@link Ext.data.Model record} in the iteration.
-     * @param {Object} [includeOptions] An object which contains options which modify how the store is traversed.
-     * @param {Boolean} [includeOptions.filtered] Pass `true` to include filtered out nodes in the iteration.
-     *
-     * Note that the `filtered` option can also be passed as a separate parameter for
-     * compatibility with previous versions.
-     *
+     * @param {Object/Boolean} [includeOptions] An object which contains options which
+     * modify how the store is traversed. Or simply the `filtered` option.
+     * @param {Boolean} [includeOptions.filtered] Pass `true` to include filtered out
+     * nodes in the iteration.
      */
-    each: function(fn, scope, bypassFilters) {
+    each: function (fn, scope, includeOptions) {
         var data = this.getData(),
-            len,
-            record, i;
+            bypassFilters = includeOptions,
+            len, record, i;
 
-        if (typeof bypassFilters === 'object') {
-            bypassFilters = bypassFilters.filtered;
+        if (typeof includeOptions === 'object') {
+            bypassFilters = includeOptions.filtered;
         }
 
-        if (bypassFilters === true && data.filtered) {
+        if (bypassFilters && data.filtered) {
             data = data.getSource();
         }
+        
         data = data.items.slice(0); // safe for re-entrant calls
         len = data.length;
 
@@ -183,26 +182,33 @@ Ext.define('Ext.data.LocalStore', {
      *     // returns ["Larry", "Darryl"]
      *
      * @param {String} property The property to collect
-     * @param {Object} [includeOptions] An object which contains options which modify how the store is traversed.
-     * @param {Boolean} [includeOptions.allowNull] Pass true to allow null, undefined or empty string values.
-     * @param {Boolean} [includeOptions.filtered] Pass `true` to collect from all records, even ones which are filtered.
+     * @param {Object} [includeOptions] An object which contains options which modify how
+     * the store is traversed. For compatibility, this argument may be the `allowNull`
+     * value itself. If so, the next argument is the `filtered` value.
+     * @param {Boolean} [includeOptions.allowNull] Pass true to allow null, undefined or
+     * empty string values.
+     * @param {Boolean} [includeOptions.filtered] Pass `true` to collect from all records,
+     * even ones which are filtered.
+     * @param {Boolean} [filtered] This argument only applies when the legacy call form
+     * is used and `includeOptions` is actually the `allowNull` value.
      *
      * @return {Object[]} An array of the unique values
      */
-    collect: function(dataIndex, allowNull, bypassFilters) {
+    collect: function (property, includeOptions, filtered) {
         var me = this,
+            allowNull = includeOptions,
             data = me.getData();
         
-        if (typeof allowNull === 'object') {
-            bypassFilters = allowNull.filtered;
-            allowNull = allowNull.allowNull;
+        if (typeof includeOptions === 'object') {
+            filtered = includeOptions.filtered;
+            allowNull = includeOptions.allowNull;
         }
 
-        if (bypassFilters === true && data.filtered) {
+        if (filtered && data.filtered) {
             data = data.getSource();
         }
 
-        return data.collect(dataIndex, 'data', allowNull);
+        return data.collect(property, 'data', allowNull);
     },
 
     /**
@@ -214,7 +220,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {Mixed} id The id of the Record to find.
      * @return {Ext.data.Model} The Record with the passed id. Returns null if not found.
      */
-    getById: function(id) {
+    getById: function (id) {
         var data = this.getData();
         
         if (data.filtered) {
@@ -233,7 +239,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {Mixed} internalId The id of the Record to find.
      * @return {Ext.data.Model} The Record with the passed internalId. Returns null if not found.
      */
-    getByInternalId: function(internalId) {
+    getByInternalId: function (internalId) {
         var data = this.getData(),
             keyCfg;
 
@@ -271,7 +277,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {Ext.data.Model} record The Ext.data.Model object to find.
      * @return {Number} The index of the passed Record. Returns -1 if not found.
      */
-    indexOf: function(record) {
+    indexOf: function (record) {
         return this.getData().indexOf(record);
     },
 
@@ -283,7 +289,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {String} id The id of the Record to find.
      * @return {Number} The index of the Record. Returns -1 if not found.
      */
-    indexOfId: function(id) {
+    indexOfId: function (id) {
         return this.indexOf(this.getById(id));
     },
 
@@ -297,7 +303,7 @@ Ext.define('Ext.data.LocalStore', {
      * 
      * @return {Ext.data.Model[]} records The added records
      */
-    insert: function(index, records) {
+    insert: function (index, records) {
         var me = this,
             len, i;
         
@@ -338,7 +344,7 @@ Ext.define('Ext.data.LocalStore', {
      * Defaults to this Store.
      * @return {Ext.util.Collection} The matched records
      */
-    queryBy: function(fn, scope) {
+    queryBy: function (fn, scope) {
         var data = this.getData();
 
         return (data.getSource() || data).createFiltered(fn, scope);
@@ -363,7 +369,7 @@ Ext.define('Ext.data.LocalStore', {
      * added to the regex). Ignored if `anyMatch` is `true`.
      * @return {Ext.util.Collection} The matched records
      */
-    query: function(property, value, anyMatch, caseSensitive, exactMatch) {
+    query: function (property, value, anyMatch, caseSensitive, exactMatch) {
         var data = this.getData();
 
         return (data.getSource() || data).createFiltered(property, value, anyMatch, caseSensitive, exactMatch);
@@ -380,7 +386,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Ext.data.Model/undefined} The first model instance in the store, or undefined
      */
-    first: function(grouped) {
+    first: function (grouped) {
         return this.getData().first(grouped) || null;
     },
 
@@ -395,7 +401,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Ext.data.Model/undefined} The last model instance in the store, or undefined
      */
-    last: function(grouped) {
+    last: function (grouped) {
         return this.getData().last(grouped) || null;
     },
 
@@ -412,7 +418,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Number} The sum
      */
-    sum: function(field, grouped) {
+    sum: function (field, grouped) {
         var data = this.getData();
         return (grouped && this.isGrouped()) ? data.sumByGroup(field) : data.sum(field);
     },
@@ -428,7 +434,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Number} the count
      */
-    count: function(grouped) {
+    count: function (grouped) {
         var data = this.getData();
         return (grouped && this.isGrouped()) ? data.countByGroup() : data.count();
     },
@@ -445,7 +451,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Object} The minimum value, if no items exist, undefined.
      */
-    min: function(field, grouped) {
+    min: function (field, grouped) {
         var data = this.getData();
         return (grouped && this.isGrouped()) ? data.minByGroup(field) : data.min(field);
     },
@@ -462,7 +468,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Object} The maximum value, if no items exist, undefined.
      */
-    max: function(field, grouped) {
+    max: function (field, grouped) {
         var data = this.getData();
         return (grouped && this.isGrouped()) ? data.maxByGroup(field) : data.max(field);
     },
@@ -479,7 +485,7 @@ Ext.define('Ext.data.LocalStore', {
      * the store has a groupField.
      * @return {Object} The average value, if no items exist, 0.
      */
-    average: function(field, grouped) {
+    average: function (field, grouped) {
         var data = this.getData();
         return (grouped && this.isGrouped()) ? data.averageByGroup(field) : data.average(field);
     },
@@ -499,7 +505,7 @@ Ext.define('Ext.data.LocalStore', {
      * @param {String} field The field to get the value from
      * @return {Object} An object literal with the group names and their appropriate values.
      */
-    aggregate: function(fn, scope, grouped, field) {
+    aggregate: function (fn, scope, grouped, field) {
         var me = this,
             groups, len, out, group, i;
         
@@ -518,7 +524,7 @@ Ext.define('Ext.data.LocalStore', {
         }
     },
 
-    getAggregate: function(fn, scope, records, field){
+    getAggregate: function (fn, scope, records, field){
         var values = [],
             len = records.length,
             i;
@@ -549,7 +555,7 @@ Ext.define('Ext.data.LocalStore', {
         }
     },
     
-    callObservers: function(action, args) {
+    callObservers: function (action, args) {
         var observers = this.observers,
             len, items, i, methodName, item;
         
@@ -586,7 +592,7 @@ Ext.define('Ext.data.LocalStore', {
      *
      * @private
      */
-    queryRecordsBy: function(fn, scope) {
+    queryRecordsBy: function (fn, scope) {
         var data = this.getData(),
             matches = [],
             len, i, record;
@@ -615,7 +621,7 @@ Ext.define('Ext.data.LocalStore', {
      *
      * @private
      */
-    queryRecords: function(field, value) {
+    queryRecords: function (field, value) {
         var data = this.getData(),
             matches = [],
             len, i, record;
@@ -632,11 +638,11 @@ Ext.define('Ext.data.LocalStore', {
     },
 
     privates: {
-        isLast: function(record) {
+        isLast: function (record) {
             return record === this.last();
         },
 
-        makeInternalKeyCfg: function() {
+        makeInternalKeyCfg: function () {
             return {
                 byInternalId: {
                     property: 'internalId',

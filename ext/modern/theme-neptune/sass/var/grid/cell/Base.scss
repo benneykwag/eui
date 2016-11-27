@@ -2,48 +2,56 @@
  * @class Ext.grid.cell.Base
  */
 
+//# fashion replaces $grid-cell-font-weight
 /**
  * @var {string/number}
  * Grid cell font-weight
  */
 $gridcell-font-weight: dynamic($listitem-font-weight);
 
+//# fashion replaces $grid-cell-font-size
 /**
  * @var {number}
  * Grid cell font-size
  */
 $gridcell-font-size: dynamic($listitem-font-size);
 
+//# fashion replaces $grid-cell-font-size-big
 /**
  * @var {number}
  * Grid cell font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $gridcell-font-size-big: dynamic($listitem-font-size-big);
 
+//# fashion replaces $grid-cell-line-height
 /**
  * @var {number}
  * Grid cell line-height
  */
 $gridcell-line-height: dynamic($listitem-line-height);
 
+//# fashion replaces $grid-cell-line-height-big
 /**
  * @var {number}
  * Grid cell line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $gridcell-line-height-big: dynamic($listitem-line-height-big);
 
+//# fashion replaces $grid-cell-font-family
 /**
  * @var {string}
  * Grid cell font-family
  */
 $gridcell-font-family: dynamic($listitem-font-family);
 
+//# fashion replaces $grid-cell-padding
 /**
  * @var {number/list}
  * Grid cell padding
  */
 $gridcell-padding: dynamic($listitem-padding);
 
+//# fashion replaces $grid-cell-padding-big
 /**
  * @var {number/list}
  * Grid cell padding in the {@link Global_CSS#$enable-big big} sizing scheme

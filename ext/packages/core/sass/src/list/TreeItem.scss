@@ -1,3 +1,7 @@
+/**
+ * @class Ext.list.TreeItem
+ */
+
 @function add-if ($value1, $value2) {
     @if $value1 == null or $value2 == null {
         @return null;
@@ -7,8 +11,6 @@
 }
 
 /**
- * @class Ext.list.TreeItem
- *
  * This private mixin handle styling all elements inside the x-treelist root element.
  * The public treelist-ui mixin calls this inside a proper selector for the ui while
  * the default styling (handled below) call this mixin at global scope (to produce a
@@ -340,7 +342,7 @@
     }
 
     &.#{$prefix}treelist-highlight-path {
-        .#{$prefix}treelist-item-over > * {
+        .#{$prefix}treelist-item-over > * > * {
             > .#{$prefix}treelist-item-icon {
                 color: $item-icon-over-color;
                 transition: $item-icon-over-transition;

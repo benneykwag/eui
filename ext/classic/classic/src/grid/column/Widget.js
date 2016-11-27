@@ -318,13 +318,6 @@ Ext.define('Ext.grid.column.Widget', {
             tdCls = me.tdCls,
             widget;
 
-        me.listenerScopeFn = function (defaultScope) {
-            if (defaultScope === 'this') {
-                return this;
-            }
-            return me.resolveListenerScope(defaultScope);
-        };
-
         // Need an instantiated example to retrieve the tdCls that it needs
         widget = Ext.widget(me.widget);
 
@@ -344,6 +337,7 @@ Ext.define('Ext.grid.column.Widget', {
         var view = this.getView();
 
         this.callParent();
+
         // View already ready, means we were added later so go and set up our widgets, but if the grid
         // is reconfiguring, then the column will be rendered & the view will be ready, so wait until
         // the reconfigure forces a refresh
@@ -424,12 +418,10 @@ Ext.define('Ext.grid.column.Widget', {
                 result = null;
 
             if (record) {
-                result = me.ownerGrid.createManagedWidget(me.getId(), me.widget, record);
-                result.resolveListenerScope = me.listenerScopeFn;
+                result = me.ownerGrid.createManagedWidget(me.getView(), me.getId(), me.widget, record);
                 result.getWidgetRecord = me.widgetRecordDecorator;
                 result.getWidgetColumn = me.widgetColumnDecorator;
                 result.measurer = me;
-                result.ownerCmp = me.getView();
                 // The ownerCmp of the widget is the encapsulating view, which means it will be considered
                 // as a layout child, but it isn't really, we always need the layout on the
                 // component to run if asked.
@@ -462,11 +454,11 @@ Ext.define('Ext.grid.column.Widget', {
                         continue;
                     }
 
-                    cell = view.getCell(record, me).dom;
+                    cell = view.getCell(record, me);
 
                     // May be a placeholder with no data row
                     if (cell) {
-                        cell = cell.firstChild;
+                        cell = cell.dom.firstChild;
                         if (!isFixedSize && !width && me.lastBox) {
                             width = me.lastBox.width - parseInt(me.getCachedStyle(cell, 'padding-left'), 10) - parseInt(me.getCachedStyle(cell, 'padding-right'), 10);
                         }
@@ -508,7 +500,7 @@ Ext.define('Ext.grid.column.Widget', {
                         // If the widget has a focusEl, ensure that its tabbability status is synched
                         // with the view's navigable/actionable state.
                         focusEl = widget.getFocusEl();
-                        
+
                         if (focusEl) {
                             if (view.actionableMode) {
                                 if (!focusEl.isTabbable()) {
@@ -523,6 +515,8 @@ Ext.define('Ext.grid.column.Widget', {
                         }
                     }
                 }
+            } else {
+                view.refreshNeeded = true;
             }
         },
 
@@ -530,10 +524,32 @@ Ext.define('Ext.grid.column.Widget', {
             this.updateWidget(record);
         },
 
+        onLock: function(header) {
+            this.callParent([header]);
+            this.resetView();
+        },
+
+        onUnlock: function(header) {
+            this.callParent([header]);
+            this.resetView();
+        },
+
         onViewRefresh: function(view, records) {
             Ext.suspendLayouts();
             this.onItemAdd(records);
             Ext.resumeLayouts(true);
+        },
+
+        resetView: function() {
+            var me = this,
+                viewListeners = me.viewListeners;
+
+            if (viewListeners) {
+                Ext.destroy(viewListeners);
+            }
+            me.setupViewListeners(me.getView());
+
+            me.ownerGrid.handleWidgetViewChange(me.getView(), me.getId());
         },
 
         returnFalse: function() {

@@ -9,7 +9,7 @@ Ext.define('Ext.mixin.Bindable', {
 
     config: {
         /**
-         * @cfg {Object} [bind]
+         * @cfg {Object/String} [bind]
          * Setting this config option adds or removes data bindings for other configs.
          * For example, to bind the `title` config:
          *
@@ -34,6 +34,9 @@ Ext.define('Ext.mixin.Bindable', {
          *
          * The bind expressions are presented to `{@link Ext.app.ViewModel#bind}`. The
          * `ViewModel` instance is determined by `lookupViewModel`.
+         *
+         * **Note:** If  bind is passed as a string, it will use the {@link Ext.Component#property-defaultBindProperty}
+         * for the binding.
          */
         bind: {
             $value: null,

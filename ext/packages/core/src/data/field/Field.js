@@ -951,14 +951,12 @@ Ext.define('Ext.data.field.Field', {
      * Validates the passed value for this field.
      *
      * @param {Object} value The value to validate.
-     *
      * @param {String} [separator] This string is passed if the caller wants all validation
      * messages concatenated with this string between each. This can be handled as a
      * "falsy" value because concatenating with no separator is seldom desirable.
-     *
      * @param {Ext.data.ErrorCollection} [errors] This parameter is passed if the caller
      * wants all validation results individually added to the collection.
-     *
+     * @param {Ext.data.Model} record The record being validated
      * @return {Boolean/String} `true` if the value is valid. A string may be returned if
      * the value is not valid, to indicate an error message. Any other non `true` value
      * indicates the value is not valid. This method is not implemented by default,
@@ -1099,6 +1097,7 @@ Ext.define('Ext.data.field.Field', {
         5.1: {
             methods: {
                 /**
+                 * @method getSortDir
                  * Gets the sortDir for this field.
                  * @return {String} sortDir
                  * @deprecated 5.1 Setting sortDir and calling getSortDir were never applied by the

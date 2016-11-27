@@ -1,9 +1,11 @@
-/* global expect, jasmine, Ext */
+/* global expect, jasmine, Ext, xit, it */
 
 describe("grid-rowedit", function() {
     function createSuite(buffered) {
         describe(buffered ? "with buffered rendering" : "without buffered rendering", function() {
-            var ENTER = 13,
+            var itNotIE = Ext.isIE ? xit : it,
+                itWebKit = Ext.isWebKit ? it : xit,
+                ENTER = 13,
                 ESC = 27;
 
             var grid, view, scroller, store, plugin, editor, colRef, 
@@ -56,9 +58,24 @@ describe("grid-rowedit", function() {
                 if (!rec || !rec.isModel) {
                     rec = store.getAt(rec || 0);
                 }
+                if (column == null) {
+                    column = 0;
+                }
                 
                 if (typeof column === 'number') {
-                    column = colRef[column];
+                    // Ensure it's an editable column so that focus happens.
+                    while (colRef[column] && !(colRef[column].getEditor&& colRef[column].getEditor() && colRef[column].getEditor().focusable)) {
+                        ++column;
+                    }
+                    
+                    // Found no editable columns.
+                    // Editor will still display
+                    // but will not focus
+                    if (column === colRef.length) {
+                        column = null;
+                    } else {
+                        column = colRef[column];
+                    }
                 }
                 
                 plugin.startEdit(rec, column);
@@ -151,9 +168,12 @@ describe("grid-rowedit", function() {
             }
             
             afterEach(function() {
-                Ext.destroy(grid, store);
-                plugin = editor = grid = store = view = null;
                 Ext.data.Model.schema.clear();
+                
+                waits(100);
+                runs(function() {
+                    plugin = editor = grid = store = view = Ext.destroy(grid, store);
+                });
             });
 
             describe("resolveListenerScope", function() {
@@ -185,22 +205,32 @@ describe("grid-rowedit", function() {
                 it('should move an editor from one side to another when a column is locked during editing', function() {
                     var ed;
 
-                    triggerCellMouseEvent('dblclick', 0, 2);
+                    grid.setActionableMode(true, new Ext.grid.CellContext(grid.normalGrid.view).setPosition(0, 0));
                     ed = colRef[2].getEditor();
-                    expect(plugin.editing).toBe(true);
-
-                    // The editor of the 3rd column (first normal column) should be active
-                    expect(Ext.Element.getActiveElement() === ed.inputEl.dom).toBe(true);
                     
-                    // The editor should be in the right container
-                    expect(ed.up('container') === plugin.editor.items.items[1]).toBe(true);
+                    waitsFor(function() {
+                        return plugin.editing && plugin.editor.containsFocus;
+                    }, 'Editor field to gain focus');
 
-                    // Locking the first normal column should not throw error.
-                    grid.lock(colRef[2]);
-                    expect(plugin.editing).toBe(true);
+                    runs(function() {
+                        // The editor should be in the right container
+                        expect(ed.up('container') === plugin.editor.items.items[1]).toBe(true);
 
-                    // The editor should now be in the left container
-                    expect(ed.up('container') === plugin.editor.items.items[0]).toBe(true);
+                        // Locking the first normal column should not throw error.
+                        grid.lock(colRef[2]);
+                        ed = colRef[2].getEditor();
+                    });
+
+                    // Wait for async focusing to untangle.
+                    waitsFor(function() {
+                        return plugin.editing && plugin.editor.containsFocus;
+                    }, 'focus to return to the editor field after the column was locked');
+                    runs(function() {
+                        expect(plugin.editing).toBe(true);
+
+                        // The editor should now be in the left container
+                        expect(ed.up('container') === plugin.editor.items.items[0]).toBe(true);
+                    });
                 });
             });
 
@@ -328,23 +358,23 @@ describe("grid-rowedit", function() {
                     }
 
                     // this will scroll the grid all the way to the right
-                    view.scrollBy(300,0);
+                    view.scrollBy(300, 0);
                     waitsFor(function() {
                         return view.getScrollX() >= 200;
                     });
 
                     runs(function(){
                         x = view.getScrollX();
-                        plugin.startEdit(rec,colRef[4]);
+                        plugin.startEdit(rec, colRef[4]);
 
                         // expects the grid not to scroll when editing the last field
-                        expect(view.getScrollX()).toBe(x-offset);
+                        expect(view.getScrollX()).toBe(x - offset);
                         plugin.cancelEdit();
                         // expects the grid not to scroll when cancelling the edit
                         expect(view.getScrollX()).toBe(x);
-                        plugin.startEdit(rec,colRef[0]);
+                        plugin.startEdit(rec, colRef[0]);
                         // expects the grid to scroll left when editing the first field
-                        expect(view.getScrollX()).toBe(offset);
+                        expect(view.getScrollX()).toBe(0);
                     });
                 });
 
@@ -514,10 +544,16 @@ describe("grid-rowedit", function() {
                             
                             var button = editor.down('#update');
                             
-                            editor.activeField.setValue('throbbe');
-                            pressTabKey(editor.activeField, false);
-                            
-                            expectFocused(button);
+                            waitsFor(function() {
+                                return editor.activeField.el.contains(Ext.Element.getActiveElement());
+                            });
+
+                            runs(function() {                           
+                                editor.activeField.setValue('throbbe');
+                                pressTabKey(editor.activeField, false);
+
+                                expectFocused(button);
+                            });
                         });
                     });
                     
@@ -741,18 +777,24 @@ describe("grid-rowedit", function() {
 
                 });
 
-                it('it should keep the editor active if scrolling out of view', function() {
+                it('should keep the editor active if scrolling out of view', function() {
                     startEdit();
+
+                    waitsFor(function() {
+                        return plugin.editing && plugin.getEditor().containsFocus;
+                    });
 
                     // this will scroll the grid view down
                     // to a point where rows get de-rendered
                     // if the grid has a bufferedRenderer plugin
-                    waitsFor(function () {
-                        view.scrollBy(0, 100);
+                    jasmine.waitsForScroll(scroller, function (scroller, x, y) {
+                        if (plugin.editor._cachedNode || !grid.bufferedRenderer) {
+                            return true;
+                        }
+                        scroller.scrollBy(0, 100);
                         // Wait until a record begin edit is cached
                         // or verified if it is not a grid with bufferedRenderer
-                         return plugin.editor._cachedNode || !grid.bufferedRenderer;
-                    }, 'scroll to the bottom', 10000);
+                    }, 'scroll to the bottom', 10000, 50);
 
                     runs(function(){
                         // if this is a grid with bufferedRenderer
@@ -762,10 +804,12 @@ describe("grid-rowedit", function() {
                         }
                     });
 
-                    waitsFor(function() {
-                        view.scrollBy(0, -100);
-                        return view.getScrollY() === 0 && plugin.editor.getLocalY() === 0;
-                    }, 'view to scroll to top and RowEditor to reappear', 10000);
+                    jasmine.waitsForScroll(scroller, function(scroller, x, y) {
+                        if (view.getScrollY() === 0 && plugin.editor.getLocalY() === 0) {
+                            return true;
+                        }
+                        scroller.scrollBy(0, -100);
+                    }, 'view to scroll to top and RowEditor to reappear', 10000, 50);
 
                     runs(function(){
                         // the cached record should have been erased
@@ -1556,14 +1600,12 @@ describe("grid-rowedit", function() {
             
             describe("adding/removing/moving columns", function() {
                 function dragColumn(from, to, onRight) {
-                    var fromBox = from.el.getBox(),
+                    var fromBox = from.titleEl.getBox(),
                         fromMx = fromBox.x + fromBox.width/2,
                         fromMy = fromBox.y + fromBox.height/2,
-                        toBox = to.el.getBox(),
-                        toMx = toBox.x,
+                        toBox = to.titleEl.getBox(),
+                        toMx = onRight ? toBox.right - 10 : toBox.left + 10,
                         toMy = toBox.y + toBox.height/2,
-                        offset = onRight ? toBox.width - 6 : 5,
-                        moveOffset = toMx + offset,
                         dragThresh = onRight ? Ext.dd.DragDropManager.clickPixelThresh + 1 : -Ext.dd.DragDropManager.clickPixelThresh - 1;
 
                     // Mousedown on the header to drag
@@ -1574,10 +1616,10 @@ describe("grid-rowedit", function() {
                     jasmine.fireMouseEvent(from.el.dom, 'mousemove', fromMx + dragThresh, fromMy);
 
                     // The move to left of the centre of the target element
-                    jasmine.fireMouseEvent(to.el.dom, 'mousemove', moveOffset, toMy);
+                    jasmine.fireMouseEvent(to.el.dom, 'mousemove', toMx, toMy);
 
                     // Drop to left of centre of target element
-                    jasmine.fireMouseEvent(to.el.dom, 'mouseup', moveOffset, toMy);
+                    jasmine.fireMouseEvent(to.el.dom, 'mouseup', toMx, toMy);
                 }
 
                 describe("modification while visible with the grid pending layouts", function() {
@@ -1768,25 +1810,41 @@ describe("grid-rowedit", function() {
                             }
 
                             it("should move all leaf columns to the left", function() {
-                                if (!beforeFirstShow) {
-                                   startEdit();
-                                }
-                                grid.normalGrid.headerCt.move(1, 0);
                                 if (beforeFirstShow) {
-                                   startEdit();
+                                    grid.normalGrid.headerCt.move(1, 0);
                                 }
-                                expectOrder(['field4', 'field5', 'field6', 'field1', 'field2', 'field3', 'field7', 'field8', 'field9']);
+
+                                startEdit();
+                                waitsForFocus(plugin.getEditor());
+                                
+                                if (!beforeFirstShow) {
+                                    runs(function() {
+                                         grid.normalGrid.headerCt.move(1, 0);
+                                    });
+                                }
+
+                                runs(function() {
+                                    expectOrder(['field4', 'field5', 'field6', 'field1', 'field2', 'field3', 'field7', 'field8', 'field9']);
+                                });
                             });
 
                             it("should move all leaf columns to the right", function() {
-                                if (!beforeFirstShow) {
-                                   startEdit();
-                                }
-                                grid.normalGrid.headerCt.move(1, 2);
                                 if (beforeFirstShow) {
-                                   startEdit();
+                                    grid.normalGrid.headerCt.move(1, 2);
                                 }
-                                expectOrder(['field1', 'field2', 'field3', 'field7', 'field8', 'field9', 'field4', 'field5', 'field6']);
+
+                                startEdit();
+                                waitsForFocus(plugin.getEditor());
+                                
+                                if (!beforeFirstShow) {
+                                    runs(function() {
+                                         grid.normalGrid.headerCt.move(1, 2);
+                                    });
+                                }
+                                
+                                runs(function() {
+                                    expectOrder(['field1', 'field2', 'field3', 'field7', 'field8', 'field9', 'field4', 'field5', 'field6']);
+                                });
                             });
                         });
                     });
@@ -1850,14 +1908,12 @@ describe("grid-rowedit", function() {
 
                     plugin.startEdit(store.last(), 1);
 
-                    waitsFor(function() {
-                        return plugin.editor.activeField && plugin.editor.activeField.hasFocus;
-                    });
+                    waitsForFocus(plugin.editor);
 
                     runs(function() {
                         var viewYScroll = view.getScrollY(),
 
-                            // Return the scrollTo posirtion required to being the activeField fully into view
+                            // Return the scrollTo position required to being the activeField fully into view
                             scrollPos = plugin.editor.activeField.el.getScrollIntoViewXY(view.el, view.getScrollX(), viewYScroll);
 
                         // The field being edited must already be fully scrolled into view by the editor positioning.
@@ -1867,7 +1923,7 @@ describe("grid-rowedit", function() {
             });
 
             describe('resizing columns', function() {
-                it('should keep x scroll synced', function() {
+                itWebKit('should keep x scroll synced', function() {
                     makeGrid(getDefaultColumns(false, {
                         width: 200
                     }, 10));
@@ -1876,14 +1932,18 @@ describe("grid-rowedit", function() {
                     waitsForEvent(scroller, 'scrollend', 'view to scroll');
                     runs(function() {
                         startEdit(0, 3);
+                    });
+
+                    waitsForFocus(plugin.getEditor());
+
+                    runs(function() {
                         colRef[5].setWidth(colRef[5].getWidth() - 50);
                     });
 
                     waitsFor(function() {
-
                         // X positions must be synced
                         return plugin.editor.getScrollable().getPosition().x === scroller.getPosition().x;
-                    }, 'scroll positions to sync');
+                    }, 'scroll positions to sync', 10000, 100);
                 });
             });
 

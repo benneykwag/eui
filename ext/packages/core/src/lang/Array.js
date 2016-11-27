@@ -189,10 +189,17 @@ Ext.Array = (function() {
     },
 
     spliceSim = function (array, index, removeCount) {
-        var pos = fixArrayIndex(array, index),
-            removed = array.slice(index, fixArrayIndex(array, pos+removeCount));
+        var len = arguments.length,
+            pos = fixArrayIndex(array, index),
+            removed;
 
-        if (arguments.length < 4) {
+        if (len < 3) {
+            removeCount = array.length - pos;
+        }
+
+        removed = array.slice(index, fixArrayIndex(array, pos+removeCount));
+
+        if (len < 4) {
             replaceSim(array, pos, removeCount);
         } else {
             replaceSim(array, pos, removeCount, slice.call(arguments, 3));

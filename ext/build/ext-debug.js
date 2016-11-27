@@ -1,5 +1,5 @@
 /*
-This file is part of Ext JS 6.2.0.839
+This file is part of Ext JS 6.2.2.12
 
 Copyright (c) 2011-2016 Sencha Inc
 
@@ -13,7 +13,7 @@ Ext license terms. Public redistribution is prohibited.
 
 For early licensing, please contact us at licensing@sencha.com
 
-Version: 6.2.0.839 Build date: 2016-08-10 19:20:41 (019b211ad3a7e25b0be0c7820e70bf195acc9c4d)
+Version: 6.2.2.12 Build date: 2016-11-25 05:03:39 (7c6ca4398640d60600383da9019c5736e1077649)
 
 */
 
@@ -72,7 +72,7 @@ var Ext = Ext || {};
     "Ext.perf": "../packages/core/src/perf",
     "Ext.plugin.Abstract": "../packages/core/src/plugin/Abstract.js",
     "Ext.plugin.LazyItems": "../packages/core/src/plugin/LazyItems.js",
-    "Ext.plugin.MouseEnter": "../packages/core/src/plugin/MousEnter.js",
+    "Ext.plugin.MouseEnter": "../packages/core/src/plugin/MouseEnter.js",
     "Ext.promise": "../packages/core/src/promise",
     "Ext.scroll.Scroller": "../packages/core/src/scroll/Scroller.js",
     "Ext.sparkline": "../packages/core/src/sparkline",
@@ -556,6 +556,7 @@ var Ext = Ext || {};
       "uses": [
         31,
         33,
+        35,
         74,
         75,
         76,
@@ -985,6 +986,7 @@ var Ext = Ext || {};
     {
       "path": "../packages/core/src/util/translatable/Abstract.js",
       "requires": [
+        12,
         24,
         97
       ],
@@ -1029,7 +1031,7 @@ var Ext = Ext || {};
         20,
         49,
         76,
-        376
+        375
       ],
       "idx": 102
     },
@@ -1136,10 +1138,10 @@ var Ext = Ext || {};
         66,
         90,
         233,
+        370,
         371,
         372,
-        373,
-        376,
+        375,
         383,
         385,
         455,
@@ -2795,6 +2797,7 @@ var Ext = Ext || {};
       "requires": [
         36,
         49,
+        74,
         76
       ],
       "uses": [
@@ -2895,7 +2898,9 @@ var Ext = Ext || {};
         24,
         297
       ],
-      "uses": [],
+      "uses": [
+        49
+      ],
       "idx": 298
     },
     {
@@ -3258,7 +3263,7 @@ var Ext = Ext || {};
       "idx": 339
     },
     {
-      "path": "../packages/core/src/plugin/MousEnter.js",
+      "path": "../packages/core/src/plugin/MouseEnter.js",
       "requires": [
         338
       ],
@@ -3445,20 +3450,12 @@ var Ext = Ext || {};
       "idx": 363
     },
     {
-      "path": "../packages/core/src/util/translatable/CssTransform.js",
+      "path": "../packages/core/src/util/paintmonitor/OverflowChange.js",
       "requires": [
-        99
+        45
       ],
       "uses": [],
       "idx": 364
-    },
-    {
-      "path": "../packages/core/src/util/translatable/ScrollParent.js",
-      "requires": [
-        99
-      ],
-      "uses": [],
-      "idx": 365
     },
     {
       "path": "../packages/core/src/util/translatable/CssPosition.js",
@@ -3466,32 +3463,29 @@ var Ext = Ext || {};
         99
       ],
       "uses": [],
+      "idx": 365
+    },
+    {
+      "path": "../packages/core/src/util/translatable/CssTransform.js",
+      "requires": [
+        99
+      ],
+      "uses": [],
       "idx": 366
     },
     {
-      "path": "../packages/core/src/util/Translatable.js",
+      "path": "../packages/core/src/util/translatable/ScrollParent.js",
       "requires": [
-        100,
-        364,
-        365,
-        366
+        99
       ],
       "uses": [],
       "idx": 367
     },
     {
-      "path": "../packages/core/src/util/paintmonitor/OverflowChange.js",
-      "requires": [
-        45
-      ],
-      "uses": [],
-      "idx": 368
-    },
-    {
       "path": "../classic/classic/src/Action.js",
       "requires": [],
       "uses": [],
-      "idx": 369
+      "idx": 368
     },
     {
       "path": "../classic/classic/src/ElementLoader.js",
@@ -3502,56 +3496,56 @@ var Ext = Ext || {};
         17,
         18
       ],
-      "idx": 370
+      "idx": 369
     },
     {
       "path": "../classic/classic/src/ComponentLoader.js",
       "requires": [
-        370
+        369
       ],
       "uses": [],
-      "idx": 371
+      "idx": 370
     },
     {
       "path": "../classic/classic/src/layout/SizeModel.js",
       "requires": [],
       "uses": [],
-      "idx": 372
+      "idx": 371
     },
     {
       "path": "../classic/classic/src/layout/Layout.js",
       "requires": [
         12,
         90,
-        372
+        371
       ],
       "uses": [
         49,
         602
       ],
-      "idx": 373
+      "idx": 372
     },
     {
       "path": "../classic/classic/src/layout/container/Container.js",
       "requires": [
         90,
         103,
-        373
+        372
       ],
       "uses": [
         233
       ],
-      "idx": 374
+      "idx": 373
     },
     {
       "path": "../classic/classic/src/layout/container/Auto.js",
       "requires": [
-        374
+        373
       ],
       "uses": [
         90
       ],
-      "idx": 375
+      "idx": 374
     },
     {
       "path": "../classic/classic/src/ZIndexManager.js",
@@ -3564,7 +3558,7 @@ var Ext = Ext || {};
         49,
         119
       ],
-      "idx": 376
+      "idx": 375
     },
     {
       "path": "../classic/classic/src/container/Container.js",
@@ -3574,9 +3568,9 @@ var Ext = Ext || {};
         226,
         329,
         359,
-        369,
-        375,
-        376
+        368,
+        374,
+        375
       ],
       "uses": [
         12,
@@ -3584,27 +3578,27 @@ var Ext = Ext || {};
         23,
         49
       ],
-      "idx": 377
+      "idx": 376
     },
     {
       "path": "../classic/classic/src/layout/container/Editor.js",
       "requires": [
-        374
+        373
       ],
       "uses": [],
-      "idx": 378
+      "idx": 377
     },
     {
       "path": "../classic/classic/src/Editor.js",
       "requires": [
-        377,
-        378
+        376,
+        377
       ],
       "uses": [
         1,
         20
       ],
-      "idx": 379
+      "idx": 378
     },
     {
       "path": "../classic/classic/src/EventManager.js",
@@ -3612,6 +3606,12 @@ var Ext = Ext || {};
       "uses": [
         76
       ],
+      "idx": 379
+    },
+    {
+      "path": "../classic/classic/src/Gadget.js",
+      "requires": [],
+      "uses": [],
       "idx": 380
     },
     {
@@ -3647,7 +3647,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/component/Component.js",
       "requires": [
-        373
+        372
       ],
       "uses": [],
       "idx": 384
@@ -3754,7 +3754,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/SegmentedButton.js",
       "requires": [
-        374
+        373
       ],
       "uses": [],
       "idx": 395
@@ -3762,7 +3762,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/button/Segmented.js",
       "requires": [
-        377,
+        376,
         392,
         395
       ],
@@ -3772,7 +3772,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/panel/Bar.js",
       "requires": [
-        377
+        376
       ],
       "uses": [],
       "idx": 397
@@ -3883,7 +3883,7 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/layout/container/Box.js",
       "requires": [
         86,
-        374,
+        373,
         404,
         405,
         406,
@@ -3891,7 +3891,7 @@ var Ext = Ext || {};
       ],
       "uses": [
         12,
-        372,
+        371,
         385
       ],
       "idx": 408
@@ -3915,7 +3915,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/toolbar/Toolbar.js",
       "requires": [
-        377,
+        376,
         385,
         402,
         409,
@@ -4005,7 +4005,7 @@ var Ext = Ext || {};
       "uses": [
         23,
         49,
-        372
+        371
       ],
       "idx": 419
     },
@@ -4035,7 +4035,7 @@ var Ext = Ext || {};
         55,
         72,
         90,
-        377,
+        376,
         403,
         411,
         418,
@@ -4052,7 +4052,7 @@ var Ext = Ext || {};
         94,
         111,
         233,
-        375,
+        374,
         385,
         399,
         401,
@@ -4063,7 +4063,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/Table.js",
       "requires": [
-        374
+        373
       ],
       "uses": [],
       "idx": 423
@@ -4102,7 +4102,7 @@ var Ext = Ext || {};
       ],
       "uses": [
         49,
-        372
+        371
       ],
       "idx": 427
     },
@@ -4110,7 +4110,7 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/container/Viewport.js",
       "requires": [
         332,
-        377,
+        376,
         427
       ],
       "uses": [],
@@ -4119,7 +4119,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/Anchor.js",
       "requires": [
-        375
+        374
       ],
       "uses": [],
       "idx": 429
@@ -4137,7 +4137,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/dashboard/Column.js",
       "requires": [
-        377,
+        376,
         429,
         430
       ],
@@ -4147,7 +4147,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/Column.js",
       "requires": [
-        375
+        374
       ],
       "uses": [],
       "idx": 432
@@ -4473,7 +4473,7 @@ var Ext = Ext || {};
       ],
       "uses": [
         111,
-        377,
+        376,
         385,
         386
       ],
@@ -4516,7 +4516,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/FieldContainer.js",
       "requires": [
-        377,
+        376,
         457,
         466,
         467
@@ -4527,7 +4527,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/CheckboxGroup.js",
       "requires": [
-        374
+        373
       ],
       "uses": [
         233
@@ -4567,7 +4567,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/form/FieldSet.js",
       "requires": [
-        377,
+        376,
         466
       ],
       "uses": [
@@ -4600,7 +4600,9 @@ var Ext = Ext || {};
         465,
         466
       ],
-      "uses": [],
+      "uses": [
+        362
+      ],
       "idx": 475
     },
     {
@@ -4705,6 +4707,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/view/AbstractView.js",
       "requires": [
+        74,
         75,
         95,
         111,
@@ -4963,6 +4966,7 @@ var Ext = Ext || {};
         506
       ],
       "uses": [
+        34,
         74
       ],
       "idx": 507
@@ -5128,11 +5132,11 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/grid/CellEditor.js",
       "requires": [
-        379
+        378
       ],
       "uses": [
         49,
-        377
+        376
       ],
       "idx": 521
     },
@@ -5147,7 +5151,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/Fit.js",
       "requires": [
-        374
+        373
       ],
       "uses": [],
       "idx": 523
@@ -5162,6 +5166,7 @@ var Ext = Ext || {};
         1,
         76,
         167,
+        211,
         233,
         527,
         534,
@@ -5282,7 +5287,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/grid/RowEditorButtons.js",
       "requires": [
-        377
+        376
       ],
       "uses": [
         385,
@@ -5303,8 +5308,8 @@ var Ext = Ext || {};
         49,
         66,
         76,
-        375,
-        377,
+        374,
+        376,
         385,
         419,
         501,
@@ -5380,7 +5385,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/grid/header/Container.js",
       "requires": [
-        377,
+        376,
         401,
         402,
         525,
@@ -5564,7 +5569,6 @@ var Ext = Ext || {};
         556
       ],
       "uses": [
-        90,
         111,
         147,
         385
@@ -5781,7 +5785,7 @@ var Ext = Ext || {};
         33,
         101,
         167,
-        375,
+        374,
         385,
         407,
         408,
@@ -5911,7 +5915,7 @@ var Ext = Ext || {};
         20,
         90,
         147,
-        378,
+        377,
         385,
         459,
         462,
@@ -6036,7 +6040,7 @@ var Ext = Ext || {};
         598
       ],
       "uses": [
-        375,
+        374,
         439,
         520,
         522,
@@ -6057,7 +6061,7 @@ var Ext = Ext || {};
         55,
         66,
         72,
-        372
+        371
       ],
       "idx": 601
     },
@@ -6067,7 +6071,7 @@ var Ext = Ext || {};
         66,
         72,
         337,
-        373,
+        372,
         600,
         601
       ],
@@ -6127,7 +6131,7 @@ var Ext = Ext || {};
       "requires": [
         72,
         112,
-        374,
+        373,
         608
       ],
       "uses": [
@@ -6157,7 +6161,7 @@ var Ext = Ext || {};
     {
       "path": "../classic/classic/src/layout/container/Form.js",
       "requires": [
-        375
+        374
       ],
       "uses": [],
       "idx": 612
@@ -6276,7 +6280,7 @@ var Ext = Ext || {};
         623
       ],
       "uses": [
-        375,
+        374,
         520,
         522
       ],
@@ -6399,7 +6403,7 @@ var Ext = Ext || {};
       "path": "../classic/classic/src/toolbar/Breadcrumb.js",
       "requires": [
         230,
-        377,
+        376,
         393,
         402
       ],
@@ -6469,7 +6473,7 @@ var Ext = Ext || {};
       ],
       "uses": [
         167,
-        375,
+        374,
         522
       ],
       "idx": 642
@@ -6565,7 +6569,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.Action": {
-      "idx": 369,
+      "idx": 368,
       "alias": [],
       "alternates": []
     },
@@ -6590,7 +6594,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.ComponentLoader": {
-      "idx": 371,
+      "idx": 370,
       "alias": [],
       "alternates": []
     },
@@ -6612,19 +6616,19 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.Editor": {
-      "idx": 379,
+      "idx": 378,
       "alias": [
         "widget.editor"
       ],
       "alternates": []
     },
     "Ext.ElementLoader": {
-      "idx": 370,
+      "idx": 369,
       "alias": [],
       "alternates": []
     },
     "Ext.EventManager": {
-      "idx": 380,
+      "idx": 379,
       "alias": [],
       "alternates": []
     },
@@ -6719,7 +6723,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.ZIndexManager": {
-      "idx": 376,
+      "idx": 375,
       "alias": [],
       "alternates": [
         "Ext.WindowGroup"
@@ -6925,7 +6929,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.container.Container": {
-      "idx": 377,
+      "idx": 376,
       "alias": [
         "widget.container"
       ],
@@ -9115,12 +9119,12 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.layout.Layout": {
-      "idx": 373,
+      "idx": 372,
       "alias": [],
       "alternates": []
     },
     "Ext.layout.SizeModel": {
-      "idx": 372,
+      "idx": 371,
       "alias": [],
       "alternates": []
     },
@@ -9215,7 +9219,7 @@ var Ext = Ext || {};
       ]
     },
     "Ext.layout.container.Auto": {
-      "idx": 375,
+      "idx": 374,
       "alias": [
         "layout.auto",
         "layout.autocontainer"
@@ -9288,7 +9292,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.layout.container.Container": {
-      "idx": 374,
+      "idx": 373,
       "alias": [
         "layout.container"
       ],
@@ -9304,7 +9308,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.layout.container.Editor": {
-      "idx": 378,
+      "idx": 377,
       "alias": [
         "layout.editor"
       ],
@@ -10514,11 +10518,6 @@ var Ext = Ext || {};
       "alias": [],
       "alternates": []
     },
-    "Ext.util.Translatable": {
-      "idx": 367,
-      "alias": [],
-      "alternates": []
-    },
     "Ext.util.XTemplateCompiler": {
       "idx": 89,
       "alias": [],
@@ -10540,7 +10539,7 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.util.paintmonitor.OverflowChange": {
-      "idx": 368,
+      "idx": 364,
       "alias": [],
       "alternates": []
     },
@@ -10565,28 +10564,38 @@ var Ext = Ext || {};
       "alternates": []
     },
     "Ext.util.translatable.CssPosition": {
-      "idx": 366,
-      "alias": [],
+      "idx": 365,
+      "alias": [
+        "translatable.cssposition"
+      ],
       "alternates": []
     },
     "Ext.util.translatable.CssTransform": {
-      "idx": 364,
-      "alias": [],
+      "idx": 366,
+      "alias": [
+        "translatable.csstransform"
+      ],
       "alternates": []
     },
     "Ext.util.translatable.Dom": {
       "idx": 99,
-      "alias": [],
+      "alias": [
+        "translatable.dom"
+      ],
       "alternates": []
     },
     "Ext.util.translatable.ScrollParent": {
-      "idx": 365,
-      "alias": [],
+      "idx": 367,
+      "alias": [
+        "translatable.scrollparent"
+      ],
       "alternates": []
     },
     "Ext.util.translatable.ScrollPosition": {
       "idx": 100,
-      "alias": [],
+      "alias": [
+        "translatable.scrollposition"
+      ],
       "alternates": []
     },
     "Ext.view.AbstractView": {
@@ -10716,10 +10725,10 @@ var Ext = Ext || {};
         "classic"
       ],
       "type": "toolkit",
-      "version": "6.2.0.839"
+      "version": "6.2.2.12"
     },
     "cmd": {
-      "version": "6.2.0.95"
+      "version": "6.2.1.29"
     },
     "core": {
       "alternateName": [
@@ -10730,7 +10739,7 @@ var Ext = Ext || {};
         "ext"
       ],
       "type": "code",
-      "version": "6.2.0.839"
+      "version": "6.2.2.12"
     },
     "ext": {
       "build": {
@@ -10746,7 +10755,7 @@ var Ext = Ext || {};
         ]
       },
       "type": "framework",
-      "version": "6.2.0.839"
+      "version": "6.2.2.12"
     }
   },
   "bootRelative": true
@@ -12287,11 +12296,8 @@ Ext.getResourcePath = function(path, poolName, packageName) {
  * A lower-level technique that does not use the `Ext.app.Application` architecture is
  * {@link Ext#onReady Ext.onReady}.
  *
- * For more information about how to use the Ext classes, see:
- *
- * - <a href="http://www.sencha.com/learn/">The Learning Center</a>
- * - <a href="http://www.sencha.com/learn/Ext_FAQ">The FAQ</a>
- * - <a href="http://www.sencha.com/forum/">The forums</a>
+ * You can also discuss concepts and issues with others on the
+ * <a href="http://www.sencha.com/forum/">Sencha Forums</a>.
  *
  * @singleton
  */
@@ -13695,9 +13701,14 @@ Ext.Array = (function() {
             return array;
         },
         spliceSim = function(array, index, removeCount) {
-            var pos = fixArrayIndex(array, index),
-                removed = array.slice(index, fixArrayIndex(array, pos + removeCount));
-            if (arguments.length < 4) {
+            var len = arguments.length,
+                pos = fixArrayIndex(array, index),
+                removed;
+            if (len < 3) {
+                removeCount = array.length - pos;
+            }
+            removed = array.slice(index, fixArrayIndex(array, pos + removeCount));
+            if (len < 4) {
                 replaceSim(array, pos, removeCount);
             } else {
                 replaceSim(array, pos, removeCount, slice.call(arguments, 3));
@@ -16444,7 +16455,7 @@ Ext.Date = (function() {
      * @private
      */
         parseCodes: {
-            /**
+            /*
          * Notes:
          * g = {Number} calculation group (0 or 1. only group 1 contributes to date calculations.)
          * c = {String} calculation method (required for group 1. null for group 0. {0} = currentGroup - position in regex result array)
@@ -17100,9 +17111,11 @@ Ext.Date = (function() {
      * @param {Date} date The date to modify
      * @param {String} interval A valid date interval enum value.
      * @param {Number} value The amount to add to the current date.
+     * @param {Boolean} [preventDstAdjust=false] `true` to prevent adjustments when crossing
+     * daylight savings boundaries.
      * @return {Date} The new Date instance.
      */
-        add: function(date, interval, value) {
+        add: function(date, interval, value, preventDstAdjust) {
             var d = utilDate.clone(date),
                 base = 0,
                 day, decimalValue;
@@ -17132,19 +17145,35 @@ Ext.Date = (function() {
                     // ....
                     // 
                     case utilDate.MILLI:
-                        d.setTime(d.getTime() + value);
+                        if (preventDstAdjust) {
+                            d.setMilliseconds(d.getMilliseconds() + value);
+                        } else {
+                            d.setTime(d.getTime() + value);
+                        };
                         break;
                     case utilDate.SECOND:
-                        d.setTime(d.getTime() + value * 1000);
+                        if (preventDstAdjust) {
+                            d.setSeconds(d.getSeconds() + value);
+                        } else {
+                            d.setTime(d.getTime() + value * 1000);
+                        };
                         break;
                     case utilDate.MINUTE:
-                        d.setTime(d.getTime() + value * 60 * 1000);
+                        if (preventDstAdjust) {
+                            d.setMinutes(d.getMinutes() + value);
+                        } else {
+                            d.setTime(d.getTime() + value * 60 * 1000);
+                        };
                         break;
                     case utilDate.HOUR:
-                        d.setTime(d.getTime() + value * 60 * 60 * 1000);
+                        if (preventDstAdjust) {
+                            d.setHours(d.getHours() + value);
+                        } else {
+                            d.setTime(d.getTime() + value * 60 * 60 * 1000);
+                        };
                         break;
                     case utilDate.DAY:
-                        d.setTime(d.getTime() + value * 24 * 60 * 60 * 1000);
+                        d.setDate(d.getDate() + value);
                         break;
                     case utilDate.MONTH:
                         day = date.getDate();
@@ -17218,10 +17247,12 @@ Ext.Date = (function() {
      * @param {Date} date The date to modify
      * @param {String} interval A valid date interval enum value.
      * @param {Number} value The amount to subtract from the current date.
+     * @param {Boolean} [preventDstAdjust=false] `true` to prevent adjustments when crossing
+     * daylight savings boundaries.
      * @return {Date} The new Date instance.
      */
-        subtract: function(date, interval, value) {
-            return utilDate.add(date, interval, -value);
+        subtract: function(date, interval, value, preventDstAdjust) {
+            return utilDate.add(date, interval, -value, preventDstAdjust);
         },
         /**
      * Checks if a date falls on or between the given start and end dates.
@@ -17682,9 +17713,16 @@ Ext.Function = (function() {
          * @return {Function} cloneFn
          */
             clone: function(method) {
-                return function() {
+                var newMethod, prop;
+                newMethod = function() {
                     return method.apply(this, arguments);
                 };
+                for (prop in method) {
+                    if (method.hasOwnProperty(prop)) {
+                        newMethod[prop] = method[prop];
+                    }
+                }
+                return newMethod;
             },
             /**
          * Creates an interceptor function. The passed function is called before the original one. If it returns false,
@@ -17873,21 +17911,22 @@ Ext.Function = (function() {
          * @return {Function} A function which invokes the passed function after buffering for the specified time.
          */
             createBuffered: function(fn, buffer, scope, args) {
-                var timerId;
-                return function() {
-                    var callArgs = args || Array.prototype.slice.call(arguments, 0),
-                        me = scope || this;
-                    if (timerId) {
-                        clearTimeout(timerId);
-                    }
-                    timerId = setTimeout(function() {
-                        if (Ext.elevateFunction) {
-                            Ext.elevateFunction(fn, me, callArgs);
-                        } else {
-                            fn.apply(me, callArgs);
+                var timerId,
+                    result = function() {
+                        var callArgs = args || Array.prototype.slice.call(arguments, 0),
+                            me = scope || this;
+                        if (timerId) {
+                            clearTimeout(timerId);
                         }
-                    }, buffer);
-                };
+                        timerId = result.timer = setTimeout(function() {
+                            if (Ext.elevateFunction) {
+                                Ext.elevateFunction(fn, me, callArgs);
+                            } else {
+                                fn.apply(me, callArgs);
+                            }
+                        }, buffer);
+                    };
+                return result;
             },
             /**
         * Creates a wrapped function that, when invoked, defers execution until the next
@@ -19692,6 +19731,16 @@ Ext.apply(Ext, {
         };
     }()),
     /**
+     * Indicates if the page is currently running in online or offline mode, according
+     * to the `navigator.onLine` property.
+     * @return {Boolean} `true` if the page is currently running in an online mode.
+     *
+     * @since 6.2.1
+     */
+    isOnline: function() {
+        return Ext.global.navigator.onLine;
+    },
+    /**
      * @method iterate
      * @member Ext
      * Iterates either an array or an object. This method delegates to
@@ -21010,8 +21059,8 @@ Ext.apply(Ext, {
         }
     }
     if (!packages.ext && !packages.touch) {
-        Ext.setVersion('ext', '6.2.0.839');
-        Ext.setVersion('core', '6.2.0.839');
+        Ext.setVersion('ext', '6.2.2.12');
+        Ext.setVersion('core', '6.2.2.12');
     }
 })(Ext.manifest);
 
@@ -21991,6 +22040,7 @@ Ext.Config.prototype = {
      * `{@link #configure}` when it receives an `instanceConfig` containing a
      * `platformConfig` property.
      *
+     * @param {Ext.Base} instance
      * @param {Object} instanceConfig The instance config parameter.
      * @return {Object} The new instance config object with platformConfig results applied.
      * @private
@@ -22344,16 +22394,16 @@ Ext.Base = (function(flexSetter) {
          * @private
          * @static
          * @inheritable
-         * @param config
+         * @param parentClass
          */
-        extend: function(parent) {
+        extend: function(parentClass) {
             var me = this,
-                parentPrototype = parent.prototype,
+                parentPrototype = parentClass.prototype,
                 prototype, name, statics;
             prototype = me.prototype = Ext.Object.chain(parentPrototype);
             prototype.self = me;
             me.superclass = prototype.superclass = parentPrototype;
-            if (!parent.$isClass) {
+            if (!parentClass.$isClass) {
                 for (name in BasePrototype) {
                     if (name in prototype) {
                         prototype[name] = BasePrototype[name];
@@ -22365,12 +22415,12 @@ Ext.Base = (function(flexSetter) {
             if (statics) {
                 for (name in statics) {
                     if (!me.hasOwnProperty(name)) {
-                        me[name] = parent[name];
+                        me[name] = parentClass[name];
                     }
                 }
             }
-            if (parent.$onExtended) {
-                me.$onExtended = parent.$onExtended.slice();
+            if (parentClass.$onExtended) {
+                me.$onExtended = parentClass.$onExtended.slice();
             }
             me.getConfigurator();
         },
@@ -22803,7 +22853,7 @@ Ext.Base = (function(flexSetter) {
          */
         mixin: function(name, mixinClass) {
             var me = this,
-                mixin, prototype, key, statics, i, ln, mixinName, name, mixinValue, mixins, mixinStatics;
+                mixin, prototype, key, statics, i, ln, mixinName, name, mixinValue, mixins, mixinStatics, staticName;
             if (typeof name !== 'string') {
                 mixins = name;
                 if (mixins instanceof Array) {
@@ -22856,9 +22906,9 @@ Ext.Base = (function(flexSetter) {
             statics = mixin.$inheritableStatics;
             if (statics) {
                 mixinStatics = {};
-                for (name in statics) {
-                    if (!me.hasOwnProperty(name)) {
-                        mixinStatics[name] = mixinClass[name];
+                for (staticName in statics) {
+                    if (!me.hasOwnProperty(staticName)) {
+                        mixinStatics[staticName] = mixinClass[staticName];
                     }
                 }
                 me.addInheritableStatics(mixinStatics);
@@ -23358,8 +23408,9 @@ Ext.Base = (function(flexSetter) {
          *     alert(awesome.getName()); // 'Super Awesome'
          *
          * @protected
-         * @param {Object} config
+         * @param {Object} instanceConfig
          * @return {Ext.Base} this
+         * @chainable
          */
         initConfig: function(instanceConfig) {
             var me = this,
@@ -23374,21 +23425,20 @@ Ext.Base = (function(flexSetter) {
         /**
          * Returns a specified config property value. If the name parameter is not passed,
          * all current configuration options will be returned as key value pairs.
-         * @method
          * @param {String} [name] The name of the config property to get.
          * @param {Boolean} [peek=false] `true` to peek at the raw value without calling the getter.
          * @return {Object} The config property value.
+         * @method
          */
         getConfig: getConfig,
         /**
          * Sets a single/multiple configuration options.
-         * @method
          * @param {String/Object} name The name of the property to set, or a set of key value pairs to set.
          * @param {Object} [value] The value to set for the name parameter.
+         * @param {Object} [options] (private)
          * @return {Ext.Base} this
          */
-        setConfig: function(name, value, /* private */
-        options) {
+        setConfig: function(name, value, options) {
             // options can have the following properties:
             // - defaults `true` to only set the config(s) that have not been already set on
             // this instance.
@@ -23415,8 +23465,8 @@ Ext.Base = (function(flexSetter) {
             return cfg.getCurrentConfig(this);
         },
         /**
+         * @param {String} name
          * @private
-         * @param config
          */
         hasConfig: function(name) {
             return name in this.defaultConfig;
@@ -23464,7 +23514,7 @@ Ext.Base = (function(flexSetter) {
         $links: null,
         /**
          * Adds a "destroyable" object to an internal list of objects that will be destroyed
-         * when this instance is destroyed (via `{@link #destroy}`).
+         * when this instance is destroyed (via `{@link #method!destroy}`).
          * @param {String} name
          * @param {Object} value
          * @return {Object} The `value` passed.
@@ -23585,8 +23635,8 @@ Ext.Base = (function(flexSetter) {
      * @param {Array/Arguments} args The arguments, either an array or the `arguments` object
      * from the current method, for example: `this.callOverridden(arguments)`
      * @return {Object} Returns the result of calling the overridden method
+     * @deprecated 4.1.0 Use {@link #method-callParent} instead.
      * @protected
-     * @deprecated Use {@link #callParent} instead.
      */
     BasePrototype.callOverridden = BasePrototype.callParent;
     Ext.privacyViolation = function(cls, existing, member, isStatic) {
@@ -23871,6 +23921,7 @@ Ext.Base = (function(flexSetter) {
      * @method constructor
      * Create a new anonymous class.
      *
+     * @param Class
      * @param {Object} data An object represent the properties of this class
      * @param {Function} onCreated Optional, the callback function to be executed when this class is fully created.
      * Note that the creation process can be asynchronous depending on the pre-processors used.
@@ -23990,6 +24041,9 @@ Ext.Base = (function(flexSetter) {
          * @param {Object} fn.data The set of properties passed in {@link Ext.Class} constructor
          * @param {Function} fn.fn The callback function that **must** to be executed when this
          * pre-processor finishes, regardless of whether the processing is synchronous or asynchronous.
+         * @param properties
+         * @param position
+         * @param relativeTo
          * @return {Ext.Class} this
          * @private
          * @static
@@ -24616,7 +24670,7 @@ Ext.Inventory.prototype = {
                     continue;
                 }
                 if (toName[a] !== cls) {
-                    if (!update && toName[a]) {
+                    if (!update && toName[a] && ('Ext.Gadget' !== a)) {
                         Ext.log.warn("Overriding existing mapping: '" + a + "' From '" + toName[a] + "' to '" + cls + "'. Is this intentional?");
                     }
                     toName[a] = cls;
@@ -25390,7 +25444,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
          *
          *     alert(MyCompany.pkg.Example === someObject); // alerts true
          *
-         * @param {String} name
+         * @param {String} namespace
          * @param {Object} value
          */
             setNamespace: function(namespace, value) {
@@ -25530,7 +25584,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
             },
             /**
          * Defines a class.
-         * @deprecated Use {@link Ext#define} instead, as that also supports creating overrides.
+         * @deprecated 4.1 Use {@link Ext#define} instead.
          * @private
          */
             create: function(className, data, createdFn) {
@@ -25785,9 +25839,12 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
             /**
          * Register a post-processor function.
          *
-         * @private
          * @param {String} name
-         * @param {Function} postprocessor
+         * @param {Function} fn
+         * @param {String/String[]} properties
+         * @param {String} position
+         * @param {String} relativeTo
+         * @private
          */
             registerPostprocessor: function(name, fn, properties, position, relativeTo) {
                 if (!position) {
@@ -26557,6 +26614,9 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
             delete Manager.existCache[className];
             delete Manager.classState[className];
             Manager.removeName(className);
+            // Indiscriminately clear all factory caches here. It might be slightly inefficient however undefine
+            // is typically only called during unit testing.
+            Ext.Factory.clearCaches();
             var entry = Manager.getNamespaceEntry(className),
                 scope = entry.parent ? Manager.lookupName(entry.parent, false) : Ext.global;
             if (scope) {
@@ -26663,7 +26723,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
     Ext.addRootNamespaces = Manager.addRootNamespaces;
     /**
      * Old name for {@link Ext#widget}.
-     * @deprecated Use {@link Ext#widget} instead.
+     * @deprecated 5.0 Use {@link Ext#widget} instead.
      * @method createWidget
      * @member Ext
      * @private
@@ -26816,6 +26876,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
         engineVersion = '',
         majorVer = '',
         isWebView = false,
+        edgeRE = /(Edge\/)([\w.]+)/,
         i, prefix, mode, name, maxIEVersion;
     /**
      * @property {String}
@@ -26869,7 +26930,8 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
     // Edge has a userAgent with All browsers so we manage it separately
     // "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
     if (/Edge\//.test(userAgent)) {
-        browserMatch = userAgent.match(/(Edge\/)([\w.]+)/);
+        browserMatch = userAgent.match(edgeRE);
+        engineMatch = userAgent.match(edgeRE);
     }
     if (browserMatch) {
         browserName = browserNames[Ext.Object.getKey(browserPrefixes, browserMatch[1])];
@@ -27212,6 +27274,7 @@ Ext.ClassManager = (function(Class, alias, arraySlice, arrayFrom, global) {
 Ext.env.Browser.prototype = {
     constructor: Ext.env.Browser,
     engineNames: {
+        edge: 'Edge',
         webkit: 'WebKit',
         gecko: 'Gecko',
         presto: 'Presto',
@@ -27219,6 +27282,7 @@ Ext.env.Browser.prototype = {
         other: 'Other'
     },
     enginePrefixes: {
+        edge: 'Edge/',
         webkit: 'AppleWebKit/',
         gecko: 'Gecko/',
         presto: 'Presto/',
@@ -27308,13 +27372,6 @@ Ext.env.Browser.prototype = {
             return prefix + Ext.String.capitalize(name);
         }
         return name;
-    },
-    getPreferredTranslationMethod: function(config) {
-        if (typeof config === 'object' && 'translationMethod' in config && config.translationMethod !== 'auto') {
-            return config.translationMethod;
-        } else {
-            return 'csstransform';
-        }
     }
 };
 /**
@@ -27567,7 +27624,7 @@ Ext.env.OS.prototype = {
     } else if (nativeDeviceType === 'iPad') {
         deviceType = 'Tablet';
     } else {
-        if (!osEnv.is.Android && !osEnv.is.iOS && !osEnv.is.WindowsPhone && /Windows|Linux|MacOS/.test(osName)) {
+        if (!osEnv.is.Android && !osEnv.is.iOS && !osEnv.is.WindowsPhone && /Windows|Linux|MacOS|ChromeOS/.test(osName)) {
             deviceType = 'Desktop';
             // always set it to false when you are on a desktop not using Ripple Emulation
             Ext.browser.is.WebView = !!Ext.browser.is.Ripple;
@@ -28574,7 +28631,7 @@ Ext.feature = {
                     style, el;
                 if (Ext.getScrollbarSize().height) {
                     // must have space-consuming scrollbars for bug to be possible
-                    el = this.getTestElement();
+                    el = this.getTestElement('div', true);
                     style = el.style;
                     style.height = '50px';
                     style.width = '50px';
@@ -28693,7 +28750,13 @@ Ext.feature = {
                 // If the bug is present, the 95 pixel wide inner div, encroaches into the
                 // vertical scrollbar, but does NOT trigger horizontal overflow, so the clientHeight remains
                 // equal to the offset height.
-                var outerBox = div.firstChild;
+                var outerBox = div.firstChild,
+                    style = div.style,
+                    pos = style.position;
+                // This issue seems to require a repaint to measure correctly
+                style.position = 'absolute';
+                outerBox.offsetHeight;
+                style.position = pos;
                 return outerBox.clientHeight === outerBox.offsetHeight;
             }
         },
@@ -28742,7 +28805,7 @@ Ext.feature = {
         {
             name: 'SpecialKeyDownRepeat',
             fn: function() {
-                return Ext.isWebKit ? parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 : !(!(Ext.isGecko || Ext.isIE) || (Ext.isOpera && Ext.operaVersion < 12));
+                return Ext.isWebKit ? parseInt(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1], 10) >= 525 : !(!(Ext.isGecko || Ext.isIE || Ext.isEdge) || (Ext.isOpera && Ext.operaVersion < 12));
             }
         },
         /**
@@ -28993,6 +29056,21 @@ Ext.feature = {
             fn: function(doc) {
                 var style = doc.documentElement.style;
                 return 'scrollSnapType' in style || 'webkitScrollSnapType' in style || 'msScrollSnapType' in style;
+            }
+        },
+        /**
+         * @property TranslateYCausesHorizontalScroll
+         * @private
+         * @type {Boolean}
+         *
+         * Bug for Edge logged here: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/9743268/
+         */
+        {
+            name: 'TranslateYCausesHorizontalScroll',
+            ready: true,
+            fn: function(doc, div) {
+                div.innerHTML = '<div style="position: relative; overflow: auto; height: 200px; width: 200px;">' + '<div>' + '<div style="transform: translateY(260px); width: 50px;">a</div>' + '</div>' + '</div>';
+                return div.firstChild.scrollWidth > div.firstChild.clientWidth;
             }
         },
         0
@@ -30652,7 +30730,7 @@ if (Ext._beforereadyhandler) {
 }
 
 /**
- *
+ * @class Ext.util.Positionable
  */
 Ext.define('Ext.overrides.util.Positionable', {
     override: 'Ext.util.Positionable',
@@ -30835,7 +30913,7 @@ Ext.define('Ext.overrides.util.Positionable', {
      */
 
 /**
- *
+ * @class Ext.event.Event
  */
 Ext.define('Ext.overrides.event.Event', {
     override: 'Ext.event.Event',
@@ -31089,7 +31167,7 @@ Ext.define('Ext.overrides.event.Event', {
         };
     }()),
     // call to produce method
-    preventDefault: function() {
+    preventDefault: function(browserOnly) {
         var me = this,
             event = me.browserEvent,
             parentEvent = me.parentEvent,
@@ -31098,7 +31176,13 @@ Ext.define('Ext.overrides.event.Event', {
         // invalidated, so we can't delve into the details of it. If so,
         // just fall out gracefully and don't attempt to do anything.
         if (typeof event.type !== 'unknown') {
-            me.defaultPrevented = true;
+            // In some cases we want to prevent default on the browser event
+            // but keep propagating it through our event system. For example,
+            // in Checkbox selection where the cells with checkboxes should
+            // prevent focusing on mousedown but still fire the click event.
+            if (!browserOnly) {
+                me.defaultPrevented = true;
+            }
             // if the event was created by prototype-chaining a new object to an existing event
             // instance, we need to make sure the parent event is defaultPrevented as well.
             if (parentEvent) {
@@ -31926,7 +32010,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         destroy: function() {
             var me = this,
                 dom = me.dom,
-                data = me.getData(),
+                data = me.getData(true),
                 maskEl, maskMsg;
             if (dom) {
                 if (me.isAnimate) {
@@ -31992,18 +32076,21 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          */
         fadeIn: function(o) {
             var me = this,
-                dom = me.dom;
+                dom = me.dom,
+                animFly = new Ext.dom.Fly();
             me.animate(Ext.apply({}, o, {
                 opacity: 1,
                 internalListeners: {
                     beforeanimate: function(anim) {
+                        // Reattach to the DOM in case the caller animated a Fly
+                        // in which case the dom reference will have changed by now.
+                        animFly.attach(dom);
                         // restore any visibility/display that may have 
                         // been applied by a fadeout animation
-                        var el = Ext.fly(dom, '_anim');
-                        if (el.isStyle('display', 'none')) {
-                            el.setDisplayed('');
+                        if (animFly.isStyle('display', 'none')) {
+                            animFly.setDisplayed('');
                         } else {
-                            el.show();
+                            animFly.show();
                         }
                     }
                 }
@@ -32035,17 +32122,23 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          */
         fadeOut: function(o) {
             var me = this,
-                dom = me.dom;
+                dom = me.dom,
+                animFly = new Ext.dom.Fly();
             o = Ext.apply({
                 opacity: 0,
                 internalListeners: {
                     afteranimate: function(anim) {
-                        if (dom && anim.to.opacity === 0) {
-                            var el = Ext.fly(dom, '_anim');
+                        if (anim.to.opacity === 0) {
+                            // Reattach to the DOM in case the caller animated a Fly
+                            // in which case the dom reference will have changed by now.
+                            animFly.attach(dom);
+                            // Reattach to the DOM in case the caller animated a Fly
+                            // in which case the dom reference will have changed by now.
+                            animFly.attach(dom);
                             if (o.useDisplay) {
-                                el.setDisplayed(false);
+                                animFly.setDisplayed(false);
                             } else {
-                                el.hide();
+                                animFly.hide();
                             }
                         }
                     }
@@ -32092,19 +32185,22 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         frame: function(color, count, obj) {
             var me = this,
                 dom = me.dom,
+                animFly = new Ext.dom.Fly(),
                 beforeAnim;
             color = color || '#C3DAF9';
             count = count || 1;
             obj = obj || {};
             beforeAnim = function() {
-                var el = Ext.fly(dom, '_anim'),
-                    animScope = this,
+                var animScope = this,
                     box, proxy, proxyAnim;
-                el.show();
-                box = el.getBox();
+                // Reattach to the DOM in case the caller animated a Fly
+                // in which case the dom reference will have changed by now.
+                animFly.attach(dom);
+                animFly.show();
+                box = animFly.getBox();
                 proxy = Ext.getBody().createChild({
                     role: 'presentation',
-                    id: el.dom.id + '-anim-proxy',
+                    id: animFly.dom.id + '-anim-proxy',
                     style: {
                         position: 'absolute',
                         'pointer-events': 'none',
@@ -32199,7 +32295,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
         /**
          * Gets an object with all CSS positioning properties. Useful along with
-         * `setPostioning` to get snapshot before performing an update and then restoring
+         * `setPositioning` to get snapshot before performing an update and then restoring
          * the element.
          * @param {Boolean} [autoPx=false] true to return pixel values for "auto" styles.
          * @return {Object}
@@ -32245,14 +32341,17 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         ghost: function(anchor, obj) {
             var me = this,
                 dom = me.dom,
+                animFly = new Ext.dom.Fly(),
                 beforeAnim;
             anchor = anchor || "b";
             beforeAnim = function() {
-                var el = Ext.fly(dom, '_anim'),
-                    width = el.getWidth(),
-                    height = el.getHeight(),
-                    xy = el.getXY(),
-                    position = el.getPositioning(),
+                // Reattach to the DOM in case the caller animated a Fly
+                // in which case the dom reference will have changed by now.
+                animFly.attach(dom);
+                var width = animFly.getWidth(),
+                    height = animFly.getHeight(),
+                    xy = animFly.getXY(),
+                    position = animFly.getPositioning(),
                     to = {
                         opacity: 0
                     };
@@ -32288,11 +32387,13 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 }
                 this.to = to;
                 this.on('afteranimate', function() {
-                    var el = Ext.fly(dom, '_anim');
-                    if (el) {
-                        el.hide();
-                        el.clearOpacity();
-                        el.setPositioning(position);
+                    // Reattach to the DOM in case the caller animated a Fly
+                    // in which case the dom reference will have changed by now.
+                    animFly.attach(dom);
+                    if (animFly) {
+                        animFly.hide();
+                        animFly.clearOpacity();
+                        animFly.setPositioning(position);
                     }
                 });
             };
@@ -32350,6 +32451,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             var me = this,
                 dom = me.dom,
                 from = {},
+                animFly = new Ext.dom.Fly(),
                 restore, to, attr, lns, event, fn;
             o = o || {};
             lns = o.listeners || {};
@@ -32364,10 +32466,12 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             // Don't apply directly on lns, since we reference it in our own callbacks below
             o.listeners = Ext.apply(Ext.apply({}, lns), {
                 beforeanimate: function() {
+                    // Reattach to the DOM in case the caller animated a Fly
+                    // in which case the dom reference will have changed by now.
+                    animFly.attach(dom);
                     restore = dom.style[attr];
-                    var el = Ext.fly(dom, '_anim');
-                    el.clearOpacity();
-                    el.show();
+                    animFly.clearOpacity();
+                    animFly.show();
                     event = lns.beforeanimate;
                     if (event) {
                         fn = event.fn || event;
@@ -32677,6 +32781,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         puff: function(obj) {
             var me = this,
                 dom = me.dom,
+                animFly = new Ext.dom.Fly(),
                 beforeAnim,
                 box = me.getBox(),
                 originalStyles = me.getStyle([
@@ -32697,9 +32802,11 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 useDisplay: false
             });
             beforeAnim = function() {
-                var el = Ext.fly(dom, '_anim');
-                el.clearOpacity();
-                el.show();
+                // Reattach to the DOM in case the caller animated a Fly
+                // in which case the dom reference will have changed by now.
+                animFly.attach(dom);
+                animFly.clearOpacity();
+                animFly.show();
                 this.to = {
                     width: box.width * 2,
                     height: box.height * 2,
@@ -32709,16 +32816,16 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     fontSize: '200%'
                 };
                 this.on('afteranimate', function() {
-                    var el = Ext.fly(dom, '_anim');
-                    if (el) {
-                        if (obj.useDisplay) {
-                            el.setDisplayed(false);
-                        } else {
-                            el.hide();
-                        }
-                        el.setStyle(originalStyles);
-                        Ext.callback(obj.callback, obj.scope);
+                    // Reattach to the DOM in case the caller animated a Fly
+                    // in which case the dom reference will have changed by now.
+                    animFly.attach(dom);
+                    if (obj.useDisplay) {
+                        animFly.setDisplayed(false);
+                    } else {
+                        animFly.hide();
                     }
+                    animFly.setStyle(originalStyles);
+                    Ext.callback(obj.callback, obj.scope);
                 });
             };
             me.animate({
@@ -33029,6 +33136,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         setVisible: function(visible, animate) {
             var me = this,
                 dom = me.dom,
+                animFly,
                 visMode = getVisMode(me);
             // hideMode string override
             if (typeof animate === 'string') {
@@ -33073,11 +33181,11 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         easing: 'ease-in'
                     };
                 }
-                me.animate(Ext.applyIf({
+                animFly = new Ext.dom.Fly() , me.animate(Ext.applyIf({
                     callback: function() {
                         if (!visible) {
                             // Grab the dom again, since the reference may have changed if we use fly
-                            Ext.fly(dom).setVisible(false).setOpacity(1);
+                            animFly.attach(dom).setVisible(false).setOpacity(1);
                         }
                     },
                     to: {
@@ -33206,24 +33314,27 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             var me = this,
                 dom = me.dom,
                 elStyle = dom.style,
+                animFly = new Ext.dom.Fly(),
                 beforeAnim, wrapAnim, restoreScroll, wrapDomParentNode;
             anchor = anchor || "t";
             obj = obj || {};
             beforeAnim = function() {
+                // Reattach to the DOM in case the caller animated a Fly
+                // in which case the dom reference will have changed by now.
+                animFly.attach(dom);
                 var animScope = this,
                     listeners = obj.listeners,
-                    el = Ext.fly(dom, '_anim'),
                     box, originalStyles, anim, wrap;
                 if (!slideOut) {
-                    el.fixDisplay();
+                    animFly.fixDisplay();
                 }
-                box = el.getBox();
-                if ((anchor == 't' || anchor == 'b') && box.height === 0) {
+                box = animFly.getBox();
+                if ((anchor === 't' || anchor === 'b') && box.height === 0) {
                     box.height = dom.scrollHeight;
-                } else if ((anchor == 'l' || anchor == 'r') && box.width === 0) {
+                } else if ((anchor === 'l' || anchor === 'r') && box.width === 0) {
                     box.width = dom.scrollWidth;
                 }
-                originalStyles = el.getStyle([
+                originalStyles = animFly.getStyle([
                     'width',
                     'height',
                     'left',
@@ -33233,24 +33344,24 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     'position',
                     'z-index'
                 ], true);
-                el.setSize(box.width, box.height);
+                animFly.setSize(box.width, box.height);
                 // Cache all descendants' scrollTop & scrollLeft values if configured to preserve scroll.
                 if (obj.preserveScroll) {
-                    restoreScroll = el.cacheScrollValues();
+                    restoreScroll = animFly.cacheScrollValues();
                 }
-                wrap = el.wrap({
+                wrap = animFly.wrap({
                     role: 'presentation',
-                    id: Ext.id() + '-anim-wrap-for-' + el.dom.id,
+                    id: Ext.id() + '-anim-wrap-for-' + dom.id,
                     style: {
                         visibility: slideOut ? 'visible' : 'hidden'
                     }
                 });
                 wrapDomParentNode = wrap.dom.parentNode;
-                wrap.setPositioning(el.getPositioning());
+                wrap.setPositioning(animFly.getPositioning());
                 if (wrap.isStyle('position', 'static')) {
                     wrap.position('relative');
                 }
-                el.clearPositioning('auto');
+                animFly.clearPositioning('auto');
                 wrap.clip();
                 // The wrap will have reset all descendant scrollTops. Restore them if we cached them.
                 if (restoreScroll) {
@@ -33259,7 +33370,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 // This element is temporarily positioned absolute within its wrapper.
                 // Restore to its default, CSS-inherited visibility setting.
                 // We cannot explicitly poke visibility:visible into its style because that overrides the visibility of the wrap.
-                el.setStyle({
+                animFly.setStyle({
                     visibility: '',
                     position: 'absolute'
                 });
@@ -33399,20 +33510,22 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 }));
                 // In the absence of a callback, this listener MUST be added first
                 wrapAnim.on('afteranimate', function() {
-                    var el = Ext.fly(dom, '_anim');
-                    el.setStyle(originalStyles);
+                    // Reattach to the DOM in case the caller animated a Fly
+                    // in which case the dom reference will have changed by now.
+                    animFly.attach(dom);
+                    animFly.setStyle(originalStyles);
                     if (slideOut) {
                         if (obj.useDisplay) {
-                            el.setDisplayed(false);
+                            animFly.setDisplayed(false);
                         } else {
-                            el.hide();
+                            animFly.hide();
                         }
                     }
                     if (wrap.dom) {
                         if (wrap.dom.parentNode) {
-                            wrap.dom.parentNode.insertBefore(el.dom, wrap.dom);
+                            wrap.dom.parentNode.insertBefore(dom, wrap.dom);
                         } else {
-                            wrapDomParentNode.appendChild(el.dom);
+                            wrapDomParentNode.appendChild(dom);
                         }
                         wrap.destroy();
                     }
@@ -33553,6 +33666,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         switchOff: function(options) {
             var me = this,
                 dom = me.dom,
+                animFly = new Ext.dom.Fly(),
                 beforeAnim;
             options = Ext.applyIf(options || {}, {
                 easing: 'ease-in',
@@ -33561,14 +33675,16 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                 useDisplay: false
             });
             beforeAnim = function() {
-                var el = Ext.fly(dom, '_anim'),
-                    animScope = this,
-                    size = el.getSize(),
-                    xy = el.getXY(),
+                // Reattach to the DOM in case the caller animated a Fly
+                // in which case the dom reference will have changed by now.
+                animFly.attach(dom);
+                var animScope = this,
+                    size = animFly.getSize(),
+                    xy = animFly.getXY(),
                     keyframe, position;
-                el.clearOpacity();
-                el.clip();
-                position = el.getPositioning();
+                animFly.clearOpacity();
+                animFly.clip();
+                position = animFly.getPositioning();
                 keyframe = new Ext.fx.Animator({
                     target: dom,
                     duration: options.duration,
@@ -33588,15 +33704,17 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                     }
                 });
                 keyframe.on('afteranimate', function() {
-                    var el = Ext.fly(dom, '_anim');
+                    // Reattach to the DOM in case the caller animated a Fly
+                    // in which case the dom reference will have changed by now.
+                    animFly.attach(dom);
                     if (options.useDisplay) {
-                        el.setDisplayed(false);
+                        animFly.setDisplayed(false);
                     } else {
-                        el.hide();
+                        animFly.hide();
                     }
-                    el.clearOpacity();
-                    el.setPositioning(position);
-                    el.setSize(size);
+                    animFly.clearOpacity();
+                    animFly.setPositioning(position);
+                    animFly.setSize(size);
                     // kill the no-op element animation created below
                     animScope.end();
                 });
@@ -33943,6 +34061,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.0': {
                 methods: {
                     /**
+                     * @method pause
                      * Creates a pause before any subsequent queued effects begin. If there are no effects queued after the pause it will
                      * have no effect. Usage:
                      *
@@ -33960,6 +34079,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return me;
                     },
                     /**
+                     * @method scale
                      * Animates the transition of an element's dimensions from a starting height/width to an ending height/width. This
                      * method is a convenience implementation of {@link #shift}. Usage:
                      *
@@ -33990,6 +34110,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this;
                     },
                     /**
+                     * @method shift
                      * Animates the transition of any combination of an element's dimensions, xy position and/or opacity. Any of these
                      * properties not specified in the config object will not be changed. This effect requires that at least one new
                      * dimension, position or opacity setting must be passed in on the config object in order for the function to have
@@ -34022,6 +34143,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '4.2': {
                 methods: {
                     /**
+                     * @method moveTo
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position (coordinates are page-based)
                      * @param {Number} y Y value for new position (coordinates are page-based)
@@ -34037,6 +34159,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         ], animate);
                     },
                     /**
+                     * @method setBounds
                      * Sets the element's position and size in one shot. If animation is true then
                      * width, height, x and y will be animated concurrently.
                      *
@@ -34067,6 +34190,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         }, animate);
                     },
                     /**
+                     * @method setLeftTop
                      * Sets the element's left and top positions directly using CSS style
                      * @param {Number/String} left Number of pixels or CSS string value to
                      * set as the left CSS property value
@@ -34086,6 +34210,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return me;
                     },
                     /**
+                     * @method setLocation
                      * Sets the position of the element in page coordinates.
                      * @param {Number} x X value for new position
                      * @param {Number} y Y value for new position
@@ -34105,6 +34230,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             '5.0': {
                 methods: {
                     /**
+                     * @method getAttributeNS
                      * Returns the value of a namespaced attribute from the element's underlying DOM node.
                      * @param {String} namespace The namespace in which to look for the attribute
                      * @param {String} name The attribute name
@@ -34115,6 +34241,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this.getAttribute(name, namespace);
                     },
                     /**
+                     * @method getCenterXY
                      * Calculates the x, y to center this element on the screen
                      * @return {Number[]} The x, y values [x, y]
                      * @deprecated 5.0.0 Use {@link Ext.dom.Element#getAlignToXY} instead.
@@ -34124,6 +34251,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return this.getAlignToXY(DOC, 'c-c');
                     },
                     /**
+                     * @method getComputedHeight
                      * Returns either the offsetHeight or the height of this element based on CSS height adjusted by padding or borders
                      * when needed to simulate offsetHeight when offsets aren't available. This may not work on display:none elements
                      * if a height has not been set using CSS.
@@ -34134,6 +34262,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return Math.max(this.dom.offsetHeight, this.dom.clientHeight) || parseFloat(this.getStyle(HEIGHT)) || 0;
                     },
                     /**
+                     * @method getComputedWidth
                      * Returns either the offsetWidth or the width of this element based on CSS width adjusted by padding or borders
                      * when needed to simulate offsetWidth when offsets aren't available. This may not work on display:none elements
                      * if a width has not been set using CSS.
@@ -34144,6 +34273,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return Math.max(this.dom.offsetWidth, this.dom.clientWidth) || parseFloat(this.getStyle(WIDTH)) || 0;
                     },
                     /**
+                     * @method getStyleSize
                      * Returns the dimensions of the element available to lay content out in.
                      *
                      * getStyleSize utilizes prefers style sizing if present, otherwise it chooses the larger of offsetHeight/clientHeight and
@@ -34188,6 +34318,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         };
                     },
                     /**
+                     * @method isBorderBox
                      * Returns true if this element uses the border-box-sizing model.  This method is
                      * deprecated as of version 5.0 because border-box sizing is forced upon all elements
                      * via a style sheet rule, and the browsers that do not support border-box (IE6/7 strict
@@ -34199,6 +34330,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return true;
                     },
                     /**
+                     * @method isDisplayed
                      * Returns true if display is not "none"
                      * @return {Boolean}
                      * @deprecated 5.0.0 use element.isStyle('display', 'none');
@@ -34207,6 +34339,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                         return !this.isStyle('display', 'none');
                     },
                     /**
+                     * @method focusable
                      * Checks whether this element can be focused.
                      * @return {Boolean} True if the element is focusable
                      * @deprecated 5.0.0 use {@link #isFocusable} instead
@@ -34625,8 +34758,6 @@ Ext.define('Ext.overrides.dom.Element', (function() {
     }
     Ext.onInternalReady(function() {
         var transparentRe = /^(?:transparent|(?:rgba[(](?:\s*\d+\s*[,]){3}\s*0\s*[)]))$/i,
-            bodyCls = [],
-            //htmlCls = [],
             origSetWidth = proto.setWidth,
             origSetHeight = proto.setHeight,
             origSetSize = proto.setSize,
@@ -34756,7 +34887,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         Ext.getDoc().on('selectstart', function(ev, dom) {
             var selectableCls = Element.selectableCls,
                 unselectableCls = Element.unselectableCls,
-                tagName = dom && dom.tagName;
+                tagName = dom && dom.tagName,
+                el = new Ext.dom.Fly();
             tagName = tagName && tagName.toLowerCase();
             // Element.unselectable is not really intended to handle selection within text fields and it is important that
             // fields inside menus or panel headers don't inherit the unselectability. In most browsers this is automatic but in
@@ -34766,7 +34898,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             }
             // Walk up the DOM checking the nodes. This may be 'slow' but selectstart events don't fire very often
             while (dom && dom.nodeType === 1 && dom !== DOC.documentElement) {
-                var el = Ext.fly(dom);
+                el.attach(dom);
                 // If the node has the class x-selectable then stop looking, the text selection is allowed
                 if (el.hasCls(selectableCls)) {
                     return;
@@ -34783,7 +34915,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             var value = style[this.name] || '';
             return transparentRe.test(value) ? 'transparent' : value;
         }
-        /*
+        /**
+         * @method makeSelectionRestoreFn
          * Helper function to create the function that will restore the selection.
          */
         function makeSelectionRestoreFn(activeEl, start, end) {
@@ -34793,6 +34926,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
             };
         }
         /**
+         * @method getRightMarginFixCleaner
          * Creates a function to call to clean up problems with the work-around for the
          * WebKit RightMargin bug. The work-around is to add "display: 'inline-block'" to
          * the element before calling getComputedStyle and then to restore its original
@@ -34980,84 +35114,8 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * to the elements of root-level containers instead.
          */
         if (!Ext.scopeCss) {
-            bodyCls.push(Ext.baseCSSPrefix + 'body');
+            Ext.getBody().addCls(Ext.baseCSSPrefix + 'body');
         }
-        if (supports.Touch) {
-            bodyCls.push(Ext.baseCSSPrefix + 'touch');
-        }
-        if (Ext.isIE && Ext.isIE9m) {
-            bodyCls.push(Ext.baseCSSPrefix + 'ie', Ext.baseCSSPrefix + 'ie9m');
-            // very often CSS needs to do checks like "IE7+" or "IE6 or 7". To help
-            // reduce the clutter (since CSS/SCSS cannot do these tests), we add some
-            // additional classes:
-            //
-            //      x-ie7p      : IE7+      :  7 <= ieVer
-            //      x-ie7m      : IE7-      :  ieVer <= 7
-            //      x-ie8p      : IE8+      :  8 <= ieVer
-            //      x-ie8m      : IE8-      :  ieVer <= 8
-            //      x-ie9p      : IE9+      :  9 <= ieVer
-            //      x-ie78      : IE7 or 8  :  7 <= ieVer <= 8
-            //
-            bodyCls.push(Ext.baseCSSPrefix + 'ie8p');
-            if (Ext.isIE8) {
-                bodyCls.push(Ext.baseCSSPrefix + 'ie8');
-            } else {
-                bodyCls.push(Ext.baseCSSPrefix + 'ie9', Ext.baseCSSPrefix + 'ie9p');
-            }
-            if (Ext.isIE8m) {
-                bodyCls.push(Ext.baseCSSPrefix + 'ie8m');
-            }
-        }
-        if (Ext.isIE10) {
-            bodyCls.push(Ext.baseCSSPrefix + 'ie10');
-        }
-        if (Ext.isIE10p) {
-            bodyCls.push(Ext.baseCSSPrefix + 'ie10p');
-        }
-        if (Ext.isIE11) {
-            bodyCls.push(Ext.baseCSSPrefix + 'ie11');
-        }
-        if (Ext.isEdge) {
-            bodyCls.push(Ext.baseCSSPrefix + 'edge');
-        }
-        if (Ext.isGecko) {
-            bodyCls.push(Ext.baseCSSPrefix + 'gecko');
-        }
-        if (Ext.isOpera) {
-            bodyCls.push(Ext.baseCSSPrefix + 'opera');
-        }
-        if (Ext.isOpera12m) {
-            bodyCls.push(Ext.baseCSSPrefix + 'opera12m');
-        }
-        if (Ext.isWebKit) {
-            bodyCls.push(Ext.baseCSSPrefix + 'webkit');
-        }
-        if (Ext.isSafari) {
-            bodyCls.push(Ext.baseCSSPrefix + 'safari');
-        }
-        if (Ext.isChrome) {
-            bodyCls.push(Ext.baseCSSPrefix + 'chrome');
-        }
-        if (Ext.isMac) {
-            bodyCls.push(Ext.baseCSSPrefix + 'mac');
-        }
-        if (Ext.isLinux) {
-            bodyCls.push(Ext.baseCSSPrefix + 'linux');
-        }
-        if (!supports.CSS3BorderRadius) {
-            bodyCls.push(Ext.baseCSSPrefix + 'nbr');
-        }
-        if (!supports.CSS3LinearGradient) {
-            bodyCls.push(Ext.baseCSSPrefix + 'nlg');
-        }
-        if (supports.Touch) {
-            bodyCls.push(Ext.baseCSSPrefix + 'touch');
-        }
-        if (Ext.os.deviceType) {
-            bodyCls.push(Ext.baseCSSPrefix + Ext.os.deviceType.toLowerCase());
-        }
-        //Ext.fly(document.documentElement).addCls(htmlCls);
-        Ext.getBody().addCls(bodyCls);
     }, null, {
         priority: 1500
     });
@@ -35300,6 +35358,9 @@ Ext.define('Ext.overrides.Widget', {
     }
 });
 
+/**
+ * @class Ext.Progress
+ */
 Ext.define('Ext.overrides.Progress', {
     override: 'Ext.Progress',
     config: {
@@ -35314,6 +35375,14 @@ Ext.define('Ext.overrides.Progress', {
         width -= me.element.getBorderWidth('lr');
         me.backgroundEl.setWidth(width);
         me.textEl.setWidth(width);
+    },
+    privates: {
+        startBarAnimation: function(o) {
+            this.barEl.animate(o);
+        },
+        stopBarAnimation: function() {
+            this.barEl.stopAnimation();
+        }
     }
 });
 
@@ -35378,7 +35447,7 @@ Ext.application = function(config) {
 };
 
 /**
- *
+ * @class Ext.app.Application
  */
 Ext.define('Ext.overrides.app.Application', {
     override: 'Ext.app.Application',
@@ -35410,22 +35479,23 @@ Ext.define('Ext.overrides.app.Application', {
         this.setQuickTips(enableQuickTips);
     },
     applyMainView: function(mainView) {
-        var view, proto, config, plugins;
+        var view, proto, config, protoPlugins, configPlugins;
         if (typeof mainView === 'string') {
             view = this.getView(mainView);
+            config = {};
         } else {
+            config = mainView;
             view = Ext.ClassManager.getByConfig(mainView);
         }
         proto = view.prototype;
         if (!proto.isViewport) {
-            plugins = proto.plugins;
-            // Need to copy over any plugins defined on the prototype.
-            plugins = [
+            // Need to copy over any plugins defined on the prototype and on the config.
+            protoPlugins = Ext.Array.from(proto.plugins);
+            configPlugins = Ext.Array.from(config.plugins);
+            config = Ext.apply({}, config);
+            config.plugins = [
                 'viewport'
-            ].concat(plugins ? Ext.Array.from(plugins, true) : []);
-            config = {
-                plugins: plugins
-            };
+            ].concat(protoPlugins, configPlugins);
         }
         return view.create(config);
     },
@@ -35488,6 +35558,9 @@ Ext.define('Ext.overrides.app.domain.View', {
     }
 });
 
+/**
+ * @class Ext.dom.Helper
+ */
 Ext.define('Ext.overrides.dom.Helper', (function() {
     var tableRe = /^(?:table|thead|tbody|tr|td)$/i,
         tableElRe = /td|tr|tbody|thead/i,
@@ -35578,11 +35651,23 @@ Ext.define('Ext.overrides.dom.Helper', (function() {
     };
 })());
 
-Ext.define('Ext.overrides.list.TreeItem', {
-    override: 'Ext.list.TreeItem',
+/**
+ * @class Ext.list.AbstractTreeItem
+ */
+Ext.define('Ext.overrides.list.AbstractTreeItem', {
+    override: 'Ext.list.AbstractTreeItem',
+    // This config is used by TreeIten, however to support the generic API (RootItem),
+    // we need this up here.
     config: {
         floated: null
-    },
+    }
+});
+
+/**
+ * @class Ext.list.TreeItem
+ */
+Ext.define('Ext.overrides.list.TreeItem', {
+    override: 'Ext.list.TreeItem',
     // Implement a setter.
     // There *is* no "floated" config in Classic.
     // We're still an inner item, we just get put inside a Container.
@@ -35643,14 +35728,20 @@ Ext.define('Ext.overrides.list.TreeItem', {
                 owner = me.getOwner(),
                 ownerTree = me.up('treelist'),
                 floater,
-                toolElement = me.getToolElement();
+                toolElement = me.getToolElement(),
+                expandedWidth = ownerTree.expandedWidth,
+                defaultListWidth = ownerTree.defaultListWidth;
+            if (expandedWidth === null) {
+                expandedWidth = defaultListWidth;
+            }
             me.floater = floater = new Ext.container.Container({
                 cls: ownerTree.self.prototype.element.cls + ' ' + ownerTree.uiPrefix + ownerTree.getUi() + ' ' + Ext.baseCSSPrefix + 'treelist-floater',
                 floating: true,
                 // We do not get element resize events on IE8
                 // so fall back to 6.0.1 sizing to 200 wide.
-                width: Ext.isIE8 ? 200 : (ownerTree.expandedWidth - toolElement.getWidth()),
+                width: Ext.isIE8 ? defaultListWidth : (expandedWidth - toolElement.getWidth()),
                 shadow: false,
+                hidden: true,
                 renderTo: Ext.getBody(),
                 listeners: {
                     element: 'el',
@@ -35668,7 +35759,39 @@ Ext.define('Ext.overrides.list.TreeItem', {
 });
 
 /**
- *
+ * @class Ext.list.Tree
+ */
+Ext.define('Ext.overrides.list.Tree', {
+    override: 'Ext.list.Tree',
+    canMeasure: true,
+    constructor: function(config) {
+        this.callParent([
+            config
+        ]);
+        // Track size so that we can track the expanded size
+        // for use by the floated state of items when in micro mode.
+        // Browsers where this event is not supported, fall back to a width
+        // of 200px for floated tree items.
+        if (!Ext.isIE8) {
+            this.element.on('resize', 'onElResize', this);
+        }
+    },
+    beforeLayout: function() {
+        this.syncIconSize();
+    },
+    onElResize: function(el, details) {
+        if (!this.getMicro() && this.canMeasure) {
+            this.expandedWidth = details.width;
+        }
+    },
+    privates: {
+        defaultListWidth: 200,
+        expandedWidth: null
+    }
+});
+
+/**
+ * @class Ext.plugin.Abstract
  */
 Ext.define('Ext.overrides.plugin.Abstract', {
     override: 'Ext.plugin.Abstract',
@@ -35721,6 +35844,9 @@ Ext.define('Ext.overrides.plugin.Abstract', {
     }
 });
 
+/**
+ * @class Ext.sparkline.Base
+ */
 Ext.define('Ext.override.sparkline.Base', {
     override: 'Ext.sparkline.Base',
     statics: {
@@ -35895,7 +36021,9 @@ Ext.define(null, {
                         y = maxPosition.y;
                     }
                 }
-                x = me.convertX(x);
+                if (x !== null) {
+                    x = me.convertX(x);
+                }
                 if (animate) {
                     to = {};
                     if (y != null) {
@@ -35935,6 +36063,8 @@ Ext.define(null, {
                         // will fire the event.
                         +dom.scrollLeft;
                         dom.scrollLeft = x;
+                        +dom.scrollTop;
+                        dom.scrollTop = y;
                     }
                 }
                 // Our position object will need refreshing before returning.

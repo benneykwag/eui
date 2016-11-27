@@ -331,6 +331,9 @@ $panel-anchor-width: dynamic($panel-anchor-height * 2.33);
  * @param {number/list} $body-padding
  * Panel body padding
  *
+ * @param {number/list} $body-padding-big
+ * Panel body padding in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
  * @param {color} $header-background-color
  * Panel Header background-color
  *
@@ -574,34 +577,34 @@ $panel-anchor-width: dynamic($panel-anchor-height * 2.33);
             // If background is a different color, create the overlay triangle.
             @if $body-background-color != $border-color and $border-width != 0 {
                 .#{$prefix}anchor:after {
-                    border: calc(#{$anchor-border-width or $default-calc-value} - #{$border-width or $panel-border-width or $default-calc-value}) solid transparent;
+                    border: $anchor-border-width solid transparent;
                 }
 
                 .#{$prefix}anchor-top:after {
                     border-top-width: 0;
-                    border-bottom: calc(#{$anchor-height or $default-calc-value} - #{$border-width or $panel-border-width or $default-calc-value}) solid $body-background-color;
-                    left: calc(-#{$anchor-border-width or $default-calc-value} + #{($border-width * 2) or $default-calc-value});
+                    border-bottom: $anchor-height solid $body-background-color;
+                    left: calc(-#{$anchor-border-width or $default-calc-value} + #{$border-width or $default-calc-value});
                     top: $border-width;
                 }
 
                 .#{$prefix}anchor-bottom:after {
                     border-bottom-width: 0;
-                    border-top: calc(#{$anchor-height or $default-calc-value} - #{$border-width or $panel-border-width or $default-calc-value}) solid $body-background-color;
-                    left: calc(-#{$anchor-border-width or $default-calc-value} + #{($border-width * 2) or $default-calc-value});
+                    border-top: $anchor-height solid $body-background-color;
+                    left: calc(-#{$anchor-border-width or $default-calc-value} + #{$border-width or $default-calc-value});
                     bottom: $border-width;
                 }
 
                 .#{$prefix}anchor-left:after {
                     border-left-width: 0;
-                    border-right: calc(#{$anchor-height or $default-calc-value} - #{$border-width or $panel-border-width or $default-calc-value}) solid $body-background-color;
-                    top: calc(-#{$anchor-border-width or $default-calc-value} + #{($border-width * 2) or $default-calc-value});
+                    border-right: $anchor-height solid $body-background-color;
+                    top: calc(-#{$anchor-border-width or $default-calc-value} + #{$border-width or $default-calc-value});
                     left: $border-width;
                 }
 
                 .#{$prefix}anchor-right:after {
                     border-right-width: 0;
-                    border-left: calc(#{$anchor-height or $default-calc-value} - #{$border-width or $panel-border-width or $default-calc-value}) solid $body-background-color;
-                    top: calc(-#{$anchor-border-width or $default-calc-value} + #{($border-width * 2) or $default-calc-value});
+                    border-left: $anchor-height solid $body-background-color;
+                    top: calc(-#{$anchor-border-width or $default-calc-value} + #{$border-width or $default-calc-value});
                     right: $border-width;
                 }
             }

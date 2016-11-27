@@ -372,13 +372,20 @@ Ext.define('Ext.sparkline.Base', {
     },
 
     onMouseMove: function (e) {
-        this.currentPageXY = e.getPoint();
-        this.redraw();
+        var me = this;
+
+        // In IE/Edge, the mousemove event fires before mouseenter
+        // This is correct according to the spec
+        // https://www.w3.org/TR/uievents/#events-mouseevent-event-order
+        me.canvasRegion = me.canvasRegion || me.canvas.el.getRegion();
+        me.currentPageXY = e.getPoint();
+        me.redraw();
     },
 
     onMouseLeave: function () {
         var me = this;
-        me.currentPageXY = me.targetX = me.targetY = null;
+        // mouseleave is guaranteed to fire last, so clear region here
+        me.canvasRegion = me.currentPageXY = me.targetX = me.targetY = null;
         me.redraw();
         me.hideTip();
     },
@@ -386,11 +393,13 @@ Ext.define('Ext.sparkline.Base', {
     updateDisplay: function () {
         var me = this,
             values = me.getValues(),
-            offset, tipHtml, region;
+            tipHtml, region;
 
-        if (values && values.length && me.currentPageXY && me.el.getRegion().contains(me.currentPageXY)) {
-            offset = me.canvas.el.getXY();
-            region = me.getRegion(me.currentPageXY[0] - offset[0], me.currentPageXY[1] - offset[1]);
+        // To work out the position of currentPageXY within the canvas, we must account for the fact that
+        // while document Y values as represented in the currentPageXY are based from the top of
+        // the document, canvas Y values begin from the bottom of the canvas element.
+        if (values && values.length && me.currentPageXY && me.canvasRegion.contains(me.currentPageXY)) {
+            region = me.getRegion(me.currentPageXY[0] - me.canvasRegion.left, (me.canvasRegion.bottom - 1) - me.currentPageXY[1]);
 
             if (region != null && me.isValidRegion(region, values)) {
                 if (!me.disableHighlight) {

@@ -175,6 +175,10 @@ Ext.define('Ext.grid.plugin.Editable', {
 
     init: function(grid) {
         this.setGrid(grid);
+
+        grid.setTouchAction({
+            doubleTapZoom: false
+        });
     },
 
     updateGrid: function(grid, oldGrid) {

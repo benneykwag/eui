@@ -222,12 +222,15 @@ Ext.define('Ext.picker.Slot', {
      * @private
      */
     initialize: function() {
-        this.callParent();
+        var me = this,
+            scroller;
 
-        var scroller = this.getScrollable();
+        me.callParent();
 
-        this.on({
-            scope: this,
+        scroller = me.getScrollable();
+
+        me.on({
+            scope: me,
             painted: 'onPainted',
             itemtap: 'doItemTap',
             resize: {
@@ -236,19 +239,19 @@ Ext.define('Ext.picker.Slot', {
             }
         });
 
-        this.picker.on({
-            scope: this,
+        me.picker.on({
+            scope: me,
             beforehiddenchange: 'onBeforeHiddenChange'
         });
 
-        this.element.on({
-            scope: this,
+        me.element.on({
+            scope: me,
             touchstart: 'onTouchStart',
             touchend: 'onTouchEnd'
         });
 
         scroller.on({
-            scope: this,
+            scope: me,
             scrollend: 'onScrollEnd'
         });
     },

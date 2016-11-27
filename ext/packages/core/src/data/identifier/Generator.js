@@ -218,7 +218,7 @@ function () {
      * @member Ext.Factory
      * @method dataIdentifier
      * Returns an instance of an ID generator based on the ID you pass in.
-     * @param {string} id
+     * @param {String/Object} config The config object or `id` to lookup.
      * @return {Object} Ext.data.identifier.* The data identifier
      */
     Factory.dataIdentifier = function (config) {

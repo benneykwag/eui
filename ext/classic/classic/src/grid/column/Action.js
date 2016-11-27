@@ -501,7 +501,8 @@ Ext.define('Ext.grid.column.Action', {
             match,
             item,
             disabled,
-            cellFly = Ext.fly(cell);
+            cellFly = Ext.fly(cell),
+            oldActiveEl;
 
         // Flag event to tell SelectionModel not to process it.
         e.stopSelection = !key && me.stopSelection;
@@ -532,12 +533,10 @@ Ext.define('Ext.grid.column.Action', {
                 }
 
                 else if (type === 'click' || (key === e.ENTER || key === e.SPACE)) {
+                    oldActiveEl = Ext.Element.getActiveElement();
                     Ext.callback(item.handler || me.handler, item.scope || me.origScope, [view, recordIndex, cellIndex, item, e, record, row], undefined, me);
 
                     // Handler could possibly destroy the grid, so check we're still available.
-                    // 
-                    // If the handler moved focus outside of the view, do not allow this event to propagate
-                    // to cause any navigation.
                     if (view.destroyed) {
                         return false;
                     } else {
@@ -546,7 +545,9 @@ Ext.define('Ext.grid.column.Action', {
                         if (!e.position.getNode()) {
                             e.position.refresh();
                         }
-                        if (!view.el.contains(Ext.Element.getActiveElement())) {
+                        // If the handler moved focus, do not allow this event to propagate
+                        // to cause any navigation.
+                        if (Ext.Element.getActiveElement() !== oldActiveEl) {
                             return false;
                         }
                     }
@@ -564,6 +565,11 @@ Ext.define('Ext.grid.column.Action', {
     // Private override because this cannot function as a Container, and it has an items property which is an Array, NOT a MixedCollection.
     getRefItems: function() {
         return [];
+    },
+
+    contains: function() {
+        // Same as above
+        return false;
     },
 
     privates: {

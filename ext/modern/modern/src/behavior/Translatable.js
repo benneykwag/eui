@@ -6,7 +6,7 @@ Ext.define('Ext.behavior.Translatable', {
     extend: 'Ext.behavior.Behavior',
 
     requires: [
-        'Ext.util.Translatable'
+        'Ext.util.translatable.*'
     ],
 
     setConfig: function(config) {
@@ -15,7 +15,7 @@ Ext.define('Ext.behavior.Translatable', {
 
         if (config) {
             if (!translatable) {
-                this.translatable = translatable = new Ext.util.Translatable(config);
+                this.translatable = translatable = Ext.Factory.translatable(config, 'csstransform');
                 translatable.setElement(component.renderElement);
                 translatable.on('destroy', 'onTranslatableDestroy', this);
             }

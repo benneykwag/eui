@@ -606,27 +606,28 @@ Ext.define('Ext.data.schema.Schema', {
      * 
      * @param {Ext.data.field.Field} referenceField The `field` with the `reference` config.
      * 
-     * @param {String} [association] The name of the association. If empty or null, this
+     * @param {Object} [descr] The `reference` descriptor from the `referenceField` if one
+     * was given in the field definition.
+     *
+     * @param {String} [descr.association] The name of the association. If empty or null, this
      * will be derived from `entityType`, `role`, `inverse` and
      * `referenceField.unique`.
-     * 
-     * @param {String} [role] The name of the relationship from `entityType` to the target
+     *
+     * @param {String} [descr.role] The name of the relationship from `entityType` to the target
      * `type`. If not specified, the default is the `referenceField.name` (minus any "Id"
      * suffix if present).
-     * 
-     * @param {String} [inverse] The name of the relationship from the target `type`
+     *
+     * @param {String} [descr.inverse] The name of the relationship from the target `type`
      * to the `entityType`. If not specified, this is derived from the
      * {@link Ext.data.Model#entityName entityName} of the `entityType`
      * ({@link Ext.util.Inflector#singularize singularized} or
      * {@link Ext.util.Inflector#pluralize pluralized} based on `referenceField.unique`).
-     * 
-     * @param {String} type The {@link Ext.data.Model#entityName entityName} of the target
-     * of the reference.
-     * 
-     * @param {Object} [descr] The `reference` descriptor from the `referenceField` if one
-     * was given in the field definition.
+     *
+     * @param {String} descr.type The {@link Ext.data.Model#entityName entityName} of the
+     * target of the reference.
      *
      * @param {Boolean} [unique=false] Indicates if the reference is one-to-one.
+     * @param {Boolean} [dupeCheck] (private)
      * 
      * @protected
      */

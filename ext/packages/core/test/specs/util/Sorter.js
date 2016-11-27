@@ -135,15 +135,18 @@ describe("Ext.util.Sorter", function() {
             };
         }
 
-        function nullFirstComparator(nullFirst) {
+        function nullFirstComparator(nullFirst, transform) {
             return function (v1, v2) {
                 if (v1 === null) {
                     return nullFirst ? -1 : 1;
                 } else if (v2 === null) {
                     return nullFirst ? 1 : -1;
-                } else {
-                    return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
+                } else if (transform) {
+                    v1 = transform(v1);
+                    v2 = transform(v2);
                 }
+                
+                return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
             };
         }
 
@@ -151,7 +154,7 @@ describe("Ext.util.Sorter", function() {
         // had to do this b/c we're testing simple arrays and didn't need to specify a `property` value.
         function defaultSorterFn(v1, v2) {
             var me = this,
-                transform = me.transform;
+                transform = me._transform;
 
             if (v1 === v2) {
                 return 0;
@@ -195,11 +198,11 @@ describe("Ext.util.Sorter", function() {
         function sortIt(method, nullFirst) {
             var candidate = candidates[method],
                 testArr = candidate.test,
-                compare = createComparator(candidates[method], nullFirst);
+                compare = createComparator(candidate, nullFirst);
 
             describe(method + (nullFirst ? ' first' : ' last'), function () {
                 it('should sort null values ' + (nullFirst ? 'first' : 'last'), function () {
-                    expect(testArr.concat().sort(nullFirstComparator(nullFirst))).toEqual(testArr.concat().sort(compare));
+                    expect(testArr.concat().sort(nullFirstComparator(nullFirst, candidate.transform))).toEqual(testArr.concat().sort(compare));
                 });
             });
         }

@@ -150,6 +150,7 @@ Ext.define("Ext.util.Sortable", {
      *     The number of sorters maintained is limited by the {@link #multiSortLimit} configuration.
      *
      * * `append` : This means that the new sorter becomes the last sorter.
+     * @param {Boolean} doSort True to sort using a generated sorter function that combines all of the Sorters passed
      * @return {Ext.util.Sorter[]} The new sorters.
      */
     sort: function(sorters, direction, insertionPosition, doSort) {

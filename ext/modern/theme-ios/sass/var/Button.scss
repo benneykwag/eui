@@ -11,8 +11,8 @@ $button-font-weight: dynamic($font-weight-normal);
 
 $button-line-height: dynamic(1.1429em);
 $button-line-height-big: dynamic(1.25em);
-$button-padding: dynamic(0.2143em 0.7143em);
-$button-padding-big: dynamic(0.3125em 0.9375em);
+$button-padding: dynamic(0.2143em 0);
+$button-padding-big: dynamic(0.3125em 0);
 $button-icon-color: dynamic($button-color);
 $button-icon-size: dynamic(px-to-em(16px, 14px));
 $button-icon-size-big: dynamic(px-to-em(24px, 16px));
@@ -23,6 +23,17 @@ $button-pressed-icon-color: dynamic($button-pressed-color);
         $ui: 'confirm',
         $color: $ios-green,
         $pressed-color: mix(#fff, $ios-green, 70%)
+    );
+}
+
+@mixin button-alt-ui {
+    @include button-ui(
+        $ui: 'alt',
+        $color: #fff,
+        $background-color: $ios-blue,
+        $pressed-background-color: $button-pressed-color,
+        $padding: 0.2143em 0.714em,
+        $padding-big: 0.3125em .9375em
     );
 }
 
@@ -42,9 +53,15 @@ $button-pressed-icon-color: dynamic($button-pressed-color);
         $background-color: $background-color,
         $pressed-background-color: $base-color,
         $pressed-color: #fff,
-        $border-radius: 0.3rem
+        $border-radius: 0.3rem,
+        $padding: 0.2143em 0.714em,
+        $padding-big: 0.3125em .9375em
     );
 }
 
-@mixin button-action-ui {}
-@mixin button-round-ui {}
+@mixin button-action-ui {
+    @include button-ui(
+        $ui: 'action',
+        $font-weight: $font-weight-bold
+    )
+}

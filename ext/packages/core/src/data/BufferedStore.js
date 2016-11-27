@@ -127,7 +127,7 @@ Ext.define('Ext.data.BufferedStore', {
      * property to be overridden.
      * @param {Array/Object} data
      */
-    applyData: function(data) {
+    applyData: function (data) {
         var dataCollection = this.data || (this.data = this.createDataCollection());
 
         //<debug>
@@ -139,7 +139,7 @@ Ext.define('Ext.data.BufferedStore', {
         return dataCollection;
     },
 
-    applyProxy: function(proxy) {
+    applyProxy: function (proxy) {
         proxy = this.callParent([proxy]);
 
         // This store asks for pages.
@@ -150,35 +150,35 @@ Ext.define('Ext.data.BufferedStore', {
         return proxy;
     },
 
-    applyAutoSort: function() {
+    applyAutoSort: function () {
         // Return undefined so that applier does not run.
         // BufferedStore/PageMap cannot sort.
     },
 
-    createFiltersCollection: function() {
+    createFiltersCollection: function () {
         return new Ext.util.FilterCollection();
     },
 
-    createSortersCollection: function() {
+    createSortersCollection: function () {
         return new Ext.util.SorterCollection();
     },
 
     //<debug>
-    updateRemoteFilter: function(remoteFilter, oldRemoteFilter) {
+    updateRemoteFilter: function (remoteFilter, oldRemoteFilter) {
         if (remoteFilter === false) {
             Ext.raise('Buffered stores are always remotely filtered.');
         }
         this.callParent([remoteFilter, oldRemoteFilter]);
     },
 
-    updateRemoteSort: function(remoteSort, oldRemoteSort) {
+    updateRemoteSort: function (remoteSort, oldRemoteSort) {
         if (remoteSort === false) {
             Ext.raise('Buffered stores are always remotely sorted.');
         }
         this.callParent([remoteSort, oldRemoteSort]);
     },
 
-    updateTrackRemoved: function(value) {
+    updateTrackRemoved: function (value) {
         if (value !== false) {
             Ext.raise('Cannot use trackRemoved with a buffered store.');
         }
@@ -186,19 +186,19 @@ Ext.define('Ext.data.BufferedStore', {
     },
     //</debug>
 
-    updateGroupField: function(field) {
+    updateGroupField: function (field) {
         this.group(field);
     },
 
-    getGrouper: function() {
+    getGrouper: function () {
         return this.grouper;
     },
 
-    isGrouped: function() {
+    isGrouped: function () {
         return !!this.grouper;
     },
 
-    createDataCollection: function() {
+    createDataCollection: function () {
         var me = this,
             result = new Ext.data.PageMap({
                 store: me,
@@ -220,16 +220,16 @@ Ext.define('Ext.data.BufferedStore', {
     },
 
     //<debug>
-    add: function() {
+    add: function () {
         Ext.raise('add method may not be called on a buffered store - the store is a map of remote data');
     },
     
-    insert: function() {
+    insert: function () {
         Ext.raise('insert method may not be called on a buffered store - the store is a map of remote data');
     },
     //</debug>
 
-    removeAll: function(silent) {
+    removeAll: function (silent) {
         var me = this,
             data = me.getData();
 
@@ -244,7 +244,7 @@ Ext.define('Ext.data.BufferedStore', {
         }            
     },
 
-    flushLoad: function() {
+    flushLoad: function () {
         var me = this,
             options = me.pendingLoadOptions;
 
@@ -269,7 +269,7 @@ Ext.define('Ext.data.BufferedStore', {
         return me.loadToPrefetch(options);
     },
 
-    reload: function(options) {
+    reload: function (options) {
         var me = this,
             data = me.getData(),
             // If we don't have a known totalCount, use a huge value
@@ -301,8 +301,8 @@ Ext.define('Ext.data.BufferedStore', {
                 me.loading = false;
                 data.un('pageadd', waitForReload);
                 records = data.getRange(startIdx, endIdx);
-                me.fireEvent('load', me, records, true);
                 me.fireEvent('refresh', me);
+                me.fireEvent('load', me, records, true);
             }
         };
         bufferZone = Math.ceil((me.getLeadingBufferZone() + me.getTrailingBufferZone()) / 2);
@@ -355,7 +355,7 @@ Ext.define('Ext.data.BufferedStore', {
         }
     },
 
-    filter: function() {
+    filter: function () {
         //<debug>
         if (!this.getRemoteFilter()) {
             Ext.raise('Local filtering may not be used on a buffered store - the store is a map of remote data');
@@ -366,19 +366,19 @@ Ext.define('Ext.data.BufferedStore', {
         this.callParent(arguments);
     },
 
-    filterBy: function(fn, scope) {
+    filterBy: function (fn, scope) {
         //<debug>
         Ext.raise('Local filtering may not be used on a buffered store - the store is a map of remote data');
         //</debug>
     },
 
-    loadData: function(data, append) {
+    loadData: function (data, append) {
         //<debug>
         Ext.raise('LoadData may not be used on a buffered store - the store is a map of remote data');
         //</debug>
     },
 
-    loadPage: function(page, options) {
+    loadPage: function (page, options) {
         var me = this;
         options = options || {};
 
@@ -392,7 +392,7 @@ Ext.define('Ext.data.BufferedStore', {
         return me.loadToPrefetch(options);
     },
 
-    clearData: function(isLoad) {
+    clearData: function (isLoad) {
         var me = this,
             data = me.getData();
 
@@ -406,11 +406,11 @@ Ext.define('Ext.data.BufferedStore', {
      * A BufferedStore always reports that it contains the full dataset.
      * The number of records that happen to be cached at any one time is never useful.
      */
-    getCount: function() {
+    getCount: function () {
         return this.totalCount || 0;
     },
 
-    getRange: function(start, end, options) {
+    getRange: function (start, end, options) {
         var me = this,
             maxIndex = me.totalCount - 1,
             lastRequestStart = me.lastRequestStart,
@@ -490,7 +490,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Mixed} id The id of the Record to find.
      * @return {Ext.data.Model} The Record with the passed id. Returns null if not found.
      */
-    getById: function(id) {
+    getById: function (id) {
         var result = this.data.findBy(function(record) {
             return record.getId() === id;
         });
@@ -500,7 +500,7 @@ Ext.define('Ext.data.BufferedStore', {
     /**
      * @inheritdoc
      */
-    getAt: function(index) {
+    getAt: function (index) {
         var data = this.getData();
 
         if (data.hasRange(index, index)) {
@@ -518,12 +518,12 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Mixed} internalId The id of the Record to find.
      * @return {Ext.data.Model} The Record with the passed internalId. Returns null if not found.
      */
-    getByInternalId: function(internalId) {
+    getByInternalId: function (internalId) {
         return this.data.getByInternalId(internalId);
     },
 
     // Inherit docs
-    contains: function(record) {
+    contains: function (record) {
         return this.indexOf(record) > -1;
     },
 
@@ -535,7 +535,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Ext.data.Model} record The Ext.data.Model object to find.
      * @return {Number} The index of the passed Record. Returns -1 if not found.
      */
-    indexOf: function(record) {
+    indexOf: function (record) {
         return this.getData().indexOf(record);
     },
 
@@ -547,11 +547,11 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {String} id The id of the Record to find.
      * @return {Number} The index of the Record. Returns -1 if not found.
      */
-    indexOfId: function(id) {
+    indexOfId: function (id) {
         return this.indexOf(this.getById(id));
     },
 
-    group: function(grouper, direction) {
+    group: function (grouper, direction) {
         var me = this,
             oldGrouper;
         
@@ -573,7 +573,7 @@ Ext.define('Ext.data.BufferedStore', {
 
         me.getData().clear();
         me.loadPage(1, {
-            callback: function() {
+            callback: function () {
                 me.fireEvent('groupchange', me, me.getGrouper());
             }
         });
@@ -584,11 +584,11 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Number} index The record index
      * @return {Number} The page the record belongs to
      */
-    getPageFromRecordIndex: function(index) {
+    getPageFromRecordIndex: function (index) {
         return Math.floor(index / this.getPageSize()) + 1;
     },
     
-    calculatePageCacheSize: function(rangeSizeRequested) {
+    calculatePageCacheSize: function (rangeSizeRequested) {
         var me = this,
             purgePageCount = me.getPurgePageCount();
 
@@ -598,7 +598,7 @@ Ext.define('Ext.data.BufferedStore', {
         return purgePageCount ? Math.max(me.getData().getMaxSize() || 0, Math.ceil((rangeSizeRequested + me.getTrailingBufferZone() + me.getLeadingBufferZone()) / me.getPageSize()) * 2 + purgePageCount) : 0;
     },
 
-    loadToPrefetch: function(options) {
+    loadToPrefetch: function (options) {
         var me = this,
             prefetchOptions = options,
             i,
@@ -725,7 +725,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Object} options (Optional) config object, passed into the Ext.data.operation.Operation object before loading.
      * See {@link #method-load}
      */
-    prefetch: function(options) {
+    prefetch: function (options) {
         var me = this,
             pageSize = me.getPageSize(),
             data = me.getData(),
@@ -798,7 +798,7 @@ Ext.define('Ext.data.BufferedStore', {
      * Any requests which still make it through will be for the previous pageMapGeneration
      * (pageMapGeneration is incremented upon clear), and so will be rejected upon arrival.
      */
-    onPageMapClear: function() {
+    onPageMapClear: function () {
         var me = this,
             loadingFlag = me.wasLoading,
             reqs = me.pageRequests,
@@ -842,7 +842,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Object} options (Optional) config object, passed into the Ext.data.operation.Operation object before loading.
      * See {@link #method-load}
      */
-    prefetchPage: function(page, options) {
+    prefetchPage: function (page, options) {
         var me = this,
             pageSize = me.getPageSize(),
             start = (page - 1) * pageSize,
@@ -866,8 +866,8 @@ Ext.define('Ext.data.BufferedStore', {
      * @private
      * @param {Ext.data.operation.Operation} operation The operation that completed
      */
-    onProxyPrefetch: function(operation) {
-        if (this.destroyed) {
+    onProxyPrefetch: function (operation) {
+        if (this.destroying || this.destroyed) {
             return;
         }
         
@@ -915,8 +915,8 @@ Ext.define('Ext.data.BufferedStore', {
                             }
                         }
                         me.getData().un('pageadd', waitForReload);
-                        me.fireEvent('load', me, [], true);
                         me.fireEvent('refresh', me);
+                        me.fireEvent('load', me, [], true);
                     }
                 } else {
                     me.cachePage(records, operation.getPage());
@@ -935,7 +935,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Ext.data.Model[]} records The records to cache
      * @param {Ext.data.operation.Operation} page The associated operation
      */
-    cachePage: function(records, page) {
+    cachePage: function (records, page) {
         var me = this,
             len = records.length, i;
 
@@ -960,7 +960,7 @@ Ext.define('Ext.data.BufferedStore', {
      * indicate that it's going to need extra rows to peek at to determine
      * group start/end status for the rendered block.
      */
-    rangeCached: function(start, end, forRender) {
+    rangeCached: function (start, end, forRender) {
         var requiredStart = start,
             requiredEnd = end;
 
@@ -981,7 +981,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @private
      * @param {Number} page The page to find in the page cache.
      */
-    pageCached: function(page) {
+    pageCached: function (page) {
         return this.getData().hasPage(page);
     },
 
@@ -990,7 +990,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @private
      * @param {Number} page The page to check for
      */
-    pagePending: function(page) {
+    pagePending: function (page) {
         return !!this.pageRequests[page];
     },
 
@@ -1002,7 +1002,7 @@ Ext.define('Ext.data.BufferedStore', {
      * @param {Number} end The end index in the range
      * @return {Boolean}
      */
-    rangeSatisfied: function(start, end) {
+    rangeSatisfied: function (start, end) {
         return this.rangeCached(start, end);
     },
 
@@ -1010,7 +1010,7 @@ Ext.define('Ext.data.BufferedStore', {
      * Handles the availability of a requested range that was not previously available
      * @private
      */
-    onRangeAvailable: function(options) {
+    onRangeAvailable: function (options) {
         var me = this,
             totalCount = me.getTotalCount(),
             start = options.prefetchStart,
@@ -1043,9 +1043,15 @@ Ext.define('Ext.data.BufferedStore', {
      * Guarantee a specific range, this will load the store with a range (that
      * must be the `pageSize` or smaller) and take care of any loading that may
      * be necessary.
-     * @deprecated Use {@link #getRange}
+     * @param {Number} start The starting index. Defaults to zero.
+     * @param {Number} end The ending index. Defaults to the last record. The end index
+     * **is included**.
+     * @param {Function} callback Function to call with the results
+     * @param {Object} [scope] The `this` pointer for the `callback`.
+     * @param {Object} [options] (private)
+     * @deprecated 4.2 Use {@link #getRange}
      */
-    guaranteeRange: function(start, end, callback, scope, options) {
+    guaranteeRange: function (start, end, callback, scope, options) {
          options = Ext.apply({
              callback: callback,
              scope: scope
@@ -1059,7 +1065,7 @@ Ext.define('Ext.data.BufferedStore', {
      * Converts the row range to a page range and then only load pages which are not already
      * present in the page cache.
      */
-    prefetchRange: function(start, end) {
+    prefetchRange: function (start, end) {
         var me = this,
             startPage, endPage, page,
             data = me.getData();
@@ -1082,7 +1088,7 @@ Ext.define('Ext.data.BufferedStore', {
         }
     },
 
-    primeCache: function(start, end, direction) {
+    primeCache: function (start, end, direction) {
         var me = this,
             leadingBufferZone = me.getLeadingBufferZone(),
             trailingBufferZone = me.getTrailingBufferZone(),
@@ -1107,7 +1113,7 @@ Ext.define('Ext.data.BufferedStore', {
         me.prefetchRange(start, end);
     },
 
-    sort: function(field, direction, mode) {
+    sort: function (field, direction, mode) {
         if (arguments.length === 0) {
             this.clearAndLoad();
         } else {
@@ -1115,7 +1121,7 @@ Ext.define('Ext.data.BufferedStore', {
         }
     },
 
-    onSorterEndUpdate: function() {
+    onSorterEndUpdate: function () {
         var me = this,
             sorters = me.getSorters().getRange();
 
@@ -1123,7 +1129,7 @@ Ext.define('Ext.data.BufferedStore', {
         if (sorters.length) {
             me.fireEvent('beforesort', me, sorters);
             me.clearAndLoad({
-                callback: function() {
+                callback: function () {
                     me.fireEvent('sort', me, sorters);
                 }
             });
@@ -1133,7 +1139,7 @@ Ext.define('Ext.data.BufferedStore', {
         }
     },
 
-    clearAndLoad: function(options) {
+    clearAndLoad: function (options) {
         var me = this;
         
         me.clearing = true;
@@ -1144,7 +1150,7 @@ Ext.define('Ext.data.BufferedStore', {
     },
 
     privates: {
-        isLast: function(record) {
+        isLast: function (record) {
             return this.indexOf(record) === this.getTotalCount() - 1;
         },
 

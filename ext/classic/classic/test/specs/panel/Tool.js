@@ -1,7 +1,8 @@
 /* global expect, Ext, jasmine, spyOn */
 
 describe("Ext.panel.Tool", function() {
-    var tool, el;
+    var describeNotTouch = jasmine.supportsTouch ? xdescribe : describe,
+        tool, el;
     
     function makeTool(cfg) {
         cfg = Ext.apply({
@@ -132,7 +133,7 @@ describe("Ext.panel.Tool", function() {
         });
         
         describe("pointer", function() {
-            describe("mouseover", function() {
+            describeNotTouch("mouseover", function() {
                 beforeEach(function() {
                     jasmine.fireMouseEvent(el, 'mouseover', 1, 1);
                 });

@@ -113,9 +113,7 @@ Ext.define('Ext.Menu', {
     /**
      * @hide
      */
-    translatable: {
-        translationMethod: null
-    },
+    translatable: true,
 
     layout: {
         type: 'vbox',
@@ -138,7 +136,7 @@ Ext.define('Ext.Menu', {
     },
 
     constructor: function() {
-        this.config.translatable.translationMethod = 'csstransform';
+        this.config.translatable.type = 'csstransform';
         this.callParent(arguments);
     },
 

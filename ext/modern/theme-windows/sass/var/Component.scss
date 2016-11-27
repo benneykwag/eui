@@ -51,9 +51,7 @@ $global-list-height: dynamic(46px);
  */
 $loading-spinner-color: dynamic(#aaa);
 
-/**
- * color styles
- */
+// Color Styles
 
 $dark-theme: dynamic(true);
 $dialog-color: #1F1F1F;
@@ -64,14 +62,15 @@ $dialog-color: #1F1F1F;
  */
 $base-color: dynamic(rgba(145,0,145,1)); // Triton Blue
 
-/**
- * Light theme
- */
+
+// Light Theme
+
 $light-background-color: dynamic(#fff);
 $light-foreground-color: dynamic(#111);
 $light-inactive-color: dynamic(#ddd);
 
 // Form fields
+
 $light-field-background-color: dynamic(#fff);
 $light-field-border-color: dynamic(#BABABA);
 $light-field-color: dynamic(#000);
@@ -97,14 +96,14 @@ $light-form-toggle-disabled-background-color: dynamic(#E0E0E0);
 $light-form-toggle-disabled-border-color: dynamic(#CCCCCC);
 $light-form-toggle-disabled-thumb-background-color: dynamic(#A6A6A6);
 
-/**
- * Dark theme
- */
+// Dark Theme
+
 $dark-background-color: dynamic(#111);
 $dark-foreground-color: dynamic(#fff);
 $dark-inactive-color: dynamic(#666);
 
 // Form fields
+
 $dark-field-background-color: dynamic(#D2D2D2);
 $dark-field-border-color: dynamic(#D2D2D2);
 $dark-field-color: dynamic(rgba(0,0,0,.8));
@@ -130,9 +129,7 @@ $dark-form-toggle-disabled-background-color: dynamic(#383838);
 $dark-form-toggle-disabled-border-color: dynamic(#4A4A4A);
 $dark-form-toggle-disabled-thumb-background-color: dynamic(#6C6C6C);
 
-/**
- * Default values (light theme)
- */
+// Default Values (light theme)
 
 $background-color: dynamic(if($dark-theme, $dark-background-color, $light-background-color));
 $foreground-color: dynamic(if($dark-theme, $dark-foreground-color, $light-foreground-color));
@@ -140,6 +137,7 @@ $inactive-color: dynamic(if($dark-theme, $dark-inactive-color, $light-inactive-c
 $color: $foreground-color;
 
 // Form fields
+
 $field-background-color: dynamic(if($dark-theme, $dark-field-background-color, $light-field-background-color));
 $field-border-color: dynamic(if($dark-theme, $dark-field-border-color, $light-field-border-color));
 $field-color: dynamic(if($dark-theme, $dark-field-color, $light-field-color));
@@ -170,9 +168,8 @@ $form-slider-height: dynamic(11px);
 $alert-color: dynamic(red);
 $confirm-color: dynamic(#92cf00);  // Green
 
-/**
-* font sizes
-*/
+// Font Sizes
+
 $font-size-small: dynamic(10pt);
 $font-size-normal: dynamic(11pt);
 $font-size-medium: dynamic(15pt);

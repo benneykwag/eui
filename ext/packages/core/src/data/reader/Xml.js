@@ -172,13 +172,14 @@ Ext.define('Ext.data.reader.Xml', {
     },
 
     /**
-     * @private
-     * Creates a function to return some particular key of data from a response. The totalProperty and
-     * successProperty are treated as special cases for type casting, everything else is just a simple selector.
-     * @param {String} key
+     * Creates a function to return some particular key of data from a response. The
+     * `totalProperty` and `successProperty` are treated as special cases for type
+     * casting, everything else is just a simple selector.
+     * @param {String} expr
      * @return {Function}
+     * @private
      */
-    createAccessor: function(expr) {
+    createAccessor: function (expr) {
         if (Ext.isEmpty(expr)) {
             return Ext.emptyFn;
         }
@@ -277,9 +278,10 @@ Ext.define('Ext.data.reader.Xml', {
      * Parses an XML document and returns a ResultSet containing the model instances.
      * @param {Object} doc Parsed XML document
      * @param {Object} [readOptions] See {@link #read} for details.
+     * @param {Object} [internalReadOptions] (private)
      * @return {Ext.data.ResultSet} The parsed result set
      */
-    readRecords: function(doc, readOptions, /* private */ internalReadOptions) {
+    readRecords: function(doc, readOptions, internalReadOptions) {
         // it's possible that we get passed an array here by associations.
         // Make sure we strip that out (see Ext.data.reader.Reader#readAssociated)
         if (Ext.isArray(doc)) {

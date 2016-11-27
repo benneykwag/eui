@@ -9,14 +9,15 @@
  *            {name: 'framework', type: 'string'},
  *            {name: 'rocks', type: 'boolean'}
  *        ],
- *        data:{ items:[
+ *        data:[
  *            { framework: "Ext JS",     rocks: true  },
  *            { framework: "Ext GWT",    rocks: true  },
  *            { framework: "Other Guys", rocks: false }
- *        ]}
+ *        ]
  *     });
  *
  *     Ext.create('Ext.grid.Grid', {
+ *         fullscreen: true,
  *         store: Ext.data.StoreManager.lookup('sampleStore'),
  *         columns: [
  *             { text: 'Framework',  dataIndex: 'framework', flex: 1 },

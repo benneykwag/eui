@@ -134,8 +134,10 @@ Ext.define('Ext.slider.Widget', {
     getThumb: function(ordinal) {
         var me = this,
             thumbConfig,
-            result = (me.thumbs || (me.thumbs = []))[ordinal];
-        
+            result = (me.thumbs || (me.thumbs = []))[ordinal],
+            panDisable = me.getVertical() ? 'panY' : 'panX',
+            touchAction = {};
+
         if (!result) {
             thumbConfig = {
                 cls: me.thumbCls,
@@ -143,6 +145,8 @@ Ext.define('Ext.slider.Widget', {
             };
             thumbConfig['data-thumbIndex'] = ordinal;
             result = me.thumbs[ordinal] = me.innerEl.createChild(thumbConfig);
+            touchAction[panDisable] = false;
+            result.setTouchAction(touchAction);
         }
         return result;
     },

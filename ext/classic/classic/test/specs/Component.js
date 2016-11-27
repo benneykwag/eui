@@ -1,3 +1,5 @@
+/* global expect, Ext, jasmine, spyOn, xdescribe */
+
 describe("Ext.Component", function(){
     var Component = Ext.Component,
         proto = Component.prototype,
@@ -4857,6 +4859,7 @@ describe("Ext.Component", function(){
                             '<span id="{id}-spanEl" data-ref="spanEl">foo bar</span>',
                         '</div>'
                     ],
+                    scrollable: false,
                     getFocusEl: function() {
                         return this.el;
                     }
@@ -4864,7 +4867,7 @@ describe("Ext.Component", function(){
             });
             
             it("should add " + compIdAttr + " attribute to the focusable element", function() {
-                var cmpId = c.getFocusEl().getAttribute(compIdAttr);
+                var cmpId = c.getFocusEl().dom.getAttribute(compIdAttr);
                 
                 expect(cmpId).toBe(c.id);
             });
@@ -5003,9 +5006,8 @@ describe("Ext.Component", function(){
             textfield1.focus();
 
             // Some browsers deliver the focus event asynchronously
-            waitsFor(function() {
-                return c.containsFocus;
-            });
+            waitsForFocus(c);
+
             runs(function() {
                 // Focus has entered "c" and inner1 (and all inner1's descendants)
                 expect(cFocusEnterSpy.callCount).toBe(1);
@@ -5029,9 +5031,8 @@ describe("Ext.Component", function(){
             });
 
             // Some browsers deliver the focus event asynchronously
-            waitsFor(function() {
-                return inner2.containsFocus;
-            });
+            waitsForFocus(inner2);
+
             runs(function() {
                 expect(cFocusEnterSpy.callCount).toBe(1);
                 expect(inner1FocusEnterSpy.callCount).toBe(1);
@@ -7104,7 +7105,7 @@ describe("Ext.Component", function(){
         });
     });
 
-    (Ext.supports.Touch ? xdescribe : describe)("scroll template methods", function() {
+    (jasmine.supportsTouch ? xdescribe : describe)("scroll template methods", function() {
         var startSpy, moveSpy, endSpy;
 
         beforeEach(function() {

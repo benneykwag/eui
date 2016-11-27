@@ -510,10 +510,10 @@ Ext.define('Ext.data.proxy.Server', {
     },
 
     /**
-     * In ServerProxy subclasses, the {@link #create}, {@link #read}, {@link #update} and {@link #erase} methods all
-     * pass through to doRequest. Each ServerProxy subclass must implement the doRequest method - see {@link
-     * Ext.data.proxy.JsonP} and {@link Ext.data.proxy.Ajax} for examples. This method carries the same signature as
-     * each of the methods that delegate to it.
+     * In ServerProxy subclasses, the {@link #method-create}, {@link #method-read}, {@link #method-update} and
+     * {@link #method-erase} methods all pass through to doRequest. Each ServerProxy subclass must implement the
+     * doRequest method - see {@link Ext.data.proxy.JsonP} and {@link Ext.data.proxy.Ajax} for examples. This method
+     * carries the same signature as each of the methods that delegate to it.
      *
      * @param {Ext.data.operation.Operation} operation The Ext.data.operation.Operation object
      * @param {Function} callback The callback function to call when the Operation has completed
@@ -536,9 +536,16 @@ Ext.define('Ext.data.proxy.Server', {
     afterRequest: Ext.emptyFn,
 
     destroy: function() {
-        Ext.destroy(this.getReader(), this.getWriter());
-        this.reader = this.writer = null;
+        var me = this;
         
-        this.callParent();
+        me.destroying = true;
+        
+        // Don't force Reader and Writer creation if they weren't yet instantiated
+        me.reader = me.writer = Ext.destroy(me.reader, me.writer);
+        
+        me.callParent();
+        
+        me.destroying = false;
+        me.destroyed = true;
     }
 });

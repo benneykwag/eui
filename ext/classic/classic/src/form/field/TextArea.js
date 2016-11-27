@@ -257,6 +257,7 @@ Ext.define('Ext.form.field.TextArea', {
 
             height = Math.min(Math.max(height, me.growMin), me.growMax);
 
+            inputEl.setStyle('overflow-y', height >= me.growMax ? 'auto' : 'hidden');
             me.bodyEl.setHeight(height);
 
             me.updateLayout();

@@ -394,6 +394,7 @@ TestAction.multiply(
      * @private
      * @param {String} action The action being executed
      * @param {Object} method The method being executed
+     * @param {Object} args The argument to pass to the request
      */
     configureRequest: function(action, method, args){
         var me = this,

@@ -19,10 +19,16 @@ $prefix: dynamic('x-');
 $relative-image-path-for-uis: false !default;
 
 /**
- * @var {boolean} $include-not-found-images
+ * @var {boolean} $include-missing-images
  * True to include files which are not found when compiling your SASS
  */
 $include-missing-images: dynamic(true);
+
+/**
+ * @var {boolean} $enable-missing-image-warnings
+ * True to show a warning while including files which are not found when compiling your SASS
+ */
+$enable-missing-image-warnings: dynamic($include-missing-images);
 
 /**
  * @var {boolean} $include-ie

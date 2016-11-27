@@ -72,3 +72,8 @@
         }
     }
 }
+
+// Firefox needs pointer-events: none on the checkbox span to work around focusing issues
+.#{$prefix}gecko .#{$prefix}selmodel-checkonly .#{$prefix}grid-checkcolumn {
+    pointer-events: none;
+}

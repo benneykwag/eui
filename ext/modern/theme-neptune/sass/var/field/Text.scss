@@ -62,6 +62,7 @@ $textfield-focused-input-border-style: dynamic(null);
  */
 $textfield-invalid-input-border-style: dynamic(null);
 
+//# fashion replaces $field-border-color
 /**
  * @var {color/list}
  * Text Field input border color
@@ -162,7 +163,7 @@ $textfield-input-font-family: dynamic($font-family);
  * @var {color}
  * Text Field {@link #placeholder} color
  */
-$textfield-placeholder-color: dynamic(null);
+$textfield-placeholder-color: dynamic($neutral-medium-dark-color);
 
 /**
  * Creates a visual theme for a Text Field
@@ -174,8 +175,89 @@ $textfield-placeholder-color: dynamic(null);
  * @param {String} [$xtype=textfield] (protected) The {@link Ext.Class#xtype} to use
  * in CSS selectors.  For use by UI mixins of derived classes.
  *
+ * @param {color} $background-color
+ * Text Field input background color
+ *
+ * @param {color} $focused-background-color
+ * Focused Text Field background color
+ *
+ * @param {color} $invalid-background-color
+ * Invalid Text Field background color
+ *
+ * @param {color} $disabled-background-color
+ * Disabled Text Field background color
+ *
+ * @param {color} $label-color
+ * Text Field label color
+ *
+ * @param {color} $focused-label-color
+ * Focused Text Field label color
+ *
+ * @param {color} $invalid-label-color
+ * Invalid Text Field label color
+ *
+ * @param {color} $disabled-label-color
+ * Disabled Text Field label color
+ *
+ * @param {color} $label-background-color
+ * Text Field Label background color
+ *
+ * @param {color} $focused-label-background-color
+ * Focused Text Field Label background color
+ *
+ * @param {color} $invalid-label-background-color
+ * Invalid Text Field Label background color
+ *
+ * @param {color} $disabled-label-background-color
+ * Disabled Text Field Label background color
+ *
+ * @param {Number} $label-padding
+ * Text Field label padding
+ *
+ * @param {Number} $label-padding-big
+ * Text Field label padding in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
+ * @param {Number} $label-font-weight
+ * Text Field label font weight
+ *
+ * @param {Number} $label-font-size
+ * Text Field label font size
+ *
+ * @param {Number} $label-font-size-big
+ * Text Field label font size in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
+ * @param {Number} $label-line-height
+ * Text Field label line height
+ *
+ * @param {Number} $label-line-height-big
+ * Text Field label line height in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
+ * @param {String} $label-font-family
+ * Text Field label font family
+ *
+ * @param {Number} $disabled-opacity
+ * Text Field disabled opacity
+ *
+ * @param {Number} $required-indicator-font-weight
+ * Required indicator font weight
+ *
+ * @param {Number} $required-indicator-font-size
+ * Required indicator font size
+ *
+ * @param {Number} $required-indicator-line-height
+ * Required indicator line height
+ *
+ * @param {String} $required-indicator-font-family
+ * Required indicator font family
+ *
+ * @param {String} $required-indicator-margin
+ * Required indicator margin
+ *
+ * @param {String} $required-indicator-margin-big
+ * Required indicator margin in the {@link Global_CSS#$enable-big big} sizing scheme
+ *
  * @param {color} $input-color
- * Text Field input color
+ * Text field input color
  *
  * @param {color} $focused-input-color
  * Text Field input color when focused
@@ -319,10 +401,10 @@ $textfield-placeholder-color: dynamic(null);
         .#{$prefix}input {
             @include font($input-font-weight, $input-font-size, $input-line-height, $input-font-family);
             @include border($input-border-width, $input-border-style, $input-border-color);
+            background-color: $input-background-color;
         }
 
         .#{$prefix}input-el {
-            background-color: $input-background-color;
             color: $input-color;
             padding: $input-padding;
             // input element has to have its own line height or it is not heighted correctly
@@ -336,8 +418,15 @@ $textfield-placeholder-color: dynamic(null);
                 }
             }
 
-            &::-webkit-input-placeholder,
-            &::-moz-placeholder,
+            // when using vendor prefixes, the selectors need to be separated into their own
+            // rule for each prefix because when encountering an unsupported vendor prefix,
+            // CSS parsing engines will consider the entire rule invalid.
+            &::-webkit-input-placeholder {
+                color: $placeholder-color;
+            }
+            &::-moz-placeholder {
+                color: $placeholder-color;
+            }
             &:-ms-input-placeholder {
                 color: $placeholder-color;
             }
@@ -346,10 +435,10 @@ $textfield-placeholder-color: dynamic(null);
         &.#{$prefix}focused {
             .#{$prefix}input {
                 @include border($focused-input-border-width, $focused-input-border-style, $focused-input-border-color);
+                background-color: $focused-input-background-color;
             }
 
             .#{$prefix}input-el {
-                background-color: $focused-input-background-color;
                 color: $focused-input-color;
             }
         }
@@ -357,21 +446,21 @@ $textfield-placeholder-color: dynamic(null);
         &.#{$prefix}invalid {
             .#{$prefix}input {
                 @include border($invalid-input-border-width, $invalid-input-border-style, $invalid-input-border-color);
+                background-color: $invalid-input-background-color;
             }
 
             .#{$prefix}input-el {
-                background-color: $invalid-input-background-color;
                 color: $invalid-input-color;
             }
         }
 
         &.#{$prefix}disabled {
             .#{$prefix}input {
+                background-color: $disabled-input-background-color;
                 border-color: $disabled-input-border-color;
             }
 
             .#{$prefix}input-el {
-                background-color: $disabled-input-background-color;
                 color: $disabled-input-color;
             }
         }

@@ -84,6 +84,7 @@ Ext.define('Ext.dom.GarbageCollector', {
             }
             
             if (isGarbage) {
+                isGarbage = false;
                 if (el && el.dom) {
                     //<debug>
                     tagName = el.dom.tagName;

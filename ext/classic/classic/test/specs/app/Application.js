@@ -3,6 +3,10 @@
 describe("Ext.app.Application", function() {
     var Class, app, initCalled, launchCalled, required;
 
+    function createApp(cfg, cls) {
+        app = new (cls || TestApplication.Application)(cfg);
+    }
+    
     beforeEach(function() {
         this.addMatchers({
             toBeFunction: function(expected) {
@@ -67,38 +71,45 @@ describe("Ext.app.Application", function() {
             }
         });
     });
-    
+
     afterEach(function() {
         required = null;
         Ext.app.clearNamespaces();
 
-        if (Ext.isIE) {
-            window.TestApplication = undefined;
-        } else {
-            delete window.TestApplication;
-        }
-
+        Ext.destroy(app);
         Ext.undefine('TestApplication.controller.Foo');
         Ext.undefine('TestApplication.view.Viewport');
         Ext.undefine('TestApplication.Application');
+
+        if (Ext.isIE) {
+            Ext.global.TestApplication = undefined;
+            Ext.global.CtrlApplication = undefined;
+        } else {
+            delete Ext.global.TestApplication;
+            delete Ext.global.CtrlApplication;
+        }
     });
 
     describe("resolves global namespaces upon class creation", function() {
         it("has TestApplication namespace", function() {
+            createApp();
             expect(Ext.app.namespaces['TestApplication']).toBeTruthy();
         });
         
         it("has TestApplication.Foo namespace", function() {
+            createApp();
             expect(Ext.app.namespaces['TestApplication.Foo']).toBeTruthy();
         });
         
         it("has TestApplication.Bar namespace", function() {
+            createApp();
             expect(Ext.app.namespaces['TestApplication.Bar']).toBeTruthy();
         });
     });
     
     describe("resolves class names", function() {
         it("resolves Viewport when autoCreateViewport is true", function() {
+            createApp();
             expect(required).toEqual([
                 'TestApplication.view.Viewport'
             ]);
@@ -134,10 +145,18 @@ describe("Ext.app.Application", function() {
             });
 
             afterEach(function() {
+                // Old IEs throw an error.
+                try {
+                    delete Ext.global.Foo;
+                    delete Ext.global.TestApplication;
+                } catch (e) {
+                    Ext.global.Foo = undefined;
+                    Ext.global.TestApplication = null;
+                }
+
                 Ext.undefine('TestApplication.AbstractApplication');
                 Ext.undefine('TestApplication.Application2');
                 Ext.undefine('Foo.view.Viewport');
-                delete Ext.global.Foo;
             });
             
             it("resolves Viewport path", function() {
@@ -149,26 +168,29 @@ describe("Ext.app.Application", function() {
     });
     
     it("is constructable", function() {
-        app = new TestApplication.Application();
-
+        createApp();
         expect(app).toBeDefined();
     });
 
     it("adds getApplication method...", function() {
+        createApp();
         expect(app.getApplication).toBeFunction();
     });
 
     it("... which returns Application instance", function() {
+        createApp();
         var a = app.getApplication();
 
         expect(a).toEqual(app);
     });
 
     it("inits itself as a Controller", function() {
+        createApp();
         expect(app._initialized).toBeTruthy();
     });
 
     it("inits dependent Controllers and sets their id", function() {
+        createApp();
         var ctrl = app.getController('Foo');
 
         expect(ctrl.initialized).toBeTruthy();
@@ -176,23 +198,26 @@ describe("Ext.app.Application", function() {
     });
 
     it("calls onLaunch on dependent Controllers", function() {
+        createApp();
         var ctrl = app.getController('Foo');
 
         expect(ctrl.launched).toBeTruthy();
     });
 
     it("calls its init() method", function() {
+        createApp();
         expect(initCalled).toBeTruthy();
     });
 
     it("calls its launch() method", function() {
+        createApp();
         expect(launchCalled).toBeTruthy();
     });
 
     it("fires launch event", function() {
         var fired = false;
 
-        new TestApplication.Application({
+        app = new TestApplication.Application({
             listeners: {
                 launch: function() { fired = true; }
             }
@@ -204,7 +229,7 @@ describe("Ext.app.Application", function() {
     it("inits QuickTips", function() {
         spyOn(Ext.tip.QuickTipManager, 'init');
 
-        new TestApplication.Application();
+        createApp();
 
         expect(Ext.tip.QuickTipManager.init).toHaveBeenCalled();
     });
@@ -212,13 +237,13 @@ describe("Ext.app.Application", function() {
     it("inits Viewport when autoCreateViewport is true", function() {
         spyOn(TestApplication.view.Viewport, 'create');
 
-        new TestApplication.Application();
+        createApp();
 
         expect(TestApplication.view.Viewport.create).toHaveBeenCalled();
     });
 
     it("should init Ext.util.History", function() {
-        app = new TestApplication.Application();
+        createApp();
 
         return expect(Ext.util.History.ready).toEqual(true);
     });
@@ -235,7 +260,7 @@ describe("Ext.app.Application", function() {
         });
 
         it("adds defaultToken", function() {
-            app = new TestApplication.Application({
+            createApp({
                 defaultToken : 'foo'
             });
 
@@ -247,7 +272,7 @@ describe("Ext.app.Application", function() {
                 History.add('foo');
             }
 
-            app = new TestApplication.Application({
+            createApp({
                 defaultToken : 'bar'
             });
 
@@ -306,7 +331,7 @@ describe("Ext.app.Application", function() {
                 ]
             });
 
-            app = new CtrlApplication.Application();
+            createApp(null, CtrlApplication.Application);
         });
 
         afterEach(function() {
@@ -318,9 +343,9 @@ describe("Ext.app.Application", function() {
             Ext.undefine('CtrlApplication.Application');
 
             if (Ext.isIE) {
-                window.CtrlApplication = undefined;
+                Ext.global.CtrlApplication = undefined;
             } else {
-                delete window.CtrlApplication;
+                delete Ext.global.CtrlApplication;
             }
 
             ctorLog = null;

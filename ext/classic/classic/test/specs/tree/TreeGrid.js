@@ -196,6 +196,36 @@ describe("Ext.tree.TreeGrid", function() {
 
         Ext.destroy(tree);
     });
+
+    describe('tabbability', function() {
+        it('should keep all elements untabbable when not in actionable mode', function() {
+            makeTreeGrid({
+                width: 300,
+                columns: [{
+                    xtype: 'treecolumn',
+                    text: 'F1',
+                    dataIndex: 'f1',
+                    width: 100
+                }, {
+                    text: 'F2',
+                    dataIndex: 'f2',
+                    flex: 1
+                }, {
+                    xtype: 'actioncolumn'
+                }]
+            });
+
+            tree.getNavigationModel().setPosition(0, 0);
+            waitsFor(function() {
+                return tree.view.containsFocus;
+            });
+            runs(function() {
+                expect(tree.view.el.findTabbableElements({skipSelf: true}).length).toBe(0);
+                tree.store.first().expand();
+                expect(tree.view.el.findTabbableElements({skipSelf: true}).length).toBe(0);
+            });
+        });
+    });
     
     describe('Model mutation', function() {
         it('should not have to render a whole row, it should update innerHTML of cell', function() {
@@ -332,18 +362,23 @@ describe("Ext.tree.TreeGrid", function() {
             rootNode.expand();
             tree.view.setScrollY(40);
 
+            // We must wait until the Scroller knows about the scroll position
+            // at which point it fires a scrollend event
+            waitsForEvent(tree.getView().getScrollable(), 'scrollend', 'Tree scrollend');
+
             // Wait for scroll position to be read
-            waitsFor(function() {
-                return tree.view.getScrollable().getPosition().y === 40;
+            runs(function() {
+                expect(tree.view.getScrollable().getPosition().y).toBe(40);
             });
             
             runs(function() {
                 tree.getRootNode().childNodes[1].expand();
             });
 
-            // We must wait until the Scroller knows about the scroll position
-            // at which point it fires a scrollend event
-            waitsForEvent(tree.getView().getScrollable(), 'scrollend', 'Tree scrollend');
+            // Nothing should happen. The bug was that expansion caused focus-scroll.
+            // No scrolling, and no event firing sohuld take place, scroll position
+            // and application state should remain unchanged.
+            waits(200);
 
             // Expanding a node should not scroll.
             runs(function() {
@@ -353,6 +388,7 @@ describe("Ext.tree.TreeGrid", function() {
         it("should not not scroll horizontally upon node toggle", function() {
             // MUST be no scroll so that the non buffered rendering pathway is used
             // and the row count changes and a layout is triggered.
+            tree.setHideHeaders(false);
             tree.setHeight(600);
             tree.collapseAll();
             tree.columns[0].setWidth(200);
@@ -360,11 +396,15 @@ describe("Ext.tree.TreeGrid", function() {
             rootNode.expand();
             tree.view.setScrollX(40);
 
-            // Wait for scroll syncing to complete
-            waitsFor(function() {
-                return tree.headerCt.getScrollable().getPosition().x === 40;
-            });
+            // We must wait until the Scroller knows about the scroll position
+            // at which point it fires a scrollend event
+            waitsForEvent(tree.getView().getScrollable(), 'scrollend', 'Tree scrollend');
 
+            // Wait for scroll position to be read
+            runs(function() {
+                expect(tree.view.getScrollable().getPosition().x).toBe(40);
+            });
+            
             runs(function() {
                 tree.getRootNode().childNodes[1].expand();
             });
@@ -671,18 +711,6 @@ describe("Ext.tree.TreeGrid", function() {
     });
 
     describe('collapsing locked TreeGrid', function() {
-        beforeEach(function() {
-            // Our test suite assumes that unspecified header text will still show headers.
-            // 6.1 sets hideHeaders if there is no header text and hideHeaders is not in the class.
-            // Our jasmine implementation overrides it just for tests, so undo it because that
-            // hiding of empty headers is what we are testing here.
-            delete Ext.panel.Table.prototype.hideHeaders;
-        });
-        afterEach(function() {
-            // Restore the test suite's required setting.
-            Ext.panel.Table.prototype.hideHeaders = false;
-        });
-
         it('should allow animated collapse and expand', function() {
             tree = new Ext.tree.Panel({
                 renderTo : Ext.getBody(),
@@ -715,8 +743,8 @@ describe("Ext.tree.TreeGrid", function() {
                 expandSpy = spyOnEvent(tree.lockedGrid, 'expand');
 
             // None of the columns have a text or title config, so the headers should be hidden.
-            expect(tree.lockedGrid.hideHeaders).toBe(true);
-            expect(tree.normalGrid.hideHeaders).toBe(true);
+            expect(tree.lockedGrid.headerCt.getHeight()).toBe(0);
+            expect(tree.normalGrid.headerCt.getHeight()).toBe(0);
 
             // Because locked side is collapsible, it will acquire a header.
             // Normal side should sync with this and have a header even though
@@ -738,6 +766,63 @@ describe("Ext.tree.TreeGrid", function() {
             // Wait for the expand event
             waitsFor(function() {
                 return expandSpy.callCount === 1;
+            });
+        });
+    });
+
+    describe('auto hide headers, then headers arriving from a bind', function() {
+        var store = Ext.create('Ext.data.TreeStore', {
+            autoDestroy: true,
+            root: {
+                expanded: true,
+                children: [{
+                    text: 'detention',
+                    leaf: true
+                }, {
+                    text: 'homework',
+                    expanded: true,
+                    children: [{
+                        text: 'book report',
+                        leaf: true
+                    }, {
+                        text: 'algebra',
+                        leaf: true
+                    }]
+                }, {
+                    text: 'buy lottery tickets',
+                    leaf: true
+                }]
+            }
+        });
+
+        it('should show the headers as soon as any header acquires text', function() {
+            tree = Ext.create('Ext.tree.Panel', {
+                title: 'Simple Tree',
+                width: 300,
+                viewModel: {
+                    data: {
+                        headerText: 'A header'
+                    }
+                },
+                store: store,
+                rootVisible: false,
+                renderTo: Ext.getBody(),
+                columns: [{
+                    bind: {
+                        text: '{headerText}'
+                    },
+                    xtype: 'treecolumn',
+                    dataIndex: 'text',
+                    flex: 1
+                }]
+            });
+
+            // No header text anywhere in the Panel
+            expect(tree.headerCt.getHeight()).toBe(0);
+
+            // When they arrive from the bind, that should change
+            waitsFor(function() {
+                return tree.headerCt.getHeight() > 0;
             });
         });
     });

@@ -17,6 +17,7 @@
 @if $include-rtl {
     .#{$prefix}grid-locked-split .#{$prefix}rtl.#{$prefix}grid-inner-normal {
         border-width: 0 $grid-lockable-separator-border-width 0 0;
+        border-right-color: $grid-lockable-separator-border-color;
     }
 }
 
@@ -121,4 +122,15 @@
 
 .#{$prefix}grid-scroll-container {
     background-color: $grid-body-background-color;
+}
+
+@if $include-rtl {
+    .#{$prefix}rtl {
+        > .#{$prefix}grid-scroll-container {
+            direction: rtl;
+            > .#{$prefix}grid-scroll-body {
+                direction: rtl;
+            }
+        }
+    }
 }

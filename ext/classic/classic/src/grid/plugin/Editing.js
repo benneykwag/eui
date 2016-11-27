@@ -466,13 +466,15 @@ Ext.define('Ext.grid.plugin.Editing', {
             expanderSelector = view.expanderSelector,
             // Use getColumnManager() in this context because colIdx includes hidden columns.
             columnHeader = view.ownerCt.getColumnManager().getHeaderAtIndex(colIdx),
-            editor = columnHeader.getEditor(record);
+            editor = columnHeader.getEditor(record),
+            targetCmp;
 
         if (this.shouldStartEdit(editor) && (!expanderSelector || !e.getTarget(expanderSelector))) {
             ownerGrid.setActionableMode(true, e.position);
         } 
         // Clicking on a component in a widget column
-        else if (ownerGrid.actionableMode && view.owns(e.target) && Ext.Component.fromElement(e.target, cell).focusable) {
+        else if (ownerGrid.actionableMode && view.owns(e.target) &&
+                 (targetCmp = Ext.Component.fromElement(e.target, cell) && targetCmp.focusable)) {
             return;
         }
         // The cell is not actionable, we we must exit actionable mode

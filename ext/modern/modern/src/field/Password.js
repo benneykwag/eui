@@ -43,7 +43,7 @@ Ext.define('Ext.field.Password', {
     xtype: 'passwordfield',
     alternateClassName: 'Ext.form.Password',
 
-    uses: [
+    requires: [
         'Ext.field.trigger.Reveal'
     ],
 

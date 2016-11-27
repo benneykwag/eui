@@ -34,11 +34,14 @@ Ext.define('Ext.rtl.scroll.Scroller', {
             return this.getRtl() ? element.rtlGetScroll() : element.getScroll();
         },
 
-        updateSpacerXY: function(pos) {
+        // rtl hook
+        translateSpacer: function(x, y) {
             if (this.getRtl()) {
-                pos.x = -pos.x;
+                this.getSpacer().dom.style.right = (x - 1) + 'px';
+                this.callParent([null, y]);
+            } else {
+                this.callParent([x, y]);
             }
-            this.callOverridden([pos]);
         }
     }
 });

@@ -2916,6 +2916,27 @@ describe("Ext.Class", function() {
 
                 expect(sub.foo()).toBe('mixinfoosub');
             });
+
+            it("should make the mixin available when the mixin has inheritableStatics", function() {
+                var M = Ext.define(null, {
+                    extend: 'Ext.Mixin',
+
+                    mixinConfig: {
+                        id: 'mymixin'
+                    },
+
+                    inheritableStatics: {
+                        foo: Ext.emptyFn
+                    }
+                });
+
+                cls = Ext.define(null, {
+                    mixins: [M]
+                });
+
+                o = new cls();
+                expect(o.mixins.mymixin).toBe(M.prototype);
+            });
         });
     });
 

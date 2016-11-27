@@ -126,9 +126,9 @@ Ext.define('Ext.menu.Menu', {
      * The delay in ms as to how long the framework should wait before firing a mouseleave event.
      * This allows submenus not to be collapsed while hovering other menu items.
      *
-     * Defaults to 100
+     * Defaults to 50
      */
-     mouseLeaveDelay: 100,
+     mouseLeaveDelay: 50,
 
     /**
      * @property {Boolean} isMenu
@@ -283,7 +283,7 @@ Ext.define('Ext.menu.Menu', {
             me.constrain = false;
         }
 
-        me.callParent(arguments);
+        me.callParent();
 
         // Configure items prior to render with special classes to align
         // non MenuItem child components with their MenuItem siblings.
@@ -316,7 +316,7 @@ Ext.define('Ext.menu.Menu', {
     beforeRender: function() {
         var me = this;
         
-        me.callParent(arguments);
+        me.callParent();
 
         // Menus are usually floating: true, which means they shrink wrap their items.
         // However, when they are contained, and not auto sized, we must stretch the items.
@@ -330,7 +330,7 @@ Ext.define('Ext.menu.Menu', {
         }
     },
 
-    onBoxReady: function() {
+    onBoxReady: function(width, height) {
         var me = this,
             iconSeparatorCls = me._iconSeparatorCls,
             keyNav = me.focusableKeyNav;
@@ -375,7 +375,7 @@ Ext.define('Ext.menu.Menu', {
             });
         }
 
-        me.callParent(arguments);
+        me.callParent([width, height]);
 
         // TODO: Move this to a subTemplate When we support them in the future
         if (me.showSeparator) {
@@ -643,6 +643,7 @@ Ext.define('Ext.menu.Menu', {
             me.escapeKeyNav.destroy();
         }
 
+        me.itemOverTask.cancel();
         me.parentMenu = me.ownerCmp = me.escapeKeyNav = null;
         
         if (me.rendered) {
@@ -659,11 +660,15 @@ Ext.define('Ext.menu.Menu', {
 
     onMouseLeave: function(e) {
         var me = this;
-
-        me.itemOverTask.cancel();
+        
+        if (me.itemOverTask) {
+            me.itemOverTask.cancel();
+        }
+        
         if (me.disabled) {
             return;
         }
+        
         me.fireEvent('mouseleave', me, e);
     },
 
@@ -690,7 +695,11 @@ Ext.define('Ext.menu.Menu', {
         if (item) {
             // Activate the item in time specified by mouseLeaveDelay.
             // If we mouseout, or move to another item this invocation will be canceled.
-            me.itemOverTask.delay(me.mouseLeaveDelay, null, null, [e, item]);
+            if (e.pointerType === 'touch') {
+                me.handleItemOver(e, item);
+            } else {
+                me.itemOverTask.delay(me.expanded ? me.mouseLeaveDelay : 0, null, null, [e, item]);
+            }
         }
         if (mouseEnter) {
             me.fireEvent('mouseenter', me, e);
@@ -765,15 +774,19 @@ Ext.define('Ext.menu.Menu', {
             }
         }
 
-        me.callParent(arguments);
+        me.callParent();
     },
 
-    afterShow: function() {
+    afterShow: function(animateTarget, callback, scope) {
         var me = this,
             ariaDom = me.ariaEl.dom;
 
-        me.callParent(arguments);
+        me.callParent([animateTarget, callback, scope]);
         Ext.menu.Manager.onShow(me);
+
+        if (me.parentMenu) {
+            me.parentMenu.expanded = true;
+        }
         
         if (me.floating && ariaDom) {
             ariaDom.setAttribute('aria-expanded', true);
@@ -795,7 +808,11 @@ Ext.define('Ext.menu.Menu', {
         me.callParent([animateTarget, cb, scope]);
         me.lastHide = Ext.Date.now();
         Ext.menu.Manager.onHide(me);
-        
+
+        if (me.parentMenu && me.parentMenu.expanded) {
+            me.parentMenu.expanded = false;
+        }
+
         if (me.floating && ariaDom) {
             ariaDom.setAttribute('aria-expanded', false);
         }
@@ -821,7 +838,7 @@ Ext.define('Ext.menu.Menu', {
          */
         applyDefaults: function (config) {
             if (!Ext.isString(config)) {
-                config = this.callParent(arguments);
+                config = this.callParent([config]);
             }
             return config;
         },

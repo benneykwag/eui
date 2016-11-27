@@ -53,6 +53,7 @@
      * @method constructor
      * Create a new anonymous class.
      *
+     * @param Class
      * @param {Object} data An object represent the properties of this class
      * @param {Function} onCreated Optional, the callback function to be executed when this class is fully created.
      * Note that the creation process can be asynchronous depending on the pre-processors used.
@@ -209,6 +210,9 @@
          * @param {Object} fn.data The set of properties passed in {@link Ext.Class} constructor
          * @param {Function} fn.fn The callback function that **must** to be executed when this
          * pre-processor finishes, regardless of whether the processing is synchronous or asynchronous.
+         * @param properties
+         * @param position
+         * @param relativeTo
          * @return {Ext.Class} this
          * @private
          * @static

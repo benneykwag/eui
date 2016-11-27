@@ -246,7 +246,7 @@ Ext.env.OS.prototype = {
         deviceType = 'Tablet';
     }
     else {
-        if (!osEnv.is.Android && !osEnv.is.iOS && !osEnv.is.WindowsPhone && /Windows|Linux|MacOS/.test(osName)) {
+        if (!osEnv.is.Android && !osEnv.is.iOS && !osEnv.is.WindowsPhone && /Windows|Linux|MacOS|ChromeOS/.test(osName)) {
             deviceType = 'Desktop';
 
             // always set it to false when you are on a desktop not using Ripple Emulation

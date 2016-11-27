@@ -140,8 +140,10 @@ Ext.define('Ext.grid.plugin.MultiSelection', {
 
         if (this.getUseTriggerButton() && titleBar && titleBar.getTitle()) {
             this.triggerButton = titleBar.add({
+                ui: 'alt',
                 align: 'right',
                 xtype: 'button',
+                margin: '0 0 0 10',
                 text: this.getTriggerText()
             });
 
@@ -153,7 +155,7 @@ Ext.define('Ext.grid.plugin.MultiSelection', {
             grid.setMode('MULTI');
         }
 
-        grid.config.columns.unshift(selectionColumn);
+        grid.insertColumn(0, selectionColumn);
     },
 
     onTriggerButtonTap: function() {
@@ -173,7 +175,8 @@ Ext.define('Ext.grid.plugin.MultiSelection', {
         this.cancelButton = this.getGrid().getTitleBar().add({
             align: 'right',
             xtype: 'button',
-            ui: 'action',
+            ui: 'alt',
+            margin: '0 0 0 10',
             text: this.getCancelText(),
             scope: this
         });
@@ -189,14 +192,14 @@ Ext.define('Ext.grid.plugin.MultiSelection', {
     exitSelectionMode: function() {
         this.cancelButton.destroy();
         this.triggerButton.setText(this.getTriggerText());
-        this.triggerButton.setUi(null);
+        this.triggerButton.setUi('alt');
         this.getSelectionColumn().hide();
         this.getGrid().setMode('SINGLE');
         this.getGrid().deselectAll();
     },
 
     deleteSelectedRecords: function() {
-        this.getGrid().getStore().remove(this.getGrid().getSelection());
+        this.getGrid().getStore().remove(this.getGrid().getSelections());
     },
 
     applySelectionColumn: function(column) {

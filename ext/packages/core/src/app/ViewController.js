@@ -323,19 +323,19 @@ Ext.define('Ext.app.ViewController', {
      * @return {Boolean} returns false if any of the handlers return false otherwise it returns true.
      * @protected
      */
-    fireViewEvent: function(eventName, firstArg) {
+    fireViewEvent: function (eventName, args) {
         var view = this.view,
             result = false,
-            args = arguments;
+            a = arguments;
 
         if (view) {
-            if (view !== firstArg) {
-                args = Ext.Array.slice(args);
+            if (view !== args) {
+                a = Ext.Array.slice(a);
 
-                args.splice(1, 0, view);
+                a.splice(1, 0, view); // insert view at [1]
             }
 
-            result = view.fireEvent.apply(view, args);
+            result = view.fireEvent.apply(view, a);
         }
 
         return result;

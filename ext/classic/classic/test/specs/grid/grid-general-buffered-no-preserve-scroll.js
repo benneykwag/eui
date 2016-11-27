@@ -1,6 +1,6 @@
 /* global Ext, expect, spyOn, jasmine, xit, MockAjaxManager */
 
-describe("grid-general-buffered-no-preserv-scroll", function() {
+describe("grid-general-buffered-no-preserve-scroll", function() {
     var grid, store,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,

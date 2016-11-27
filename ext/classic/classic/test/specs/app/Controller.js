@@ -1,3 +1,5 @@
+/* global Ext, spyOn, expect */
+
 describe("Ext.app.Controller", function() {
     var panelEventFired = false,
         customEventFired = false,
@@ -618,13 +620,15 @@ describe("Ext.app.Controller", function() {
                 controllers: ['Parent']
             });
             
-            new TestController.Application();
+            var testApp = new TestController.Application();
             
             expect(called1).toBeTruthy();
             // AND
             expect(called2).toBeTruthy();
             // AND
             expect(called3).toBeTruthy();
+
+            testApp.destroy();
         });
     });
 

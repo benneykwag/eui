@@ -17,6 +17,8 @@
     align: 'right',
     ignoreExport: true,
 
+    sortable: false,
+
     cell: {
         xtype: 'rownumberercell'
     },

@@ -74,6 +74,14 @@
                 @include ext-box-orient(vertical);
                 @include ext-box-align(stretch);
                 @include ext-box-pack(center);
+
+                @if $include-ie {
+                    // Button is not correctly sized horizontally in IE10 and 11
+                    // when icon is placed above/below
+                    .#{$prefix}ie10p & {
+                        overflow: hidden;
+                    }
+                }
             }
 
             @if $include-ie {
@@ -120,6 +128,8 @@
         background-repeat: no-repeat;
 
         @if $flexbox {
+            flex-shrink: 0;
+
             .#{$prefix}#{$base-cls}-icon > & {
                 display: block;
             }
@@ -143,9 +153,18 @@
     }
 
     .#{$prefix}#{$base-cls}-button-center {
-        text-align: center;
+        @if $include-ie {
+            .#{$prefix}ie9m & {
+                text-align: center;
+            }
+        }
         @if $flexbox {
             @include ext-box-pack(center);
+        }
+
+        &.#{$prefix}#{$base-cls}-icon-top,
+        &.#{$prefix}#{$base-cls}-icon-bottom {
+            text-align: center;
         }
     }
 

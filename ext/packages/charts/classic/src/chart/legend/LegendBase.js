@@ -3,46 +3,50 @@
  */
 Ext.define('Ext.chart.legend.LegendBase', {
     extend: 'Ext.view.View',
+
     config: {
         tpl: [
-            '<div class="', Ext.baseCSSPrefix, 'legend-container">',
-                '<tpl for=".">',
-                    '<div class="', Ext.baseCSSPrefix, 'legend-item">',
-                        '<span ',
-                            'class="', Ext.baseCSSPrefix, 'legend-item-marker {[ values.disabled ? Ext.baseCSSPrefix + \'legend-inactive\' : \'\' ]}" ',
-                            'style="background:{mark};">',
-                        '</span>{name}',
-                    '</div>',
-                '</tpl>',
+            '<div class="', Ext.baseCSSPrefix, 'legend-inner">', // for IE8 vertical centering
+                '<div class="', Ext.baseCSSPrefix, 'legend-container">',
+                    '<tpl for=".">',
+                        '<div class="', Ext.baseCSSPrefix, 'legend-item">',
+                            '<span ',
+                                'class="', Ext.baseCSSPrefix, 'legend-item-marker {[ values.disabled ? Ext.baseCSSPrefix + \'legend-item-inactive\' : \'\' ]}" ',
+                                'style="background:{mark};">',
+                            '</span>{name}',
+                        '</div>',
+                    '</tpl>',
+                '</div>',
             '</div>'
         ],
-        nodeContainerSelector: 'div.' + Ext.baseCSSPrefix + 'legend-container',
-        itemSelector: 'div.' + Ext.baseCSSPrefix + 'legend-item',
+        nodeContainerSelector: 'div.' + Ext.baseCSSPrefix + 'legend-inner', // element that contains rows (see AbstractView)
+        itemSelector: 'div.' + Ext.baseCSSPrefix + 'legend-item',           // row element (see AbstractView)
         docked: 'bottom'
     },
 
     setDocked: function (docked) {
+        // If we call the method 'updateDocked' instead of 'setDocked', the following error is thrown:
+        // "Ext.Component#setDocked" is deprecated. Please use "setDock" instead.
         var me = this,
-            panel = me.ownerCt,
-            layout;
+            panel = me.ownerCt;
 
-        me.docked = docked;
+        me.docked = me.dock = docked;
 
         switch (docked) {
             case 'top':
             case 'bottom':
-                me.addCls(Ext.baseCSSPrefix + 'horizontal');
-                layout = 'hbox';
+                me.addCls(me.horizontalCls);
+                me.removeCls(me.verticalCls);
                 break;
             case 'left':
             case 'right':
-                me.removeCls(Ext.baseCSSPrefix + 'horizontal');
-                layout = 'vbox';
+                me.addCls(me.verticalCls);
+                me.removeCls(me.horizontalCls);
                 break;
         }
 
         if (panel) {
-            panel.setDocked(docked);
+            panel.setDock(docked);
         }
     },
 

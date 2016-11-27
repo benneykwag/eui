@@ -260,13 +260,9 @@ Ext.define('Ext.grid.plugin.RowExpander', {
 
     beforeReconfigure: function(grid, store, columns, oldStore, oldColumns) {
         var me = this;
-
-        if (me.viewListeners) {
-            me.viewListeners.destroy();    
-        }
         
         if (columns) {
-            me.expanderColumn = new Ext.grid.Column(me.getHeaderConfig());    
+            me.expanderColumn = new Ext.grid.column.Column(me.getHeaderConfig());    
             columns.unshift(me.expanderColumn);
         }
         
@@ -404,12 +400,6 @@ Ext.define('Ext.grid.plugin.RowExpander', {
 
         if (me.scrollIntoViewOnExpand && wasCollapsed) {
             me.grid.ensureVisible(rowIdx);
-        }
-
-        // The two sides are layout roots. The top grid will not have layed out.
-        // We must postprocess it now.
-        if (ownerLockable && ownerLockable.componentLayoutCounter === componentLayoutCounter) {
-            ownerLockable.syncLockableLayout();
         }
     },
 

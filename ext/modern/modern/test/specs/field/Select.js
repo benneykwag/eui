@@ -493,14 +493,15 @@ describe('Ext.field.Select', function() {
                 waitsFor(function() {
                     return scrollComplete;
                 }, 'slot to scroll selection into view', 800);
+                
+                waitsForSpy(resizeSpy);
+
                 runs(function() {
                     item = list.getItemAt(45);
                     scrollHeight = picker.element.getHeight();
                     scrollMin = scroller.getPosition().y;                    
                     scrollMax = scrollMin+scrollHeight;
                     offset = item.renderElement.dom.offsetTop;
-
-                    expect(resizeSpy).toHaveBeenCalled();
                     expect(resizeSpy.callCount).toBe(1);
                 });                
             });

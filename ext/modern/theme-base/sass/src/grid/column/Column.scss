@@ -14,7 +14,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        @include st-box-flex;
+        @include st-box-flex(1, 'auto');
     }
 
     &.#{$prefix}align-right {

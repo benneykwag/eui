@@ -1,3 +1,5 @@
+/* global Ext, spyOn, jasmine, expect */
+
 describe("Modern Ext.Widget", function() {
 
     var w;
@@ -12,7 +14,7 @@ describe("Modern Ext.Widget", function() {
     });
 
     describe("view controllers", function() {
-        var Controller, spy
+        var Controller, spy;
         beforeEach(function() {
             // Suppress console warning about mapping being overridden
             spyOn(Ext.log, 'warn');
@@ -708,7 +710,7 @@ describe("Modern Ext.Widget", function() {
                     config: {
                         test: null
                     }
-                })
+                });
             });
 
             afterEach(function() {

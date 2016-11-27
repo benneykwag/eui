@@ -243,9 +243,6 @@ Ext.define('Ext.draw.engine.Canvas', {
 
     element: {
         reference: 'element',
-        style: {
-            position: 'absolute'
-        },
         children: [{
             reference: 'innerElement',
             style: {

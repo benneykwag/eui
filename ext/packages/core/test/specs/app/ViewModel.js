@@ -2191,6 +2191,17 @@ describe("Ext.app.ViewModel", function() {
                                 expect(store.getAt(1)).toBe(session.getRecord('Post', 2));
                             });
                         }
+
+                        it("should not throw when dropping the owner that causes the store to destroy", function() {
+                            makeUser(1);
+                            var posts = user.posts();
+                            bindNotify('{user.posts}', spy);
+                            setNotify('user', user);
+                            expect(function() {
+                                user.drop();
+                            }).not.toThrow();
+                            expect(posts.destroyed).toBe(true);
+                        });
                     });
                 });
 

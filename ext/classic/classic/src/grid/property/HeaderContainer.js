@@ -117,7 +117,8 @@ Ext.define('Ext.grid.property.HeaderContainer', {
 
     /**
      * @private
-     */    renderBool : function(bVal) {
+     */
+    renderBool : function(bVal) {
         return this[bVal ? 'trueText' : 'falseText'];
     },
 

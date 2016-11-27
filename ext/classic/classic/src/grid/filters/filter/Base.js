@@ -299,7 +299,6 @@ Ext.define('Ext.grid.filters.filter.Base', {
     /**
      * Sets the status of the filter and fires the appropriate events.
      * @param {Boolean} active The new filter state.
-     * @param {String} key The filter key for columns that support multiple filters.
      */
     setActive: function (active) {
         var me = this,

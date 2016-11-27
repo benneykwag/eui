@@ -92,6 +92,7 @@ Ext.define('Ext.chart.AbstractChart', {
         'Ext.data.StoreManager',
         'Ext.chart.legend.Legend',
         'Ext.chart.legend.SpriteLegend',
+        'Ext.chart.legend.store.Store',
         'Ext.data.Store'
     ],
 
@@ -473,11 +474,17 @@ Ext.define('Ext.chart.AbstractChart', {
          */
         highlightItem: null,
 
-        touchAction: {
-            panX: false,
-            panY: false,
-            pinchZoom: false,
-            doubleTapZoom: false
+        surfaceZIndexes: {
+            background: 0, // Contains the backround 'rect' sprite.
+            main: 1,       // Contains grid lines and CrossZoom overlay 'rect' sprite.
+            grid: 2,       // Reserved (unused).
+            series: 3,     // Contains series sprites.
+            axis: 4,       // Reserved.
+            chart: 5,      // Covers whole chart, minus the legend area.
+            overlay: 6,    // This surface will typically contain chart labels
+                           // and interaction sprites like crosshair lines.
+            legend: 7,     // SpriteLegend surface.
+            title: 8       // Reserved.
         }
     },
 
@@ -505,22 +512,6 @@ Ext.define('Ext.chart.AbstractChart', {
      */
     isThicknessChanged: false,
 
-    /**
-     * @private
-     * The z-indexes to use for the various surfaces
-     */
-    surfaceZIndexes: {
-        background: 0,
-        main: 1,
-        grid: 2,
-        series: 3,
-        axis: 4,
-        chart: 5,
-        overlay: 6,
-        legend: 7,
-        title: 8
-    },
-
     constructor: function (config) {
         var me = this;
 
@@ -535,7 +526,7 @@ Ext.define('Ext.chart.AbstractChart', {
 
         me.callParent(arguments);
 
-        delete me.isInitializing;
+        me.isInitializing = false;
 
         me.getSurface('main');
         me.getSurface('chart').setFlipRtlText(me.getInherited().rtl);
@@ -846,22 +837,6 @@ Ext.define('Ext.chart.AbstractChart', {
         }
     },
 
-    resetLegendStore: function () {
-        var store = this.getLegendStore(),
-            data, i, len, record;
-
-        if (store) {
-            data = this.getLegendStore().getData().items;
-
-            for (i = 0, len = data.length; i < len; i++) {
-                record = data[i];
-                record.beginEdit();
-                record.set('disabled', false);
-                record.commit();
-            }
-        }
-    },
-
     onUpdateLegendStore: function (store, record) {
         var series = this.getSeries(), seriesItem;
 
@@ -939,18 +914,14 @@ Ext.define('Ext.chart.AbstractChart', {
         }
     },
 
-    getSurface: function (name, type) {
-        name = name || 'main';
-        type = type || name;
+    getSurface: function (id, type) {
+        id = id || 'main';
+        type = type || id;
 
         var me = this,
-            surface = this.callParent([name]),
-            zIndexes = me.surfaceZIndexes,
+            surface = this.callParent([id, type]),
             map = me.surfaceMap;
 
-        if (type in zIndexes) {
-            surface.element.setStyle('zIndex', zIndexes[type]);
-        }
         if (!map[type]) {
             map[type] = [];
         }
@@ -983,7 +954,8 @@ Ext.define('Ext.chart.AbstractChart', {
             result = [],
             axis, oldAxis,
             linkedTo, id,
-            i, ln, oldMap;
+            i, j, ln, oldMap,
+            series;
 
         me.animationSuspendCount++;
 
@@ -1040,9 +1012,21 @@ Ext.define('Ext.chart.AbstractChart', {
             }
         }
 
+        me.axesChangeSeries = {};
         for (i in oldMap) {
             if (!result.map[i]) {
-                oldMap[i].destroy();
+                oldAxis = oldMap[i];
+                if (oldAxis && !oldAxis.destroyed) {
+                    // At this point the series still have their `xAxis` and `yAxis` configs
+                    // set to old axes. We need to update such series with new matching axes
+                    // by calling their `onAxesChange` method.
+                    for (j = 0, ln = oldAxis.boundSeries.length; j < ln; j++) {
+                        series = oldAxis.boundSeries[j];
+                        me.axesChangeSeries[series.getId()] = series;
+
+                    }
+                    oldAxis.destroy();
+                }
             }
         }
 
@@ -1051,9 +1035,28 @@ Ext.define('Ext.chart.AbstractChart', {
         return result;
     },
 
-    updateAxes: function () {
-        if (!this.isDestroying) {
-            this.scheduleLayout();
+    updateAxes: function (axes) {
+        var me = this,
+            seriesMap = me.axesChangeSeries,
+            series, id, i, ln, axis;
+
+        for (id in seriesMap) {
+            series = seriesMap[id];
+            // `true` to force set series' axes, even if they are already set
+            // (in this case to old axes that were just destroyed in the `axes` applier).
+            series.onAxesChange(me, true);
+        }
+
+        // If changes to the `axes` config are made post chart creation, without making any
+        // changes to the series afterwards, we need to figure out the new axes' `boundSeries`
+        // manually, as the 'serieschange' event won't be fired in this case.
+        for (i = 0, ln = axes.length; i < ln; i++) {
+            axis = axes[i];
+            axis.onSeriesChange(me);
+        }
+
+        if (!me.isDestroying) {
+            me.scheduleLayout();
         }
     },
 

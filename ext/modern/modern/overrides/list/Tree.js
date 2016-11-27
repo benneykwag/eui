@@ -1,3 +1,6 @@
+/**
+ * @class Ext.list.Tree
+ */
 Ext.define('Ext.overrides.list.Tree', {
     override: 'Ext.list.Tree',
 

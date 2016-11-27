@@ -1,3 +1,5 @@
+/* global Ext, expect, jasmine */
+
 describe("Ext.resizer.Splitter", function () {
     var splitter, c;
 
@@ -112,7 +114,7 @@ describe("Ext.resizer.Splitter", function () {
                     width: 200,
                     region: 'west',
                     split: true,
-                    collapsible: true,
+                    collapsible: true
                 }, iframe]
             });
             splitter = c.down('splitter');

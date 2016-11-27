@@ -407,7 +407,6 @@ Ext.Loader = (new function() {  // jshint ignore:line
          * of the path, then delegates to Ext.Loader#addClassPathMappings
          * @param pathConfig
          */
-
         addBaseUrlClassPathMappings: function(pathConfig) {
             for (var name in pathConfig) {
                 pathConfig[name] = Boot.baseUrl + pathConfig[name];

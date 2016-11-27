@@ -794,14 +794,10 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Removes all items from the store.
-     *
+     * Removes all unfiltered items from the store.  Filtered records will not be removed.
      * Individual record `{@link #event-remove}` events are not fired by this method.
      *
      * @param {Boolean} [silent=false] Pass `true` to prevent the `{@link #event-clear}` event from being fired.
-     *
-     * This method is affected by filtering.
-     * 
      * @return {Ext.data.Model[]} The removed records.
      */
     removeAll: function(silent) {
@@ -1286,6 +1282,7 @@ Ext.define('Ext.data.Store', {
          * {@link #event-add} and {@link #event-remove} events to determine whether the records are being removed/added
          * or just having the position changed.
          * @param {Ext.data.Model[]/Ext.data.Model} [records] The record(s).
+         * @param {Object} [getMap] (private)
          * @return {Number} The number of records being moved. `0` if no records are moving. If records are passed
          * the number will refer to how many of the passed records are moving.
          *

@@ -2,19 +2,21 @@
  * @class Ext.grid.column.Column
  */
 
-
+//# fashion replaces $grid-column-color
 /**
  * @var {color}
  * Grid column text color
  */
 $gridcolumn-color: dynamic($highlight-color);
 
+//# fashion replaces $grid-column-background-color
 /**
  * @var {color}
  * Grid column background-color
  */
 $gridcolumn-background-color: dynamic($neutral-light-color);
 
+//# fashion replaces $grid-column-sorted-background-color
 /**
  * @var {color}
  * Grid column background-color when sorted
@@ -39,54 +41,63 @@ $gridcolumn-border-width: dynamic(null 1px 1px null);
  */
 $gridcolumn-border-style: dynamic(null solid solid null);
 
+//# fashion replaces $grid-column-border-color
 /**
  * @var {color}
  * Grid column background-color
  */
 $gridcolumn-border-color: dynamic(null $neutral-medium-dark-color $neutral-medium-dark-color null);
 
+//# fashion replaces $grid-column-font-weight
 /**
  * @var {string/number}
  * Grid column font-weight
  */
 $gridcolumn-font-weight: dynamic($font-weight-bold);
 
+//# fashion replaces $grid-column-font-size
 /**
  * @var {number}
  * Grid column font-size
  */
 $gridcolumn-font-size: dynamic(1rem);
 
+//# fashion replaces $grid-column-font-size-big
 /**
  * @var {number}
  * Grid column font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $gridcolumn-font-size-big: dynamic(null);
 
+//# fashion replaces $grid-column-line-height
 /**
  * @var {number}
  * Grid column line-height
  */
 $gridcolumn-line-height: dynamic(1.25em);
 
+//# fashion replaces $grid-column-line-height-big
 /**
  * @var {number}
  * Grid column line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $gridcolumn-line-height-big: dynamic(1.2em);
 
+//# fashion replaces $grid-column-font-family
 /**
  * @var {string}
  * Grid column font-family
  */
 $gridcolumn-font-family: dynamic($font-family);
 
+//# fashion replaces $grid-column-padding
 /**
  * @var {number/list}
  * Grid column padding
  */
 $gridcolumn-padding: dynamic(.308em .6em);
 
+//# fashion replaces $grid-column-padding-big
 /**
  * @var {number/list}
  * Grid column padding in the {@link Global_CSS#$enable-big big} sizing scheme
@@ -117,6 +128,7 @@ $gridcolumn-sort-icon-size: dynamic(1em);
  */
 $gridcolumn-sort-icon-size-big: dynamic(null);
 
+//# fashion replaces $grid-column-sort-icon-font-size
 /**
  * @var {number}
  * Grid column sort icon font size
@@ -129,18 +141,21 @@ $gridcolumn-sort-icon-font-size: dynamic($gridcolumn-sort-icon-size);
  */
 $gridcolumn-sort-icon-font-size-big: dynamic($gridcolumn-sort-icon-size-big);
 
+//# fashion replaces $grid-column-sort-icon-color
 /**
  * @var {color}
  * Grid column sort icon color
  */
 $gridcolumn-sort-icon-color: dynamic($gridcolumn-color);
 
+//# fashion replaces $grid-column-sort-asc-icon
 /**
  * @var {string/list}
  * Grid column sort ascending icon
  */
 $gridcolumn-sort-asc-icon: dynamic($fa-var-long-arrow-up);
 
+//# fashion replaces $grid-column-sort-desc-icon
 /**
  * @var {string/list}
  * Grid column sort descending icon

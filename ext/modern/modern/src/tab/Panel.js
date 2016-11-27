@@ -108,18 +108,19 @@ Ext.define('Ext.tab.Panel', {
     },
 
     initialize: function() {
-        this.callParent();
+        var me = this;
+        me.callParent();
 
-        this.on({
+        me.on({
             beforeactivetabchange: 'doTabChange',
             delegate: '> tabbar',
-            scope   : this
+            scope   : me
         });
 
-        this.on({
+        me.on({
             disabledchange: 'onItemDisabledChange',
             delegate: '> component',
-            scope   : this
+            scope   : me
         });
     },
 

@@ -349,7 +349,8 @@ Ext.define('Ext.form.Basic', {
     destroy: function() {
         var me = this,
             mon = me.monitor;
-        
+
+        clearTimeout(me.actionTimer);
         if (mon) {
             mon.unbind();
             me.monitor = null;
@@ -648,14 +649,16 @@ Ext.define('Ext.form.Basic', {
      * @return {Ext.form.Basic} this
      */
     doAction: function(action, options) {
+        var me = this;
+
         if (Ext.isString(action)) {
-            action = Ext.ClassManager.instantiateByAlias('formaction.' + action, Ext.apply({}, options, {form: this}));
+            action = Ext.ClassManager.instantiateByAlias('formaction.' + action, Ext.apply({}, options, {form: me}));
         }
-        if (this.fireEvent('beforeaction', this, action) !== false) {
-            this.beforeAction(action);
-            Ext.defer(action.run, 100, action);
+        if (me.fireEvent('beforeaction', me, action) !== false) {
+            me.beforeAction(action);
+            me.actionTimer = Ext.defer(action.run, 100, action);
         }
-        return this;
+        return me;
     },
 
     /**
@@ -1068,12 +1071,13 @@ Ext.define('Ext.form.Basic', {
             fields  = this.getFields().items,
             fLen    = fields.length,
             isArray = Ext.isArray,
+            dataMethod = useDataValues ? 'getModelData' : 'getSubmitData',
             field, data, val, bucket, name, f;
 
         for (f = 0; f < fLen; f++) {
             field = fields[f];
             if (!dirtyOnly || field.isDirty()) {
-                data = field[useDataValues ? 'getModelData' : 'getSubmitData'](includeEmptyText, isSubmitting);
+                data = field[dataMethod](includeEmptyText, isSubmitting);
 
                 if (Ext.isObject(data)) {
                     for (name in data) {
@@ -1085,10 +1089,6 @@ Ext.define('Ext.form.Basic', {
                             }
 
                             if (!field.isRadio) {
-                                // skipping checkbox null values since they have no contextual value
-                                if(field.isCheckbox && val===null) {
-                                    continue;
-                                }
                                 if (values.hasOwnProperty(name)) {
                                     bucket = values[name];
 

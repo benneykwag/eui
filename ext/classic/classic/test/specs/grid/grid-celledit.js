@@ -2279,18 +2279,17 @@ describe("grid-celledit", function(){
                         column: 0
                     });
                     var field = plugin.getActiveEditor().field;
-                    jasmine.waitForFocus(field);
+                    jasmine.waitForFocus(field, 'combobox to focus for the first time');
                     runs(function() {
                         // Trigger combo to expand, then down to last value
                         jasmine.fireKeyEvent(field.inputEl, 'keydown', DOWN);
                         jasmine.fireKeyEvent(field.inputEl, 'keydown', DOWN);
                         jasmine.fireKeyEvent(field.inputEl, 'keydown', DOWN);
-                        // Begin edit on next field
-                        jasmine.fireKeyEvent(field.inputEl, 'keydown', TAB);
-                        expect(store.getAt(0).get('field1')).toBe('Baz');
+                        fireTabAndWait(field.inputEl, field, 'combobox to focus for the second time');
                     });
-                    jasmine.waitForFocus(field);
+
                     runs(function() {
+                        expect(store.getAt(0).get('field1')).toBe('Baz');
                         jasmine.fireKeyEvent(field.inputEl, 'keydown', TAB);
                         expect(store.getAt(1).get('field1')).toBe('2.1');
                     });
@@ -2401,6 +2400,7 @@ describe("grid-celledit", function(){
                 }, 'grid cell editor to hide');
 
                 runs(function() {
+                    jasmine.fireMouseEvent(document, 'mousedown');
                     jasmine.fireMouseEvent(tree.view.getNode(1), 'mouseup');
 
                     // Invoke the triggerfield editor
@@ -2416,6 +2416,7 @@ describe("grid-celledit", function(){
                     return cellEditing.editors.items[1].isVisible() === false;
                 }, 'second grid cell editor to hide');
                 runs(function() {
+                    jasmine.fireMouseEvent(document, 'mousedown');
                     jasmine.fireMouseEvent(tree.view.getNode(1), 'mouseup');
                 });
             });

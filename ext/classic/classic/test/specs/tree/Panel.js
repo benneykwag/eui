@@ -2,7 +2,8 @@
 
 describe("Ext.tree.Panel", function(){
     
-    var TreeItem = Ext.define(null, {
+    var itNotTouch = jasmine.supportsTouch ? xit : it,
+        TreeItem = Ext.define(null, {
         extend: 'Ext.data.TreeModel',
         fields: ['id', 'text', 'secondaryId'],
         proxy: {
@@ -154,8 +155,7 @@ describe("Ext.tree.Panel", function(){
                     else {
                         expect(dom.scrollHeight).toBeGreaterThan(dom.clientHeight);
                     }
-                }
-                else {
+                } else {
                     expect(dom.scrollHeight).toBeLessThanOrEqual(dom.clientHeight);
                 }
             }
@@ -168,8 +168,7 @@ describe("Ext.tree.Panel", function(){
                     else {
                         expect(dom.scrollWidth).toBeGreaterThan(dom.clientWidth);
                     }
-                }
-                else {
+                } else {
                     expect(dom.scrollWidth).toBeLessThanOrEqual(dom.clientWidth);
                 }
             }
@@ -220,6 +219,7 @@ describe("Ext.tree.Panel", function(){
                     expanded: true
                 });
                 expectScroll(false, true);
+                expect(view.getScrollable().getX()).toBe(true);
             });
 
             it("should show a scrollbar in both directions", function() {
@@ -646,7 +646,9 @@ describe("Ext.tree.Panel", function(){
     describe("auto height with expand/collapse", function() {
         function makeAutoTree(animate, data, cfg) {
             makeTree(data, Ext.apply({
-                animate: animate
+                animate: animate,
+                expandDuration: 100,
+                collapseDuration: 100
             }, cfg), null, {
                 expanded: true
             });
@@ -1853,7 +1855,7 @@ describe("Ext.tree.Panel", function(){
             expect(view.getNodeByRecord(store.getNodeById('M'))).toHaveCls(selectedItemCls);
         });
         
-        it("should add the expanderIconOverCls class when mouseover the expander icon", function() {
+        itNotTouch("should add the expanderIconOverCls class when mouseover the expander icon", function() {
             var cell00 = view.getCell(0, 0);
 
             expect(cell00.hasCls(view.expanderIconOverCls)).toBe(false);

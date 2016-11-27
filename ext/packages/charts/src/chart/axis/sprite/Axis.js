@@ -459,7 +459,7 @@ Ext.define('Ext.chart.axis.sprite.Axis', {
                 case 'gauge':
                     var gaugeAngles = me.getGaugeAngles();
                     me.iterate(majorTicks, function (position, labelText, i) {
-                        position = (position - attr.min) / (attr.max - attr.min + 1) * attr.totalAngle - attr.totalAngle + gaugeAngles.start;
+                        position = (position - attr.min) / (attr.max - attr.min) * attr.totalAngle - attr.totalAngle + gaugeAngles.start;
                         ctx.moveTo(
                             attr.centerX + (attr.length) * Math.cos(position),
                             attr.centerY + (attr.length) * Math.sin(position)
@@ -716,7 +716,7 @@ Ext.define('Ext.chart.axis.sprite.Axis', {
                     lastLabelText = labelText;
 
                     if (typeof text !== 'undefined') {
-                        var angle = (position - attr.min) / (attr.max - attr.min + 1) * attr.totalAngle -
+                        var angle = (position - attr.min) / (attr.max - attr.min) * attr.totalAngle -
                             attr.totalAngle + gaugeAngles.start;
                         label.setAttributes({
                             text: String(text),

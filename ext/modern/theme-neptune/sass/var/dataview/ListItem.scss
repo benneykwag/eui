@@ -5,6 +5,7 @@
 // NOTE when adding or removing variables in this file - please remember to document them
 // over in SimpleListItem.scss as well
 
+//# fashion replaces $list-item-color
 /**
  * @var {color}
  * List item text color
@@ -29,6 +30,7 @@ $listitem-pressed-color: dynamic(null);
  */
 $listitem-selected-color: dynamic(null);
 
+//# fashion replaces $list-item-background-color
 /**
  * @var {color}
  * List item background-color
@@ -47,12 +49,14 @@ $listitem-alt-background-color: dynamic(darken($listitem-background-color, 2));
  */
 $listitem-hovered-background-color: dynamic(mix(#fff, $base-light-color, 65%));
 
+//# fashion replaces $list-item-pressed-background-color
 /**
  * @var {color}
  * List item background-color when pressed
  */
 $listitem-pressed-background-color: dynamic(null);
 
+//# fashion replaces $list-item-selected-background-color
 /**
  * @var {color}
  * List item background-color when selected
@@ -71,6 +75,7 @@ $listitem-border-width: dynamic(1px);
  */
 $listitem-border-style: dynamic(solid);
 
+//# fashion replaces $list-item-border-color
 /**
  * @var {color}
  * List item border-color
@@ -95,48 +100,56 @@ $listitem-pressed-border-color: dynamic($listitem-pressed-background-color);
  */
 $listitem-selected-border-color: dynamic($listitem-selected-background-color);
 
+//# fashion replaces $list-item-font-weight
 /**
  * @var {string/number}
  * List item font-weight
  */
 $listitem-font-weight: dynamic($font-weight-normal);
 
+//# fashion replaces $list-item-font-size
 /**
  * @var {number}
  * List item font-size
  */
 $listitem-font-size: dynamic(1rem);
 
+//# fashion replaces $list-item-font-size-big
 /**
  * @var {number}
  * List item font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $listitem-font-size-big: dynamic(null);
 
+//# fashion replaces $list-item-line-height
 /**
  * @var {number}
  * List item line-height
  */
 $listitem-line-height: dynamic(1.25em);
 
+//# fashion replaces $list-item-line-height-big
 /**
  * @var {number}
  * List item line-height in the {@link Global_CSS#$enable-big big} sizing scheme
  */
 $listitem-line-height-big: dynamic(1.2em);
 
+//# fashion replaces $list-item-font-family
 /**
  * @var {string}
  * List item font-family
  */
 $listitem-font-family: dynamic($font-family);
 
+//# fashion replaces $list-item-padding
 /**
  * @var {number/list}
  * List item padding
  */
 $listitem-padding: dynamic(.308em .6em);
 
+//# fashion replaces $list-item-padding-big
 /**
  * @var {number/list}
  * List item padding in the {@link Global_CSS#$enable-big big} sizing scheme

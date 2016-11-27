@@ -478,7 +478,7 @@ Ext.define('Ext.draw.modifier.Animation', {
     },
 
     destroy: function () {
-        this.stop();
+        Ext.draw.Animator.remove(this);
         this.callParent();
     }
 });

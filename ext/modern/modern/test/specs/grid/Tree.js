@@ -435,7 +435,7 @@ describe("Ext.grid.Tree", function() {
 
             beforeEach(function() {
                 errorSpy = jasmine.createSpy();
-                onError = window.onError;
+                onError = window.onerror;
                 // We can't catch any exceptions thrown by synthetic events,
                 // so a standard toThrow() or even try/catch won't do the job
                 // here. They will hit onerror though, so use that.
@@ -447,7 +447,7 @@ describe("Ext.grid.Tree", function() {
             });
 
             afterEach(function() {
-                window.onError = onError;
+                window.onerror = onError;
                 errorSpy = null;
             });
 

@@ -1,3 +1,5 @@
+/* global expect, Ext */
+
 describe('Ext.draw.Surface', function () {
 
     describe('add', function () {

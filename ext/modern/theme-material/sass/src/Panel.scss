@@ -15,12 +15,12 @@
 
     .#{$prefix}input {
         .#{$prefix}cleartrigger .#{$prefix}icon-el {
-            color: $reverse-color;
+            color: $base-foreground-color;
         }
 
         // Normal text inputs
         .#{$prefix}input-el {
-            -webkit-text-fill-color: $reverse-color;
+            -webkit-text-fill-color: $base-foreground-color;
         }
     }
 

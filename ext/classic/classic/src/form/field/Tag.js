@@ -4,34 +4,34 @@
  * within the picker itself. Users may easily add or remove `tags` from the 
  * display value area.
  *
- *       @example
- *       var shows = Ext.create('Ext.data.Store', {
- *           fields: ['id','show'],
- *           data: [
- *               {id: 0, show: 'Battlestar Galactica'},
- *               {id: 1, show: 'Doctor Who'},
- *               {id: 2, show: 'Farscape'},
- *               {id: 3, show: 'Firefly'},
- *               {id: 4, show: 'Star Trek'},
- *               {id: 5, show: 'Star Wars: Christmas Special'}
- *           ]
- *        });
+ *    @example
+ *    var shows = Ext.create('Ext.data.Store', {
+ *        fields: ['id','show'],
+ *        data: [
+ *            {id: 0, show: 'Battlestar Galactica'},
+ *            {id: 1, show: 'Doctor Who'},
+ *            {id: 2, show: 'Farscape'},
+ *            {id: 3, show: 'Firefly'},
+ *            {id: 4, show: 'Star Trek'},
+ *            {id: 5, show: 'Star Wars: Christmas Special'}
+ *        ]
+ *    });
  *
- *       Ext.create('Ext.form.Panel', {
- *           renderTo: Ext.getBody(),
- *           title: 'Sci-Fi Television',
- *           height: 200,
- *           width: 500,
- *           items: [{
- *               xtype: 'tagfield',
- *               fieldLabel: 'Select a Show',
- *               store: shows,
- *               displayField: 'show',
- *               valueField: 'id',
- *               queryMode: 'local',
- *               filterPickList: true
- *           }]
- *       });  
+ *    Ext.create('Ext.form.Panel', {
+ *        renderTo: Ext.getBody(),
+ *        title: 'Sci-Fi Television',
+ *        height: 200,
+ *        width: 500,
+ *        items: [{
+ *            xtype: 'tagfield',
+ *            fieldLabel: 'Select a Show',
+ *            store: shows,
+ *            displayField: 'show',
+ *            valueField: 'id',
+ *            queryMode: 'local',
+ *            filterPickList: true
+ *        }]
+ *    });
  *       
  * ### History
  *
@@ -674,6 +674,13 @@ Ext.define('Ext.form.field.Tag', {
         return data;
     },
 
+    onRender: function(container, index) {
+        var me = this;
+
+        me.callParent([container, index]);
+        me.emptyClsElements.push(me.listWrapper, me.placeholderLabel);
+    },
+
     afterRender: function() {
         var me = this,
             inputEl = me.inputEl,
@@ -690,8 +697,7 @@ Ext.define('Ext.form.field.Tag', {
         me.applyAriaListMarkup();
         me.applyAriaSelectedText();
 
-        me.callParent(arguments);
-        me.emptyClsElements.push(me.listWrapper, me.placeholderLabel);
+        me.callParent();
     },
 
     findRecord: function(field, value) {

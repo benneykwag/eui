@@ -834,7 +834,9 @@ $button-segmented-ui: dynamic($enable-default-uis);
     @include button-ui(
         $ui: 'alt',
         $color: $panel-tool-color,
-        $background-color: transparent
+        $background-color: transparent,
+        $border-width: 0,
+        $pressed-background-color: transparent
     );
 }
 

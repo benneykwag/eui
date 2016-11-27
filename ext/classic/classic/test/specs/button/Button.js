@@ -1001,7 +1001,7 @@ describe("Ext.button.Button", function() {
     });
 
     describe("menu", function() {
-        it("should not include menu descendant items in its CQ children if the ">" operator is used", function() {
+        it("should not include menu descendant items in its CQ children if the &gt; combinator is used", function() {
             var queryResult;
 
             makeButton({

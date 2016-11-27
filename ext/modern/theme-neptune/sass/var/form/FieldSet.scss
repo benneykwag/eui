@@ -43,7 +43,7 @@ $fieldset-title-font-size: dynamic(.8em);
 $fieldset-title-font-size-big: dynamic(.8em);
 $fieldset-title-margin: dynamic(1em .7em .3em);
 
-$fieldset-instructions-color: dynamic(lighten($fieldset-title-color, 30%));
+$fieldset-instructions-color: dynamic(lighten($fieldset-title-color, 20%));
 $fieldset-instructions-margin: dynamic(1em .7em .3em);
 $fieldset-instructions-font-weight: dynamic(null);
 $fieldset-instructions-font-size: dynamic(null);

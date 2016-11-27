@@ -7,11 +7,18 @@
 Ext.define('Ext.util.translatable.Abstract', {
     extend: 'Ext.Evented',
 
+    mixins: [
+        'Ext.mixin.Factoryable'
+    ],
+
+    factoryConfig: {
+        type: 'translatable',
+        defaultType: 'csstransform'
+    },
+
     requires: ['Ext.fx.easing.Linear'],
 
     config: {
-        useWrapper: null,
-
         easing: null,
 
         easingX: {
@@ -114,11 +121,11 @@ Ext.define('Ext.util.translatable.Abstract', {
             this.stopAnimation();
         }
 
-        if (!isNaN(x) && typeof x == 'number') {
+        if (!isNaN(x) && typeof x === 'number') {
             this.x = x;
         }
 
-        if (!isNaN(y) && typeof y == 'number') {
+        if (!isNaN(y) && typeof y === 'number') {
             this.y = y;
         }
         this.doTranslate(x, y);
@@ -127,7 +134,7 @@ Ext.define('Ext.util.translatable.Abstract', {
     translateAxis: function(axis, value, animation) {
         var x, y;
 
-        if (axis == 'x') {
+        if (axis === 'x') {
             x = value;
         }
         else {
@@ -182,8 +189,8 @@ Ext.define('Ext.util.translatable.Abstract', {
 
         var now = Ext.Date.now(),
             easing = animation.easing,
-            easingX = (typeof x == 'number') ? (animation.easingX || easing || me.getEasingX() || true) : null,
-            easingY = (typeof y == 'number') ? (animation.easingY || easing || me.getEasingY() || true) : null;
+            easingX = (typeof x === 'number') ? (animation.easingX || easing || me.getEasingX() || true) : null,
+            easingY = (typeof y === 'number') ? (animation.easingY || easing || me.getEasingY() || true) : null;
 
         if (easingX) {
             easingX = me.factoryEasing(easingX);

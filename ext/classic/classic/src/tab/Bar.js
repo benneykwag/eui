@@ -94,9 +94,6 @@ Ext.define('Ext.tab.Bar', {
     _stripCls: Ext.baseCSSPrefix + 'tab-bar-strip',
     _baseBodyCls: Ext.baseCSSPrefix + 'tab-bar-body',
 
-    /**
-     * @private
-     */
     renderTpl:
         '<tpl if="hasTabGuard">{% this.renderTabGuard(out, values, \'before\'); %}</tpl>' +
         '<div id="{id}-body" data-ref="body" role="presentation" class="{baseBodyCls} {baseBodyCls}-{ui} ' +

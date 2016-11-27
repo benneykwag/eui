@@ -31,11 +31,8 @@
  * A lower-level technique that does not use the `Ext.app.Application` architecture is
  * {@link Ext#onReady Ext.onReady}.
  *
- * For more information about how to use the Ext classes, see:
- *
- * - <a href="http://www.sencha.com/learn/">The Learning Center</a>
- * - <a href="http://www.sencha.com/learn/Ext_FAQ">The FAQ</a>
- * - <a href="http://www.sencha.com/forum/">The forums</a>
+ * You can also discuss concepts and issues with others on the
+ * <a href="http://www.sencha.com/forum/">Sencha Forums</a>.
  *
  * @singleton
  */

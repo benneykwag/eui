@@ -1,6 +1,6 @@
 /**
-* Allows GroupTab to render a table structure.
-*/
+ * Allows GroupTab to render a table structure.
+ */
 Ext.define('Ext.ux.GroupTabRenderer', {
     extend: 'Ext.plugin.Abstract',
     alias: 'plugin.grouptabrenderer',

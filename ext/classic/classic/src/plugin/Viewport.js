@@ -58,6 +58,18 @@ Ext.define('Ext.plugin.Viewport', {
         }
     },
 
+    destroy: function() {
+        var el = this.cmp.el;
+
+        this.callParent();
+        // Remove the injected overrides so that the bodyEl singleton
+        // can be reused by subsequent code (eg, unit tests)
+        if (el) {
+            delete el.setHeight;
+            delete el.setWidth;
+        }
+    },
+
     statics: {
         decorate: function (target) {
             Ext.applyIf(target.prototype || target, {
@@ -210,6 +222,8 @@ Ext.define('Ext.plugin.Viewport', {
                         }
                     }
 
+                    delete me.el.setHeight;
+                    delete me.el.setWidth;
                     me.removeUIFromElement();
                     me.el.removeCls(me.baseCls);
                     Ext.fly(document.body.parentNode).removeCls(me.viewportCls);

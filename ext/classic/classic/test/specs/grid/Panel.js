@@ -668,34 +668,34 @@ describe('Ext.grid.Panel', function(){
                 })
             });
             col = grid.getVisibleColumnManager().getColumns()[0];
-            col.triggerEl.show();
-            jasmine.fireMouseEvent(col.triggerEl.dom, 'click');
-            menu = col.activeMenu;
-            expect(menu.isVisible()).toBe(true);
 
-            columnsItem = menu.child('[text=Columns]');
+            Ext.testHelper.showHeaderMenu(col);
 
-            // The single menu item should be for the "Forename" column
-            expect(columnsItem.menu.items.items.length).toBe(1);
-            expect(columnsItem.menu.items.items[0].text).toBe('Forename');
+            runs(function() {
+                menu = col.activeMenu;
+                columnsItem = menu.child('[text=Columns]');
 
-            menu.hide();
+                // The single menu item should be for the "Forename" column
+                expect(columnsItem.menu.items.items.length).toBe(1);
+                expect(columnsItem.menu.items.items[0].text).toBe('Forename');
 
-            // Reconfigure and check that the columns menu reflects the new column set
-            grid.reconfigure(null, [{dataIndex: 'surname', text: 'Surname'}]);
+                menu.hide();
 
-            col = grid.getVisibleColumnManager().getColumns()[0];
-            col.triggerEl.show();
-            jasmine.fireMouseEvent(col.triggerEl.dom, 'click');
-            menu = col.activeMenu;
-            expect(menu.isVisible()).toBe(true);
+                // Reconfigure and check that the columns menu reflects the new column set
+                grid.reconfigure(null, [{dataIndex: 'surname', text: 'Surname'}]);
 
-            columnsItem = menu.child('[text=Columns]');
+                col = grid.getVisibleColumnManager().getColumns()[0];
+                Ext.testHelper.showHeaderMenu(col);
+            });
 
-            // The single menu item should be for the "Surname" column
-            expect(columnsItem.menu.items.items.length).toBe(1);
-            expect(columnsItem.menu.items.items[0].text).toBe('Surname');
+            runs(function() {
+                menu = col.activeMenu;
+                columnsItem = menu.child('[text=Columns]');
 
+                // The single menu item should be for the "Surname" column
+                expect(columnsItem.menu.items.items.length).toBe(1);
+                expect(columnsItem.menu.items.items[0].text).toBe('Surname');
+            });
         });
 
         it("Should reconfigure the grid with no error", function() {
@@ -1302,9 +1302,9 @@ describe('Ext.grid.Panel', function(){
             });
         
             // create the Data Store
-            var store = new Ext.data.Store({
+            var store = new Ext.data.BufferedStore({
                 model: 'ForumThread',
-                buffered: true,
+                asynchronousLoad: false,
                 pageSize: 350,
                 proxy: {
                     type: 'ajax',
@@ -1406,9 +1406,9 @@ describe('Ext.grid.Panel', function(){
                 fields: ['id', 'title']
             });
 
-            var store = new Ext.data.Store({
+            var store = new Ext.data.BufferedStore({
                 model: 'ForumThread',
-                buffered: true,
+                asynchronousLoad: false,
                 pageSize: 50,
                 proxy: {
                     type: 'memory',
@@ -1460,9 +1460,9 @@ describe('Ext.grid.Panel', function(){
             var wasCalled = false;
 
             function createGrid() {
-                store = new Ext.data.Store({
+                store = new Ext.data.BufferedStore({
                     model: 'Foo',
-                    buffered: true,
+                    asynchronousLoad: false,
                     pageSize: 100,
                     proxy: {
                         type: 'ajax',
@@ -3036,6 +3036,7 @@ describe('Ext.grid.Panel', function(){
             var store = new Ext.data.Store({
                 model: ForumThread,
                 buffered: true,
+                asynchronousLoad: false,
                 pageSize: 350,
                 proxy: {
                     type: 'ajax',
@@ -3115,9 +3116,9 @@ describe('Ext.grid.Panel', function(){
             }
 
             // create the Data Store
-            var store = new Ext.data.Store({
+            var store = new Ext.data.BufferedStore({
                 model: ForumThread,
-                buffered: true,
+                asynchronousLoad: false,
                 pageSize: 350,
                 proxy: {
                     type: 'ajax',
@@ -3141,7 +3142,8 @@ describe('Ext.grid.Panel', function(){
                 }],
                 renderTo: Ext.getBody()
             });
-            var view = grid.getView();
+            var view = grid.getView(),
+                scroller = view.getScrollable();
             
             store.load();
 
@@ -3151,12 +3153,12 @@ describe('Ext.grid.Panel', function(){
             });
 
             // Scroll until we've moved out of the initial rendered block
-            waitsFor(function() {
+            jasmine.waitsForScroll(scroller, function() {
                 if (view.all.startIndex > 0) {
                     return true;
                 }
-                view.scrollTo(0, view.getScrollY() + 100);
-            });
+                scroller.scrollBy(0, 100);
+            }, 'Initially rendered block to scroll out of view');
             
             runs(function() {
 
@@ -3345,6 +3347,7 @@ describe('Ext.grid.Panel', function(){
         beforeEach(function() {
             createGrid({
                 buffered: true,
+                asynchronousLoad: false,
                 pageSize: 4
             });
         });
@@ -3694,6 +3697,7 @@ describe('Ext.grid.Panel', function(){
         it('should hide the locked grid when there are no locked columns, and not refresh it', function() {
             createGrid({
                 buffered: true,
+                asynchronousLoad: false,
                 pageSize: 4
             }, {
                 enableLocking: true

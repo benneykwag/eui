@@ -396,7 +396,9 @@ Ext.define('Ext.grid.feature.GroupStore', {
                 metaGroup = groupingFeature.getMetaGroup(record);
 
                 if (modifiedFieldNames && Ext.Array.contains(modifiedFieldNames, groupingFeature.getGroupField())) {
-                    return me.onDataChanged();
+                    me.onDataChanged();
+                    delete record.group;
+                    return;
                 }
 
                 // Fire an update event on the collapsed metaGroup placeholder record

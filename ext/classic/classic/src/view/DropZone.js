@@ -127,7 +127,7 @@ Ext.define('Ext.view.DropZone', {
 
             if (me.overRecord !== overRecord || me.currentPosition !== pos) {
 
-                indicatorY = Ext.fly(node).getY() - view.el.getY() - 1;
+                indicatorY = Ext.fly(node).getY() - Ext.fly(view.getNodeContainer()).getY() - 1;
                 if (pos === 'after') {
                     indicatorY += Ext.fly(node).getHeight();
                 }
@@ -200,6 +200,8 @@ Ext.define('Ext.view.DropZone', {
     onNodeDrop: function(targetNode, dragZone, e, data) {
         var me = this,
             dropHandled = false,
+            overRecord = me.overRecord,
+            currentPosition = me.currentPosition,
  
             // Create a closure to perform the operation which the event handler may use.
             // Users may now set the wait parameter in the beforedrop handler, and perform any kind
@@ -210,9 +212,9 @@ Ext.define('Ext.view.DropZone', {
                 wait: false,
                 processDrop: function () {
                     me.invalidateDrop();
-                    me.handleNodeDrop(data, me.overRecord, me.currentPosition);
+                    me.handleNodeDrop(data, overRecord, currentPosition);
                     dropHandled = true;
-                    me.fireViewEvent('drop', targetNode, data, me.overRecord, me.currentPosition);
+                    me.fireViewEvent('drop', targetNode, data, overRecord, currentPosition);
                 },
  
                 cancelDrop: function() {
@@ -223,7 +225,7 @@ Ext.define('Ext.view.DropZone', {
             performOperation = false;
  
         if (me.valid) {
-            performOperation = me.fireViewEvent('beforedrop', targetNode, data, me.overRecord, me.currentPosition, dropHandlers);
+            performOperation = me.fireViewEvent('beforedrop', targetNode, data, overRecord, currentPosition, dropHandlers);
             if (dropHandlers.wait) {
                 return;
             }

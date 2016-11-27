@@ -21,6 +21,14 @@ body {
 .#{$prefix}body, .#{$prefix}inner {
     width: 100%;
     height: 100%;
+
+    // When the component is not heighted (either explicitly or via flexing/stretching)
+    // height 100% causes the x-body/x-inner to shrink down to 0 height.  Since the 100%
+    // height serves no purpose for non-heighted components (there is no explicit height
+    // for the body/inner to be 100% of) we can just fall back to auto-heighting.
+    &:not(.#{$prefix}heighted) {
+        height: auto;
+    }
 }
 
 .#{$prefix}sized {
@@ -56,7 +64,7 @@ body.#{$prefix}chromeios {
     }
 }
 
-.#{$prefix}ios {
+.#{$prefix}mobile-safari {
     .#{$prefix}float-wrap {
         // Must use height:100% on iOS, 100vh is the full device height including
         // browser chrome, so sizing the float-wrap to that causes overflow.

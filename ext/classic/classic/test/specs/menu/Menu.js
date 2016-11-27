@@ -12,7 +12,7 @@ describe("Ext.menu.Menu", function() {
         var x = item.el.getX() + item.el.getWidth() / 2,
             y = item.el.getY() + item.el.getHeight() / 2;
 
-        if (Ext.supports.TouchEvents) {
+        if (jasmine.supportsTouch) {
             Ext.testHelper.touchStart(item.el, { x: x, y: y });
             Ext.testHelper.touchEnd(item.el, { x: x, y: y });
         } else {
@@ -24,7 +24,7 @@ describe("Ext.menu.Menu", function() {
         var x = item.el.getX() + item.el.getWidth() / 2,
             y = item.el.getY() + item.el.getHeight() / 2;
 
-        if (Ext.supports.TouchEvents) {
+        if (jasmine.supportsTouch) {
             Ext.testHelper.touchStart(item.el, { x: x, y: y });
             Ext.testHelper.touchEnd(item.el, { x: x, y: y });
         } else {
@@ -38,7 +38,7 @@ describe("Ext.menu.Menu", function() {
         var x = el.getX() + el.getWidth() / 2,
             y = el.getY() + el.getHeight() / 2;
 
-        if (Ext.supports.TouchEvents) {
+        if (jasmine.supportsTouch) {
             Ext.testHelper.touchStart(el, { x: x, y: y });
         } else {
             jasmine.fireMouseEvent(el, 'mousedown');
@@ -302,7 +302,7 @@ describe("Ext.menu.Menu", function() {
     
     describe('Touch events', function() {
         // https://sencha.jira.com/browse/EXTJS-20372
-        if (Ext.supports.TouchEvents) {
+        if (jasmine.supportsTouch) {
             it("should not expand submenu when parent item is touched", function() {
                 makeMenu({
                     items: [{
@@ -610,15 +610,11 @@ describe("Ext.menu.Menu", function() {
             
             menu.items.items[0].focus();
             
-            waitsFor(function() {
-                return menu.containsFocus;
-            });
+            waitsForFocus(menu);
             runs(function() {
-                menu.items.items[0].blur();
+                document.body.focus();
             });
-            waitsFor(function() {
-                return !menu.containsFocus;
-            });
+            jasmine.blurAndWait(menu);
             runs(function() {
                 expect(menu.isVisible()).toBe(true);
             });
@@ -1359,7 +1355,7 @@ describe("Ext.menu.Menu", function() {
                 downSpy = spyOn(menu, 'onFocusableContainerDownKey').andCallThrough();
                 rightSpy = spyOn(menu, 'onFocusableContainerRightKey').andCallThrough();
                 
-                menu.show();
+                menu.showAt(0, 0);
             });
             
             afterEach(function() {

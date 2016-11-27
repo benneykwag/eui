@@ -14,6 +14,7 @@ Ext.define('Ext.event.publisher.Focus', {
 
     // At this point only Firefox does not support focusin/focusout, see this bug:
     // https://bugzilla.mozilla.org/show_bug.cgi?id=687787
+    // TODO: Fix event order: https://github.com/jquery/jquery/issues/3123
     handledDomEvents: ['focusin', 'focusout'],
 
     publishDelegatedDomEvent: function(e) {
@@ -41,17 +42,12 @@ Ext.define('Ext.event.publisher.Focus', {
         var me = this,
             commonAncestor,
             node, targets = [],
-            event, focusEnterEvent, fromFly, toFly;
-
-        // In IE9- it can happen that either fromElement or toElement is not falsy value
-        // but is not a HTMLElement either, but some mysterious empty object which is
-        // truthy itself but Ext.fly() for which returns null. :(
-        fromFly = Ext.fly(fromElement);
-        toFly   = Ext.fly(toElement);
+            focusFly = me.focusFly,
+            event, focusEnterEvent;
 
         // If we have suspended focus/blur processing due to framework needing to silently manipulate
         // focus position, then return early.
-        if ((fromFly && fromFly.isFocusSuspended()) || (toFly && toFly.isFocusSuspended())) {
+        if ((fromElement && focusFly.attach(fromElement).isFocusSuspended()) || (toElement && focusFly.attach(toElement).isFocusSuspended())) {
             return;
         }
 
@@ -121,6 +117,7 @@ Ext.define('Ext.event.publisher.Focus', {
 function(Focus) {
     var focusTimeout;
 
+        Focus.prototype.focusFly = new Ext.dom.Fly();
         Focus.instance = new Focus();
 
     // At this point only Firefox does not support focusin/focusout, see this bug:

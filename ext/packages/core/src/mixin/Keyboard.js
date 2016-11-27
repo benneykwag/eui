@@ -144,7 +144,7 @@ Ext.define('Ext.mixin.Keyboard', function (Keyboard) { return {
     },
 
     /**
-     * @cfg {Boolean} keyMapTarget
+     * @cfg {String} keyMapTarget
      * The name of the member that should be used to listen for keydown/keypress events.
      * This is intended to be controlled at the class level not per instance.
      * @protected

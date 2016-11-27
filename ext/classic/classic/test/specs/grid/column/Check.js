@@ -1,7 +1,8 @@
 /* global expect, jasmine, Ext */
 
 describe("Ext.grid.column.Check", function() {
-    var grid, view, store, col, invert = false;
+    var itNotIE9 = Ext.isIE9 ? xit : it,
+        grid, view, store, col, invert = false;
 
     function getColCfg() {
         return {
@@ -80,6 +81,12 @@ describe("Ext.grid.column.Check", function() {
         col = grid = store = null;
         Ext.undefine('spec.CheckColumnModel');
         Ext.data.Model.schema.clear();
+    });
+
+    it("should be able to create an instance without passing a config", function() {
+        var col = new Ext.grid.column.Check();
+        expect(col.isCheckColumn).toBe(true);
+        col.destroy();
     });
     
     describe("check rendering", function() {
@@ -371,7 +378,7 @@ describe("Ext.grid.column.Check", function() {
             });
         });
 
-        it('should set the header checkbox when all rows are checked', function() {
+        itNotIE9('should set the header checkbox when all rows are checked', function() {
             var headercheckchangeCount = 0;
 
             col.on({
@@ -399,10 +406,10 @@ describe("Ext.grid.column.Check", function() {
             // Header checkbox is updated on a timer for efficiency, so must wait
             waitsFor(function() {
                 return col.el.hasCls(col.headerCheckedCls) === true;
-            });
+            }, 'column header to be checked');
         });
 
-        it('should clear the header checkbox when a new, unchecked record is added', function() {
+        itNotIE9('should clear the header checkbox when a new, unchecked record is added', function() {
             var rowCount = view.all.getCount();
 
             // Rows 2 and 4 are unchecked. Header should start unchecked.
@@ -425,10 +432,10 @@ describe("Ext.grid.column.Check", function() {
             waitsFor(function() {
                 return view.all.getCount() === rowCount + 1 &&
                        col.el.hasCls(col.headerCheckedCls) === false;
-            });
+            }, 'column header to be unchecked');
         });
 
-        it('should set the header checkbox when all records have the dataIndex field set', function() {
+        itNotIE9('should set the header checkbox when all records have the dataIndex field set', function() {
             // Rows 2 and 4 are unchecked. Header should start unchecked.
             expect(col.el.hasCls(col.headerCheckedCls)).toBe(false);
 
@@ -446,7 +453,7 @@ describe("Ext.grid.column.Check", function() {
             // Header checkbox is updated on a timer for efficiency, so must wait
             waitsFor(function() {
                 return col.el.hasCls(col.headerCheckedCls) === true;
-            });
+            }, 'column header to be checked');
         });
     });
 });

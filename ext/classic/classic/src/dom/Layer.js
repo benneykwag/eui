@@ -6,7 +6,7 @@
  * {@link Ext.dom.Element#enableShim enableShim}
  */
 Ext.define('Ext.dom.Layer', {
-    extend: 'Ext.Element',
+    extend: 'Ext.dom.Element',
     alternateClassName: 'Ext.Layer',
 
     /**

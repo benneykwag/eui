@@ -199,8 +199,8 @@ Ext.Boot.load("../bootstrap-launch.js");
 ${specfiles.list}
         ];
 
-    if (window.Cmd) {
-        url = Cmd.status.getCurrentChunk(url);
+    if (top.Test && top.Test.Options && top.Test.Options.getCurrentChunk) {
+        url = top.Test.Options.getCurrentChunk(url);
     }
     
     Ext.Boot.load({

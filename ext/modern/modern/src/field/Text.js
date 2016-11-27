@@ -67,6 +67,10 @@ Ext.define('Ext.field.Text', {
     xtype: 'textfield',
     alternateClassName: 'Ext.form.Text',
 
+    requires: [
+        'Ext.field.trigger.Clear'
+    ],
+
     /**
      * @event focus
      * Fires when this field receives input focus
@@ -250,7 +254,13 @@ Ext.define('Ext.field.Text', {
 
         bubbleEvents: ['action'],
 
-        bodyAlign: 'stretch'
+        bodyAlign: 'stretch',
+
+        /**
+          * @cfg {'left'/'center'/'right'} [textAlign='left'].
+          * The text alignment of this field.
+          */
+        textAlign: null
     },
 
     defaultBindProperty: 'value',
@@ -315,20 +325,43 @@ Ext.define('Ext.field.Text', {
         if (me.initialized) {
             me.fireEvent('change', me, value, oldValue);
         }
+
+        // When configured with labelAlign placeholder, we should animate the label back to the
+        // placeholder or placeholder back to label if the field's value was cleared or set programatically.
+        if (!me.isConfiguring && !me.isFocused && me.getLabelAlign() === 'placeholder') {
+            me[!value ? 'animateLabelToPlaceholder' : 'animatePlaceholderToLabel']();
+        }
     },
 
     updateLabel: function (newLabel, oldLabel) {
-        this.callParent(arguments);
+        var me = this;
 
-        if (this.getLabelAlign() === 'placeholder') {
-            this.setPlaceHolder(newLabel);
+        me.callParent([newLabel, oldLabel]);
+
+        if (me.getLabelAlign() === 'placeholder') {
+            if (me.getValue()) {
+                me.labelElement.setStyle('opacity', 1);
+            } else {
+                me.setPlaceHolder(newLabel);
+            }
         }
     },
 
     updateLabelAlign: function(labelAlign, oldLabelAlign) {
 
-
         this.callParent([labelAlign, oldLabelAlign]);
+    },
+
+    updateTextAlign: function(newAlign, oldAlign) {
+        var element = this.element;
+ 
+        if (oldAlign) {
+            element.removeCls(Ext.baseCSSPrefix + 'text-align-' + oldAlign);
+        }
+ 
+        if (newAlign) {
+            element.addCls(Ext.baseCSSPrefix + 'text-align-' + newAlign);
+        }
     },
 
     /**
@@ -429,51 +462,137 @@ Ext.define('Ext.field.Text', {
         this.toggleClearTrigger(!disabled);
     },
 
-    applyTriggers: function(triggers) {
+    updateClearIcon: function(clearIcon, oldClearIcon) {
         var me = this,
-            instances = {},
-            // String lookup is necessary to prevent cmd from requiring the Trigger class
-            Trigger = Ext.field.trigger['Trigger'],
+            triggers, clearTrigger;
+
+        if (!me.isConfiguring) {
+            triggers = me.getTriggers();
+            clearTrigger = triggers && triggers.clear;
+
+            if (clearIcon) {
+                if (!clearTrigger) {
+                    me.addTrigger('clear', 'clear');
+                }
+            } else if (clearTrigger) {
+                me.removeTrigger('clear');
+            }
+        }
+    },
+
+    applyTriggers: function(triggers, oldTriggers) {
+        var me = this,
+            instances = oldTriggers || {},
             clearable = me.getClearIcon(),
-            name, trigger;
+            name, trigger, oldTrigger;
 
         for (name in triggers) {
-            if (!clearable && (name === 'clear')) {
-                continue;
-            }
-
             trigger = triggers[name];
+            oldTrigger = instances[name];
 
-            if (trigger === true) {
-                trigger = {
-                    type: name
-                };
-            } else if (typeof trigger === 'string') {
-                trigger = {
-                    type: trigger
-                };
+            // Any key that exists on the incoming object should cause destruction of
+            // the existing trigger for that key, if one exists.  This is true for both
+            // truthy values (triggers and trigger configs) and falsy values. Falsy values
+            // cause destruction of the existing trigger without replacement.
+            if (oldTrigger) {
+                oldTrigger.destroy();
             }
 
-            trigger = Ext.apply({
-                field: me
-            }, trigger);
+            if (trigger) {
+                if (!clearable && (name === 'clear')) {
+                    continue;
+                }
 
-            trigger = trigger.xtype ? Ext.create(trigger) : Trigger.create(trigger);
-
-            instances[name] = trigger;
+                instances[name] = me.createTrigger(name, trigger);
+            }
         }
 
         return instances;
     },
 
     updateTriggers: function(triggers, oldTriggers) {
-        var name;
+        this.syncTriggers();
+    },
 
-        for (name in oldTriggers) {
-            oldTriggers[name].destroy();
+    /**
+     * Adds a trigger to this text field.
+     * @param {String} name Unique name (within this field) for the trigger.  Cannot be the
+     * same as the name of an existing trigger for this field.
+     * @param {Ext.field.trigger.Trigger/Object} trigger The trigger instance or a config
+     * object for a trigger to add
+     * @return {Ext.field.trigger.Trigger} The trigger that was added
+     */
+    addTrigger: function(name, trigger) {
+        var me = this,
+            triggers = me.getTriggers(),
+            triggerConfig;
+
+        //<debug>
+        if (triggers && triggers[name]) {
+            Ext.raise('Trigger with name "' + name + '" already exists.');
+        }
+        if (typeof name !== 'string') {
+            Ext.raise('Cannot add trigger. Key must be a string.');
+        }
+        if (typeof trigger !== 'string' && !Ext.isObject(trigger)) {
+            Ext.raise('Cannot add trigger "' + name + '". A trigger config or instance is required.');
+        }
+        //</debug>
+
+        trigger = me.createTrigger(name, trigger);
+
+        if (triggers) {
+            triggers[name] = trigger;
+            me.syncTriggers();
+        } else {
+            triggerConfig = {};
+            triggerConfig[name] = trigger;
+            me.setTriggers(triggerConfig);
+        }
+
+        return trigger;
+    },
+
+    /**
+     * Removes a trigger from this text field.
+     * @param {String/Ext.field.trigger.Trigger} trigger The name of the trigger to remove,
+     * or a trigger reference.
+     * @param {Boolean} [destroy=true] False to prevent the trigger from being destroyed
+     * on removal.  Only use this option if you want to reuse the trigger instance.
+     * @return {Ext.field.trigger.Trigger} The trigger that was removed
+     */
+    removeTrigger: function(trigger, destroy) {
+        var me = this,
+            triggers = me.getTriggers(),
+            name = trigger,
+            triggerEl;
+
+        if (name.isTrigger) {
+            name = trigger.getName();
+        } else {
+            trigger = triggers[name];
+        }
+
+        //<debug>
+        if (!name) {
+            Ext.raise('Trigger not found.');
+        } else if (!triggers[name]) {
+            Ext.raise('Cannot remove trigger. Trigger with name "' + name + '" not found.');
+        }
+        //</debug>
+
+        delete triggers[name];
+
+        if (destroy !== false) {
+            trigger.destroy();
+        } else {
+            triggerEl = trigger.el.dom;
+            triggerEl.parentNode.removeChild(triggerEl);
         }
 
         this.syncTriggers();
+
+        return trigger;
     },
 
     /**
@@ -652,9 +771,25 @@ Ext.define('Ext.field.Text', {
     },
 
     doDestroy: function() {
-        this.setTriggers(null);
-        this.triggerGroups = null;
-        this.callParent();
+        var me = this,
+            triggers = me.getTriggers(),
+            triggerGroups = me.triggerGroups,
+            name;
+
+        if (triggerGroups) {
+            for (name in triggerGroups) {
+                triggerGroups[name].destroy();
+            }
+            me.triggerGroups = null;
+        }
+
+        for (name in triggers) {
+            triggers[name].destroy();
+        }
+
+        me.setTriggers(null);
+
+        me.callParent();
     },
 
     privates: {
@@ -698,6 +833,32 @@ Ext.define('Ext.field.Text', {
             me.setPlaceHolder(null);
 
             me.lastPlaceholderAnimInfo = null;
+        },
+
+        /**
+         * @private
+         */
+        createTrigger: function(name, trigger) {
+            if (!trigger.isTrigger) {
+                if (trigger === true) {
+                    trigger = {
+                        type: name
+                    };
+                } else if (typeof trigger === 'string') {
+                    trigger = {
+                        type: trigger
+                    };
+                }
+
+                trigger = Ext.apply({
+                    name: name,
+                    field: this
+                }, trigger);
+
+                trigger = trigger.xtype ? Ext.create(trigger) : Ext.Factory.trigger(trigger);
+            }
+
+            return trigger;
         },
 
         getPlaceholderAnimInfo: function() {
@@ -773,6 +934,9 @@ Ext.define('Ext.field.Text', {
                     afterTriggers.push(triggerGroup);
                 }
             }
+
+            Trigger.sort(beforeTriggers);
+            Trigger.sort(afterTriggers);
 
             for (i = 0, ln = beforeTriggers.length; i < ln; i++) {
                 input.beforeElement.appendChild(beforeTriggers[i].element);

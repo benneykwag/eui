@@ -173,13 +173,17 @@ describe("Ext.viewport.Default", function() {
             it("should fire an 'orientationchange' event and pass the new orientation, width and height as arguments, if the orientation did change", function(){
                 var newOrientation = viewport.LANDSCAPE;
 
-                viewport.setWidth(100);
-                viewport.setHeight(200);
                 viewport.setOrientation(viewport.PORTRAIT);
 
                 spyOn(viewport, 'determineOrientation').andReturn(newOrientation);
                 spyOn(viewport, 'fireEvent');
 
+                viewport.updateSize = function() {
+                    this.windowWidth = 100;
+                    this.windowHeight = 200;
+
+                    return this;
+                };
                 viewport.onOrientationChange();
 
                 expect(viewport.fireEvent).toHaveBeenCalledWith('orientationchange', viewport, newOrientation, 100, 200);

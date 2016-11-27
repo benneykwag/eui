@@ -290,7 +290,7 @@ Ext.define('Ext.tip.QuickTip', {
         // have fired, so just update content and alignment.
         if (me.isVisible()) {
             me.updateContent();
-            me.handleAfterShow();
+            me.realignToTarget();
         } else {
             if (activeTarget.showDelay) {
                 delay = me.showDelay;

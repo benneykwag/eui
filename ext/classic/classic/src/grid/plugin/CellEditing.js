@@ -519,17 +519,20 @@ Ext.define('Ext.grid.plugin.CellEditing', {
     },
 
     getEditor: function(record, column) {
+        return this.getCachedEditor(column.getItemId(), record, column);
+    },
+    
+    getCachedEditor: function (editorId, record, column) {
         var me = this,
             editors = me.editors,
-            editorId = column.getItemId(),
             editor = editors.getByKey(editorId);
-
+        
         if (!editor) {
             editor = column.getEditor(record);
             if (!editor) {
                 return false;
             }
-
+            
             // Allow them to specify a CellEditor in the Column
             if (!(editor instanceof Ext.grid.CellEditor)) {
                 // Apply the field's editorCfg to the CellEditor config.
@@ -546,7 +549,7 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             // Prevent this field from being included in an Ext.form.Basic
             // collection, if the grid happens to be used inside a form
             editor.field.excludeForm = true;
-
+            
             // If the editor is new to this grid, then add it to the grid, and ensure it tells us about its life cycle.
             if (editor.column !== column) {
                 editor.column = column;
@@ -554,20 +557,20 @@ Ext.define('Ext.grid.plugin.CellEditing', {
             }
             editors.add(editor);
         }
-
+        
         // Inject an upward link to its owning grid even though it is not an added child.
         editor.ownerCmp = me.grid.ownerGrid;
-
+        
         if (column.isTreeColumn) {
             editor.isForTree = column.isTreeColumn;
             editor.addCls(Ext.baseCSSPrefix + 'tree-cell-editor');
         }
-
+        
         // Set the owning grid.
         // This needs to be kept up to date because in a Lockable assembly, an editor
         // needs to swap sides if the column is moved across.
         editor.setGrid(me.grid);
-
+        
         // Keep upward pointer correct for each use - editors are shared between locking sides
         editor.editingPlugin = me;
         return editor;

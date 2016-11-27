@@ -96,55 +96,57 @@ Ext.define('Ext.grid.feature.Summary', {
     summaryItemCls: Ext.baseCSSPrefix + 'grid-row-summary-item',
     dockedSummaryCls: Ext.baseCSSPrefix + 'docked-summary',
 
+    summaryRowCls: Ext.baseCSSPrefix + 'grid-row-summary ' + Ext.baseCSSPrefix + 'grid-row-total',
+    summaryRowSelector: '.' + Ext.baseCSSPrefix + 'grid-row-summary.' + Ext.baseCSSPrefix + 'grid-row-total',
+
     panelBodyCls: Ext.baseCSSPrefix + 'summary-',
 
     // turn off feature events.
     hasFeatureEvent: false,
 
-    fullSummaryTpl: [
-        '{%',
-            'var me = this.summaryFeature,',
-            '    record = me.summaryRecord,',
-            '    view = values.view,',
-            '    bufferedRenderer = view.bufferedRenderer;',
+    fullSummaryTpl: {
+        fn: function(out, values, parent) {
+            var me = this.summaryFeature,
+                record = me.summaryRecord,
+                view = values.view,
+                bufferedRenderer = view.bufferedRenderer;
 
-            'this.nextTpl.applyOut(values, out, parent);',
-            
-            'if (!me.disabled && me.showSummaryRow &&',
-                '!view.addingRows && view.store.isLast(values.record)) {',
-                'if (bufferedRenderer) {',
-                '    bufferedRenderer.variableRowHeight = true;',
-                '}',
-                'me.outputSummaryRecord((record && record.isModel) ? record : me.createSummaryRecord(view), values, out, parent);',
-            '}',
-        '%}', {
-            priority: 300,
+            this.nextTpl.applyOut(values, out, parent);
 
-            beginRowSync: function (rowSync) {
-                rowSync.add('fullSummary', this.summaryFeature.summaryRowSelector);
-            },
+            if (!me.disabled && me.showSummaryRow && !view.addingRows && view.store.isLast(values.record)) {
+                if (bufferedRenderer) {
+                     bufferedRenderer.variableRowHeight = true;
+                }
+                me.outputSummaryRecord((record && record.isModel) ? record : me.createSummaryRecord(view), values, out, parent);
+            }
+        },
 
-            syncContent: function(destRow, sourceRow, columnsToUpdate) {
-                destRow = Ext.fly(destRow, 'syncDest');
-                sourceRow = Ext.fly(sourceRow, 'sycSrc');
-                var summaryFeature = this.summaryFeature,
-                    selector = summaryFeature.summaryRowSelector,
-                    destSummaryRow = destRow.down(selector, true),
-                    sourceSummaryRow = sourceRow.down(selector, true);
+        priority: 300,
 
-                // Sync just the updated columns in the summary row.
-                if (destSummaryRow && sourceSummaryRow) {
+        beginRowSync: function (rowSync) {
+            rowSync.add('fullSummary', this.summaryFeature.summaryRowSelector);
+        },
 
-                    // If we were passed a column set, only update those, otherwise do the entire row
-                    if (columnsToUpdate) {
-                        this.summaryFeature.view.updateColumns(destSummaryRow, sourceSummaryRow, columnsToUpdate);
-                    } else {
-                        Ext.fly(destSummaryRow).syncContent(sourceSummaryRow);
-                    }
+        syncContent: function(destRow, sourceRow, columnsToUpdate) {
+            destRow = Ext.fly(destRow, 'syncDest');
+            sourceRow = Ext.fly(sourceRow, 'sycSrc');
+            var summaryFeature = this.summaryFeature,
+                selector = summaryFeature.summaryRowSelector,
+                destSummaryRow = destRow.down(selector, true),
+                sourceSummaryRow = sourceRow.down(selector, true);
+
+            // Sync just the updated columns in the summary row.
+            if (destSummaryRow && sourceSummaryRow) {
+
+                // If we were passed a column set, only update those, otherwise do the entire row
+                if (columnsToUpdate) {
+                    this.summaryFeature.view.updateColumns(destSummaryRow, sourceSummaryRow, columnsToUpdate);
+                } else {
+                    Ext.fly(destSummaryRow).syncContent(sourceSummaryRow);
                 }
             }
         }
-    ],
+    },
 
     init: function(grid) {
         var me = this,
@@ -211,7 +213,7 @@ Ext.define('Ext.grid.feature.Summary', {
         } else {
             if (grid.bufferedRenderer) {
                 me.wrapsItem = true;
-                view.addRowTpl(Ext.XTemplate.getTpl(me, 'fullSummaryTpl')).summaryFeature = me;
+                view.addRowTpl(me.fullSummaryTpl).summaryFeature = me;
                 view.on('refresh', me.onViewRefresh, me);
             } else {
                 me.wrapsItem = false;

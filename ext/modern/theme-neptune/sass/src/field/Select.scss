@@ -12,6 +12,7 @@
             margin-right: 2.6em;
             @include font-icon($selectfield-selected-item-icon, $pseudo: after, $style-pseudo: true);
             &:after {
+                color: $selectfield-selected-item-icon-color;
                 position: absolute;
                 right: .6em;
             }

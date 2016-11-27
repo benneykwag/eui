@@ -122,8 +122,6 @@ Ext.define('Ext.chart.CartesianChart', {
             --me.animationSuspendCount;
             return;
         }
-        me.suspendThicknessChanged();
-
         // 'chart' surface rect is the size of the chart's inner element
         // (see chart.getChartBox), i.e. the portion of the chart minus
         // the legend area (whether DOM or sprite based).
@@ -147,6 +145,8 @@ Ext.define('Ext.chart.CartesianChart', {
         if (width <= 0 || height <= 0) {
             return;
         }
+
+        me.suspendThicknessChanged();
 
         shrinkBox.left += chartRect[0];
         shrinkBox.top += chartRect[1];
@@ -272,7 +272,7 @@ Ext.define('Ext.chart.CartesianChart', {
             floating = axis.getFloating();
             value = floating ? floating.value : null;
             if (value === null) {
-                delete axis.floatingAtCoord;
+                axis.floatingAtCoord = null;
                 continue;
             }
             axisSurface = axis.getSurface();

@@ -149,6 +149,9 @@ describe("grid-generallocking-from-no-locking", function() {
             // Scroll to end (ensureVisible sanitizes the inputs)
             grid.ensureVisible(100);
 
+            // Scroll must have worked.
+            expect(grid.view.normalView.bufferedRenderer.getLastVisibleRowIndex()).toBe(grid.store.getCount() - 1);
+
             // Locked grid is hidden because there are no locked columns
             expect(grid.lockedGrid.isVisible()).toBe(false);
 

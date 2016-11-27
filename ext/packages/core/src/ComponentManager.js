@@ -299,8 +299,8 @@ Ext.define('Ext.ComponentManager', {
          * @private
          * @since 6.0.1
          */
-        fromElement: function (node, limit, selector) {
-            var target = Ext.getDom(node),
+        fromElement: function (el, limit, selector) {
+            var target = Ext.getDom(el),
                 cache = this.all,
                 depth = 0,
                 topmost, cmpId, cmp;
@@ -327,28 +327,6 @@ Ext.define('Ext.ComponentManager', {
             }
 
             return null;
-        }
-    },
-
-    deprecated: {
-        5: {
-            methods: {
-                /**
-                 * Checks if an item is registered.
-                 * @param {String} component The mnemonic string by which the class may be looked up.
-                 * @return {Boolean} Whether the type is registered.
-                 * @deprecated 5.0
-                 */
-                isRegistered: null,
-
-                /**
-                 * Registers a new item constructor, keyed by a type key.
-                 * @param {String} type The mnemonic string by which the class may be looked up.
-                 * @param {Function} cls The new instance class.
-                 * @deprecated 5.0
-                 */
-                registerType: null
-            }
         }
     }
 },

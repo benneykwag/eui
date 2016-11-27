@@ -1,7 +1,16 @@
 describe("Ext.util.TextMetrics", function(){
     
     var defaultText = 'The quick brown fox jumps over the lazy dog',
-        el, tm, makeTm, staticTm, makeEl;
+        el, tm, makeTm, staticTm, makeEl, w, hasTahoma;
+
+    // One the the tests relies on the Tahoma font.
+    // Disable it on platforms where that's not available.
+    el = Ext.getBody().createChild();
+    el.dom.innerHTML = 'MMMMM';
+    w = el.dom.clientWidth;
+    el.dom.style.fontFamily = 'Tahoma';
+    hasTahoma = el.dom.style.clientWidth > w;
+    el.destroy();
     
     beforeEach(function(){
         makeEl = function(style, value) {
@@ -74,24 +83,26 @@ describe("Ext.util.TextMetrics", function(){
                     expect(w).toBeGreaterThan(baseLine);
                 });
             });
-            
-            describe("font family", function(){
-                var baseLine;
-                beforeEach(function(){
-                    baseLine = staticTm('font-family', 'Arial').width;
+
+            if (hasTahoma) {
+                describe("font family", function(){
+                    var baseLine;
+                    beforeEach(function(){
+                        baseLine = staticTm('font-family', 'Arial').width;
+                    });
+
+                    // Tahoma should be wider
+                    it("should affect instance sizing", function(){
+                        var w = makeTm('font-family', 'Tahoma').width;
+                        expect(w).toBeGreaterThan(baseLine);
+                    });
+
+                    it("should affect static sizing", function(){
+                        var w = staticTm('font-family', 'Tahoma').width;
+                        expect(w).toBeGreaterThan(baseLine);
+                    });
                 });
-                
-                // Tahoma should be wider
-                it("should affect instance sizing", function(){
-                    var w = makeTm('font-family', 'Tahoma').width;
-                    expect(w).toBeGreaterThan(baseLine);
-                });
-                
-                it("should affect static sizing", function(){
-                    var w = staticTm('font-family', 'Tahoma').width;
-                    expect(w).toBeGreaterThan(baseLine);
-                });
-            });
+            }
             
             // The spec fails in safari 5.x for some reason, leave it out
             // for now until we can get something more definite in.

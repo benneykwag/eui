@@ -455,7 +455,7 @@ Ext.define('Ext.data.reader.Json', {
 
     getAccessorKey: function(prop) {
         var simple = this.getUseSimpleAccessors() ? 'simple' : '';
-        return this.$className + simple + prop;
+        return this.callParent([simple + prop]);
     },
 
     privates: {

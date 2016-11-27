@@ -75,33 +75,3 @@
         }
     }
 }
-
-// Platform specific code
-
-.x-ie {
-    .x-stretched {
-        &.x-dock-horizontal {
-            > .x-dock-body {
-                width: 0;
-            }
-        }
-
-        &.x-dock-vertical {
-            > .x-dock-body {
-                height: 0;
-            }
-        }
-    }
-
-    .x-has-width > .x-dock.x-unsized.x-dock-horizontal {
-        > .x-dock-body {
-            width: 0;
-        }
-    }
-
-    .x-has-height > .x-dock.x-unsized.x-dock-vertical {
-        > .x-dock-body {
-            height: 0;
-        }
-    }
-}

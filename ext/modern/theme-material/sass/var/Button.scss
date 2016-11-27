@@ -20,7 +20,8 @@ $button-padding-big: dynamic(px-to-em(6px, 16px) px-to-em(($content-padding / 2)
 $button-pressed-icon-color: dynamic($button-pressed-color);
 $button-disabled-opacity: dynamic(null);
 $button-badge-background-color: dynamic($accent-color);
-$button-badge-color: dynamic($color);
+$button-badge-background-gradient: dynamic(null);
+$button-badge-color: dynamic($accent-foreground-color);
 $button-badge-border-color: dynamic(transparent);
 $button-badge-border-radius: dynamic(32px);
 $button-badge-min-width: dynamic(32px);
@@ -37,7 +38,7 @@ $button-raised-decline-ui: dynamic($enable-default-uis);
 @mixin button-action-ui {
     @include button-ui(
         $ui: 'action',
-        $color: $reverse-color,
+        $color: $base-foreground-color,
         $background-color: $base-color
     );
 }
@@ -45,7 +46,7 @@ $button-raised-decline-ui: dynamic($enable-default-uis);
 @mixin button-alt-ui {
     @include button-ui(
         $ui: 'alt',
-        $color: $reverse-color,
+        $color: $base-foreground-color,
         $background-color: $base-color,
         $pressed-background-color: $base-color
     );
@@ -55,7 +56,7 @@ $button-raised-decline-ui: dynamic($enable-default-uis);
     @include button-ui(
     $ui: 'confirm',
     $color: $confirm-color,
-    $pressed-color: $reverse-color,
+    $pressed-color: $base-foreground-color,
     $pressed-background-color: $confirm-color
     );
 }
@@ -64,7 +65,7 @@ $button-raised-decline-ui: dynamic($enable-default-uis);
     @include button-ui(
     $ui: 'decline',
     $color: $alert-color,
-    $pressed-color: $reverse-color,
+    $pressed-color: $base-foreground-color,
     $pressed-background-color: $alert-color
     );
 }
@@ -100,7 +101,7 @@ $button-raised-decline-ui: dynamic($enable-default-uis);
 @mixin button-segmented-ui {
     @include button-ui(
         $ui: 'segmented',
-        $color: $reverse-color,
+        $color: $base-foreground-color,
         $background-color: $base-color,
         $pressed-background-color: $base-pressed-color
     );

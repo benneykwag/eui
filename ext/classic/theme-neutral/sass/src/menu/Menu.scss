@@ -618,8 +618,9 @@
             .#{$prefix}menu-item-checked & {
                 @if $enable-font-icons and ($ui-item-checkbox-group-checked-glyph != null) {
                     @include font-icon($ui-item-checkbox-group-checked-glyph, $line-height: $ui-item-checkbox-size);
+                } @else {
+                    background-image: theme-background-image('menu/#{$ui}-group-checked');
                 }
-                background-image: theme-background-image('menu/#{$ui}-group-checked');
             }
 
             .#{$prefix}menu-item-unchecked & {

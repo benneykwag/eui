@@ -128,6 +128,39 @@ describe("Ext.toolbar.Toolbar", function(){
                 
                 expect(menufield.getValue()).toBe(barfield.getValue());
             });
+
+            it('should be able to check and uncheck Checkboxes', function() {
+                var menu, barfield, menufield;
+                createToolbar({
+                    enableOverflow: true,
+                    width: 100,
+                    defaults: {
+                        xtype: 'checkbox'
+                    },
+                    items : [{
+                        boxLabel : 'Foo'
+                    },{
+                        boxLabel : 'Bar'
+                    },{
+                        boxLabel : 'Test'
+                    },{
+                        boxLabel: 'Sencha'
+                    }]
+                });
+                menu = toolbar.layout.overflowHandler.menu;
+                menu.show();
+
+                barfield = toolbar.down('checkbox[boxLabel=Sencha]');
+                menufield = barfield.overflowClone;
+
+                jasmine.fireMouseEvent(menufield.el, 'click');
+
+                expect(menufield.getValue()).toBe(true);
+
+                jasmine.fireMouseEvent(menufield.el, 'click');
+
+                expect(menufield.getValue()).toBe(false);
+            });
         });
     });
 

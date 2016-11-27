@@ -248,9 +248,19 @@ Ext.Function = (function() {
          * @return {Function} cloneFn
          */
         clone: function(method) {
-            return function() {
+            var newMethod, prop;
+            
+            newMethod = function() {
                 return method.apply(this, arguments);
             };
+            
+            for (prop in method) {
+                if (method.hasOwnProperty(prop)) {
+                    newMethod[prop] = method[prop];
+                }
+            }
+            
+            return newMethod;
         },
 
         /**
@@ -451,24 +461,25 @@ Ext.Function = (function() {
          * @return {Function} A function which invokes the passed function after buffering for the specified time.
          */
         createBuffered: function(fn, buffer, scope, args) {
-            var timerId;
+            var timerId,
+                result = function() {
+                    var callArgs = args || Array.prototype.slice.call(arguments, 0),
+                        me = scope || this;
 
-            return function() {
-                var callArgs = args || Array.prototype.slice.call(arguments, 0),
-                    me = scope || this;
-
-                if (timerId) {
-                    clearTimeout(timerId);
-                }
-
-                timerId = setTimeout(function(){
-                    if (Ext.elevateFunction) {
-                        Ext.elevateFunction(fn, me, callArgs);
-                    } else {
-                        fn.apply(me, callArgs);
+                    if (timerId) {
+                        clearTimeout(timerId);
                     }
-                }, buffer);
-            };
+
+                    timerId = result.timer = setTimeout(function(){
+                        if (Ext.elevateFunction) {
+                            Ext.elevateFunction(fn, me, callArgs);
+                        } else {
+                            fn.apply(me, callArgs);
+                        }
+                    }, buffer);
+                };
+
+            return result;
         },
 
         /**

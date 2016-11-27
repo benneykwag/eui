@@ -1238,7 +1238,10 @@ Ext.define('Ext.panel.Panel', {
 
     doDestroy: function() {
         var me = this;
-        
+
+        if (me.slideOutTask) {
+            me.slideOutTask.cancel();
+        }
         Ext.destroy(
             me.placeholder,
             me.ghostPanel,
@@ -1952,7 +1955,12 @@ Ext.define('Ext.panel.Panel', {
             floatCls = Ext.panel.Panel.floatCls,
             collapsed = me.collapsed,
             layoutOwner = me.ownerCt || me,
-            slideDirection, myBox;
+            slideDirection, myBox, hoverlisteners = {
+                mouseleave: me.onMouseLeaveFloated,
+                mouseenter: me.onMouseEnterFloated,
+                scope: me,
+                destroyable: true
+            };
 
         if (me.isSliding) {
             return;
@@ -2002,8 +2010,8 @@ Ext.define('Ext.panel.Panel', {
                 destroyable: true
             });
         }
-        placeholder.el.on('mouseenter', me.onMouseEnterFloated, me);
-        me.el.on('mouseenter', me.onMouseEnterFloated, me);
+        me.phHoverListeners = placeholder.el.on(hoverlisteners);
+        me.elHoverListeners = me.el.on(hoverlisteners);
 
         me.el.addCls(floatCls);
         me.floated = collapsed;
@@ -2075,6 +2083,16 @@ Ext.define('Ext.panel.Panel', {
 
     onMouseEnterFloated: function(e) {
         this.slideOutTask.cancel();
+    },
+
+    onMouseLeaveFloated: function(e) {
+        var toElement = e.getRelatedTarget();
+
+        // If the toElement is in the component tree, do not collapse
+        if (toElement && (this.owns(toElement) || this.placeholder.owns(toElement))) {
+            return;
+        }
+        this.slideOutTask.delay(500);
     },
     
     onPlaceholderResize: function(ph, newWidth, newHeight) {
@@ -3775,21 +3793,23 @@ Ext.define('Ext.panel.Panel', {
      */
     unghost: function(show, matchPosition, focus) {
         var me = this,
+            el = me.el,
             ghostPanel = me.ghostPanel;
 
         if (!ghostPanel) {
             return;
         }
+        // Show el first to restore the element to the original
+        // visibility mode.
+        el.show();
+        el.setVisibilityMode(me.elVisMode);
+
         if (show !== false) {
-            // Show el first, so that position adjustment in setPagePosition
-            // will work when relative positioned elements have their XY read.
-            // Restore the element's visibility mode. ghost() sets it to CLIP
-            // to retain accessibility.
-            me.el.show();
-            me.el.setVisibilityMode(me.elVisMode);
             if (matchPosition !== false) {
                 me.setPagePosition(ghostPanel.getXY());
             }
+        } else {
+            el.hide();
         }
         ghostPanel.el.hide();
         ghostPanel.setHiddenState(true);
@@ -4176,9 +4196,7 @@ Ext.define('Ext.panel.Panel', {
             me.floatedFromCollapse = null;
 
             // Remove mouse leave/enter monitors, and the mousedown monitor
-            Ext.destroy(me.pointerLeaveListener);
-            placeholderEl.un('mouseenter', me.onMouseEnterFloated, me);
-            el.un('mouseenter', me.onMouseEnterFloated, me);
+            Ext.destroy(me.pointerLeaveListener, me.phHoverListeners, me.elHoverListeners);
             if (bodyMousedownListener) {
                 me.bodyMousedownListener = bodyMousedownListener.destroy()
             }

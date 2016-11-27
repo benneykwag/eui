@@ -1,3 +1,5 @@
+/* global spyOn, expect, Ext */
+
 describe('Ext.picker.Slot', function () {
     var picker, viewport, slot;
 
@@ -52,6 +54,9 @@ describe('Ext.picker.Slot', function () {
             waitsFor(function() {
                 return scrollComplete;
             }, 'slot to scroll selection into view', 800);
+            
+            waitsForSpy(spy);
+
             runs(function () {
                 expect(spy).toHaveBeenCalled();
                 expect(spy.callCount).toBe(1);
@@ -81,53 +86,40 @@ describe('Ext.picker.Slot', function () {
         });
 
         it("should scroll to selection if view is scrolled, no new selection is made, and picker is re-shown", function () {
-            var scrollComplete = false,
-                bar, barIndex, scrollable, curY;
+            var bar, scrollable;
 
             picker.show();
 
             bar = picker.bar;
             scrollable = slot.getScrollable();
-            scrollable.on('scrollend', function () {
-                scrollComplete = true;
-            });
+            
+            waitsForEvent(scrollable, 'scrollend', 'slot to scroll selection into view', 800);
 
-            waitsFor(function () {
-                return scrollComplete;
-            }, 'slot to scroll selection into view', 800);
             runs(function () {
-                scrollComplete = false;
                 // item 45 should be seleted (the default)
+                expect(getBarIndex(bar)).toBe(45);
+
                 // now let's mimic a scroll to the very top of the list
                 scrollable.scrollTo(0, 0);
             });
 
-            waitsFor(function () {
-                return scrollComplete;
-            }, 'scroll to top of scrollable area', 800);
+            waitsForEvent(scrollable, 'scrollend', 'scroll to top of scrollable area', 800);
+
             runs(function () {
-                scrollComplete = false;
-                curY = scrollable.getPosition().y;
-                // scrolling is done, we should be at the top of the scroller
-                expect(curY).toBe(0);
+                expect(scrollable.getPosition().y).toBe(0);
+
                 // now let's simulate the scroll to the top, but the picker is dimissed with no selection made
                 picker.hide();
                 // now let's re-open the picker
                 picker.show();
             });
+            
+            waits(800);
 
-            waitsFor(function () {
-                return scrollComplete;
-            }, 'slot to scroll selection into view', 800);
             runs(function () {
-                // at this point, the original selection should be scrolled into view, regardless of the previous scroll pos
-                barIndex = getBarIndex(bar);
-                
-                // bar should be aligned with the selected item
-                expect(barIndex).toBe(45);
-                
-                Ext.destroy(scrollable);
-            });
+                // Wait for the original selection should be scrolled into view, regardless of the previous scroll pos
+                expect(getBarIndex(bar)).toBe(45);
+            }, 'slot to scroll selection into view');
         });
     });
 

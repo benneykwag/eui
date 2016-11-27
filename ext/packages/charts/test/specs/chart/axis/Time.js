@@ -1,10 +1,21 @@
 describe('Ext.chart.axis.Time', function () {
     
     describe('renderer', function () {
+        var chart;
+        
+        afterEach(function() {
+            Ext.destroy(chart);
+        });
+
         it('should work with custom renderers even when "dateFormat" is set', function () {
             var axisRendererCallCount = 0,
                 lastAxisRendererResult,
-                chart = new Ext.chart.CartesianChart({
+                axes,
+                timeAxis,
+                performLayoutSpy,
+                axisLayoutSpy;
+
+            chart = new Ext.chart.CartesianChart({
                 renderTo: Ext.getBody(),
                 width: 400,
                 height: 400,
@@ -40,10 +51,10 @@ describe('Ext.chart.axis.Time', function () {
             chart.performLayout();
             expect(axisRendererCallCount).toBeGreaterThan(3);
 
-            var axes = chart.getAxes();
-            var timeAxis = axes[1];
+            axes = chart.getAxes();
+            timeAxis = axes[1];
+            performLayoutSpy = spyOn(chart, 'performLayout').andCallThrough();
 
-            var performLayoutSpy = spyOn(chart, 'performLayout');
             axisRendererCallCount = 0;
             runs(function () {
                 timeAxis.getSegmenter().setStep({
@@ -52,9 +63,7 @@ describe('Ext.chart.axis.Time', function () {
                 });
             });
 
-            waitsFor(function () {
-                return performLayoutSpy.wasCalled;
-            });
+            waitsForSpy(performLayoutSpy, 'layout after setStep');
 
             runs(function () {
                 expect(axisRendererCallCount).toBe(3);
@@ -70,9 +79,7 @@ describe('Ext.chart.axis.Time', function () {
                 // New custom renderer should trigger axis and chart layouts.
             });
 
-            waitsFor(function () {
-                return performLayoutSpy.wasCalled;
-            });
+            waitsForSpy(performLayoutSpy, 'layout after setRenderer');
 
             runs(function () {
                 expect(axisRendererCallCount).toBe(3);
@@ -86,15 +93,7 @@ describe('Ext.chart.axis.Time', function () {
                 expect(defaultRenderer.isDefault).toBe(true);
             });
 
-            waitsFor(function () {
-                return performLayoutSpy.wasCalled;
-            });
-
-            runs(function () {
-                // We'll never get here, unless chart.performLayout was called as a result of
-                // 'timeAxis.setRenderer(null);' call, which is what we expecting.
-                Ext.destroy(chart);
-            });
+            waitsForSpy(performLayoutSpy, 'layout after reset renderer');
         });
     });
     

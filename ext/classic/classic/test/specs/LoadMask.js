@@ -1,3 +1,5 @@
+/* global MockAjaxManager, Ext, expect, spyOn, jasmine */
+
 describe("Ext.LoadMask", function(){
     var mask, target, mockComplete;
     
@@ -421,7 +423,7 @@ describe("Ext.LoadMask", function(){
                 });
 
                 it('should not cause onFocusLeave consequences on show', function() {
-                    var menu, menuItem, panelMask, panelStore;
+                    var menu, menuItem, panelMask, panelStore, col0;
                     panel = new Ext.grid.Panel({
                         renderTo: document.body,
                         title: 'Test focus',
@@ -444,15 +446,17 @@ describe("Ext.LoadMask", function(){
                         }]
                     });
                     panelStore = panel.store;
+                    col0 = panel.getVisibleColumnManager().getColumns()[0];
 
-                    jasmine.fireMouseEvent(panel.getVisibleColumnManager().getColumns()[0].el, 'mouseover');
-                    jasmine.fireMouseEvent(panel.getVisibleColumnManager().getColumns()[0].triggerEl, 'click');
-                    menu = panel.down('menu');
-                    menuItem = menu.child(':first');
-                    menuItem.focus();
+                    Ext.testHelper.showHeaderMenu(col0);
 
-                    // Menu must start focused
-                    waitForFocus(menuItem, 'menuItemOne to recieve focus');
+                    runs(function() {
+                        menu = col0.activeMenu;
+                        menuItem = menu.child(':first');
+                        menuItem.focus(false, true);
+                        waitsForFocus(menuItem);
+                    });
+                    
 
                     runs(function() {
                         // Show the mask and it should focus
@@ -461,7 +465,7 @@ describe("Ext.LoadMask", function(){
                     waitsFor(function() {
                         panelMask = panel.view.loadMask;
                         return panelMask && panelMask.isVisible();
-                    }, 'LoadMask to receive show');
+                    }, 'LoadMask to show');
 
                     // That should NOT have disturbed the floating Menu which hides onFocusLeave
                     runs(function() {
@@ -481,9 +485,7 @@ describe("Ext.LoadMask", function(){
                 });
                 
                 it("should steal focus from within target on show", function() {
-                    runs(function() {
-                        mask.show();
-                    });
+                    mask.show();
                     
                     waitForFocus(mask);
                     
@@ -492,17 +494,13 @@ describe("Ext.LoadMask", function(){
                 
                 describe("restoring focus on hide", function() {
                     beforeEach(function() {
-                        runs(function() {
-                            mask.show();
-                        });
+                        mask.show();
                     
                         waitForFocus(mask);
                     });
                     
                     it("should go to previously focused element", function() {
-                        runs(function() {
-                            mask.hide();
-                        });
+                        mask.hide();
                     
                         waitForFocus(fooBtn);
                     
@@ -514,10 +512,8 @@ describe("Ext.LoadMask", function(){
                             renderTo: Ext.getBody(),
                             text: 'bar'
                         });
-                        
-                        runs(function() {
-                            barBtn.focus();
-                        });
+
+                        barBtn.focus();
                         
                         waitForFocus(barBtn);
                         

@@ -996,7 +996,8 @@ describe('Ext.grid.feature.Grouping', function () {
         }
 
         function doUITest(storeCfg, dir) {
-            var groupField = storeCfg.groupField;
+            var groupField = storeCfg.groupField,
+                menu;
 
             // Note groupField can be null so the feature doesn't render as grouped.
             doGrid(storeCfg);
@@ -1008,17 +1009,29 @@ describe('Ext.grid.feature.Grouping', function () {
                 expect(grid.store.isGrouped()).toBe(!!groupField);
 
                 // Trigger the menu.
+                // For touch platforms, we wait until this becomes a longpress
+                jasmine.fireMouseEvent(header.el.dom, 'mousedown');
                 jasmine.fireMouseEvent(header.triggerEl.dom, 'click');
                 // Click 'Group by this field'.
-                jasmine.fireMouseEvent(header.ownerCt.menu.down('#groupMenuItem').itemEl.dom, 'click');
+                
+                waitsFor(function() {
+                    menu = header.activeMenu;
+                    return menu && menu.isVisible();
+                });
+
+                runs(function() {
+                    jasmine.fireMouseEvent(menu.down('#groupMenuItem').itemEl.dom, 'click');
+                });
             } else {
                 header.sort(dir);
             }
 
-            grid.saveState();
+            runs(function() {
+                grid.saveState();
 
-            testStateful(groupField, dir);
-            testStateful(groupField, dir);
+                testStateful(groupField, dir);
+                testStateful(groupField, dir);
+            });
         }
 
         function testStateful(groupField, dir) {
@@ -1103,60 +1116,67 @@ describe('Ext.grid.feature.Grouping', function () {
 
         it('should lookup the correct record for a row when clicked when groups are collapsed', function () {
             // See EXTJS-15190.
-            var el, selection;
+            var el, selection, menu;
 
             doGrid();
 
             header = grid.headerCt.down('[dataIndex="student"]');
 
             // Trigger the menu.
-            jasmine.fireMouseEvent(header.triggerEl.dom, 'click');
-            // Click 'Group by this field'.
-            jasmine.fireMouseEvent(header.ownerCt.menu.down('#groupMenuItem').itemEl.dom, 'click');
+            Ext.testHelper.showHeaderMenu(header);
+            
+            runs(function() {
+                menu = header.activeMenu;
 
-            grid.saveState();
+                // Click 'Group by this field'.
+                jasmine.fireMouseEvent(menu.down('#groupMenuItem').itemEl.dom, 'click');
 
-            tearDown();
+                grid.saveState();
 
-            doGrid();
+                tearDown();
 
-            // Collapse the first group.
-            grouping.collapse('Student 1');
+                doGrid();
 
-            // Get the second row in the Student 2 group.
-            el = view.getRowByRecord(grouping.dataSource.getAt(2)).firstChild;
+                // Collapse the first group.
+                grouping.collapse('Student 1');
 
-            jasmine.fireMouseEvent(el, 'click');
-            selection = grid.selModel.getSelection();
+                // Get the second row in the Student 2 group.
+                el = view.getRowByRecord(grouping.dataSource.getAt(2)).firstChild;
 
-            // Ensure that not only is there a selection but it's the correct one, and also that the row has the correct class.
-            expect(Ext.fly(el).up(view.getItemSelector()).hasCls('x-grid-item-selected')).toBe(true);
-            expect(selection.length).toBe(1);
-            expect(selection[0] === view.getRecord(el)).toBe(true);
+                jasmine.fireMouseEvent(el, 'click');
+                selection = grid.selModel.getSelection();
+
+                // Ensure that not only is there a selection but it's the correct one, and also that the row has the correct class.
+                expect(Ext.fly(el).up(view.getItemSelector()).hasCls('x-grid-item-selected')).toBe(true);
+                expect(selection.length).toBe(1);
+                expect(selection[0] === view.getRecord(el)).toBe(true);
+            });
         });
 
         it('should persist the .isGrouping property on the view when grouped', function () {
-            // See EXTJS-15190.
-            var el, selection;
-
             doGrid();
 
             header = grid.headerCt.down('[dataIndex="student"]');
 
             // Trigger the menu.
-            jasmine.fireMouseEvent(header.triggerEl.dom, 'click');
-            // Click 'Group by this field'.
-            jasmine.fireMouseEvent(header.ownerCt.menu.down('#groupMenuItem').itemEl.dom, 'click');
+            Ext.testHelper.showHeaderMenu(header);
 
-            expect(view.isGrouping).toBe(true);
+            runs(function() {
+                menu = header.activeMenu;
 
-            grid.saveState();
+                // Click 'Group by this field'.
+                jasmine.fireMouseEvent(menu.down('#groupMenuItem').itemEl.dom, 'click');
 
-            tearDown();
+                expect(view.isGrouping).toBe(true);
 
-            doGrid();
+                grid.saveState();
 
-            expect(view.isGrouping).toBe(true);
+                tearDown();
+
+                doGrid();
+
+                expect(view.isGrouping).toBe(true);
+            });
         });
     });
 
@@ -1250,10 +1270,11 @@ describe('Ext.grid.feature.Grouping', function () {
                 // For instance, when the feature would process the store again, it was expecting the collapsed state
                 // to have been poked onto the group object itself, which may no longer be around. We now have a separate,
                 // internal metaGroup cache in the feature that stores this information.
-                function testIt(group, method, filterValue) {
+                function testIt(group, method, filterValue, collapsible) {
                     var initialState = method === 'expand';
+                    collapsible = collapsible !== false;
                     
-                    describe('Group: "' + group + '", method: "' + method + '", filterValue: "' + filterValue + '"', function() {
+                    describe('Group: "' + group + '", method: "' + method + '", filterValue: "' + filterValue + '"' + '", collapsible: "' + collapsible + '"', function() {
                         it('should retain its state of ' + !initialState, function () {
                             makeUI(null, {
                                 startCollapsed: initialState
@@ -1271,14 +1292,20 @@ describe('Ext.grid.feature.Grouping', function () {
                             expect(groupingFeature.getMetaGroup(group).isCollapsed).toBe(!initialState);
                         });
 
-                        it('should have the ' + (initialState ? 'collapseTip' : 'expandTip') +  ' tooltip', function() {
+                        it('should ' + (collapsible ? '' : 'not') + ' have the ' + (initialState ? 'collapseTip' : 'expandTip') +  ' tooltip', function() {
                             var row;
                             makeUI(null,{
-                                startCollapsed: initialState
+                                startCollapsed: initialState,
+                                collapsible: collapsible
                             });
                             groupingFeature[method](group);
                             row = view.body.query('.' + groupingFeature.ctCls + '>div div', true)[group === 'Greek' ? 0 : 1];
-                            expect(row.getAttribute('data-qtip')).toEqual(initialState ? groupingFeature.collapseTip : groupingFeature.expandTip);
+                            
+                            if (collapsible) {
+                                expect(row.getAttribute('data-qtip')).toEqual(initialState ? groupingFeature.collapseTip : groupingFeature.expandTip);
+                            } else {
+                                expect(row.getAttribute('data-qtip')).toBeNull();
+                            }
                         });
                     });
                 }
@@ -1287,6 +1314,7 @@ describe('Ext.grid.feature.Grouping', function () {
                     describe('when expanded group is filtered', function () {
                         testIt('Greek', 'expand', 'Roman');
                         testIt('Roman', 'expand', 'Greek');
+                        testIt('Roman', 'expand', 'Greek', false);
                     });
 
                     describe('when expanded group is not filtered', function () {
@@ -1299,6 +1327,7 @@ describe('Ext.grid.feature.Grouping', function () {
                     describe('when collapsed group is filtered', function () {
                         testIt('Greek', 'collapse', 'Roman');
                         testIt('Roman', 'collapse', 'Greek');
+                        testIt('Roman', 'collapse', 'Greek', false);
                     });
 
                     describe('when collapsed group is not filtered', function () {
@@ -2477,14 +2506,12 @@ describe('Ext.grid.feature.Grouping', function () {
     describe("move column with filters", function() {
         // Pass a reference to the cmp not an index!
         function dragColumn(from, to, onRight) {
-            var fromBox = from.el.getBox(),
+            var fromBox = from.titleEl.getBox(),
                 fromMx = fromBox.x + fromBox.width/2,
                 fromMy = fromBox.y + fromBox.height/2,
-                toBox = to.el.getBox(),
-                toMx = toBox.x,
+                toBox = to.titleEl.getBox(),
+                toMx = onRight ? toBox.right - 10 : toBox.left + 10,
                 toMy = toBox.y + toBox.height/2,
-                offset = onRight ? toBox.width - 6 : 5,
-                moveOffset = toMx + offset,
                 dragThresh = onRight ? Ext.dd.DragDropManager.clickPixelThresh + 1 : -Ext.dd.DragDropManager.clickPixelThresh - 1;
 
             // Mousedown on the header to drag
@@ -2495,10 +2522,11 @@ describe('Ext.grid.feature.Grouping', function () {
             jasmine.fireMouseEvent(from.el.dom, 'mousemove', fromMx + dragThresh, fromMy);
 
             // The move to left of the centre of the target element
-            jasmine.fireMouseEvent(to.el.dom, 'mousemove', moveOffset, toMy);
+            jasmine.fireMouseEvent(to.el.dom, 'mousemove', toMx, toMy);
 
             // Drop to left of centre of target element
-            jasmine.fireMouseEvent(to.el.dom, 'mouseup', moveOffset, toMy);
+            jasmine.fireMouseEvent(to.el.dom, 'mouseup', toMx, toMy);
+
         }
 
         it("should allow column drag/drop with filters enabled", function() {

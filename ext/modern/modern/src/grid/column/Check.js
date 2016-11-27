@@ -15,10 +15,10 @@ Ext.define('Ext.grid.column.Check', {
      * @event beforecheckchange
      * Fires when the UI requests a change of check status.
      * The change may be vetoed by returning `false` from a listener.
-     * @param {Ext.grid.cell.Check} The cell changing its state.
+     * @param {Ext.grid.cell.Check} this The cell changing its state.
      * @param {Number} rowIndex The row index.
      * @param {Boolean} checked `true` if the box is to be checked.
-     * @param {Ext.data.Model} The record to be updated.
+     * @param {Ext.data.Model} record The record to be updated.
      * @param {Ext.event.Event} e The underlying event which caused the check change.
      * @param {Ext.grid.CellContext} e.position A {@link Ext.grid.CellContext CellContext} object
      * containing all contextual information about where the event was triggered.
@@ -27,10 +27,10 @@ Ext.define('Ext.grid.column.Check', {
     /**
      * @event checkchange
      * Fires when the UI has successfully changed the checked state of a row.
-     * @param {Ext.grid.cell.Check} The cell changing its state.
+     * @param {Ext.grid.cell.Check} this The cell changing its state.
      * @param {Number} rowIndex The row index.
      * @param {Boolean} checked `true` if the box is now checked.
-     * @param {Ext.data.Model} The record which was updated.
+     * @param {Ext.data.Model} record The record which was updated.
      * @param {Ext.event.Event} e The underlying event which caused the check change.
      * @param {Ext.grid.CellContext} e.position A {@link Ext.grid.CellContext CellContext} object
      */

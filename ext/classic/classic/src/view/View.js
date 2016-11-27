@@ -165,6 +165,7 @@ Ext.define('Ext.view.View', {
      * @preventable
      * Fires before the keydown event on an item is processed. Return false to cancel 
      * the default action.
+     *
      * @inheritdoc #beforeitemmousedown
      */
 
@@ -179,8 +180,13 @@ Ext.define('Ext.view.View', {
     /**
      * @event beforeitemkeypress
      * @preventable
-     * Fires before the keypress event on an item is processed. Return false to cancel 
+     * Fires before the keypress event on an item before it is processed. Return false to cancel
      * the default action.
+     *
+     * **Note:** beforeitemkeypress is ONLY triggered by characters, numbers, and some action keys (esc, tab, backspace, space).
+     * If you need an event that is triggered by other keys, like function keys, arrow keys, or shift, ctrl, alt, use
+     * beforeitemkeydown.
+     *
      * @inheritdoc #beforeitemmousedown
      */
 
@@ -248,6 +254,11 @@ Ext.define('Ext.view.View', {
      * @event itemkeypress
      * Fires when a key is pressed while an item is currently selected.
      * @inheritdoc #beforeitemmousedown
+     *
+     * **Note:** itemkeypress is ONLY triggered by characters, numbers, and some action keys (esc, tab, backspace, space).
+     * If you need an event that is triggered by other keys, like function keys, arrow keys, or shift, ctrl, alt, use
+     * itemkeydown.
+     *
      */
 
     /**

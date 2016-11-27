@@ -93,11 +93,29 @@ describe("grid-general", function() {
                 return store;
             }
 
+            function makeData(rows, columns) {
+                var data = [],
+                    dataRow,
+                    i,j;
+
+                for (i = 0; i < rows; i++) {
+                    dataRow = {
+                        id: 'rec' + i
+                    };
+                    for (j = 0; j < columns.length; j++) {
+                        dataRow[columns[j].dataIndex] = (i + 1) + ', ' + (j + 1);
+                    }
+                    data.push(dataRow);
+                }
+
+                return data;
+            }
+
             function makeGrid(columns, data, cfg, options, locked) {
                 options = options || {};
                 cfg = cfg || {};
 
-                var i, dataCount, dataRow;
+                var i;
 
                 if (!options.preventColumnCreate && !columns) {
                     columns = [];
@@ -114,17 +132,7 @@ describe("grid-general", function() {
 
                 // Could pass number of required records
                 if (typeof data === 'number') {
-                    dataCount = data;
-                    data = [];
-                    for (i = 0; i < dataCount; i++) {
-                        dataRow = {
-                            id: 'rec' + i
-                        };
-                        for (var j = 0; j < columns.length; j++) {
-                            dataRow[columns[j].dataIndex] = (i + 1) + ', ' + (j + 1);
-                        }
-                        data.push(dataRow);
-                    }
+                    data = makeData(data, columns);
                 }
 
                 if (!options.preventStoreCreate) {
@@ -169,12 +177,35 @@ describe("grid-general", function() {
             }
 
             describe("misc tests", function() {
-                // EXTJS-16436
                 it("should not throw an exception when scrollable:false", function() {
-                    // Spec will fail if an error is thrown
-                    makeGrid(null, undefined, {
-                        scrollable: false
-                    });
+                    expect(function() {
+                        makeGrid(null, 50, {
+                            viewConfig: {
+                                scrollable: false
+                            }
+                        });
+                    }).not.toThrow();
+                });
+
+                it("should not thrown an exception while reconfiguring a grid with scrollable: false", function(){
+                    expect(function() {
+                        makeGrid(null, 50, {
+                            viewConfig: {
+                                scrollable: false
+                            }
+                        });
+
+                        grid.reconfigure(makeStore(makeData(10, [{dataIndex: 'field1', text: 'Field 1', width: 90}])));
+                    }).not.toThrow();
+                });
+
+                it("should sync the view scrollable with the onwergrid scrollable", function() {
+                    makeGrid(undefined, 50, {
+                        scrollable: true,
+                    }, undefined, false);
+
+                    expect(grid.getScrollable()).not.toBe(true);
+
                 });
                 
                 // EXTJS-14858
@@ -292,9 +323,202 @@ describe("grid-general", function() {
                         expect(grid.destroyed).toBe(true);
                     });
                 });
+
+                describe("updates while not visible", function() {
+                    describe("ancestor is not visible", function() {
+                        var ct;
+
+                        afterEach(function() {
+                            ct = Ext.destroy(ct);
+                        });
+
+                        it("should update after being hidden", function() {
+                            makeGrid(undefined, 5, {
+                                renderTo: null
+                            });
+
+                            ct = new Ext.container.Container({
+                                renderTo: Ext.getBody(),
+                                items: grid
+                            });
+
+
+                            ct.hide();
+
+                            store.loadData([{
+                                field1: 'foo'
+                            }]);
+                            ct.show();
+                            expect(getCellText(0, 0)).toBe('foo');
+                        });
+
+                        describe("collapsed", function() {
+                            describe("without animation", function() {
+                                it("should update after being collapsed", function() {
+                                    makeGrid(undefined, 5, {
+                                        renderTo: null
+                                    });
+
+                                    ct = new Ext.panel.Panel({
+                                        collapsible: true,
+                                        animCollapse: false,
+                                        renderTo: Ext.getBody(),
+                                        items: grid
+                                    });
+
+                                    ct.collapse();
+                                    store.loadData([{
+                                        field1: 'foo'
+                                    }]);
+                                    ct.expand();
+                                    expect(getCellText(0, 0)).toBe('foo');
+                                });
+                            });
+
+                            describe("with animation", function() {
+                                it("should update after being collapsed", function() {
+                                    makeGrid(undefined, 5, {
+                                        renderTo: null
+                                    });
+
+                                    var collapseSpy = jasmine.createSpy(),
+                                        expandSpy = jasmine.createSpy();
+
+                                    ct = new Ext.panel.Panel({
+                                        collapsible: true,
+                                        animCollapse: true,
+                                        renderTo: Ext.getBody(),
+                                        items: grid,
+                                        listeners: {
+                                            collapse: collapseSpy,
+                                            expand: expandSpy
+                                        }
+                                    });
+
+                                    ct.collapse();
+                                    waitsFor(function() {
+                                        return collapseSpy.callCount > 0;
+                                    });
+                                    runs(function() {
+                                        store.loadData([{
+                                            field1: 'foo'
+                                        }]);
+                                        ct.expand();
+                                    });
+                                    waitsFor(function() {
+                                        return expandSpy.callCount > 0;
+                                    });
+                                    runs(function() {
+                                        expect(getCellText(0, 0)).toBe('foo');
+                                    });
+                                });
+                            });
+                        });
+                    });
+
+                    describe("grid is not visible directly", function() {
+                        it("should update after being hidden", function() {
+                            makeGrid();
+                            grid.hide();
+                            store.loadData([{
+                                field1: 'foo'
+                            }]);
+                            grid.show();
+                            expect(getCellText(0, 0)).toBe('foo');
+                        });
+
+                        describe("collapsed", function() {
+                            describe("without animation", function() {
+                                it("should update after being collapsed", function() {
+                                    makeGrid(undefined, 5, {
+                                        collapsible: true,
+                                        animCollapse: false
+                                    });
+                                    grid.collapse();
+                                    store.loadData([{
+                                        field1: 'foo'
+                                    }]);
+                                    grid.expand();
+                                    expect(getCellText(0, 0)).toBe('foo');
+                                });
+                            });
+
+                            describe("with animation", function() {
+                                it("should update after being collapsed", function() {
+                                    var collapseSpy = jasmine.createSpy(),
+                                        expandSpy = jasmine.createSpy();
+
+                                    makeGrid(undefined, 5, {
+                                        collapsible: true,
+                                        animCollapse: false,
+                                        listeners: {
+                                            collapse: collapseSpy,
+                                            expand: expandSpy
+                                        }
+                                    });
+
+                                    grid.collapse();
+                                    waitsFor(function() {
+                                        return collapseSpy.callCount > 0;
+                                    });
+                                    runs(function() {
+                                        store.loadData([{
+                                            field1: 'foo'
+                                        }]);
+                                        grid.expand();
+                                    });
+                                    waitsFor(function() {
+                                        return expandSpy.callCount > 0;
+                                    });
+                                    runs(function() {
+                                        expect(getCellText(0, 0)).toBe('foo');
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
             });
 
             describe("focus behaviour", function() {
+                describe("focusing from another grid", function() {
+                    var ct;
+
+                    afterEach(function() {
+                        ct = Ext.destroy(ct);
+                    });
+
+                    it("should be able to be focus by clicking the container when another grid is focused", function() {
+                        makeGrid(null, 1, {
+                            renderTo: null
+                        });
+
+                        var other = grid,
+                            otherCols = colRef,
+                            otherView = other.view,
+                            otherStore = other.getStore();
+
+                        makeGrid(null, 1, {
+                            renderTo: null
+                        });
+
+                        ct = new Ext.container.Container({
+                            renderTo: Ext.getBody(),
+                            layout: 'hbox',
+                            items: [other, grid]
+                        });
+
+                        jasmine.focusAndWait(otherView.getCell(otherStore.getAt(0), otherCols[0]));
+
+                        runs(function() {
+                            // Trigger a click in the grid, not on a cell
+                            jasmine.fireMouseEvent(view.el, 'click', view.el.getX() + 50, 100);
+                        });
+
+                        expectFocused(view.getCell(store.getAt(0), colRef[0]));
+                    });
+                });
+
                 describe("after reconfigure", function() {
                     it("should be able to refocus the same row after reconfiguring with new columns/new records", function() {
                         makeGrid([{
@@ -306,7 +530,7 @@ describe("grid-general", function() {
                             rec = store.getAt(10);
 
                         view.focusRow(rec);
-                        jasmine.expectFocused(view.getCell(rec, colRef[0]));
+                        expectFocused(view.getCell(rec, colRef[0]));
                         runs(function() {
                             var data = [],
                                 newStore, i;
@@ -327,7 +551,7 @@ describe("grid-general", function() {
                             colRef = grid.getColumnManager().getColumns();
 
                             view.focusRow(rec);
-                            jasmine.expectFocused(view.getCell(rec, colRef[0]));
+                            expectFocused(view.getCell(rec, colRef[0]));
                         });
                     });
                 });
@@ -930,10 +1154,25 @@ describe("grid-general", function() {
                             expect(grid.getEl().select('.' + dirtyCls).getCount()).toBe(0);
                         });
 
+                        it("should not render a cell with the dirtyText description initially", function() {
+                            makeDirtyGrid(false, true);
+                            store.first().set('field1', 'bleh');
+                            grid.render(Ext.getBody());
+
+                            expect(grid.getEl().select('[aria-describedby]').getCount()).toBe(0);
+                        });
+
                         it("should not add the dirtyCls when updated with a simple cell updater", function() {
                             makeDirtyGrid(false);
                             store.first().set('field1', 'bleh');
                             expect(grid.getEl().select('.' + dirtyCls).getCount()).toBe(0);
+                        });
+
+                        it("should not add the dirtyText description when updated with a simple cell updater", function() {
+                            makeDirtyGrid(false);
+                            store.first().set('field1', 'bleh');
+                            
+                            expect(grid.getEl().select('[aria-describedby]').getCount()).toBe(0);
                         });
 
                         it("should not add the dirtyCls when updated with a renderer", function() {
@@ -946,6 +1185,18 @@ describe("grid-general", function() {
                             store.first().set('field1', 'bleh');
                             expect(grid.getEl().select('.' + dirtyCls).getCount()).toBe(0);
                         });
+
+                        it("should not add the dirtyText description when updated with a renderer", function() {
+                            makeDirtyGrid(false, false, [{
+                                dataIndex: '',
+                                renderer: function(v, meta, rec) {
+                                    return rec.get('field1') + rec.get('field2');
+                                }
+                            }]);
+                            store.first().set('field1', 'bleh');
+                            
+                            expect(grid.getEl().select('[aria-describedby]').getCount()).toBe(0);
+                        });
                     });
 
                     describe("with markDirty: true", function() {
@@ -956,6 +1207,16 @@ describe("grid-general", function() {
                             var rec = store.first();
                             for (var i = 0; i < colRef.length; ++i) {
                                 expect(getCell(rec, colRef[i])).not.toHaveCls(dirtyCls);
+                            }
+                        });
+
+                        it("should not render a cell with the dirtyText description initially if not dirty", function() {
+                            makeDirtyGrid(true, true);
+                            grid.render(Ext.getBody());
+                            
+                            var rec = store.first();
+                            for (var i = 0; i < colRef.length; ++i) {
+                                expect(getCell(rec, colRef[i])).not.toHaveAttr('aria-describedby');
                             }
                         });
 
@@ -971,6 +1232,19 @@ describe("grid-general", function() {
                             }
                         });
 
+                        it("should render a cell with the dirtyText description initially if the cell is dirty", function() {
+                            makeDirtyGrid(true, true);
+                            store.first().set('field1', 'bleh');
+                            grid.render(Ext.getBody());
+                            
+                            var rec = store.first();
+                            expect(getCell(rec, colRef[0])).toHaveAttr('aria-describedby', colRef[0].dirtyTextElementId);
+                            
+                            for (var i = 1; i < colRef.length; ++i) {
+                                expect(getCell(rec, colRef[i])).not.toHaveAttr('aria-describedby');
+                            }
+                        });
+
                         it("should add the dirtyCls to updated cells", function() {
                             makeDirtyGrid(true);
                             var rec = store.first();
@@ -978,6 +1252,17 @@ describe("grid-general", function() {
                             expect(getCell(rec, colRef[0])).toHaveCls(dirtyCls);
                             rec.set('field4', 'qwerty');
                             expect(getCell(rec, colRef[3])).toHaveCls(dirtyCls);
+                        });
+
+                        it("should add the dirtyText description to updated cells", function() {
+                            makeDirtyGrid(true);
+                            var rec = store.first();
+                            
+                            rec.set('field1', 'bleh');
+                            expect(getCell(rec, colRef[0])).toHaveAttr('aria-describedby', colRef[0].dirtyTextElementId);
+                            
+                            rec.set('field4', 'qwerty');
+                            expect(getCell(rec, colRef[3])).toHaveAttr('aria-describedby', colRef[3].dirtyTextElementId);
                         });
 
                         it("should remove the dirtyCls when the cell is no longer dirty", function() {
@@ -989,6 +1274,18 @@ describe("grid-general", function() {
                             expect(getCell(rec, colRef[0])).toHaveCls(dirtyCls);
                             rec.set('field1', val);
                             expect(getCell(rec, colRef[0])).not.toHaveCls(dirtyCls);
+                        });
+
+                        it("should remove the dirtyText description when the cell is no longer dirty", function() {
+                            makeDirtyGrid(true);
+                            var rec = store.first(),
+                                val = rec.get('field1');
+
+                            rec.set('field1', 'asdf');
+                            expect(getCell(rec, colRef[0])).toHaveAttr('aria-describedby', colRef[0].dirtyTextElementId);
+                            
+                            rec.set('field1', val);
+                            expect(getCell(rec, colRef[0])).not.toHaveAttr('aria-describedby');
                         });
 
                         it("should remove the dirtyCls on commit", function() {
@@ -1010,6 +1307,25 @@ describe("grid-general", function() {
                             expect(getCell(rec, colRef[2])).not.toHaveCls(dirtyCls);
                         });
 
+                        it("should remove the dirtyText description on commit", function() {
+                            makeDirtyGrid(true);
+                            var rec = store.first();
+
+                            rec.set('field1', 'foo');
+                            rec.set('field2', 'bar');
+                            expect(getCell(rec, colRef[0])).toHaveAttr('aria-describedby', colRef[0].dirtyTextElementId);
+                            expect(getCell(rec, colRef[1])).toHaveAttr('aria-describedby', colRef[1].dirtyTextElementId);
+
+                            rec.set('field3', 'baz');
+                            expect(getCell(rec, colRef[2])).toHaveAttr('aria-describedby', colRef[2].dirtyTextElementId);
+
+                            rec.commit();
+
+                            expect(getCell(rec, colRef[0])).not.toHaveAttr('aria-describedby');
+                            expect(getCell(rec, colRef[1])).not.toHaveAttr('aria-describedby');
+                            expect(getCell(rec, colRef[2])).not.toHaveAttr('aria-describedby');
+                        });
+
                         it("should remove the dirtyCls on reject", function() {
                             makeDirtyGrid(true);
                             var rec = store.first();
@@ -1027,6 +1343,25 @@ describe("grid-general", function() {
                             expect(getCell(rec, colRef[0])).not.toHaveCls(dirtyCls);
                             expect(getCell(rec, colRef[1])).not.toHaveCls(dirtyCls);
                             expect(getCell(rec, colRef[2])).not.toHaveCls(dirtyCls);
+                        });
+
+                        it("should remove the dirtyText description on reject", function() {
+                            makeDirtyGrid(true);
+                            var rec = store.first();
+
+                            rec.set('field1', 'foo');
+                            rec.set('field2', 'bar');
+                            expect(getCell(rec, colRef[0])).toHaveAttr('aria-describedby', colRef[0].dirtyTextElementId);
+                            expect(getCell(rec, colRef[1])).toHaveAttr('aria-describedby', colRef[1].dirtyTextElementId);
+
+                            rec.set('field3', 'baz');
+                            expect(getCell(rec, colRef[2])).toHaveAttr('aria-describedby', colRef[2].dirtyTextElementId);
+
+                            rec.reject();
+
+                            expect(getCell(rec, colRef[0])).not.toHaveAttr('aria-describedby');
+                            expect(getCell(rec, colRef[1])).not.toHaveAttr('aria-describedby');
+                            expect(getCell(rec, colRef[2])).not.toHaveAttr('aria-describedby');
                         });
                     });
                 });
@@ -1402,6 +1737,870 @@ describe("grid-general", function() {
                     });  
                 });  
             });
+
+            describe("row binding", function() {
+                // While these tests will use widgetcolumn/rowwidget, they are really testing the functionality
+                // shared in the grid/row context
+
+                function makeBindSuite(o) {
+                    var widgets, wCount;
+
+                    function notify() {
+                        var vm = grid.lookupViewModel();
+                        if (vm) {
+                            vm.notify();
+                        } else {
+                            Ext.Array.forEach(widgets, function(widget) {
+                                var vm = widget.lookupViewModel();
+                                if (vm) {
+                                    if (vm.getParent()) {
+                                        vm = vm.getParent();
+                                    }
+                                    vm.notify();
+                                }
+                            });
+                        }
+                    }
+
+                    beforeEach(function() {
+                        wCount = 0;
+                        widgets = [];
+
+                        Ext.define('spec.RowVM', {
+                            extend: 'Ext.app.ViewModel',
+                            alias: 'viewmodel.specgridrow'
+                        });
+
+                        Ext.define('spec.WidgetVM', {
+                            extend: 'Ext.app.ViewModel',
+                            alias: 'viewmodel.specwidgetvm'
+                        });
+
+                        Ext.define('spec.GridWidget', {
+                            extend: 'Ext.container.Container',
+                            xtype: 'gridwidget',
+
+                            defaultBindProperty: 'a',
+
+                            config: {
+                                a: ''
+                            },
+
+                            constructor: function(config) {
+                                ++wCount;
+                                this.callParent([config]);
+                                if (!o.ignoreFirst || wCount > 1) {
+                                    widgets.push(this);
+                                }
+                            },
+
+                            fireIt: function() {
+                                this.fireEvent('widgetevent', this);
+                            },
+                        });
+
+                        Ext.define('spec.GridWidgetChild', {
+                            extend: 'Ext.Component',
+                            xtype: 'gridwidgetchild',
+
+                            defaultBindProperty: 'z',
+
+                            config: {
+                                z: ''
+                            },
+
+                            fireIt: function() {
+                                this.fireEvent('childevent', this);
+                            }
+                        });
+                    });
+
+                    afterEach(function() {
+                        wCount = 0;
+                        widgets = null;
+                        Ext.undefine('spec.WidgetVM');
+                        Ext.undefine('spec.RowVM');
+                        Ext.undefine('spec.GridWidget');
+                        Ext.undefine('spec.GridWidgetChild');
+                    });
+
+                    function getWidget(index) {
+                        o.activateWidget(index);
+                        return widgets[index];
+                    }
+
+                    function create(widgetCfg, data, gridCfg) {
+                        o.createFn(widgetCfg, data, gridCfg);
+                    }
+
+                    describe("default viewModel creation", function() {
+                        it("should not create a viewmodel by default", function() {
+                            create({
+                                xtype: 'gridwidget'
+                            }, 1);
+
+                            var w = getWidget(0);
+                            expect(w.getViewModel()).toBeNull();
+                        });
+
+                        it("should create a viewmodel if the widget has a bind statement", function() {
+                            create({
+                                xtype: 'gridwidget',
+                                bind: '{record.id}'
+                            }, 1);
+
+                            var w = getWidget(0);
+
+                            expect(w.lookupViewModel().$className).toBe('Ext.app.ViewModel');
+                            notify();
+                            expect(w.getA()).toBe('rec0');
+                        });
+
+                        it("should create a viewmodel if a rowViewModel if specified", function() {
+                            create({
+                                xtype: 'gridwidget'
+                            }, 1, {
+                                rowViewModel: {}
+                            });
+
+                            var w = getWidget(0);
+                            expect(w.lookupViewModel().$className).toBe('Ext.app.ViewModel');
+                        });
+
+                        it("should use the viewModel type as a string", function() {
+                            create({
+                                xtype: 'gridwidget'
+                            }, 1, {
+                                rowViewModel: 'specgridrow'
+                            });
+
+                            var w = getWidget(0);
+                            expect(w.lookupViewModel().$className).toBe('spec.RowVM');
+                        });
+
+                        it("should use the viewModel type as an object", function() {
+                            create({
+                                xtype: 'gridwidget'
+                            }, 1, {
+                                rowViewModel: {
+                                    type: 'specgridrow'
+                                }
+                            });
+
+                            var w = getWidget(0);
+                            expect(w.lookupViewModel().$className).toBe('spec.RowVM');
+                        });
+                    });
+
+                    describe("inheriting viewmodels", function() {
+                        describe("viewmodel above grid", function() {
+                            var ct, vm;
+
+                            beforeEach(function() {
+                                vm = new Ext.app.ViewModel({
+                                    data: {
+                                        foo: 'xxx'
+                                    }
+                                });
+                            });
+
+                            afterEach(function() {
+                                vm = ct = Ext.destroy(ct);
+                            });
+
+                            describe("without a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}'
+                                            }
+                                        }, 1, {
+                                            renderTo: null
+                                        });
+
+                                        ct = new Ext.container.Container({
+                                            viewModel: vm,
+                                            items: grid,
+                                            renderTo: Ext.getBody()
+                                        });
+
+                                        var w = getWidget(0);
+                                        notify();
+                                        expect(w.lookupViewModel()).toBe(vm);
+                                        expect(w.items.first().getZ()).toBe('xxx');
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        }, 1, {
+                                            renderTo: null
+                                        });
+
+                                        ct = new Ext.container.Container({
+                                            viewModel: vm,
+                                            items: grid,
+                                            renderTo: Ext.getBody()
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(wVM.getParent()).toBe(vm);
+                                        expect(w.items.first().getZ()).toBe('xxxyyy');
+                                    });
+                                });
+                            });
+
+                            describe("with a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}{bar}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}'
+                                            }
+                                        }, 1, {
+                                            renderTo: null,
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        });
+
+                                        ct = new Ext.container.Container({
+                                            viewModel: vm,
+                                            items: grid,
+                                            renderTo: Ext.getBody()
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.RowVM');
+                                        expect(wVM.getParent()).toBe(vm);
+                                        expect(w.getA()).toBe('xxxyyy');
+                                        expect(w.items.first().getZ()).toBe('xxxyyy');
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}{bar}{baz}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}{baz}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    baz: 'zzz'
+                                                }
+                                            }
+                                        }, 1, {
+                                            renderTo: null,
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        });
+
+                                        ct = new Ext.container.Container({
+                                            viewModel: vm,
+                                            items: grid,
+                                            renderTo: Ext.getBody()
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(wVM.getParent().$className).toBe('spec.RowVM');
+                                        expect(wVM.getParent().getParent()).toBe(vm);
+                                        expect(w.getA()).toBe('xxxyyyzzz');
+                                        expect(w.items.first().getZ()).toBe('xxxyyyzzz');
+                                    });
+                                });
+                            });
+                        });
+
+                        describe("viewmodel on grid", function() {
+                            var vm;
+
+                            beforeEach(function() {
+                                vm = new Ext.app.ViewModel({
+                                    data: {
+                                        foo: 'xxx'
+                                    }
+                                });
+                            });
+
+                            afterEach(function() {
+                                vm = null;
+                            });
+
+                            describe("without a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}'
+                                            }
+                                        }, 1, {
+                                            viewModel: vm
+                                        });
+
+                                        var w = getWidget(0);
+                                        notify();
+                                        expect(w.lookupViewModel()).toBe(vm);
+                                        expect(w.items.first().getZ()).toBe('xxx');
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        }, 1, {
+                                            viewModel: vm
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(wVM.getParent()).toBe(vm);
+                                        expect(w.items.first().getZ()).toBe('xxxyyy');
+                                    });
+                                });
+                            });
+
+                            describe("with a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}{bar}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}'
+                                            }
+                                        }, 1, {
+                                            viewModel: vm,
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.RowVM');
+                                        expect(wVM.getParent()).toBe(vm);
+                                        expect(w.getA()).toBe('xxxyyy');
+                                        expect(w.items.first().getZ()).toBe('xxxyyy');
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    it("should hook up rows to the parent vm", function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}{bar}{baz}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}{baz}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    baz: 'zzz'
+                                                }
+                                            }
+                                        }, 1, {
+                                            viewModel: vm,
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        });
+
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(wVM.getParent().$className).toBe('spec.RowVM');
+                                        expect(wVM.getParent().getParent()).toBe(vm);
+                                        expect(w.getA()).toBe('xxxyyyzzz');
+                                        expect(w.items.first().getZ()).toBe('xxxyyyzzz');
+                                    });
+                                });
+                            });
+                        });
+
+                        describe("no viewmodel on grid", function() {
+                            describe("without a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    it("should not throw an error", function() {
+                                        // We can't bind here, but it should still render
+                                        create({
+                                            xtype: 'gridwidget',
+                                            a: 1,
+                                            items: {
+                                                xtype: 'gridwidgetchild'
+                                            }
+                                        }, 1);
+
+                                        var w = getWidget(0);
+
+                                        expect(w.getA()).toBe(1);
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    beforeEach(function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    foo: 'xxx'
+                                                }
+                                            }
+                                        }, 5);
+                                    });
+
+                                    it("should hook up rows to the parent vm", function() {
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(w.items.first().getZ()).toBe('xxx');
+                                    });
+
+                                    it("should share a scheduler for all widgets", function() {
+                                        var scheduler = getWidget(0).getViewModel().getScheduler();
+
+                                        expect(getWidget(1).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(2).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(3).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(4).getViewModel().getScheduler()).toBe(scheduler);
+                                    });
+                                });
+                            });
+
+                            describe("with a rowviewmodel", function() {
+                                describe("without widget viewmodel", function() {
+                                    beforeEach(function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}'
+                                            }
+                                        }, 5, {
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    foo: 'xxx'
+                                                }
+                                            }
+                                        });
+                                    });
+
+                                    it("should hook up rows to the parent vm", function() {
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.RowVM');
+                                        expect(w.getA()).toBe('xxx');
+                                        expect(w.items.first().getZ()).toBe('xxx');
+                                    });
+
+                                    it("should share a scheduler for all widgets", function() {
+                                        var scheduler = getWidget(0).lookupViewModel().getScheduler();
+
+                                        expect(getWidget(1).lookupViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(2).lookupViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(3).lookupViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(4).lookupViewModel().getScheduler()).toBe(scheduler);
+                                    });
+                                });
+
+                                describe("with widget viewmodel", function() {
+                                    beforeEach(function() {
+                                        create({
+                                            xtype: 'gridwidget',
+                                            bind: '{foo}{bar}',
+                                            items: {
+                                                xtype: 'gridwidgetchild',
+                                                bind: '{foo}{bar}'
+                                            },
+                                            viewModel: {
+                                                type: 'specwidgetvm',
+                                                data: {
+                                                    bar: 'yyy'
+                                                }
+                                            }
+                                        }, 5, {
+                                            rowViewModel: {
+                                                type: 'specgridrow',
+                                                data: {
+                                                    foo: 'xxx'
+                                                }
+                                            }
+                                        });
+                                    });
+
+                                    it("should hook up rows to the parent vm", function() {
+                                        var w = getWidget(0),
+                                            wVM = w.lookupViewModel();
+
+                                        notify();
+                                        expect(wVM.$className).toBe('spec.WidgetVM');
+                                        expect(wVM.getParent().$className).toBe('spec.RowVM');
+                                        expect(w.getA()).toBe('xxxyyy');
+                                        expect(w.items.first().getZ()).toBe('xxxyyy');
+                                    });
+
+                                    it("should share a scheduler for all widgets", function() {
+                                        var scheduler = getWidget(0).getViewModel().getScheduler();
+
+                                        expect(getWidget(1).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(2).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(3).getViewModel().getScheduler()).toBe(scheduler);
+                                        expect(getWidget(4).getViewModel().getScheduler()).toBe(scheduler);
+                                    });
+                                });
+                            });
+                        });
+                    });
+
+                    describe("data", function() {
+                        it("should put the record and recordIndex in the vm", function() {
+                            create({
+                                xtype: 'gridwidget',
+                                bind: '{record.id} - {recordIndex}'
+                            }, [{id: 101}, {id: 102}, {id: 103}, {id: 104}]);
+
+                            // Force widget creation in expander mode
+                            getWidget(0);
+                            getWidget(1);
+                            getWidget(2);
+                            getWidget(3);
+
+                            notify();
+
+                            expect(getWidget(0).getA()).toBe('101 - 0');
+                            expect(getWidget(1).getA()).toBe('102 - 1');
+                            expect(getWidget(2).getA()).toBe('103 - 2');
+                            expect(getWidget(3).getA()).toBe('104 - 3');
+                        });
+                    });
+
+                    describe("resolving listeners", function() {
+                        beforeEach(function() {
+                            Ext.define('spec.GridController', {
+                                extend: 'Ext.app.ViewController',
+                                alias: 'controller.specgrid',
+
+                                onFoo: function() {},
+                                onBar: function() {}
+                            });
+                        });
+
+                        afterEach(function() {
+                            Ext.undefine('spec.GridController');
+                        });
+
+                        describe("controller above the grid", function() {
+                            var ct;
+
+                            afterEach(function() {
+                                ct = Ext.destroy(ct);
+                            });
+
+                            it("should resolve to the controller", function() {
+                                create({
+                                    xtype: 'gridwidget',
+                                    listeners: {
+                                        widgetevent: 'onFoo'
+                                    },
+                                    items: {
+                                        xtype: 'gridwidgetchild',
+                                        listeners: {
+                                            childevent: 'onBar'
+                                        }
+                                    }
+                                }, 1, {
+                                    renderTo: null
+                                });
+
+                                var controller = new spec.GridController();
+                                spyOn(controller, 'onFoo');
+                                spyOn(controller, 'onBar');
+
+                                ct = new Ext.container.Container({
+                                    controller: controller,
+                                    items: grid,
+                                    renderTo: Ext.getBody()
+                                });
+
+                                var w = getWidget(0);
+                                w.fireIt();
+                                expect(controller.onFoo.callCount).toBe(1);
+
+                                w.items.first().fireIt();
+                                expect(controller.onBar.callCount).toBe(1);
+                            });
+                        });
+
+                        describe("controller on the grid", function() {
+                            it("should resolve to the controller", function() {
+                                var controller = new spec.GridController();
+                                spyOn(controller, 'onFoo');
+                                spyOn(controller, 'onBar');
+
+                                create({
+                                    xtype: 'gridwidget',
+                                    listeners: {
+                                        widgetevent: 'onFoo'
+                                    },
+                                    items: {
+                                        xtype: 'gridwidgetchild',
+                                        listeners: {
+                                            childevent: 'onBar'
+                                        }
+                                    }
+                                }, 1, {
+                                    controller: controller
+                                });
+
+                                var w = getWidget(0);
+                                w.fireIt();
+                                expect(controller.onFoo.callCount).toBe(1);
+
+                                w.items.first().fireIt();
+                                expect(controller.onBar.callCount).toBe(1);
+                            });
+                        });
+
+                        describe("method on the widget view", function() {
+                            beforeEach(function() {
+                                Ext.define('spec.SelfWidget', {
+                                    extend: 'Ext.Component',
+                                    xtype: 'selfwidget',
+
+                                    constructor: function(config) {
+                                        ++wCount;
+                                        this.callParent([config]);
+                                        if (!o.ignoreFirst || wCount > 1) {
+                                            widgets.push(this);
+                                        }
+                                    },
+
+                                    fireIt: function() {
+                                        this.fireEvent('selfevent', this);
+                                    },
+
+                                    onSelfEvent: function() {},
+
+                                    defaultListenerScope: true,
+                                    listeners: {
+                                        selfEvent: 'onSelfEvent'
+                                    }
+                                });
+                            });
+
+                            afterEach(function() {
+                                Ext.undefine('spec.SelfWidget');
+                            });
+
+                            it("should resolve to the widget method", function() {
+                                create({
+                                    xtype: 'selfwidget'
+                                }, 1);
+
+                                var w = getWidget(0);
+                                spyOn(w, 'onSelfEvent');
+
+                                w.fireIt();
+                                expect(w.onSelfEvent.callCount).toBe(1);
+                            });
+                        });
+
+                        describe("method on the widget controller", function() {
+                            beforeEach(function() {
+                                Ext.define('spec.ControllerWidget', {
+                                    extend: 'Ext.Component',
+                                    xtype: 'controllerwidget',
+
+                                    controller: 'specgrid',
+
+                                    constructor: function(config) {
+                                        ++wCount;
+                                        this.callParent([config]);
+                                        if (!o.ignoreFirst || wCount > 1) {
+                                            widgets.push(this);
+                                        }
+                                    },
+
+                                    fireIt: function() {
+                                        this.fireEvent('controllerevent', this);
+                                    },
+
+                                    listeners: {
+                                        controllerevent: 'onFoo'
+                                    }
+                                });
+                            });
+
+                            afterEach(function() {
+                                Ext.undefine('spec.ControllerWidget');
+                            });
+
+                            it("should resolve to the controller method", function() {
+                                create({
+                                    xtype: 'controllerwidget'
+                                }, 1);
+
+                                var w = getWidget(0),
+                                    controller = w.getController();
+
+                                spyOn(controller, 'onFoo');
+
+                                w.fireIt();
+                                expect(controller.onFoo.callCount).toBe(1);
+                            });
+                        });
+                    });
+
+                    describe("bindings", function() {
+                        describe("hidden", function() {
+                            beforeEach(function() {
+                                create({
+                                    xtype: 'gridwidget',
+                                    bind: {
+                                        hidden: '{record.field1}'
+                                    }
+                                }, [{
+                                    field1: false
+                                }, {
+                                    field1: true
+                                }]);
+                                getWidget(0);
+                                getWidget(1);
+                                notify();
+                            });
+
+                            it("should bind to the hidden state", function() {
+                                expect(getWidget(0).isVisible()).toBe(true);
+                                expect(getWidget(1).isVisible()).toBe(false);
+                            });
+
+                            it("should be able to bind to hidden state after reloading data", function() {
+                                store.loadData([{
+                                    field1: true
+                                }, {
+                                    field1: false
+                                }]);
+                                getWidget(0);
+                                getWidget(1);
+                                notify();
+                                expect(getWidget(0).isVisible()).toBe(false);
+                                expect(getWidget(1).isVisible()).toBe(true);
+                            });
+                        });
+                    });
+                }
+
+                describe("widget column", function() {
+                    makeBindSuite({
+                        ignoreFirst: true,
+                        createFn: function(widgetCfg, data, gridCfg) {
+                            makeGrid([{
+                                xtype: 'widgetcolumn',
+                                widget: widgetCfg
+                            }], data, gridCfg);
+                        },
+                        activateWidget: Ext.emptyFn
+                    });
+                });
+
+                describe("row widget", function() {
+                    makeBindSuite({
+                        ignoreFirst: false,
+                        createFn: function(widgetCfg, data, gridCfg) {
+                            gridCfg = gridCfg || {};
+                            gridCfg.plugins = [{
+                                ptype: 'rowwidget',
+                                widget : widgetCfg
+                            }];
+                            makeGrid([{
+                                dataIndex: 'field1'
+                            }], data, gridCfg);
+                        },
+                        activateWidget: function(index) {
+                            var expander = grid.plugins[0];
+                            expander.toggleRow(index, store.getAt(index));
+                        }
+                    });
+                });
+            });
             
             describe("reconfigure", function() {
                 describe("setStore", function() {
@@ -1434,6 +2633,23 @@ describe("grid-general", function() {
                             expectNodeLength(0);
                             expect(storeChangeSpy.callCount).toBe(1);
                         });
+                    });
+                });
+
+                describe("scroller", function() {
+                    it("should scroll to top", function() {
+                        var columns = [{
+                            dataIndex: 'field1',
+                            text: 'Field 1',
+                            width: 90
+                        }];
+
+                        makeGrid(columns, 50);
+
+                        grid.getView().getScrollable().scrollTo(null, 300, false);
+                        grid.reconfigure(makeStore(makeData(50, columns)));
+
+                        expect(grid.getView().getScrollable().position.y).toBe(0);
                     });
                 });
 
@@ -2432,6 +3648,7 @@ describe("grid-general", function() {
 
                 it("should only refresh the view once", function() {
                     var count = 0;
+
                     makeGrid([{
                         dataIndex: 'field1'
                     }]);
@@ -3036,6 +4253,47 @@ describe("grid-general", function() {
             });
 
             describe("locking columns", function(){
+                describe("basic rendering", function() {
+                    describe("locked scroller top", function() {
+                        it("should set the top of the scroller to include the view region", function() {
+                            makeGrid([{
+                                locked: true,
+                                dataIndex: 'field1',
+                                text: 'Foo'
+                            }, {
+                                dataIndex: 'field2',
+                                text: 'Bar'
+                            }], 1);
+
+                            var top = grid.scrollContainer.getTop();
+                            expect(top).toBe(grid.lockedGrid.headerCt.getHeight() + 1);
+                        });
+
+                        it("should set the top of the scroller to include the view region with only locked columns", function() {
+                            makeGrid([{
+                                locked: true,
+                                dataIndex: 'field1',
+                                text: 'Foo'
+                            }], 1);
+
+                            var top = grid.scrollContainer.getTop();
+                            expect(top).toBe(grid.lockedGrid.headerCt.getHeight() + 1);
+                        });
+
+                        it("should set the top of the scroller to include the view region with only unlocked columns", function() {
+                            makeGrid([{
+                                dataIndex: 'field1',
+                                text: 'Foo'
+                            }], 1, {
+                                enableLocking: true
+                            });
+
+                            var top = grid.scrollContainer.getTop();
+                            expect(top).toBe(grid.normalGrid.headerCt.getHeight() + 1);
+                        });
+                    });
+                });
+
                 it("should synchronize horizontal scrollbar presence between locked and normal side.", function(){
                     makeGrid([{
                         locked: true,
@@ -3373,6 +4631,46 @@ describe("grid-general", function() {
                         }
                     });
                 });
+
+                describe("locked side sizing", function() {
+                    beforeEach(function() {
+                        makeGrid([{
+                            locked: true,
+                            width: 110
+                        }, {
+                            locked: true,
+                            width: 160
+                        }, {
+                            flex: 1
+                        }]);
+                    });
+
+                    it("should wrap around locked column sizing", function() {
+                        var locked = grid.lockedGrid;
+
+                        expect(locked.getWidth()).toBe(270 + locked.gridPanelBorderWidth);
+                    });
+
+                    it("should be able to change to a fixed size", function() {
+                        var locked = grid.lockedGrid;
+
+                        locked.setWidth(400);
+
+                        expect(locked.getWidth()).toBe(400);
+                    });
+
+                    it("should be able to change to wrapping", function() {
+                        var locked = grid.lockedGrid;
+
+                        locked.setWidth(400);
+
+                        expect(locked.getWidth()).toBe(400);
+
+                        locked.setWidth(null);
+
+                        expect(locked.getWidth()).toBe(270 + locked.gridPanelBorderWidth);
+                    });
+                });
             });
 
             describe("ensureVisible", function() {
@@ -3659,6 +4957,8 @@ describe("grid-general", function() {
                             // If they want hideHeaders, ensure the viewHeight is still as required
                             if (cfg.hideHeaders) {
                                 cfg.height -= headerCtHeight;
+                            } else {
+                                cfg.hideHeaders = false;
                             }
                             makeGrid(columns, data, cfg);
                             gridRef = withLocking ? grid.normalGrid : grid;
@@ -5728,7 +7028,7 @@ describe("grid-general", function() {
                             });
 
                             describe("with no vertical and horizontal scroll", function() {
-                                visibleScrollbarsIt("it should stretch to the full column size", function() {
+                                visibleScrollbarsIt("should stretch to the full column size", function() {
                                     makeScrollGrid([{
                                         width: 600
                                     }, {
@@ -6433,22 +7733,20 @@ describe("grid-general", function() {
                 }]
             });
             var col = grid.getVisibleColumnManager().getColumns()[0],
-                cell00 = new Ext.grid.CellContext(grid.view).setPosition(0, 0);
+                cell00 = new Ext.grid.CellContext(grid.view).setPosition(0, 0),
+                widget00 = col.getWidget(grid.store.getAt(0));
 
             // First jump into the grid. Get tabIndex values correct as in real world grid use.
             grid.getNavigationModel().setPosition(0, 0);
-            waitsFor(function() {
-                return Ext.Element.getActiveElement() === cell00.getCell(true);
-            }, 'Cell 0,0 to gain focus');
+
+            waitsForFocus(cell00.getCell(), 'Cell 0,0 to gain focus');
 
             runs(function() {
                 grid.setActionableMode(true, cell00);
             });
 
             // Widget in cell 0,0 must have focus
-            waitsFor(function() {
-                return col.getWidget(grid.store.getAt(0)).hasFocus;
-            }, 'Button in cell 0,0 to gain focus');
+            waitsForFocus(widget00);
             
             runs(function() {
                 jasmine.fireKeyEvent(document.activeElement, 'keydown', Ext.event.Event.SPACE);
@@ -6456,9 +7754,7 @@ describe("grid-general", function() {
 
             // When the record is deleted from actioning the focused button, focus must
             // move into the column header
-            waitsFor(function() {
-                return Ext.Element.getActiveElement() === col.el.dom;
-            }, 'Column header 0 to gain focus');
+            waitsForFocus(col.el, 'Column header 0 to gain focus');
         });
 
         describe("direct focus of internal tabbable element", function() {
@@ -6480,11 +7776,11 @@ describe("grid-general", function() {
 
                 // Focus directly inside the cell.
                 // This should result in actionable mode.
-                icon.focus();
+                focusAndWait(icon, null, 'action icon to focus');
 
-                waitsFor(function() {
-                    return Ext.Element.getActiveElement() === icon && grid.actionableMode === true;
-                }, 'action icon to focus and grid to enter actionable mode');
+                runs(function() {
+                    expect(grid.actionableMode).toBe(true);
+                });
             });
         });
 
@@ -6508,9 +7804,13 @@ describe("grid-general", function() {
                 // Focus the tabGuard directly to imitate SHIFT+TAB from a following element.
                 grid.view.tabGuardEl.focus();
 
-                waitsFor(function() {
-                    return grid.getNavigationModel().getPosition().isEqual(cell01) && Ext.Element.getActiveElement() === cell01.getCell(true) && grid.actionableMode !== true;
-                }, 'last cell to be focused');
+                waitsForFocus(grid.view, 'view to gain focus');
+
+                runs(function() {
+                    expect(grid.getNavigationModel().getPosition().isEqual(cell01)).toBe(true);
+                    expect(Ext.Element.getActiveElement()).toBe(cell01.getCell(true));
+                    expect(grid.actionableMode).not.toBe(true);
+                });
             });
         });
 

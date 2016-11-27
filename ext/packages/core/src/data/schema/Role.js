@@ -178,7 +178,8 @@ Ext.define('Ext.data.schema.Role', {
         
         me.onStoreCreate(store, session, id);
 
-        if (foreignKeyName || (isMany && session)) {
+        // Want to run these in all cases for M-1, only with a session M-M
+        if (!isMany || session) {
             store.on({
                 scope: me,
                 add: 'onAddToMany',

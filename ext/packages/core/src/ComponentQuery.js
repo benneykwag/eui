@@ -1004,7 +1004,7 @@ Ext.define('Ext.ComponentQuery', {
         query: function(selector, root) {
             // An empty query will match every Component
             if (!selector) {
-                return Ext.ComponentManager.all.getArray();
+                return Ext.ComponentManager.getAll();
             }
             
             var results = [],
@@ -1322,5 +1322,5 @@ Ext.define('Ext.ComponentQuery', {
     Ext.first = function () {
         var matches = cq.query.apply(cq, arguments);
         return (matches && matches[0]) || null;
-    }
+    };
 });

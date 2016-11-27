@@ -1,12 +1,4 @@
 [
-//    {
-//        "platform": "OS X 10.10",
-//        "browserName": "iPad",
-//        "version": "8.1",
-//        "device-orientation": "landscape",
-//        "chunks": 13
-//    }
-//    ,
     {
         "platform": "Windows XP",
         "browserName": "internet explorer",
@@ -14,56 +6,68 @@
         "prerun": {
             "executable": "http://saucelabs-tunnel:1841/js-timeout-fix.bat"
         },
+        "enablePersistentHover": false,
         "chunks": 20
-    }
-    ,
+    },
     {
         "platform": "Windows 7",
         "browserName": "internet explorer",
         "version": "9",
-        "chunks": 10
-    }
-    ,
+        "enablePersistentHover": false,
+        "chunks": 20
+    },
     {
         "platform": "Windows 7",
         "browserName": "internet explorer",
         "version": "10",
-        "chunks": 5
-    }
-    ,
+        "enablePersistentHover": false,
+        "chunks": 20
+    },
     {
         "platform": "Windows 7",
         "browserName": "internet explorer",
         "version": "11",
-        "chunks": 5
-    }
-    ,
+        "enablePersistentHover": false,
+        "chunks": 15
+    },
     {
-        "platform": "Windows 7",
-        "browserName": "chrome",
-        "version": "43",
-        "chunks": 5
-    }
-    ,
+        "browserName": "MicrosoftEdge",
+        "platform": "Windows 10",
+        "version": "13.10586",
+        "enablePersistentHover": false,
+        "chunks": 20
+    },
+    {
+        "platform": "iOS",
+        "browserName": "Safari",
+        "version": "9.3",
+        "appiumVersion": "1.5.3",
+        "deviceOrientation": "landscape",
+        "deviceName": "iPad Retina Simulator",
+        "chunks": 15
+    },
     {
         "platform": "OS X 10.9",
         "browserName": "safari",
         "version": "7",
-        "chunks": 10
-    }
-    ,
+        "chunks": 15
+    },
     {
         "platform": "OS X 10.10",
         "browserName": "safari",
         "version": "8",
-        "chunks": 10
-    }
-    ,
+        "chunks": 15
+    },
     {
-        "platform": "Windows 7",
+        "platform": "Windows 10",
         "browserName": "firefox",
-        "version": "38",
+        "version": "48",
+        "chunks": 15
+    },
+    {
+        "platform": "Windows 10",
+        "browserName": "chrome",
+        "version": "52",
         "chunks": 15
     }
 ]
-

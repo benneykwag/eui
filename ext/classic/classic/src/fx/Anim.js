@@ -405,7 +405,7 @@ Ext.define('Ext.fx.Anim', {
     /**
      * Immediately force this animation to its final state.
      */
-    jumpToEnd: function(){
+    jumpToEnd: function(suppressEvent) {
         var me = this;
         
         if (!me.endWasCalled) {
@@ -413,7 +413,7 @@ Ext.define('Ext.fx.Anim', {
                 me.initAttrs();
             }
             Ext.fx.Manager.jumpToEnd(me);
-            me.end();
+            me.end(suppressEvent);
         }
     },
 

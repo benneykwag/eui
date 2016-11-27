@@ -1,7 +1,8 @@
 /* global Ext, MockAjaxManager, expect, spyOn, jasmine, xit */
 
 describe('Ext.grid.plugin.BufferedRenderer', function () {
-    var store, grid, tree, view, plugin,
+    var itNotIE8 = Ext.isIE8 ? xit : it,
+        store, grid, tree, view, scroller, plugin,
         synchronousLoad = true,
         proxyStoreLoad = Ext.data.ProxyStore.prototype.load,
         loadStore = function() {
@@ -20,7 +21,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             return this;
         },
         itIE10p = Ext.isIE9m ? xit : it,
-        itNotTouch = Ext.supports.TouchEvents ? xit : it;
+        itNotTouch = jasmine.supportsTouch ? xit : it;
 
     function createData(total, variableRowHeight, asymmetricRowHeight) {
         var data = [],
@@ -131,6 +132,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
         }, gridCfg));
 
         view = grid.view;
+        scroller = view.isLockingView ? grid.getScrollable() : view.getScrollable();
 
         // Extract the buffered renderer from a real TableView, the topmost one might be a Locking pseudo view
         plugin = grid.down('tableview').bufferedRenderer;
@@ -185,6 +187,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
         }, treeCfg || {}));
 
         view = tree.view;
+        scroller = view.isLockingView ? tree.getScrollable() : view.getScrollable();
         return tree;
     }
 
@@ -197,6 +200,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
     beforeEach(function () {
         // Override so that we can control asynchronous loading
+        Ext.data.BufferedStore.prototype.load = loadStore;
         Ext.data.ProxyStore.prototype.load = loadStore;
         Ext.data.TreeStore.prototype.load = loadTreeStore;
 
@@ -205,6 +209,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
     afterEach(function () {
         // Undo the overrides.
+        Ext.data.BufferedStore.prototype.load = proxyStoreLoad;
         Ext.data.ProxyStore.prototype.load = proxyStoreLoad;
         Ext.data.TreeStore.prototype.load = treeStoreLoad;
 
@@ -221,7 +226,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
         store = grid = tree = view = plugin = null;
     });
 
-    describe('updateing scroller when changing width', function() {
+    describe('updating scroller when changing width', function() {
         it('should update the horizontal scroll range', function() {
             makeGrid();
             var scroller = view.getScrollable(),
@@ -335,7 +340,6 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
             describe('Load requests during scrolling', function () {
                 var scrollToLoadBufferValue,
-                    scrollTimer,
                     Person = Ext.define(null, {
                         extend: 'Ext.data.Model',
                         fields: ['name'],
@@ -347,14 +351,6 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                             }
                         }
                     });
-
-                function scrollTheGrid() {
-                    // Scroll incrementally until the correct starting point is found
-                    if (view && !view.destroyed) {
-                        view.scrollBy(null, 100);
-                    }
-                    scrollTimer = 0;
-                }
 
                 beforeEach(function () {
                     scrollToLoadBufferValue = Ext.grid.plugin.BufferedRenderer.prototype.scrollToLoadBuffer;
@@ -406,16 +402,14 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 it('should not have time between scroll events to fire off any requests', function() {
                     spyOn(plugin, 'doAttemptLoad');
                     
-                    // Scroll to close enough to the end in a slow manner, 50ms between each scroll.
+                    // Scroll to close enough to the end in a controlled manner.
                     // The doAttemptLoad timer should not timeout and fire off a page request between each scroll.
-                    waitsFor(function() {
-                        if (plugin.getLastVisibleRowIndex() <= 995) {
-                            if (!scrollTimer) {
-                                scrollTimer = setTimeout(scrollTheGrid, 50);
-                            }
-                        } else {
+                    jasmine.waitsForScroll(scroller, function(scroller, x, y) {
+                        // Allow 5px wiggle room to detect that we're at the end of the scroll range
+                        if (Ext.Number.isEqual(y, scroller.getMaxUserPosition().y, 5)) {
                             return true;
                         }
+                        scroller.scrollBy(0, 100);
                     }, 'grid to scroll to end', 40000);
 
                     // The atteptLoad timer must never have fired during the scroll.
@@ -463,17 +457,15 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 renderTo: Ext.getBody()
             });
             view = grid.getView();
+            scroller = view.isLockingView ? grid.getScrollable() : view.getScrollable();
 
             // Wait until known correct condition is met.
             // Timeout === test failure.
-            waitsFor(function() {
+            jasmine.waitsForScroll(scroller, function() {
                 if (view.all.endIndex === store.getCount() - 1) {
                     return true;
                 }
-                else {
-                    // Scroll incrementally until the correct starting point is found
-                    view.scrollBy(null, 10);
-                }
+                scroller.scrollBy(0, 10);
             }, 'view is scrolled to the last record');
 
             runs(function() {
@@ -492,7 +484,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
     });
 
     describe("basic functionality with a buffered store", function() {
-        it("should render rows in order", function() {
+        itNotIE8("should render rows in order", function() {
             var Person = Ext.define(null, {
                 extend: 'Ext.data.Model',
                 fields: ['name'],
@@ -543,18 +535,16 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             });
             var view = grid.getView(),
                 rows = view.all;
+            scroller = view.isLockingView ? grid.getScrollable() : view.getScrollable();
 
             // Wait until known correct condition is met.
             // Timeout === test failure.
-            waitsFor(function() {
+            jasmine.waitsForScroll(scroller, function() {
                 if (rows.startIndex <= 100 && rows.endIndex >= 100) {
                     return true;
                 }
-                else {
-                    // Scroll incrementally until the correct starting point is found
-                    view.scrollBy(null, 25);
-                }
-            }, 'View to scroll record id 100 into the rendered block', 30000, Ext.isIE ? 100 : null);
+                scroller.scrollBy(0, 100);
+            }, 'View to scroll record id 100 into the rendered block', 30000);
 
             runs(function() {
                 var nodes = view.getNodes(),
@@ -1725,20 +1715,18 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
                 view = grid.view.normalView;
                 nodeCache = view.all;
+                scroller = grid.getScrollable();
 
                 if (reconfigure && !afterScrollToEnd) {
                     grid.reconfigure(null, columns);
                 }
 
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     if (nodeCache.endIndex === 99 && view.bufferedRenderer.getLastVisibleRowIndex() === 99) {
                         return true;
                     }
-                    else {
-                        // Scroll incrementally until the correct end point is found
-                        grid.getScrollable().scrollBy(null, 40);
-                    }
-                }, 'last node to scroll into view', 40000, 50);
+                    scroller.scrollBy(0, 40);
+                }, 'last node to scroll into view', 40000);
 
                 runs(function () {
                     if (reconfigure && afterScrollToEnd) {
@@ -1828,23 +1816,21 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 lockedView = grid.view.lockedView;
                 view = grid.view.normalView;
                 nodeCache = view.all;
+                scroller = grid.getScrollable();
 
                 // Set up a sequence on the buffered renderers to check that all rows are always synced
                 view.bufferedRenderer.syncRowHeights = Ext.Function.createSequence(view.bufferedRenderer.syncRowHeights, onSyncHeights);
                 lockedView.bufferedRenderer.syncRowHeights = Ext.Function.createSequence(view.bufferedRenderer.syncRowHeights, onSyncHeights);
 
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     var reachedTargetRow = nodeCache.startIndex <= 99 && nodeCache.endIndex >= 99;
 
                     // If row 99 is in the nodeCache, we're done
-                    if (reachedTargetRow) {
-                        return nodeCache.startIndex === lockedView.all.startIndex && lockedView.position === view.position && lockedView.bodyTop === view.bodyTop;
+                    if (reachedTargetRow && nodeCache.startIndex === lockedView.all.startIndex && lockedView.position === view.position && lockedView.bodyTop === view.bodyTop) {
+                        return true;
                     }
-                    else {
-                        // Scroll incrementally until the correct end point is found
-                        grid.getScrollable().scrollBy(null, 40);
-                    }
-                }, 'row 99 to be rendered', 40000, 50);
+                    scroller.scrollBy(0, 40);
+                }, 'row 99 to be rendered', 40000);
 
                 // Must have invoked the row syncher and the two body heights must be the same
                 runs(function () {
@@ -1855,17 +1841,14 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 });
 
                 // Now teleport down to neat the bottom
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     var reachedTargetRow = view.bufferedRenderer.getLastVisibleRowIndex() > 990;
 
                     if (reachedTargetRow) {
                         return true;
                     }
-                    else {
-                        // Scroll in teleporting chunks until the correct end point is found
-                        grid.getScrollable().scrollBy(null, 1000);
-                    }
-                }, 'row 990 to scroll into view', 30000, 100);
+                    scroller.scrollBy(0, 1000);
+                }, 'row 990 to scroll into view', 30000);
                 
                 // Scrolling is too fast for IE8, need to repaint the grid
                 // so that measurements below will yield correct values
@@ -1961,23 +1944,21 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 lockedView = grid.view.lockedView;
                 view = grid.view.normalView;
                 nodeCache = view.all;
+                scroller = grid.getScrollable();
 
                 // Set up a sequence on the buffered renderers to check that all rows are always synced
                 view.bufferedRenderer.syncRowHeights = Ext.Function.createSequence(view.bufferedRenderer.syncRowHeights, onSyncHeights);
                 lockedView.bufferedRenderer.syncRowHeights = Ext.Function.createSequence(view.bufferedRenderer.syncRowHeights, onSyncHeights);
 
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     var reachedTargetRow = nodeCache.startIndex <= 99 && nodeCache.endIndex >= 99;
 
                     // If row 99 is in the nodeCache, we're done
-                    if (reachedTargetRow) {
-                        return nodeCache.startIndex === lockedView.all.startIndex && lockedView.position === view.position && lockedView.bodyTop === view.bodyTop;
+                    if (reachedTargetRow && nodeCache.startIndex === lockedView.all.startIndex && lockedView.position === view.position && lockedView.bodyTop === view.bodyTop) {
+                        return true;
                     }
-                    else {
-                        // Scroll incrementally until the correct end point is found
-                        grid.getScrollable().scrollBy(null, 40);
-                    }
-                }, 'row 99 to be rendered', 40000, 50);
+                    scroller.scrollBy(0, 40);
+                }, 'row 99 to be rendered', 40000);
 
                 // Must have invoked the row syncher and the two body heights must be the same
                 runs(function () {
@@ -1987,17 +1968,14 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 });
 
                 // Now teleport down to neat the bottom
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     var reachedTargetRow = view.bufferedRenderer.getLastVisibleRowIndex() > 990;
 
                     if (reachedTargetRow) {
                         return true;
                     }
-                    else {
-                        // Scroll in teleporting chunks until the correct end point is found
-                        grid.getScrollable().scrollBy(null, 1000);
-                    }
-                }, 'row 990 to scroll into view', 30000, 100);
+                    scroller.scrollBy(0, 1000);
+                }, 'row 990 to scroll into view', 30000);
                 
                 // Scrolling is too fast for IE8, need to repaint the grid
                 // so that measurements below will yield correct values
@@ -2196,7 +2174,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
 
     describe('treepanel', function () {
         describe('expanding/collapsing', function () {
-            it('should always render the view nodes when expanding', function () {
+            itNotIE8('should always render the view nodes when expanding', function () {
                 var nodeCache;
 
                 makeTree({
@@ -2206,15 +2184,13 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 nodeCache = view.all;
 
                 // Scroll until the last tree node is the last in the rendered block.
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     if (nodeCache.endIndex === 99 && view.bufferedRenderer.getLastVisibleRowIndex() === 99) {
                         return true;
                     }
-                    else {
-                        // Scroll incrementally until the correct end point is found
-                        view.scrollBy(null, 10);
-                    }
-                }, 'last node to scroll into view', 30000, 50);
+                    // Scroll incrementally until the correct end point is found
+                    scroller.scrollBy(0, 10);
+                }, 'last node to scroll into view', 30000);
 
                 // Expanding that last node should append some child nodes to replenish the leading buffer zone.
                 runs(function () {
@@ -2223,15 +2199,13 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 });
 
                 // Scroll until the last of those expanded children is the last in the rendered block.
-                waitsFor(function () {
+                jasmine.waitsForScroll(scroller, function () {
                     if (nodeCache.endIndex === 105) {
                         return true;
                     }
-                    else {
-                        // Scroll incrementally until the correct end point is found
-                        view.scrollBy(null, 10);
-                    }
-                }, 'new last leaf node to scroll into view', 10000, 50);
+                    // Scroll incrementally until the correct end point is found
+                    scroller.scrollBy(0, 10);
+                }, 'new last leaf node to scroll into view', 10000);
 
                 // Expanding that last node should append the child nodes to the view even though the buffer rendered block is the correct size already
                 runs(function () {
@@ -2309,7 +2283,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             Ext.destroy(Hobbit);
         });
 
-        it('should reset the cached position so the grid-item-container is at the top of the view on filter', function () {
+        itNotIE8('should reset the cached position so the grid-item-container is at the top of the view on filter', function () {
             var Hobbit = Ext.define(null, {
                 extend: 'Ext.data.Model',
                 fields: ['name'],
@@ -2361,10 +2335,12 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
                 data: makeData(100, 301)
             });
 
-            waitsFor(function () {
-                view.scrollBy(null, 25);
-                return view.all.startIndex <= 199 && view.all.endIndex >= 199;
-            }, 'row 199 to scroll into the rendered block', 30000, 50);
+            jasmine.waitsForScroll(scroller, function () {
+                if (view.all.startIndex <= 199 && view.all.endIndex >= 199) {
+                    return true;
+                }
+                scroller.scrollBy(0, 200);
+            }, 'row 199 to scroll into the rendered block', 30000);
 
             runs(function () {
                 store.addFilter({
@@ -2602,7 +2578,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             window.destroy();
         });
 
-        it('should scroll to top when view size expands to encapsulate whole dataset', function() {
+        itNotIE8('should scroll to top when view size expands to encapsulate whole dataset', function() {
             var Person = Ext.define(null, {
                 extend: 'Ext.data.Model',
                 fields: ['name'],
@@ -2677,12 +2653,15 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             var tabPanel = window.child('tabpanel');
 
             var view = grid.getView();
+            scroller = view.isLockingView ? grid.getScrollable() : view.getScrollable();
 
             // Scroll all the way to the end
-            waitsFor(function () {
-                view.scrollBy(null, 100);
-                return view.all.endIndex === view.store.getCount() - 1;
-            }, 'scroll to end', 10000);
+            jasmine.waitsForScroll(scroller, function () {
+                if (view.all.endIndex === view.store.getCount() - 1) {
+                    return true;
+                }
+                scroller.scrollBy(0, 200);
+            }, 'scroll to end', 30000);
 
             runs(function() {
                 view.scrollBy(null, 100);
@@ -2702,9 +2681,11 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             });
             
             // Scroll all the way to the start
-            waitsFor(function () {
-                view.scrollBy(null, -100);
-                return view.getScrollY() === 0;;
+            jasmine.waitsForScroll(scroller, function () {
+                if (view.getScrollY() === 0) {
+                    return true;
+                }
+                scroller.scrollBy(0, -100);                
             }, 'scroll to top', 10000);
 
             runs(function() {
@@ -2720,7 +2701,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             grid.destroy();
         });
 
-        it("should reduce the size of the rendered block when the view's height is reduced", function() {
+        itNotIE8("should reduce the size of the rendered block when the view's height is reduced", function() {
             var Person = Ext.define(null, {
                 extend: 'Ext.data.Model',
                 fields: ['name'],
@@ -2760,7 +2741,7 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             
             waitsFor(function() {
                 return grid.view.all.startIndex !== 0;
-            });
+            }, 'rendered block to move away from position zero', 30000, 100);
             
             runs(function() {
 
@@ -2963,6 +2944,19 @@ describe('Ext.grid.plugin.BufferedRenderer', function () {
             // the view has moved downwards, so the first visible row index must be "trailingBufferZone" rows
             // after the requested refresh start row.
             expect(view.bufferedRenderer.getFirstVisibleRowIndex()).toBe(500 + view.bufferedRenderer.trailingBufferZone);
+        });
+    });
+    
+    describe('non scrolling grids', function() {
+        it('should not throw an error', function() {
+            expect(function() {
+                makeGrid({
+                    scrollable: false
+                }, {
+                    data: []
+                });
+                store.fireEvent('refresh', store);
+            }).not.toThrow();
         });
     });
 });

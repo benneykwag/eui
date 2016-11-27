@@ -195,10 +195,13 @@ Ext.define('Ext.chart.interactions.Crosshair', {
 
     getGestures: function () {
         var me = this,
-            gestures = {};
-        gestures[me.getGesture()] = 'onGesture';
-        gestures[me.getGesture() + 'start'] = 'onGestureStart';
-        gestures[me.getGesture() + 'end'] = 'onGestureEnd';
+            gestures = {},
+            gesture = me.getGesture();
+
+        gestures[gesture] = 'onGesture';
+        gestures[gesture + 'start'] = 'onGestureStart';
+        gestures[gesture + 'end'] = 'onGestureEnd';
+        gestures[gesture + 'cancel'] = 'onGestureCancel';
         return gestures;
     },
 
@@ -442,6 +445,10 @@ Ext.define('Ext.chart.interactions.Crosshair', {
 
         surface.renderFrame();
         me.unlockEvents(me.getGesture());
+    },
+
+    onGestureCancel: function(e) {
+        this.onGestureEnd(e);
     }
 
 });

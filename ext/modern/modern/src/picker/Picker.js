@@ -264,16 +264,16 @@ Ext.define('Ext.picker.Picker', {
             innerElement = this.innerElement;
 
         //insert the mask, and the picker bar
-        this.mask = innerElement.insertFirst({
+        me.mask = innerElement.insertFirst({
             cls: clsPrefix + 'picker-mask'
         });
 
-        this.bar = this.mask.createChild({
+        me.bar = me.mask.createChild({
             cls: clsPrefix + 'picker-bar'
         });
 
         me.on({
-            scope   : this,
+            scope   : me,
             delegate: 'pickerslot',
             slotpick: 'onSlotPick'
         });

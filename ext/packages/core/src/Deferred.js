@@ -395,10 +395,10 @@ return {
          * @return {Ext.promise.Promise} A Promise of the specified Promise or value.
          * @static
          */
-        resolved: function (value) {
+        resolved: function (promiseOrValue) {
             var deferred = new Ext.Deferred();
 
-            deferred.resolve(value);
+            deferred.resolve(promiseOrValue);
 
             return deferred.promise;
         },

@@ -576,6 +576,51 @@ Ext.define('Ext.data.Session', {
     }, 
 
     //-------------------------------------------------------------------------
+
+    /**
+     * Template method, will be called by Model after a record is committed.
+     * @param {Ext.data.Model} record The record.
+     *
+     * @protected
+     * @since 6.2.0
+     */
+    afterCommit: function (record) {
+        this.trackRecordState(record);
+    },
+
+    /**
+     * Template method, will be called by Model after a record is dropped.
+     * @param {Ext.data.Model} record The record.
+     *
+     * @protected
+     * @since 6.2.0
+     */
+    afterDrop: function (record) {
+        this.trackRecordState(record);
+    },
+
+    /**
+     * Template method, will be called by Model after a record is edited.
+     * @param {Ext.data.Model} record The record.
+     *
+     * @protected
+     * @since 6.2.0
+     */
+    afterEdit: function (record) {
+        this.trackRecordState(record);
+    },
+
+    /**
+     * Template method, will be called by Model after a record is erased (a drop
+     * that is committed).
+     * @param {Ext.data.Model} record The record.
+     *
+     * @protected
+     */
+    afterErase: function(record) {
+        this.evict(record);
+    },
+
     privates: {
         /**
          * Add a record instance to this session. Called by model.
@@ -603,50 +648,6 @@ Ext.define('Ext.data.Session', {
             for (roleName in associations) {
                 associations[roleName].checkMembership(me, record);
             }
-        },
-
-        /**
-         * Template method, will be called by Model after a record is committed.
-         * @param {Ext.data.Model} record The record.
-         *
-         * @protected
-         * @since 6.2.0
-         */
-        afterCommit: function (record) {
-            this.trackRecordState(record);
-        },
-
-        /**
-         * Template method, will be called by Model after a record is dropped.
-         * @param {Ext.data.Model} record The record.
-         *
-         * @protected
-         * @since 6.2.0
-         */
-        afterDrop: function (record) {
-            this.trackRecordState(record);
-        },
-
-        /**
-         * Template method, will be called by Model after a record is edited.
-         * @param {Ext.data.Model} record The record.
-         *
-         * @protected
-         * @since 6.2.0
-         */
-        afterEdit: function (record) {
-            this.trackRecordState(record);
-        },
-
-        /**
-         * Template method, will be called by Model after a record is erased (a drop
-         * that is committed).
-         * @param {Ext.data.Model} record The record.
-         *
-         * @protected
-         */
-        afterErase: function(record) {
-            this.evict(record);
         },
 
         /**

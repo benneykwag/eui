@@ -561,9 +561,7 @@ describe("Ext.ZIndexManager", function() {
 
             jasmine.fireMouseEvent(cell, 'dblclick');
 
-            waitsFor(function() {
-                return plugin.editing;
-            }, 'plugin to edit');
+            waitsForFocus(plugin.activeEditor.field, 'plugin to edit');
 
             runs(function(){
                 jasmine.fireKeyEvent(Ext.Element.getActiveElement(), 'keydown', Ext.event.Event.ENTER);
@@ -571,7 +569,7 @@ describe("Ext.ZIndexManager", function() {
 
             waitsFor(function() {
                 return Ext.MessageBox.isVisible();
-            }, 'become visible');
+            }, 'message box to become visible');
 
             runs(function() {
                 expect(Ext.MessageBox.el.getZIndex()).toBeGreaterThan(win.el.getZIndex());
@@ -836,19 +834,13 @@ describe("Ext.ZIndexManager", function() {
         });
         
         it("should restore focus after showing", function() {
-            var xy, x, child, text;
+            var xy, x, y, child, text;
             
             win = new Ext.window.Window({
                 title: 'Test Window',
                 width: 410,
                 height: 400
             });
-
-            win.show();
-
-            xy = win.getXY();
-            x = win.header.getX();
-
             child = new Ext.window.Window({
                 width: 200,
                 height: 100,
@@ -858,31 +850,58 @@ describe("Ext.ZIndexManager", function() {
             });
 
             win.add(child);
-            child.show();
-
             text = child.items.first();
 
-            text.focus();
+            win.show();
 
-            jasmine.waitForFocus(text);
+            jasmine.waitForFocus(win, 'top window to focus');
+            
+            runs(function() {
+                // Kick off the show soon, once jasmine has set up the wait for focus
+                setTimeout(function() {
+                    child.show();
+                }, 100);
+            });
+
+            jasmine.waitForFocus(child, 'child window to focus');
 
             runs(function() {
+                // Kick off the focus request soon, once jasmine has set up the wait for focus
+                setTimeout(function() {
+                    text.focus();
+                }, 100);
+            });
+
+            jasmine.waitForFocus(text, 'text field within child window to focus');
+
+            runs(function() {
+                xy = win.getXY();
+                x = win.header.getX();
+                y = win.header.getY();
+
                 expect(text.hasFocus).toBe(true);
                 // Drag the Window by the header
-                jasmine.fireMouseEvent(win.header.el, 'mousedown', x);
-                jasmine.fireMouseEvent(win.header.el, 'mousemove', x + 100);
+                jasmine.fireMouseEvent(win.header.el, 'mousedown', x, y);
+                jasmine.fireMouseEvent(Ext.getBody(), 'mousemove', x + 100, y);
+            });
 
+            waits(100);
+
+            runs(function() {
                 expect(child.isVisible()).toBe(false);
 
-                jasmine.fireMouseEvent(Ext.getBody(), 'mouseup');
+                // Kick off the mouseup soon, once jasmine has set up the wait for focus
+                setTimeout(function() {
+                    jasmine.fireMouseEvent(Ext.getBody(), 'mouseup', x + 100, y);
+                }, 100);
+            });
 
+            waits(100);
+
+            runs(function() {
                 // Window should have moved 100px right
                 xy[0] += 100;
                 expect(win.getXY()).toEqual(xy);
-            });
-
-            jasmine.waitForFocus(text);
-            runs(function() {
                 expect(text.hasFocus).toBe(true);
             });
         });

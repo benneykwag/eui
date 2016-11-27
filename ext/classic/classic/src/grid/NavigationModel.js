@@ -161,24 +161,42 @@ Ext.define('Ext.grid.NavigationModel', {
             return key === event.TAB ? null : event;
         }
     },
+    
+    onContainerMouseDown: function(view, mousedownEvent) {
+        var me = this,
+            context = new Ext.grid.CellContext(view),
+            position = (view.actionableMode && view.actionPosition) || view.lastFocused;
+        
+        if (!position) {
+            return;
+        }
+        
+        context.setPosition(position.record, position.column);
+        mousedownEvent.position = context;
+        me.attachClosestCell(mousedownEvent);
+        
+        // If we are not already on that position, set position there.
+        if (!me.position.isEqual(context)) {
+            me.setPosition(context, null, mousedownEvent);
+        }
+    },
 
     onCellMouseDown: function(view, cell, cellIndex, record, row, recordIndex, mousedownEvent) {
         var targetComponent = Ext.Component.fromElement(mousedownEvent.target, cell),
-            targetEl = mousedownEvent.getTarget(null, null, true),
-            onActionable = targetEl.isFocusable() && !targetEl.is(view.getCellSelector()),
+            actionableEl = mousedownEvent.getTarget(this.isFocusableEl, cell),
             ac;
 
         // If actionable mode, and		
         //  (mousedown on a tabbable, or anywhere in the ownership tree of an inner active component),		
-        // we should just keep the actino position synchronized.		
+        // we should just keep the action position synchronized.
         // The tabbable element will be part of actionability.	
         // If the mousedown was NOT on some focusable object, we need to exit actionable mode.
         if (view.actionableMode) {
             // If mousedown is on a focusable element, or in the component tree of the active component (which is NOT this)
-            if (!onActionable) {
-                onActionable = (ac = Ext.ComponentManager.getActiveComponent()) && ac !== view && ac.owns(mousedownEvent);
+            if (!actionableEl) {
+                actionableEl = (ac = Ext.ComponentManager.getActiveComponent()) && ac !== view && ac.owns(mousedownEvent);
             }
-            if (onActionable) {
+            if (actionableEl) {
                 // Keep actionPosition synched
                 view.setActionableMode(true, mousedownEvent.position);
             }
@@ -193,7 +211,7 @@ Ext.define('Ext.grid.NavigationModel', {
         // Mousedowns may have a focusing effect.
         if (mousedownEvent.pointerType !== 'touch') {
             if (mousedownEvent.position.column.cellFocusable !== false) {
-                if (onActionable) {
+                if (actionableEl) {
 
                     // So that the impending onFocusEnter does not
                     // process the event and delegate focus. We
@@ -202,15 +220,18 @@ Ext.define('Ext.grid.NavigationModel', {
                         view.containsFocus = true;
                         view.toggleChildrenTabbability(false);
                     }
-                    view.setActionableMode(true, mousedownEvent.position);
+                    if (view.setActionableMode(true, mousedownEvent.position) !== false) {
+                        actionableEl.focus();
+                    }
                 } else {
                     cell.focus();
                 }
                 if (mousedownEvent.button === 2) {
                     this.fireNavigateEvent(mousedownEvent);
                 }
-            } else {
-                mousedownEvent.preventDefault();
+            }
+            else {
+                mousedownEvent.preventDefault(true);
             }
 
             // If mousedowning on a focusable Component.
@@ -339,7 +360,7 @@ Ext.define('Ext.grid.NavigationModel', {
             mousedownEvent.preventDefault();
 
             // Stamp the closest cell into the event as if it were a cellmousedown
-            me.getClosestCell(mousedownEvent);
+            me.attachClosestCell(mousedownEvent);
 
             // If we are not already on that position, set position there.
             if (!me.position.isEqual(mousedownEvent.position)) {
@@ -355,17 +376,18 @@ Ext.define('Ext.grid.NavigationModel', {
     onItemClick: function(view, record, item, index, clickEvent) {
         // A mousedown outside a cell. Must be in a Feature, or on a row border
         if (!clickEvent.position.cellElement) {
-            this.getClosestCell(clickEvent);
+            this.attachClosestCell(clickEvent);
 
             // touchstart does not focus the closest cell, leave it until touchend (translated as a click)
             if (clickEvent.pointerType === 'touch') {
                 this.setPosition(clickEvent.position, null, clickEvent);
+            } else {
+                this.fireNavigateEvent(clickEvent);
             }
-            this.fireNavigateEvent(clickEvent);
         }
     },
 
-    getClosestCell: function(event) {
+    attachClosestCell: function(event) {
         var position = event.position,
             targetCell = position.cellElement,
             x, columns, len, i, column, b;
@@ -861,12 +883,15 @@ Ext.define('Ext.grid.NavigationModel', {
     move: function(dir, keyEvent) {
         var me = this,
             position = me.getPosition(),
-            result = position;
+            result = position,
+            rowVeto = keyEvent.shiftKey && (dir === 'right' || dir === 'left');
         
         if (position && position.record) {
             while (result) {
                 // Do not allow SHIFT+(left|right) to wrap.
-                result = position.view.walkCells(result, dir, keyEvent.shiftKey && (dir === 'right' || dir === 'left') ? me.vetoRowChange : null, me);
+                // Important to use result.view, since a call to walkCells could change the
+                // resulting view if we're using locking.
+                result = result.view.walkCells(result, dir, rowVeto ? me.vetoRowChange : null, me);
 
                 // If the new position is fousable, we're done.
                 if (result && result.column.cellFocusable !== false) {
@@ -1023,5 +1048,9 @@ Ext.define('Ext.grid.NavigationModel', {
             columnIndex: me.columnIndex,
             column: me.column
         });
+    },
+
+    isFocusableEl: function(el) {
+        return Ext.fly(el).isFocusable();
     }
 });

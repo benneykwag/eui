@@ -3,9 +3,14 @@ Ext.define('Ext.grid.cell.Expander', {
     xtype: 'expandercell',
     isExpanderCell: true,
 
+    config: {
+        collapsed: true
+    },
+
     align: 'center',
 
     classCls: Ext.baseCSSPrefix + 'expandercell',
+    expandedCls: Ext.baseCSSPrefix + 'expanded',
 
     innerTemplate: [{
         reference: 'iconElement',
@@ -13,5 +18,9 @@ Ext.define('Ext.grid.cell.Expander', {
             Ext.baseCSSPrefix + 'icon-el',
             Ext.baseCSSPrefix + 'font-icon'
         ]
-    }]
+    }],
+
+    updateCollapsed: function(collapsed) {
+        this.element.toggleCls(this.expandedCls, !collapsed);
+    }
 });

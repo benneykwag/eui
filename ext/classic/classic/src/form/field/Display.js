@@ -80,7 +80,7 @@ Ext.define('Ext.form.field.Display', {
     htmlEncode: false,
     
     /**
-     * @cfg {Function} renderer
+     * @cfg {Function/String} renderer
      * A function to transform the raw value for display in the field.
      * 
      *     Ext.create('Ext.form.Panel', {
@@ -103,6 +103,7 @@ Ext.define('Ext.form.field.Display', {
      * @param {Object} value The raw field {@link #value}
      * @param {Ext.form.field.Display} field The display field
      * @return {String} displayValue The HTML string to be rendered
+     * @controllable
      */
     
     /**
@@ -165,9 +166,11 @@ Ext.define('Ext.form.field.Display', {
     getDisplayValue: function() {
         var me = this,
             value = this.getRawValue(),
+            renderer = me.renderer,
             display;
-        if (me.renderer) {
-             display = me.renderer.call(me.scope || me, value, me);
+
+        if (renderer) {
+             display = Ext.callback(renderer, me.scope, [value, me], 0, me);
         } else {
              display = me.htmlEncode ? Ext.util.Format.htmlEncode(value) : value;
         }

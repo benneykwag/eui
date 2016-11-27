@@ -493,10 +493,10 @@ Ext.define('Ext.selection.CellModel', {
             column = view.getColumnByPosition(pos);
 
             // After a refresh, recreate the selection using the same record and grid column as before
-            if (!column.isDescendantOf(headerCt)) {
+            if (column && !column.isDescendantOf(headerCt)) {
                 // column header is not a child of the header container
                 // this happens when the grid is reconfigured with new columns
-                // make a best effor to select something by matching on id, then text, then dataIndex
+                // make a best effort to select something by matching on id, then text, then dataIndex
                 column = headerCt.queryById(column.id) || 
                                headerCt.down('[text="' + column.text + '"]') ||
                                headerCt.down('[dataIndex="' + column.dataIndex + '"]');
@@ -506,8 +506,8 @@ Ext.define('Ext.selection.CellModel', {
             // the headerCt, or a suitable match that was found after reconfiguration)
             // AND the record still exists in the store (or a record matching the id of
             // the previously selected record) We are ok to go ahead and set the selection
-            if (pos.record) {
-                if (column && (view.store.indexOfId(record.getId()) !== -1)) {
+            if (column && record) {
+                if (view.store.indexOfId(record.getId()) !== -1) {
                     newPos = new Ext.grid.CellContext(view).setPosition({
                         row: record,
                         column: column

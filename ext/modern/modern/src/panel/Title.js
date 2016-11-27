@@ -64,9 +64,8 @@ Ext.define('Ext.panel.Title', {
     weight: -10,
 
     element: {
-        unselectable: 'on',
         reference: 'element',
-        cls: Ext.baseCSSPrefix + 'panel-title-align-left',
+        cls: Ext.baseCSSPrefix + 'panel-title-align-left ' + Ext.baseCSSPrefix + 'unselectable',
 
         children: [{
             reference: 'iconElement',

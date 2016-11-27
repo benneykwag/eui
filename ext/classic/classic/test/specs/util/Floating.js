@@ -3,7 +3,7 @@
 describe("Ext.util.Floating", function() {
     var component,
         describeGoodBrowsers = Ext.isWebKit || Ext.isGecko || Ext.isChrome ? describe : xdescribe,
-        itNotTouch = Ext.supports.TouchEvents ? xit : it;
+        itNotTouch = jasmine.supportsTouch ? xit : it;
 
     function makeComponent(cfg){
         component = new Ext.Component(Ext.apply({
@@ -11,13 +11,13 @@ describe("Ext.util.Floating", function() {
         }, cfg));
     }
 
-    function spyOnEvent(object, eventName, fn) {
+    function spyOnEvent(object, eventName, fn, options) {
         var obj = {
             fn: fn || Ext.emptyFn
         },
         spy = spyOn(obj, 'fn');
 
-        object.addListener(eventName, obj.fn);
+        object.addListener(eventName, obj.fn, null, options);
         return spy;
     }
 
@@ -216,7 +216,7 @@ describe("Ext.util.Floating", function() {
 
         it("should hide the shadow during animations", function() {
             var animationDone = false,
-                shadow, shadowEl;
+                shadow, shadowEl, shadowHideSpy;
 
             makeComponent({
                 width: 200,
@@ -230,6 +230,7 @@ describe("Ext.util.Floating", function() {
             shadowEl = shadow.el;
 
             expect(shadowEl.isVisible()).toBe(true);
+            shadowHideSpy = spyOn(shadowEl, 'hide').andCallThrough();
 
             component.el.setXY([350, 400], {
                 duration: 200,
@@ -240,23 +241,20 @@ describe("Ext.util.Floating", function() {
                 }
             });
 
-            waitsFor(function() {
-                return !shadow.el && !shadowEl.isVisible();
-            }, "Shadow was never hidden", 150);
+            waitsForSpy(shadowHideSpy, "shadow to be hidden for animation");
 
             waitsFor(function() {
-                return animationDone;
-            }, "Animation never completed", 300);
+                return animationDone && shadow.el && shadow.el.isVisible();
+            }, 'shadow to be shown after animation finishes');
 
             runs(function() {
-                expect(shadow.el.isVisible()).toBe(true);
                 
                 // IE8 does shadows the hard way
                 expect(shadow.el.getX()).toBe(Ext.isIE8 ? 345 : 350);
                 expect(shadow.el.getY()).toBe(Ext.isIE8 ? 397 : 404);
                 
                 // FFWindows gets this off by one
-                expect(shadow.el.getWidth()).toBe(Ext.isIE8 ? 209 : 200);
+                expect(shadow.el.getWidth()).toBeApprox(Ext.isIE8 ? 209 : 200, 1);
                 expect(shadow.el.getHeight()).toBe(Ext.isIE8 ? 107 : 96);
             });
         });
@@ -266,7 +264,9 @@ describe("Ext.util.Floating", function() {
                 shadow;
 
             makeComponent({
-                animateShadow: true,
+                animateShadow: {
+                    duration: 100
+                },
                 width: 200,
                 height: 100,
                 x: 100,
@@ -300,7 +300,7 @@ describe("Ext.util.Floating", function() {
                 // IE8 does shadows the hard way
                 expect(shadow.el.getX()).toBe(Ext.isIE8 ? 345 : 350);
                 expect(shadow.el.getY()).toBe(Ext.isIE8 ? 397 : 404);
-                expect(shadow.el.getWidth()).toBe(Ext.isIE8 ? 209: 200);
+                expect(shadow.el.getWidth()).toBeApprox(Ext.isIE8 ? 209: 200, 1);
                 expect(shadow.el.getHeight()).toBe(Ext.isIE8 ? 107 : 96);
             });
         });
@@ -355,7 +355,7 @@ describe("Ext.util.Floating", function() {
     });
 
     describe("scroll alignment when rendered to body", function() {
-        var spy, c, scroller, floater, count;
+        var spy, c, scroller, floater, count, oldOnError = window.onerror;
 
         function makeTestComponent(alignToComponent) {
             spy = jasmine.createSpy();
@@ -420,6 +420,7 @@ describe("Ext.util.Floating", function() {
         afterEach(function() {
             Ext.un('scroll', spy);
             count = c = floater = spy = Ext.destroy(floater, c);
+            window.onerror = oldOnError;
         });
 
         describe('aligning to element', function() {
@@ -481,6 +482,40 @@ describe("Ext.util.Floating", function() {
 
                 runs(function() {
                     expect(floater.getEl().getTop()).toBe(200);
+                });
+            });
+            
+            it('should unbind the resize listener when alignTo element is destroyed', function() {
+                var alignEl = c.getEl().down('.align'),
+                    spy = spyOnEvent(Ext.GlobalEvents, 'resize', null, {
+                        buffer: 200
+                    }),
+                    onErrorSpy = jasmine.createSpy();
+
+                floater.alignTo(alignEl, 'tl-bl');
+
+                expect(floater.getEl().getTop()).toBe(200);
+
+                alignEl.dom.parentNode.removeChild(alignEl.dom);
+                
+                window.onerror = onErrorSpy.andCallFake(function() {
+                    if (oldOnError) {
+                        oldOnError();
+                    }
+                });
+
+                Ext.GlobalEvents.fireEvent('resize', 500, 500);
+                waitsFor(function() {
+                    return spy.callCount === 1;
+                });
+                runs(function() {
+                    Ext.GlobalEvents.fireEvent('resize', 1000, 1000);
+                });
+                waitsFor(function() {
+                    return spy.callCount === 2;
+                });
+                runs(function() {
+                    expect(onErrorSpy).not.toHaveBeenCalled();
                 });
             });
         });

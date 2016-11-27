@@ -10,7 +10,7 @@
     "summary": "Google APIs",
     "detailedDescription": "This package provides Google APIs support.",
 
-    "version": "6.2.0.839",
+    "version": "6.2.2.12",
     "compatVersion": "6.0.0",
     "format": "1",
     "local": true,

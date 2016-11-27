@@ -314,7 +314,7 @@ describe("Ext.ClassManager", function() {
                         this.foo = 1;
                         this.T = Self;
                     }
-                }
+                };
             });
             
             var obj = new T();

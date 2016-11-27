@@ -1,8 +1,8 @@
 describe("Ext.menu.CheckItem", function(){
     var menu, c;
 
-    function makeItem(cfg) {
-        menu = Ext.widget({
+    function makeItem(cfg, menuCfg) {
+        menu = Ext.widget(Ext.apply({
             xtype: 'menu',
             renderTo: document.body,
             items: [
@@ -11,13 +11,12 @@ describe("Ext.menu.CheckItem", function(){
                     text: 'foo'
                 }, cfg)
             ]
-        });
+        }, menuCfg));
         c = menu.items.getAt(0);
     }
 
     afterEach(function(){
-        Ext.destroy(menu);
-        c = null;
+        menu = c = Ext.destroy(menu);
     });
 
     function clickIt(event) {
@@ -131,6 +130,24 @@ describe("Ext.menu.CheckItem", function(){
             });
         });
     });
+
+    describe("default checked state", function() {
+        it("should have the uncheckedCls when not checked", function() {
+            makeItem();
+            menu.show();
+            expect(c.el).toHaveCls(c.uncheckedCls);
+            expect(c.el).not.toHaveCls(c.checkedCls);
+        });
+
+        it("should have the checkedCls when checked", function() {
+            makeItem({
+                checked: true
+            });
+            menu.show();
+            expect(c.el).not.toHaveCls(c.uncheckedCls);
+            expect(c.el).toHaveCls(c.checkedCls);
+        });
+    });
     
     describe("setChecked", function() {
         
@@ -234,7 +251,7 @@ describe("Ext.menu.CheckItem", function(){
                     });
                     c.setChecked(true, true);
                     expect(called).toBe(false);  
-                })
+                });
             });
             
             describe("veto", function(){
@@ -245,7 +262,7 @@ describe("Ext.menu.CheckItem", function(){
                     });
                     c.setChecked(true);
                     expect(c.checked).toBe(false);
-                })
+                });
             });
             
             describe("params", function(){
@@ -337,6 +354,43 @@ describe("Ext.menu.CheckItem", function(){
                     });
                 });
             });
+        });
+    });
+
+    describe("binding", function() {
+        it("should have an initial bind to the checked state", function() {
+            makeItem({
+                bind: '{isChecked}'
+            }, {
+                viewModel: {
+                    data: {
+                        isChecked: true
+                    }
+                }
+            });
+            menu.getViewModel().notify();
+            expect(c.checked).toBe(true);
+            expect(c.el).toHaveCls(c.checkedCls);
+            expect(c.el).not.toHaveCls(c.uncheckedCls);
+        });
+
+        it("should publish changes in checked state", function() {
+            makeItem({
+                bind: '{isChecked}'
+            }, {
+                viewModel: {
+                    data: {
+                        isChecked: false
+                    }
+                }
+            });
+            var vm = menu.getViewModel();
+            clickIt();
+            vm.notify();
+            expect(vm.get('isChecked')).toBe(true);
+            clickIt();
+            vm.notify();
+            expect(vm.get('isChecked')).toBe(false);
         });
     });
 

@@ -29,7 +29,7 @@
 }
 
 .x-button-icon.x-shown {
-    display: block;
+    @include st-box;
 }
 
 .x-button-icon.x-hidden {
@@ -71,7 +71,7 @@
 
 // Button labels
 .x-button-label {
-    @include st-box-flex(1);
+    @include st-box-flex(1, 'auto');
     text-align: center;
     white-space: nowrap;
     text-overflow: ellipsis;

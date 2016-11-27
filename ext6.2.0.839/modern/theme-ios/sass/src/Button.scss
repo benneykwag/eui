@@ -1,0 +1,25 @@
+.#{$prefix}button-back {
+    .#{$prefix}big & {
+        padding-left: .4em;
+    }
+
+    &:before {
+        content: $ios-back;
+        font-family: 'iOS';
+        color: $button-color;
+        font-size: 1.7em;
+        line-height: 0;
+        padding-right: 0;
+        position: relative;
+        top: .05em;
+        font-weight: bold;
+    }
+}
+
+.#{$prefix}button-back.#{$prefix}button-pressing:before {
+    color: $button-pressed-color;
+}
+
+.#{$prefix}button-back.#{$prefix}button-disabled:before {
+    color: $button-disabled-color;
+}

@@ -186,7 +186,7 @@
  *
  * ### Model Links
  *
- * A model can be described declaratively using a {@link #links `link`}. In the example code below,
+ * A model can be described declaratively using {@link #links}. In the example code below,
  * We ask the `ViewModel` to construct a record of type `User` with `id: 17`. The model will be loaded
  * from the server and the bindings will trigger once the load has completed. Similarly, we could also
  * attach a model instance to the `ViewModel` data directly.

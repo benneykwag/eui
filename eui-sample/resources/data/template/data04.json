@@ -1,0 +1,507 @@
+{
+    "success": true,
+    "message": "",
+    "total": 100,
+    "data": [
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "1111",
+            "CUSTOMER_NAME": "서울시 천호1동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "2222",
+            "CUSTOMER_NAME": "서울시 천호2동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "3333",
+            "CUSTOMER_NAME": "서울시 천호3동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "4444",
+            "CUSTOMER_NAME": "서울시 천호4동",
+            "ADDR_ENG": "주공 101"
+        },
+        {
+            "CUSTOMER_CODE": "5555",
+            "CUSTOMER_NAME": "서울시 천호5동",
+            "ADDR_ENG": "주공 101"
+        }
+    ]
+}

@@ -1,7 +1,8 @@
-/* global Ext, expect, jasmine */
+/* global Ext, expect, jasmine, xit */
 
 describe('Ext.grid.plugin.RowExpander', function () {
-    var dummyData = [
+    var itNotIE8 = Ext.isIE8 ? xit : it,
+        dummyData = [
             ['3m Co',71.72,0.02,0.03,'9/1 12:00am', 'Manufacturing'],
             ['Alcoa Inc',29.01,0.42,1.47,'9/1 12:00am', 'Manufacturing'],
             ['Altria Group Inc',83.81,0.28,0.34,'9/1 12:00am', 'Manufacturing'],
@@ -605,7 +606,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
     });
 
     describe('mousedown in large expansion row', function() {
-        it('should not scroll', function() {
+        itNotIE8('should not scroll', function() {
             grid = new Ext.grid.Panel({
                 renderTo: Ext.getBody(),
                 width: 500,
@@ -636,6 +637,8 @@ describe('Ext.grid.plugin.RowExpander', function () {
                     }]
                 }
             });
+            var scrollable = grid.getView().getScrollable(),
+                scrollEndSpy = spyOnEvent(scrollable, 'scrollend');
 
             // Expand the expander
             jasmine.fireMouseEvent(grid.view.el.query('.x-grid-row-expander')[0], 'click');
@@ -644,7 +647,7 @@ describe('Ext.grid.plugin.RowExpander', function () {
 
             // We must wait until the Scroller knows about the scroll position
             // at which point it fires a scrollend event
-            waitsForEvent(grid.getView().getScrollable(), 'scrollend', 'Grid scrollend');
+            waitsForSpy(scrollEndSpy, 'Grid scrollend');
 
             runs(function() {
                 // Must give a valid x coordinate, so that it can be matched below a column so that the navigation model

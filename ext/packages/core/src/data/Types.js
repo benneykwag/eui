@@ -1,5 +1,5 @@
 /**
- * @deprecated Please use {@link Ext.data.field.Field field types} instead.
+ * @deprecated 5.0 Please use {@link Ext.data.field.Field field types} instead.
  */
 Ext.define('Ext.data.Types', {
     singleton: true,

@@ -72,7 +72,7 @@ Ext.define('Ext.dd.DropTarget', {
      * underlying {@link Ext.dd.StatusProxy} can be updated
      * @template
      */
-    notifyEnter : function(dd, e, data){
+    notifyEnter : function(source, e, data){
         if(this.overClass){
             this.el.addCls(this.overClass);
         }
@@ -90,7 +90,7 @@ Ext.define('Ext.dd.DropTarget', {
      * underlying {@link Ext.dd.StatusProxy} can be updated
      * @template
      */
-    notifyOver : function(dd, e, data){
+    notifyOver : function(source, e, data){
         return this.dropAllowed;
     },
 
@@ -103,7 +103,7 @@ Ext.define('Ext.dd.DropTarget', {
      * @param {Object} data An object containing arbitrary data supplied by the drag source
      * @template
      */
-    notifyOut : function(dd, e, data){
+    notifyOut : function(source, e, data){
         if (this.overClass){
             this.el.removeCls(this.overClass);
         }
@@ -124,7 +124,7 @@ Ext.define('Ext.dd.DropTarget', {
      * @return {Boolean} False if the drop was invalid.
      * @template
      */
-    notifyDrop : function(dd, e, data){
+    notifyDrop : function(source, e, data){
         if (this.overClass){
             this.el.removeCls(this.overClass);
         }

@@ -1,4 +1,4 @@
-/* global Ext, jasmine, expect */
+/* global Ext, jasmine, expect, spyOn */
 
 describe("grid-view", function() {
     function createSuite(buffered) {
@@ -220,22 +220,35 @@ describe("grid-view", function() {
         function dragAndDrop(fromEl, fromX, fromY, toEl, toX, toY) {
             var dragThresh = Ext.dd.DragDropManager.clickPixelThresh + 1;
 
-            jasmine.fireMouseEvent(fromEl, 'mouseover', fromX, fromY);
-            jasmine.fireMouseEvent(fromEl, 'mousedown', fromX, fromY);
-            jasmine.fireMouseEvent(fromEl, 'mousemove', fromX + dragThresh, fromY);
+            runs(function() {
+                jasmine.fireMouseEvent(fromEl, 'mouseover', fromX, fromY);
+                jasmine.fireMouseEvent(fromEl, 'mousedown', fromX, fromY);
+            });
+            
+            // Longpress starts drag
+            if (jasmine.supportsTouch) {
+                waits(1000);
+            }
 
-            jasmine.fireMouseEvent(fromEl, 'mouseout', toX, toY);
-            jasmine.fireMouseEvent(fromEl, 'mouseleave', toX, toY);
-            jasmine.fireMouseEvent(toEl, 'mouseenter', toX, toY);
+            runs(function() {
+                jasmine.fireMouseEvent(fromEl, 'mousemove', fromX + dragThresh, fromY);
 
-            jasmine.fireMouseEvent(toEl, 'mouseover', toX, toY);
-            jasmine.fireMouseEvent(toEl, 'mousemove', toX - dragThresh, toY);
-            jasmine.fireMouseEvent(toEl, 'mousemove', toX, toY);
-            jasmine.fireMouseEvent(toEl, 'mouseup', toX, toY);
-            jasmine.fireMouseEvent(toEl, 'mouseout', fromX, fromY);
+                jasmine.fireMouseEvent(fromEl, 'mouseout', toX, toY);
+                jasmine.fireMouseEvent(fromEl, 'mouseleave', toX, toY);
+                jasmine.fireMouseEvent(toEl, 'mouseenter', toX, toY);
 
-            // Mousemove outside triggers removal of overCls
-            jasmine.fireMouseEvent(fromEl, 'mousemove', fromX, fromY);
+                jasmine.fireMouseEvent(toEl, 'mouseover', toX, toY);
+                jasmine.fireMouseEvent(toEl, 'mousemove', toX - dragThresh, toY);
+                jasmine.fireMouseEvent(toEl, 'mousemove', toX, toY);
+                jasmine.fireMouseEvent(toEl, 'mouseup', toX, toY);
+                jasmine.fireMouseEvent(toEl, 'mouseout', fromX, fromY);
+
+                // Mousemove outside triggers removal of overCls.
+                // Touchmoves with no touchstart throw errors.
+                if (!jasmine.supportsTouch) {
+                    jasmine.fireMouseEvent(fromEl, 'mousemove', fromX, fromY);
+                }
+            });
         }
 
         afterEach(function() {
@@ -313,19 +326,25 @@ describe("grid-view", function() {
                     }
                 });
 
+                // Does a longpress on touch platforms, so next block must wait
                 dragAndDrop(dragEl, startX, startY, dropEl, endX, endY);
-                expect(spy).not.toHaveBeenCalled();
+                
+                runs(function() {
+                    expect(spy).not.toHaveBeenCalled();
 
-                window.onerror = old;
+                    window.onerror = old;
 
-                // overClass should have been added
-                expect(grid2.getView().el.addCls.calls[0].args[0]).toBe('dropzone-over-class');
+                    // overClass should have been added for mouse events
+                    if (!jasmine.supportsTouch && !Ext.supports.PointerEvents) {
+                        expect(grid2.getView().el.addCls.calls[0].args[0]).toBe('dropzone-over-class');
 
-                // But removed
-                expect(grid2.getView().el.hasCls('dropzone-over-class')).toBe(false);
+                        // But removed
+                        expect(grid2.getView().el.hasCls('dropzone-over-class')).toBe(false);
+                    }
 
-                // A drag/drop must have happened
-                expect(grid2.store.getCount()).toBe(1);
+                    // A drag/drop must have happened
+                    expect(grid2.store.getCount()).toBe(1);
+                });
             });
         });
     });

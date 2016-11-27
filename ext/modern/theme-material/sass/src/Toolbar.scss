@@ -21,7 +21,7 @@
         color: $base-color;
 
         &.x-button-pressing, &.x-button.x-button-pressed {
-            color: $reverse-color;
+            color: $base-foreground-color;
         }
 
         &:last-child {

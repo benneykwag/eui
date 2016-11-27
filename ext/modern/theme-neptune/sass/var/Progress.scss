@@ -58,12 +58,14 @@ $progress-bar-background-color: dynamic($base-color);
  */
 $progress-bar-background-gradient: dynamic(null);
 
+//# fashion replaces $progress-text-color-front
 /**
  * @var {color}
  * The color of the ProgressBar's text when in front of the ProgressBar's moving element
  */
 $progress-text-front-color: dynamic(#fff);
 
+//# fashion replaces $progress-text-color-back
 /**
  * @var {color}
  * The color of the ProgressBar's text when the ProgressBar's 'moving element is not under it

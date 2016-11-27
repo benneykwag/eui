@@ -64,7 +64,7 @@ Ext.Inventory.prototype = {
 
                 if (toName[a] !== cls) {
                     //<debug>
-                    if (!update && toName[a]) {
+                    if (!update && toName[a] && ('Ext.Gadget' !== a)) {
                         Ext.log.warn("Overriding existing mapping: '" + a + "' From '" +
                             toName[a] + "' to '" + cls + "'. Is this intentional?");
                     }

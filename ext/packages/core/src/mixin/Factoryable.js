@@ -220,6 +220,19 @@ Ext.Factory.define = function (type, config) {
     return fn;
 };
 
+Ext.Factory.clearCaches = function() {
+    var Factory = Ext.Factory,
+        key, item;
+
+    for (key in Factory) {
+        item = Factory[key];
+        item = item.instance;
+        if (item) {
+            item.clearCache();
+        }
+    }
+};
+
 /**
  * This mixin automates use of `Ext.Factory`. When mixed in to a class, the `alias` of the
  * class is retrieved and combined with an optional `factoryConfig` property on that class

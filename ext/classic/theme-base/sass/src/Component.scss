@@ -57,6 +57,13 @@ img {
 
 .#{$prefix}layer {
     position: absolute !important;
+
+    // Ensure floating components begin life at the top
+    // of the viewport. Until explicitly positioned,
+    // they are in the document flow which might cause
+    // overflow and size constraint problems.
+    top: 0;
+    left: 0;
     overflow: hidden;
 }
 

@@ -391,7 +391,7 @@ Ext.define('Ext.data.request.Ajax', {
     
     /**
      * To be called when the request has come back from the server
-     * @param {Object} request
+     * @param {Object} xdrResult
      * @return {Object} The response
      * @private
      */
@@ -468,7 +468,7 @@ Ext.define('Ext.data.request.Ajax', {
 
     /**
      * Creates the response object
-     * @param {Object} request
+     * @param {Object} xhr
      * @private
      */
     createResponse: function(xhr) {

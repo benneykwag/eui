@@ -1,3 +1,5 @@
+/* global Ext, expect, jasmine, spyOn */
+
 describe("Ext", function() {
 
     describe("Ext.global", function() {

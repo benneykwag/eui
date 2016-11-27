@@ -128,7 +128,6 @@ Ext.define('Ext.Progress', {
 
     updateValue: function (value, oldValue) {
         var me = this,
-            barEl = me.barEl,
             textTpl = me.getTextTpl();
 
         if (textTpl) {
@@ -137,9 +136,9 @@ Ext.define('Ext.Progress', {
                 percent: Math.round(value * 100)
             }));
         }
-        if (me.getAnimate()) {
-            barEl.stopAnimation();
-            barEl.animate(Ext.apply({
+        if (!me.isConfiguring && me.getAnimate()) {
+            me.stopBarAnimation();
+            me.startBarAnimation(Ext.apply({
                 from: {
                     width: (oldValue * 100) + '%'
                 },
@@ -148,12 +147,22 @@ Ext.define('Ext.Progress', {
                 }
             }, me.animate));
         } else {
-            barEl.setStyle('width', (value * 100) + '%');
+            me.barEl.setStyle('width', (value * 100) + '%');
         }
     },
 
     updateText: function (text) {
         this.backgroundEl.setHtml(text);
         this.textEl.setHtml(text);
+    },
+
+    doDestroy: function() {
+        this.stopBarAnimation();
+        this.callParent();
+    },
+
+    privates: {
+        startBarAnimation: Ext.privateFn,
+        stopBarAnimation: Ext.privateFn
     }
 });

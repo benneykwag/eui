@@ -1,4 +1,4 @@
-/* global Ext, xit, expect, jasmine */
+/* global Ext, xit, expect, jasmine, MockAjaxManager */
 
 describe("Ext.GlobalEvents", function() {
     describe('idle event', function() {
@@ -76,7 +76,7 @@ describe("Ext.GlobalEvents", function() {
                 mousedownSpy();
             });
 
-            jasmine.fireMouseEvent(element, 'mousedown');
+            Ext.testHelper.touchStart(element);
 
             expect(mousedownSpy.callCount).toBe(2);
             expect(idleSpy).toHaveBeenCalled();
@@ -216,20 +216,24 @@ describe("Ext.GlobalEvents", function() {
             Ext.getViewportScroller().scrollBy(null, 100);
 
             // Wait for scroll events to fire (may be async)
-            waitsFor(function() {
-                return scrolledElements.length === 1 &&
-                       scrolledElements[0] === Ext.scroll.Scroller.viewport.getElement();
-            }, 'Scroll of document to fire through the Ext.scroll.Scroller.viewport Scroller');
+            waitsForEvent(Ext.getViewportScroller(), 'scrollend');
+            
+            runs(function() {
+                expect(scrolledElements.length).toBe(1);
+                expect(scrolledElements[0]).toBe(Ext.scroll.Scroller.viewport.getElement());
+            });
             
             runs(function() {
                 scrollingPanel.getScrollable().scrollBy(null, 100);
             });
             
             // Wait for scroll events to fire (may be async)
-            waitsFor(function() {
-                return scrolledElements.length === 2 &&
-                       scrolledElements[1] === scrollingPanel.getScrollable().getElement();
-            }, 'Scroll of panel to fire through the Ext.scroll.Scroller.viewport Scroller');
+            waitsForEvent(scrollingPanel.getScrollable(), 'scrollend');
+
+            runs(function() {
+                expect(scrolledElements.length).toBe(2);
+                expect(scrolledElements[1]).toBe(scrollingPanel.getScrollable().getElement());
+            });
         });
     });
 });

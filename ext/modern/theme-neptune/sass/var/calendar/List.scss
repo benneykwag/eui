@@ -39,7 +39,7 @@ $calendar-list-item-hidden-opacity: dynamic(0.5);
             width: $icon-size;
             height: $icon-size;
             top: 50%;
-            transform: translateY(-50%);
+            @include transform(translateY(-50%));
         }
 
         .#{$prefix}calendar-list-text {

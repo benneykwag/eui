@@ -1,3 +1,6 @@
+/**
+ * @class Ext.app.Application
+ */
 Ext.define('Ext.overrides.app.Application', {
     override: 'Ext.app.Application',
     requires: ['Ext.viewport.Viewport'],

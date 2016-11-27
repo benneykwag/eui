@@ -3964,6 +3964,7 @@ describe("Ext.list.Tree", function() {
                     makeList({
                         micro: true
                     });
+                    Ext.event.publisher.Dom.instance.reset();
                 });
 
                 it("should have the microCls", function() {
@@ -3975,7 +3976,7 @@ describe("Ext.list.Tree", function() {
                 });
 
                 // https://sencha.jira.com/browse/EXTJS-20210
-                if (!Ext.supports.Touch) {
+                if (!jasmine.supportsTouch) {
                     it('should hide the icon on float', function() {
                         var rec0 = store.getAt(0),
                             item0 = list.getItem(rec0);

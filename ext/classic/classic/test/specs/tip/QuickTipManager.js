@@ -3,12 +3,14 @@
 describe("Ext.tip.QuickTipManager", function() {
 
     beforeEach(function() {
+        jasmine.removeAllowedComponent(Ext.QuickTips.tip);
         Ext.tip.QuickTipManager.destroy();
     });
     
     afterEach(function() {
         Ext.tip.QuickTipManager.destroy();
         Ext.tip.QuickTipManager.init();
+        jasmine.addAllowedComponent(Ext.QuickTips.tip);
     });
 
     describe("init", function() {

@@ -36,8 +36,10 @@ Ext.define('Ext.layout.Fit', {
         container.innerElement.toggleCls('x-stretched', stretched);
     },
 
-    onItemInnerStateChange: function(item, isInner) {
+    onItemInnerStateChange: function(item, isInner, destroying) {
         this.callParent(arguments);
-        item.setLayoutSizeFlags(isInner ? this.container.getSizeFlags() : 0);
+        if(!destroying) {
+            item.setLayoutSizeFlags(isInner ? this.container.getSizeFlags() : 0);
+        }
     }
 });

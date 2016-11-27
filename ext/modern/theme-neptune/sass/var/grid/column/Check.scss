@@ -156,13 +156,13 @@ $checkcolumn-checkbox-size-big: dynamic($checkboxfield-checkbox-size-big);
  * @var {number}
  * Check column checkbox font-size
  */
-$checkcolumn-checkbox-font-size: dynamic($checkcolumn-checkbox-size);
+$checkcolumn-checkbox-font-size: dynamic($checkboxfield-checkbox-font-size);
 
 /**
  * @var {number}
  * Check column checkbox font-size in the {@link Global_CSS#$enable-big big} sizing scheme
  */
-$checkcolumn-checkbox-font-size-big: dynamic($checkcolumn-checkbox-size-big);
+$checkcolumn-checkbox-font-size-big: dynamic($checkboxfield-checkbox-font-size-big);
 
 /**
  * @var {string/list}

@@ -257,7 +257,7 @@ Ext.define('Ext.event.publisher.Gesture', {
     /**
      * When a gesture has been claimed this method is invoked to remove gesture events of
      * other kinds.  See implementation in Gesture publisher.
-     * @param {Ext.event.Event[]}events
+     * @param {Ext.event.Event[]} events
      * @param {String} claimedEvent
      * @return {Number} The new index of the claimed event
      * @private
@@ -623,6 +623,7 @@ Ext.define('Ext.event.publisher.Gesture', {
         me.gestureTargets = null;
         me.events = [];
         me.cancelEvents = [];
+        me.reEnterCount = 0;
 
         for (i = 0; i < ln; i++) {
             recognizer = recognizers[i];

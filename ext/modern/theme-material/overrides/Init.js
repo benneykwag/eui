@@ -1,3 +1,4 @@
+Ext.require('Ext.theme.Material');
 if (Ext.platformTags.android && Ext.platformTags.chrome && Ext.manifest.material && Ext.manifest.material.toolbar) {
     var color = Ext.manifest.material.toolbar.color,
         toolbarIsDynamic = Ext.manifest.material.toolbar.dynamic,

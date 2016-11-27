@@ -135,6 +135,19 @@ describe("Ext.form.field.Text", function() {
         expect(component.getValue()).toBe('100');
     });
 
+    it("should be able to set a value in the render event", function() {
+        makeComponent({
+            renderTo: Ext.getBody(),
+            listeners: {
+                render: function(c) {
+                    c.setValue('foo');
+                }
+            }
+        });
+        expect(component.getValue()).toBe('foo');
+        expect(component.inputEl.dom.value).toBe('foo');
+    });
+
     describe("rendering", function() {
         // NOTE this doesn't yet test the main label, error icon, etc. just the parts specific to Text.
         describe('should work', function () {
@@ -696,6 +709,15 @@ describe("Ext.form.field.Text", function() {
                 expect(component.inputEl).toHaveCls(component.emptyCls);
             });
 
+            it("should be able to use \" in the emptyText", function() {
+                makeComponent({
+                    emptyText: 'Please type "foo" here!',
+                    renderTo: Ext.getBody()
+                });
+
+                expect(component.inputEl.dom.placeholder).toBe('Please type "foo" here!');
+            });
+
             it("should be able to be added with setEmptyText", function() {
                 makeComponent({
                     renderTo: Ext.getBody()
@@ -757,6 +779,17 @@ describe("Ext.form.field.Text", function() {
                 it("should set placeholder label text to the emptyText", function() {
                     expect(label.getHtml()).toBe('empty');
                     expect(component.inputEl.dom.value).toBe('');
+                });
+
+                it("should be able to use \" in the emptyText", function() {
+                    component.destroy();
+
+                    makeComponent({
+                        emptyText: 'Please type "foo" here!',
+                        renderTo: Ext.getBody()
+                    });
+
+                    expect(component.placeholderLabel.getHtml()).toBe('Please type "foo" here!');
                 });
 
                 it("should add the emptyCls to the inputEl", function() {

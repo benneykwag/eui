@@ -1,9 +1,7 @@
 /**
- * A simple class to display a button.
- *
- * There are various different styles of Button you can create by using the {@link #icon},
- * {@link #iconCls}, {@link #iconAlign}, {@link #ui}, and {@link #text}
- * configurations.
+ * This class provides a push button with several presentation options. There are various
+ * different styles of Button you can create by using the {@link #icon}, {@link #iconCls},
+ * {@link #iconAlign}, {@link #ui}, and {@link #text} configurations.
  *
  * ## Simple Button
  *
@@ -206,7 +204,7 @@ Ext.define('Ext.Button', {
 
     cachedConfig: {
         /**
-         * @cfg {String} pressingCls
+         * @cfg {String} pressedCls
          * The CSS class to add to the Button when it is {@link #pressed}.
          * @accessor
          */
@@ -391,7 +389,7 @@ Ext.define('Ext.Button', {
          */
 
         /**
-         * @cfg
+         * @cfg baseCls
          * @inheritdoc
          */
         baseCls: Ext.baseCSSPrefix + 'button',

@@ -208,11 +208,14 @@ Ext.define('Ext.scroll.Scroller', {
 
         me.callParent([config]);
 
-        me.onDomScrollEnd = Ext.Function.createBuffered(me.onDomScrollEnd, 100, me);
+        me.bufferedOnDomScrollEnd = Ext.Function.createBuffered(me.onDomScrollEnd, 100, me);
     },
     
     destroy: function() {
         var me = this;
+
+        clearTimeout(me.restoreTimer);
+        clearTimeout(me.onDomScrollEnd.timer);
 
         // Clear any overflow styles
         me.setX(Ext.emptyString);
@@ -221,7 +224,7 @@ Ext.define('Ext.scroll.Scroller', {
         // Remove element listeners
         me.setElement(null);
         me.setScrollElement(null);
-        me.onDomScrollEnd = me._partners = me.component = null;
+        me.bufferedOnDomScrollEnd = me._partners = me.component = null;
         
         if (me._translatable) {
             me._translatable.destroy();
@@ -248,14 +251,17 @@ Ext.define('Ext.scroll.Scroller', {
             partners = me._partners || (me._partners = {}),
             otherPartners = partner._partners || (partner._partners = {});
 
+        // Translate to boolean flags. {x:<boolean>,y:<boolean>}
+        axis = me.axisConfigs[axis||'both'];
+
         partners[partner.getId()] = {
             scroller: partner,
-            axis: axis
+            axes: axis
         };
 
         otherPartners[me.getId()] = {
             scroller: me,
-            axis: axis
+            axes: axis
         };
     },
 
@@ -580,17 +586,14 @@ Ext.define('Ext.scroll.Scroller', {
     scrollIntoView: function(el, hscroll, animate, highlight) {
         var me = this,
             position = me.getPosition(),
-            newPosition, newX, newY,
-            myEl = me.getElement();
+            newPosition;
 
         // Might get called before Component#onBoxReady which is when the Scroller is set up with elements.
         if (el) {
-            newPosition = Ext.fly(el).getScrollIntoViewXY(myEl, position.x, position.y);
-            newX = (hscroll === false) ? position.x : newPosition.x;
-            newY = newPosition.y;
+            newPosition = me.getScrollIntoViewXY(el, hscroll);
 
             // Only attempt to scroll if it's needed.
-            if (newY !== position.y || newX !== position.x) {
+            if (newPosition.y !== position.y || newPosition.x !== position.x) {
                 if (highlight) {
                     me.on({
                         scrollend: 'doHighlight',
@@ -600,7 +603,7 @@ Ext.define('Ext.scroll.Scroller', {
                     });
                 }
 
-                me.doScrollTo(newX, newY, animate);
+                me.doScrollTo(newPosition.x, newPosition.y, animate);
             }
             // No scrolling needed, but still honour highlight request
             else if (highlight) {
@@ -799,6 +802,7 @@ Ext.define('Ext.scroll.Scroller', {
         '5': {
             methods: {
                 /**
+                 * @method getScroller
                  * Returns this scroller.
                  *
                  * In Sencha Touch 2, access to a Component's Scroller was provided via
@@ -821,6 +825,7 @@ Ext.define('Ext.scroll.Scroller', {
         '5.1.0': {
             methods: {
                 /**
+                 * @method scrollToTop
                  * Scrolls to 0 on both axes
                  * @param {Boolean/Object} animate
                  * @private
@@ -833,6 +838,7 @@ Ext.define('Ext.scroll.Scroller', {
                 },
 
                 /**
+                 * @method scrollToEnd
                  * Scrolls to the maximum position on both axes
                  * @param {Boolean/Object} animate
                  * @private
@@ -848,6 +854,28 @@ Ext.define('Ext.scroll.Scroller', {
     },
 
     privates: {
+        axisConfigs: {
+            x: {
+                x: true
+            },
+            y: {
+                y: true
+            },
+            both: {
+                x: true,
+                y: true
+            }
+        },
+
+        getScrollIntoViewXY: function(el, hscroll) {
+            var position = this.getPosition(),
+                newPosition;
+        
+            newPosition = Ext.fly(el).getScrollIntoViewXY(this.getElement(), position.x, position.y);
+            newPosition.x = (hscroll === false) ? position.x : newPosition.x;
+            return newPosition;
+        },
+
         getSpacer: function() {
             var me = this,
                 spacer = me._spacer,
@@ -884,25 +912,30 @@ Ext.define('Ext.scroll.Scroller', {
             return pos;
         },
 
-        // rtl hook
         updateSpacerXY: function(pos) {
-            var spacer = this.getSpacer(),
+            var me = this,
+                spacer = me.getSpacer(),
                 sStyle = spacer.dom.style,
                 scrollHeight = pos.y,
                 shortfall;
 
             sStyle.marginTop = '';
-            spacer.translate(pos.x, this.constrainScrollRange(scrollHeight));
+            me.translateSpacer(pos.x, me.constrainScrollRange(scrollHeight));
 
             // Force a synchronous layout to update the scrollHeight.
             // This flip-flops between 0px and 1px
             sStyle.lineHeight = Number(!parseInt(sStyle.lineHeight, 10)) + 'px';
 
             // See if we can get any more scrollHeight from a margin-top
-            shortfall = scrollHeight - this.getElement().dom.scrollHeight;
+            shortfall = scrollHeight - me.getElement().dom.scrollHeight;
             if (shortfall > 0) {
-                sStyle.marginTop = Math.min(shortfall, this.maxSpacerMargin || 0) + 'px';
+                sStyle.marginTop = Math.min(shortfall, me.maxSpacerMargin || 0) + 'px';
             }
+        },
+
+        // rtl hook - rtl version sets right style
+        translateSpacer: function(x, y) {
+            this.getSpacer().translate(x, y);
         },
 
         doIsInView: function(el, skipCheck) {
@@ -1041,7 +1074,9 @@ Ext.define('Ext.scroll.Scroller', {
                     }
                 }
 
-                x = me.convertX(x);
+                if (x !== null) {
+                    x = me.convertX(x);
+                }
 
                 if (animate) {
                     if (!this._translatable) {
@@ -1055,13 +1090,6 @@ Ext.define('Ext.scroll.Scroller', {
                     }
                     if (x != null) {
                         dom.scrollLeft = x;
-                        // IE8 does not update immediately without this hack.
-                        //<feature legacyBrowser>
-                        if (Ext.isIE8) {
-                            i = dom.scrollLeft;
-                            dom.scrollLeft = x;
-                        }
-                        //</feature legacyBrowser>
                     }
                 }
 
@@ -1070,11 +1098,11 @@ Ext.define('Ext.scroll.Scroller', {
             }
         },
 
-        fireScrollStart: function(x, y) {
+        fireScrollStart: function(x, y, xDelta, yDelta) {
             var me = this,
                 component = me.component;
 
-            me.invokePartners('onPartnerScrollStart', x, y);
+            me.invokePartners('onPartnerScrollStart', x, y, xDelta, yDelta);
 
             if (me.hasListeners.scrollstart) {
                 me.fireEvent('scrollstart', me, x, y);
@@ -1087,11 +1115,11 @@ Ext.define('Ext.scroll.Scroller', {
             Ext.GlobalEvents.fireEvent('scrollstart', me, x, y);
         },
 
-        fireScroll: function(x, y) {
+        fireScroll: function(x, y, xDelta, yDelta) {
             var me = this,
                 component = me.component;
 
-            me.invokePartners('onPartnerScroll', x, y);
+            me.invokePartners('onPartnerScroll', x, y, xDelta, yDelta);
 
             if (me.hasListeners.scroll) {
                 me.fireEvent('scroll', me, x, y);
@@ -1104,11 +1132,11 @@ Ext.define('Ext.scroll.Scroller', {
             Ext.GlobalEvents.fireEvent('scroll', me, x, y);
         },
 
-        fireScrollEnd: function(x, y) {
+        fireScrollEnd: function(x, y, xDelta, yDelta) {
             var me = this,
                 component = me.component;
 
-            me.invokePartners('onPartnerScrollEnd', x, y);
+            me.invokePartners('onPartnerScrollEnd', x, y, xDelta, yDelta);
 
             if (me.hasListeners.scrollend) {
                 me.fireEvent('scrollend', me, x, y);
@@ -1216,30 +1244,25 @@ Ext.define('Ext.scroll.Scroller', {
             }
         },
 
-        invokePartners: function(method, x, y) {
+        invokePartners: function(method, x, y, xDelta, yDelta) {
             var me = this,
                 partners = me._partners,
                 partner,
-                id,
-                isEnd = method ==='onPartnerScrollEnd';
+                id, axes;
 
-            // Do not invoke partners if we ar ealready reflecting a partner's scroll
-            if (!me.suspendSync & !me.isReflecting) {
+            if (!me.suspendSync) {
+                me.invokingPartners = true;
                 for (id in partners) {
+                    axes = partners[id].axes;
                     partner = partners[id].scroller;
-                    partner.isReflecting = true;
-                    partner[method](me, x, y);
 
-                    // End a partner's reflecting status only when we are ending our scroll.
-                    if (isEnd) {
-                        partner.isReflecting = false;
+                    // Only pass the scroll on to partners if we are are configured to pass on the scrolled dimension
+                    if (!partner.invokingPartners && (xDelta && axes.x || yDelta && axes.y)) {
+                        partner[method](me, axes.x ? x : null, axes.y ? y : null, xDelta, yDelta);
                     }
                 }
+                me.invokingPartners = false;
             }
-        },
-
-        clearReflecting: function() {
-            this.isReflecting = false;
         },
 
         suspendPartnerSync: function() {
@@ -1288,13 +1311,13 @@ Ext.define('Ext.scroll.Scroller', {
                 partner,
                 position;
 
-            me.isReflecting = true;
+            me.suspendPartnerSync();
             for (id in partners) {
                 partner = partners[id].scroller;
                 position = partner.getPosition();
                 me.onPartnerScroll(partner, position.x, position.y);
             }
-            me.isReflecting = false;
+            me.resumePartnerSync();
         },
 
         syncScrollbarCls: function() {
@@ -1307,65 +1330,76 @@ Ext.define('Ext.scroll.Scroller', {
 
         onDomScroll: function() {
             var me = this,
-                position, x, y;
+                position = me.position,
+                oldX = position.x,
+                oldY = position.y,
+                x, y, xDelta, yDelta;
 
             position = me.updateDomScrollPosition();
-            if (me.restoring) {
+            if (me.restoreTimer) {
+                clearTimeout(me.onDomScrollEnd.timer);
                 return;
             }
 
             x = position.x;
             y = position.y;
+            xDelta = x - oldX;
+            yDelta = y - oldY;
 
-            if (!me.isScrolling) {
-                me.isScrolling = Ext.isScrolling = true;
-                me.fireScrollStart(x, y);
+            // If we already know about the position. then we've been coerced there by a partner
+            // and that will have been firing our event sequence synchronously, so they do not
+            // not need to be fire in response to the ensuing scroll event.
+            if (xDelta || yDelta) {
+                if (!me.isScrolling) {
+                    me.isScrolling = Ext.isScrolling = true;
+                    me.fireScrollStart(x, y, xDelta, yDelta);
+                }
+
+                me.fireScroll(x, y, xDelta, yDelta);
+
+                me.bufferedOnDomScrollEnd(x, y, xDelta, yDelta);
             }
-
-            me.fireScroll(x, y);
-
-            // call the buffered onScrollEnd.  this invocation will be canceled if another
-            // scroll occurs before the buffer time.
-            me.onDomScrollEnd();
         },
 
-        onDomScrollEnd: function() {
-            var me = this,
-                position, x, y;
+        onDomScrollEnd: function(x, y, xDelta, yDelta) {
+            var me = this;
             
             // Could be destroyed by this time
             if (me.destroying || me.destroyed) {
                 return;
             }
-                
-            position = me.getPosition();
-            x = position.x;
-            y = position.y;
 
             me.isScrolling = Ext.isScrolling = false;
-
             me.trackingScrollLeft = x;
             me.trackingScrollTop = y;
-
-            me.fireScrollEnd(x, y);
+            me.fireScrollEnd(x, y, xDelta, yDelta);
         },
 
-        onPartnerScroll: function(partner, x, y) {
-            var axis = partner._partners[this.getId()].axis;
-
-            if (axis) {
-                if (axis === 'x') {
-                    y = null;
-                } else if (axis === 'y') {
-                    x = null;
-                }
-            }
-
-            this.doScrollTo(x, y, false, true);
+        onPartnerScrollStart: function(partner, x, y, xDelta, yDelta) {
+            // Pass the signal on immediately to all partners.
+            this.isScrolling = true;
+            this.fireScrollStart(x, y, xDelta, yDelta);
         },
 
-        onPartnerScrollStart: Ext.privateFn,
-        onPartnerScrollEnd: Ext.privateFn,
+        onPartnerScroll: function(partner, x, y, xDelta, yDelta) {
+            this.doScrollTo(x, y, false);
+
+            // Update the known scroll position so that when it reacts to its DOM,
+            // it will not register a change and so will not invoke partners.
+            // All scroll intentions are propagated synchronously.
+            // The ensuing multiple scroll events are then ignored.
+            this.updateDomScrollPosition();
+
+            // Pass the signal on immediately to all partners.
+            this.fireScroll(x, y, xDelta, yDelta);
+        },
+
+        onPartnerScrollEnd: function(partner, x, y, xDelta, yDelta) {
+            // Pass the signal on immediately to all partners.
+            // We are called by the bufferedOnDomScrollEnd of our controller
+            // so we must not add another delay.
+            this.onDomScrollEnd(x, y, xDelta, yDelta);
+        },
 
         removeSnapStylesheet: function() {
             var stylesheet = this.snapStylesheet;
@@ -1391,10 +1425,11 @@ Ext.define('Ext.scroll.Scroller', {
                     // while ensuring we maintain the correct internal state. 50ms is
                     // enough to capture the async scroll events, anything after that
                     // we re-enable.
-                    me.restoring = true;
-                    Ext.defer(function() {
-                        me.restoring = false;
-                    }, 50);
+                    if (!me.restoreTimer) {
+                            me.restoreTimer = Ext.defer(function() {
+                            me.restoreTimer = null;
+                        }, 50);
+                    }
                     me.doScrollTo(me.trackingScrollLeft, me.trackingScrollTop, false);
 
                     // Do not discard the state.

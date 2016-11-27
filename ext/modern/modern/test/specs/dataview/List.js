@@ -21,10 +21,28 @@ describe("Ext.dataview.List", function() {
     }
 
     function tearDown() {
-        component.destroy();
-        Ext.Viewport.destroy();
-        viewport = component = null;
+        viewport = component = Ext.destroy(component, Ext.Viewport);
     }
+    
+    describe('Rendered list with loaded store', function() {
+        it('should immediately render records', function() {
+            var store = new Ext.data.Store({
+                data: [
+                    { value: 'foo' },
+                    { value: 'bar' }
+                ]
+            });
+            component = new Ext.dataview.List({
+                renderTo: Ext.getBody(),
+                itemTpl: '<div>{value}</div>',
+                store: store
+            });
+
+            // Should be two simplelistitems in the List
+            expect(component.container.getItems().getCount()).toBe(2);
+        });
+    });
+        
 
     describe("infinite lists", function() {
         beforeEach(function() {
@@ -56,12 +74,9 @@ describe("Ext.dataview.List", function() {
             }, []);
 
             waitsFor(function() {
-                return component.visibleCount && !component.getStore().getCount();
-            });
-
-            runs(function() {
-                expect(component.visibleCount).not.toBe(Infinity);
-                expect(component.isVisible()).toBe(true);
+                return component.visibleCount != Infinity &&
+                        !component.getStore().getCount() &&
+                        component.isVisible();
             });
         });
     });

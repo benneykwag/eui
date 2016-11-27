@@ -75,7 +75,8 @@ describe('Ext.util.Renderable', function(){
 
     describe('Using existing el', function() {
         var viewport,
-            previousNodes;
+            previousNodes,
+            existingElement;
 
         beforeEach(function() {
             // The content of the body is being checked by this test so we have to empty it
@@ -92,6 +93,8 @@ describe('Ext.util.Renderable', function(){
         });
         afterEach(function() {
             viewport.destroy();
+            
+            existingElement = Ext.destroy(existingElement);
             
             // Restore previous state of document
             document.body.appendChild(previousNodes);

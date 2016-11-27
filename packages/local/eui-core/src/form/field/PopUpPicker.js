@@ -12,58 +12,80 @@ Ext.define('eui.form.field.PopUpPicker', {
     triggerCls: 'x-form-search-trigger',
     cellCls: 'fo-table-row-td',
     callBack: 'onTriggerCallback',
+
     config: {
+        simpleColumns:[],
+        normalColumns:[],
+
         simpleMode: false,
         displayField: 'NAME',
-        valueField: 'CODE'
+        valueField: 'CODE',
+        formConfig : null
     },
 
+    matchFieldWidth: false,
+
     onTriggerCallback: function (trigger, record, valueField, displayField) {
-        this.setValue(record.get(this.getValueField()));
+        if(!Ext.isArray(record)){
+            this.setValue(record.get(this.getValueField()));
+        }
     },
 
     enableKeyEvents: true,
 
-    matchFieldWidth: false,
-
-    doAlign: function () {
-        var me = this,
-            picker = me.picker,
-            aboveSfx = '-above',
-            isAbove;
-
-        // Align to the trigger wrap because the border isn't always on the input element, which
-        // can cause the offset to be off
-        if (me.simpleMode) {
-            me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+    checkBlur: function () {
+        var me = this;
+        if (me.originalValue != me.getValue()) {
+            me.setValue('');
         }
-
-        // add the {openCls}-above class if the picker was aligned above
-        // the field due to hitting the bottom of the viewport
-        isAbove = picker.el.getY() < me.inputEl.getY();
-        me.bodyEl[isAbove ? 'addCls' : 'removeCls'](me.openCls + aboveSfx);
-        picker[isAbove ? 'addCls' : 'removeCls'](picker.baseCls + aboveSfx);
     },
 
-
+    listeners: {
+        blur: 'checkBlur',
+        // 팝업 내부에서 값설정후 close
+        popupclose : {
+            delay: 100,
+            scope: 'this',
+            fn: 'collapse'
+        },
+        afterrender: {
+            delay: 1000,
+            fn: function (cmp) {
+                // originalValue를 최초 설정된 값으로 만든다.
+                cmp.resetOriginalValue();
+            }
+        }
+    },
 
     createPicker: function (C) {        // #4
         var me = this;
         if (!me.picker) {
-
             me.picker = Ext.create('Ext.panel.Panel', {
                 title: me.popupConfig.title,
                 floating: true,
+                defaultFocus: 'textfield',
+                listeners: {
+                    beforeshow: function () {
+                        me.suspendEvent('blur');
+                    },
+                    hide: function () {
+                        me.resumeEvent('blur');
+                    }
+                },
                 height: (me.simpleMode ? 300 : me.popupConfig.height),
                 width: me.popupConfig.width,
                 layout: 'fit',
                 items: [
                     {
                         xtype: me.popupConfig.popupWidget,
+                        formConfig : me.formConfig,
+                        simpleColumns : me.simpleColumns,
+                        normalColumns : me.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,
                         valueField: me.valueField,
+                        popupConfig: me.popupConfig,
                         __PARENT: me,
                         __PARAMS: {
                             popupConfig: me.popupConfig
@@ -72,13 +94,11 @@ Ext.define('eui.form.field.PopUpPicker', {
                     }
                 ]
             });
+            me.relayEvents(me.picker.items.items[0], [
+                'popupclose'
+            ]);
         }
-//        me.picker.on('show', function () {
-////            Ext.defer(function () {
-//            me.fireEvent('pickerbeforeshow', me, me.picker);
-////            },00)
-//
-//        })
+
         return me.picker;
     }
 });
