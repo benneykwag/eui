@@ -1,3 +1,14 @@
+/*
+ * 기본 ajax 요청관련 기본 설정 수정
+ * */
+Ext.define('Override.Ajax', {
+    override: 'Ext.Ajax',
+    _defaultHeaders: {
+        'Content-Type': "application/json;charset=utf-8"
+    },
+    _method: 'POST'
+});
+
 Ext.define('Override.Component', {
     override: 'Ext.Component',
     /**
@@ -275,6 +286,30 @@ Ext.define('Override.Ext.data.TreeModel', {
         }
     }
 });
+
+/*
+ * proxy Rest 관련 Default 설정
+ * */
+Ext.define('Override.data.proxy.Rest', {
+    override: 'Ext.data.proxy.Rest',
+    config: {
+        actionMethods: {
+            create: 'POST',
+            read: 'POST',
+            update: 'POST',
+            destroy: 'POST'
+        },
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        paramsAsJson: true
+    }
+});
+/*,
+         noCache: false,
+         pageParam: false,
+         startParam: false,
+         limitParam: false*/
 
 Ext.define('Override.container.Container', {
     override: 'Ext.container.Container'
@@ -582,9 +617,6 @@ Ext.define('eui.Util', {
     localeStoreValueField: 'MSG_ID',
     localeStoreDisplayField: 'MSG_CONTENTS',
     UrlPrefix: null,
-    // "http://211.196.150.66:18080/",
-    //    HurlPrefix: "http://103.168.0.58:8080/",
-    //	HurlPrefix : "http://127.0.0.1:8080/",
     localeLang: "ko",
     webosShowWindowId: null,
     currentAjaxButtonId: null,
@@ -1467,10 +1499,6 @@ Ext.define('eui.container.BaseContainer', {
 Ext.define('eui.container.PopupContainer', {
     extend: 'Ext.container.Container',
     alias: 'widget.euipopupcontainer',
-    initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
-    },
     /***
      * HPopupTrigger에 값을 전달한다.
      */
@@ -1495,9 +1523,162 @@ Ext.define('eui.container.PopupContainer', {
         var owner = Util.getOwnerCt(this);
         if (owner.xtype.indexOf('window') != -1) {
             owner.close();
-        } else {
-            owner.hide();
+        } else {}
+    }
+});
+//            owner.hide();
+
+Ext.define('eui.container.Popup', {
+    extend: 'eui.container.PopupContainer',
+    alias: 'widget.euipopup',
+    defaultListenerScope: true,
+    listeners: {
+        /**
+         * 선택된 그리드 로우 세팅,
+         */
+        enterdblclick: function() {
+            var grid = this.down('grid');
+            var selectionModel = grid.getSelectionModel(),
+                record = selectionModel.getSelection()[0],
+                rowIndex = grid.store.indexOf(record);
+            grid.fireEvent('itemdblclick', grid, record);
+        },
+        keydown: function(keycode) {
+            var grid = this.down('grid');
+            var selectionModel = grid.getSelectionModel(),
+                record = selectionModel.getSelection()[0],
+                rowIndex = grid.store.indexOf(record),
+                condi = (keycode == 40 ? 1 : -1);
+            console.log(rowIndex + condi);
+            selectionModel.select(rowIndex + condi);
+            grid.getView().focusRow(rowIndex + condi);
+            this.trigger.focus();
+        },
+        render: function() {
+            var me = this,
+                picker = this.ownerCt;
+            picker.addListener('show', 'transform', me);
         }
+    },
+    /***
+     * simpleMode에 따라 변형된다.
+     */
+    transform: function() {
+        var me = this,
+            grid = this.down('euigrid'),
+            searchKeyField = me.ownerCt.ownerCmp.searchKeyField;
+        var simpleMode = this.ownerCt.simpleMode;
+        if (simpleMode) {
+            grid.setMargin(0);
+            me.down('euiform').setHidden(true);
+            grid.reconfigure(grid.store, me.simpleColumns);
+            grid.hideHeaders = true;
+            grid.updateHideHeaders();
+            grid.store.getProxy().extraParams[searchKeyField] = me.trigger.getValue();
+            grid.store.load();
+            if (!me.multiSelect) {
+                me.down('toolbar').setHidden(true);
+            }
+        } else {
+            grid.setMargin(5);
+            me.down('euiform').setHidden(false);
+            if (!me.multiSelect) {
+                me.down('toolbar').setHidden(false);
+            }
+            grid.reconfigure(grid.store, me.normalColumns);
+            grid.hideHeaders = false;
+            grid.updateHideHeaders();
+            grid.store.getProxy().extraParams[searchKeyField] = me.trigger.previousSibling().getValue();
+            grid.store.load();
+        }
+    },
+    parentCallBack: function(view, record) {
+        this.callParent([
+            record
+        ]);
+        this.fireEvent('popupclose');
+    },
+    onMultiRecordSet: function() {
+        var grid = this.down('grid'),
+            selmodel = grid.getSelectionModel(),
+            selection = selmodel.getSelection();
+        if (selection.length == 0) {
+            return;
+        }
+        this.parentCallBack(grid, selection);
+    },
+    onFormSend: function(button) {
+        var form = button.up('form'),
+            values = form.getForm().getValues(),
+            record = Ext.create('Ext.data.Model', values);
+        this.parentCallBack(this, record);
+    },
+    defaults: {
+        margin: 5
+    },
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+    initComponent: function() {
+        var me = this,
+            config = me.popupConfig,
+            items = [],
+            grid = {
+                xtype: 'euigrid',
+                flex: 1,
+                selModel: {
+                    pruneRemoved: false
+                },
+                store: me.store,
+                listeners: {
+                    itemdblclick: 'parentCallBack'
+                },
+                forceFit: true,
+                columns: {
+                    defaults: {
+                        width: 120
+                    },
+                    items: [
+                        {
+                            text: '-',
+                            dataIndex: 'temp'
+                        }
+                    ]
+                }
+            };
+        if (me.formConfig) {
+            items.push(me.formConfig);
+        }
+        if (me.multiSelect) {
+            Ext.apply(grid, {
+                selModel: {
+                    // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
+                    mode: 'SIMPLE',
+                    selType: 'checkboxmodel'
+                }
+            });
+        }
+        items.push(grid);
+        items.push({
+            ui: 'plain',
+            xtype: 'toolbar',
+            items: [
+                '->',
+                {
+                    width: 100,
+                    iconCls: 'fa fa-thumb-tack',
+                    xtype: 'euibutton',
+                    handler: 'onMultiRecordSet',
+                    text: '확인'
+                },
+                '->'
+            ]
+        });
+        Ext.apply(me, {
+            items: items
+        });
+        this.callParent(arguments);
     }
 });
 
@@ -2252,6 +2433,286 @@ Ext.define('eui.form.Panel', {
         Ext.apply(me, {
             header: header
         });
+    }
+});
+
+/***
+ *
+ * ## Summary
+ *
+ * code & code name을 같이 사용하는 팝업 전용 fieldcontainer
+ *
+ **/
+Ext.define('eui.form.PopUpFieldContainer', {
+    extend: 'eui.form.FieldContainer',
+    alias: 'widget.euipopupfieldcontainer',
+    config: {
+        // 서버에 전달할 파라메터의 key
+        searchKeyField: 'SEARCHKEY',
+        // 우측 콤보 형태로 변경 시 그리드 컬럼 정보.
+        simpleColumns: [],
+        // 좌측 텍스트 필드로 팝업 호출시 보여줄 그리드 컬럼 정보.
+        normalColumns: [],
+        // 팝업 내부 검색용 폼 정보.
+        formConfig: null,
+        // 호출할 팝업 정보.
+        popupConfig: {}
+    },
+    bindVar: {
+        FIELD1: null,
+        FIELD2: null
+    },
+    /***
+     * 팝업 내부에서 값을 결정하면 이 메소드를 구현해야한다.
+     */
+    setPopupValues: Ext.emptyFn,
+    listeners: {
+        specialkey: 'setSpecialKey',
+        blur: 'onBlur'
+    },
+    /***
+     * Enter, Tab 에 대한 반응 처리.
+     * @param field
+     * @param e
+     * @param eOpts
+     */
+    setSpecialKey: function(field, e, eOpts) {
+        var me = this,
+            firstField = this.down('#firstField'),
+            secondField = this.down('#secondField');
+        //        if ((e.getKey() === Ext.EventObject.ENTER
+        //            && !Ext.isEmpty(field.getValue()))
+        //            || (e.getKey() === Ext.EventObject.TAB && !Ext.isEmpty(field.getValue()))) {
+        //            if (!me.checkSingleResult(field)) {
+        //                secondField.expand(field.simpleMode);
+        //            }
+        //        }
+        if (e.getKey() === Ext.EventObject.ENTER) //            && !Ext.isEmpty(field.getValue())
+        {
+            if (!me.checkSingleResult(field)) {
+                // senchaField가 expand시 blur발생 방지 ..
+                firstField.suspendEvent('blur');
+                if (field.simpleMode) {
+                    // 그리드에 선택된 로우를 세팅
+                    // collapse 되어 있는 경우 하지 않고 열기만 한다.
+                    if (secondField.isExpanded) {
+                        // 값이 변경되었을 경우.
+                        if (secondField.getValue() != secondField._tmpValue) {
+                            //
+                            secondField.fireEvent('load', {
+                                params: {
+                                    key: secondField.getValue()
+                                }
+                            });
+                            secondField._tmpValue = secondField.getValue();
+                            secondField.picker.down('grid').store.getProxy().extraParams[me.searchKeyField] = secondField.getValue();
+                            secondField.picker.down('grid').store.load({});
+                        } else /*params : {
+                                    SEARCH_KEYWORD : secondField.getValue(),
+                                    groupCode: "SP9997",
+                                    SQL: {
+                                        "HQCODE": "",
+                                        "HQNAME": secondField.getValue(),
+                                        "HQLOCNAME": ""
+                                    }
+                                }*/
+                        {
+                            secondField.picker.items.items[0].fireEvent('enterdblclick');
+                        }
+                    } else {
+                        secondField._tmpValue = secondField.getValue();
+                        secondField.expand(field.simpleMode);
+                    }
+                } else {
+                    // 상세 검색
+                    secondField.expand(field.simpleMode);
+                }
+                secondField.picker.on('hide', function() {
+                    firstField.resumeEvent('blur');
+                });
+            }
+        }
+        // 화살표 상하 키.
+        // 우측 simpleMode use
+        if (e.getKey() == 40 || e.getKey() == 38) {
+            console.log('key... ', e.getKey());
+            if (secondField.picker) {
+                secondField.expand(field.simpleMode);
+                secondField.picker.items.items[0].fireEvent('keydown', e.getKey());
+            }
+        }
+    },
+    /***
+     * 수정하다 포커스 밖으로 나갈 경우 리셋한다.
+     * @param field
+     */
+    checkBlur: function(field) {
+        var firstField = this.down('#firstField'),
+            secondField = this.down('#secondField');
+        if (field.isFormField) {
+            if (field.originalValue != field.getValue()) {
+                firstField.setValue('');
+                secondField.setValue('');
+            }
+        }
+    },
+    /***
+     * Enter & Tab 시 한건 이면 false, 두건 이상이면  true 리턴.
+     *
+     * @param field
+     * @returns {boolean}
+     */
+    checkSingleResult: function(field) {
+        var me = this;
+        return false;
+    },
+    initComponent: function() {
+        var me = this;
+        Ext.apply(this, {
+            items: [
+                {
+                    bind: me.bindVar.FIELD1,
+                    hideLabel: true,
+                    itemId: 'firstField',
+                    xtype: 'euitext',
+                    //                    triggerCls: 'x-form-search-trigger',
+                    //                    triggers: {
+                    //                        search: {
+                    //                            cls: 'x-form-search-trigger',
+                    //                            handler: 'onTriggerClick',
+                    //                            scope: 'this'
+                    //                        }
+                    //                    },
+                    simpleMode: false,
+                    listeners: {
+                        blur: 'checkBlur',
+                        afterrender: {
+                            delay: 1000,
+                            fn: function(cmp) {
+                                cmp.resetOriginalValue();
+                            }
+                        },
+                        render: function() {
+                            me.relayEvents(this, [
+                                'specialkey'
+                            ]);
+                        }
+                    }
+                },
+                {
+                    xtype: 'euipopuppicker',
+                    hideLabel: true,
+                    simpleMode: true,
+                    triggerCls: 'x-form-arrow-trigger',
+                    itemId: 'secondField',
+                    bind: me.bindVar.FIELD2,
+                    valueField: 'CUSTOMER_NAME',
+                    searchKeyField: me.searchKeyField,
+                    expand: me.expand,
+                    doAlign: me.doAlign,
+                    listeners: {
+                        render: function() {
+                            me.relayEvents(this, [
+                                'blur',
+                                'specialkey'
+                            ]);
+                        },
+                        popupsetvalues: 'setPopupValues'
+                    },
+                    simpleColumns: me.simpleColumns,
+                    normalColumns: me.normalColumns,
+                    formConfig: me.formConfig,
+                    popupConfig: me.popupConfig
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+    doAlign: function() {
+        var me = this,
+            picker = me.picker,
+            aboveSfx = '-above',
+            newPos, isAbove;
+        if (me.picker.simpleMode) {
+            // Align to the trigger wrap because the border isn't always on the input element, which
+            // can cause the offset to be off
+            picker.el.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        } else {
+            picker.el.alignTo(me.triggerWrap, me.pickerAlign, [
+                -120,
+                0
+            ]);
+        }
+        // We used *element* alignTo to bypass the automatic reposition on scroll which
+        // Floating#alignTo does. So we must sync the Component state.
+        newPos = picker.floatParent ? picker.getOffsetsTo(picker.floatParent.getTargetEl()) : picker.getXY();
+        picker.x = newPos[0];
+        picker.y = newPos[1];
+        // add the {openCls}-above class if the picker was aligned above
+        // the field due to hitting the bottom of the viewport
+        isAbove = picker.el.getY() < me.inputEl.getY();
+        me.bodyEl[isAbove ? 'addCls' : 'removeCls'](me.openCls + aboveSfx);
+        picker[isAbove ? 'addCls' : 'removeCls'](picker.baseCls + aboveSfx);
+    },
+    expand: function(simpleMode) {
+        var me = this,
+            bodyEl, picker, doc;
+        if (me.rendered && !me.isExpanded && !me.destroyed) {
+            bodyEl = me.bodyEl;
+            picker = me.getPicker();
+            doc = Ext.getDoc();
+            picker.setMaxHeight(picker.initialConfig.maxHeight);
+            picker.simpleMode = (Ext.isEmpty(simpleMode) ? me.simpleMode : simpleMode);
+            if (picker.simpleMode) {
+                me.matchFieldWidth = true;
+                picker.setWidth(me.bodyEl.getWidth());
+                picker.setHeight(100);
+            } else {
+                me.matchFieldWidth = false;
+                picker.setWidth(me.popupConfig.width);
+                picker.setHeight(me.popupConfig.height);
+            }
+            // Show the picker and set isExpanded flag. alignPicker only works if isExpanded.
+            picker.show();
+            if (picker.simpleMode) {
+                picker.down('header').hide();
+            } else {
+                picker.down('header').show();
+            }
+            me.isExpanded = true;
+            me.alignPicker();
+            bodyEl.addCls(me.openCls);
+            if (!me.ariaStaticRoles[me.ariaRole]) {
+                if (!me.ariaEl.dom.hasAttribute('aria-owns')) {
+                    me.ariaEl.dom.setAttribute('aria-owns', picker.listEl ? picker.listEl.id : picker.el.id);
+                }
+                me.ariaEl.dom.setAttribute('aria-expanded', true);
+            }
+            // Collapse on touch outside this component tree.
+            // Because touch platforms do not focus document.body on touch
+            // so no focusleave would occur to trigger a collapse.
+            me.touchListeners = doc.on({
+                // Do not translate on non-touch platforms.
+                // mousedown will blur the field.
+                translate: false,
+                touchstart: me.collapseIf,
+                scope: me,
+                delegated: false,
+                destroyable: true
+            });
+            // Scrolling of anything which causes this field to move should collapse
+            me.scrollListeners = Ext.on({
+                scroll: me.onGlobalScroll,
+                scope: me,
+                destroyable: true
+            });
+            // Buffer is used to allow any layouts to complete before we align
+            Ext.on('resize', me.alignPicker, me, {
+                buffer: 1
+            });
+            me.fireEvent('expand', me);
+            me.onExpand();
+        }
     }
 });
 
@@ -4525,30 +4986,41 @@ Ext.define('eui.form.field.PopUpPicker', {
     cellCls: 'fo-table-row-td',
     callBack: 'onTriggerCallback',
     config: {
+        simpleColumns: [],
+        normalColumns: [],
         simpleMode: false,
         displayField: 'NAME',
-        valueField: 'CODE'
+        valueField: 'CODE',
+        formConfig: null
     },
+    matchFieldWidth: false,
     onTriggerCallback: function(trigger, record, valueField, displayField) {
-        this.setValue(record.get(this.getValueField()));
+        if (!Ext.isArray(record)) {
+            this.setValue(record.get(this.getValueField()));
+        }
     },
     enableKeyEvents: true,
-    matchFieldWidth: false,
-    doAlign: function() {
-        var me = this,
-            picker = me.picker,
-            aboveSfx = '-above',
-            isAbove;
-        // Align to the trigger wrap because the border isn't always on the input element, which
-        // can cause the offset to be off
-        if (me.simpleMode) {
-            me.picker.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+    checkBlur: function() {
+        var me = this;
+        if (me.originalValue != me.getValue()) {
+            me.setValue('');
         }
-        // add the {openCls}-above class if the picker was aligned above
-        // the field due to hitting the bottom of the viewport
-        isAbove = picker.el.getY() < me.inputEl.getY();
-        me.bodyEl[isAbove ? 'addCls' : 'removeCls'](me.openCls + aboveSfx);
-        picker[isAbove ? 'addCls' : 'removeCls'](picker.baseCls + aboveSfx);
+    },
+    listeners: {
+        blur: 'checkBlur',
+        // 팝업 내부에서 값설정후 close
+        popupclose: {
+            delay: 100,
+            scope: 'this',
+            fn: 'collapse'
+        },
+        afterrender: {
+            delay: 1000,
+            fn: function(cmp) {
+                // originalValue를 최초 설정된 값으로 만든다.
+                cmp.resetOriginalValue();
+            }
+        }
     },
     createPicker: function(C) {
         // #4
@@ -4557,16 +5029,29 @@ Ext.define('eui.form.field.PopUpPicker', {
             me.picker = Ext.create('Ext.panel.Panel', {
                 title: me.popupConfig.title,
                 floating: true,
+                defaultFocus: 'textfield',
+                listeners: {
+                    beforeshow: function() {
+                        me.suspendEvent('blur');
+                    },
+                    hide: function() {
+                        me.resumeEvent('blur');
+                    }
+                },
                 height: (me.simpleMode ? 300 : me.popupConfig.height),
                 width: me.popupConfig.width,
                 layout: 'fit',
                 items: [
                     {
                         xtype: me.popupConfig.popupWidget,
+                        formConfig: me.formConfig,
+                        simpleColumns: me.simpleColumns,
+                        normalColumns: me.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,
                         valueField: me.valueField,
+                        popupConfig: me.popupConfig,
                         __PARENT: me,
                         __PARAMS: {
                             popupConfig: me.popupConfig
@@ -4575,13 +5060,10 @@ Ext.define('eui.form.field.PopUpPicker', {
                     }
                 ]
             });
+            me.relayEvents(me.picker.items.items[0], [
+                'popupclose'
+            ]);
         }
-        //        me.picker.on('show', function () {
-        ////            Ext.defer(function () {
-        //            me.fireEvent('pickerbeforeshow', me, me.picker);
-        ////            },00)
-        //
-        //        })
         return me.picker;
     }
 });
