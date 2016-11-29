@@ -1,0 +1,22 @@
+{
+    "success":true,
+    "data":[
+        {
+            "name":"마이크로소프트",
+            "code":"MICROSOFT"
+        },
+        {
+            "name":"B회사",
+            "code":"BCMP"
+        },
+        {
+            "name":"C회사",
+            "code":"CCMP"
+        },
+        {
+            "name":"D회사",
+            "code":"DCMP"
+        }
+    ],
+    "message":""
+}

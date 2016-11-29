@@ -1,0 +1,67 @@
+{
+    "data": [
+        {
+            "field1": "111-000",
+            "field2": "한솔건설",
+            "field3": "한솔건설",
+            "field4": "30",
+            "field5": "30",
+            "field6": "30",
+            "field7": "30",
+            "field8": "30",
+            "field9": "30",
+            "field10": "30",
+            "field11": "30",
+            "field12": "30",
+            "field13": "30"
+
+        },
+        {
+            "field1": "111-000",
+            "field2": "한솔건설",
+            "field3": "한솔건설",
+            "field4": "30",
+            "field5": "30",
+            "field6": "30",
+            "field7": "30",
+            "field8": "30",
+            "field9": "30",
+            "field10": "30",
+            "field11": "30",
+            "field12": "30",
+            "field13": "30"
+        },
+        {
+            "field1": "111-000",
+            "field2": "한솔건설",
+            "field3": "한솔건설",
+            "field4": "30",
+            "field5": "30",
+            "field6": "30",
+            "field7": "30",
+            "field8": "30",
+            "field9": "30",
+            "field10": "30",
+            "field11": "30",
+            "field12": "30",
+            "field13": "30"
+        },
+        {
+            "field1": "111-000",
+            "field2": "한솔건설",
+            "field3": "한솔건설",
+            "field4": "30",
+            "field5": "30",
+            "field6": "30",
+            "field7": "30",
+            "field8": "30",
+            "field9": "30",
+            "field10": "30",
+            "field11": "30",
+            "field12": "30",
+            "field13": "30"
+        }
+    ],
+    "success": "true",
+    "message": "조회되었습니다"
+}

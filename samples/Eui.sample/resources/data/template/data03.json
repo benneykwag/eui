@@ -1,0 +1,35 @@
+// children: 하위 노드..
+// text: '트리노드의 텍스트 정보..'
+// expanded : true -> 펼칠 것인지.
+// leaf: true -> 최하위 노드일 경우 꼭요.
+{
+    "success": true,
+    "message": "",
+    "data": [
+        {
+            "ZIPCODE": "1111",
+            "ADDRESS1": "서울시 천호1동",
+            "ADDRESS2": "주공 101"
+        },
+        {
+            "ZIPCODE": "2222",
+            "ADDRESS1": "서울시 천호2동",
+            "ADDRESS2": "주공 101"
+        },
+        {
+            "ZIPCODE": "3333",
+            "ADDRESS1": "서울시 천호3동",
+            "ADDRESS2": "주공 101"
+        },
+        {
+            "ZIPCODE": "4444",
+            "ADDRESS1": "서울시 천호4동",
+            "ADDRESS2": "주공 101"
+        },
+        {
+            "ZIPCODE": "5555",
+            "ADDRESS1": "서울시 천호5동",
+            "ADDRESS2": "주공 101"
+        }
+    ]
+}
