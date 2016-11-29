@@ -8,10 +8,22 @@ Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',
 
+    /***
+     * 데이트 포맷에 맞지 않는 형식을 조정한다
+     * @param v
+     * @returns {*}
+     */
     dateRenderer: function (v) {
         var date;
+
+//        var f1 = new Date('2012-02-19');      getHours() : 9
+//        var f2 = new Date('10/12/2012');      getHours() : 0
         if (Ext.isDate(v)) {
-            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            if((v.getHours() == 9 || v.getHours() == 0) && v.getMinutes() == 0 &&
+                v.getSeconds() == 0 && v.getMilliseconds() == 0){
+                return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            }
+            return Ext.Date.format(v, eui.Config.defaultDateTimeFormat);
         } else if (Ext.Date.parse(v, 'Ymd')) {
             date = Ext.Date.parse(v, 'Ymd');
             return Ext.Date.format(date, eui.Config.defaultDateFormat);
