@@ -15,16 +15,216 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='eui-grid-column-Date'>/***
-</span> *
- * ## Summary
- *
+  <pre class="prettyprint lang-js"><span id='eui-grid-column-Date'>/**
+</span> * # Summary
  * 날자 표시용 그리드 컬럼 클래스 .
+ *
+ * # 날자형 데이터 정의
+ *
+ * 서버사이드에서 전달되는 날자데이터를 표시한다
+ * 아래 형태의 데이터를 &#39;YYYY-MM-DD&#39;형태로 그리드에 표시한다.
+ *
+ *  -   YYYYMMDD : 20110109
+ *  -   YYYY-MM-DD : 2011-09-01
+ *  -   YYYY-MM-DD : 2011-09-01 hh:m:s
+ *
+ * # 포맷 변경
+ * 아래 처럼 포맷을 지정하여 표시형식을 변경가능함
+ *
+ *  format: &#39;Y-m-d H:i:s&#39;,
+ *
+ * # 날자 데이터의 서버사이드 전달
+ * 아래 샘플처럼 Util.getDatasetParam(grid.store)를 사용하거나
+ * model.getData()를 통해 데이터를 추출 할경우  eui.Config.modelGetDataDateFormat에
+ * 정의 된 형태로 설정된다
+ *
+ *  기본값
+ *  modelGetDataDateFormat: &#39;Ymd&#39;,
+ *
+ *
+ * ## 사용예
+ *     columns: [
+ *          {
+ *              // &quot;OUTPUT_DT&quot; : &quot;20101011&quot;,
+ *              text: &#39;YYYYMMDD&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;OUTPUT_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              //  &quot;INPUT_DT&quot; : &quot;10/12/2012&quot;,
+ *              text: &#39;MM/DD/YYYY&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;INPUT_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              // &quot;UPDATE_DT&quot; : &quot;2012-02-19&quot;,
+ *              text: &#39;YYYY-MM-DD&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;UPDATE_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              // &quot;RELEASE_DT&quot; : &quot;2012-01-10 13:12:34&quot;
+ *              width: 200,
+ *              text: &#39;YYYY-MM-DD HH:MI:S&#39;,
+ *              format: &#39;Y-m-d H:i:s&#39;,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;RELEASE_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          }
+ *      ]
+ *
+ * # Sample
+ *
+ *     @example
+ *     var store = Ext.create(&#39;Ext.data.Store&#39;, {
+ *         fields: [
+ *              {
+ *                  name: &quot;OUTPUT_DT&quot;,
+ *                  type: &quot;date&quot;
+ *              },
+ *              {
+ *                  name: &quot;INPUT_DT&quot;,
+ *                  type: &quot;date&quot;
+ *              },
+ *              {
+ *                  name: &quot;UPDATE_DT&quot;,
+ *                  type: &quot;date&quot;
+ *              },
+ *              {
+ *                  name: &quot;RELEASE_DT&quot;,
+ *                  type: &quot;date&quot;
+ *              }
+ *         ],
+ *         data : [
+ *          {
+ *              &quot;OUTPUT_DT&quot; : &quot;20101011&quot;,
+ *              &quot;INPUT_DT&quot; : &quot;10/12/2012&quot;,
+ *              &quot;UPDATE_DT&quot; : &quot;2012-02-19&quot;,
+ *              &quot;RELEASE_DT&quot; : &quot;2012-01-10 13:12:34&quot;
+ *          },
+ *          {
+ *              &quot;OUTPUT_DT&quot; : &quot;20101011&quot;,
+ *              &quot;INPUT_DT&quot; : &quot;10/12/2012&quot;,
+ *              &quot;UPDATE_DT&quot; : &quot;2012-02-19&quot;,
+ *              &quot;RELEASE_DT&quot; : &quot;2012-01-10 13:12:34&quot;
+ *          }
+ *         ]
+ *     });
+ *
+ *     Ext.create(&#39;eui.grid.Panel&#39;, {
+ *      store: store,
+ *      defaultListenerScope: true,
+ *      plugins: {
+ *          ptype: &#39;cellediting&#39;,   // 셀에디터를 추가.
+ *          clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+ *      },
+ *      tbar: [
+ *          {
+ *              showRowAddBtn: true,    // 행추가 버튼 활성화
+ *              showSaveBtn: true,      // 저장 버튼 활성화
+ *              xtype: &#39;commandtoolbar&#39; // eui.toolbar.Command 클래스
+ *      }
+ *      ],
+ *      listeners: {
+ *          savebtnclick: &#39;onRowSave&#39;
+ *      },
+ *      columns: [
+ *          {
+ *              // &quot;OUTPUT_DT&quot; : &quot;20101011&quot;,
+ *              text: &#39;YYYYMMDD&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;OUTPUT_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              //  &quot;INPUT_DT&quot; : &quot;10/12/2012&quot;,
+ *              text: &#39;MM/DD/YYYY&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;INPUT_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              // &quot;UPDATE_DT&quot; : &quot;2012-02-19&quot;,
+ *              text: &#39;YYYY-MM-DD&#39;,
+ *              width: 100,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;UPDATE_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          },
+ *          {
+ *              // &quot;RELEASE_DT&quot; : &quot;2012-01-10 13:12:34&quot;
+ *              width: 200,
+ *              text: &#39;YYYY-MM-DD HH:MI:S&#39;,
+ *              format: &#39;Y-m-d H:i:s&#39;,
+ *              xtype: &#39;euidatecolumn&#39;,
+ *              dataIndex: &#39;RELEASE_DT&#39;,
+ *              editor: {
+ *                  xtype: &#39;euidate&#39;
+ *              }
+ *          }
+ *        ],
+ *        height: 400,
+ *        renderTo: document.body,
+ *        onRowSave: function (grid) {
+ *          // validation check
+ *          if (!grid.store.recordsValidationCheck()) {
+ *              return;
+ *          }
+ *          Ext.Msg.show({
+ *              title: &#39;확인&#39;,
+ *              buttons: Ext.Msg.YESNO,
+ *              icon: Ext.Msg.QUESTION,
+ *              message: &#39;저장하시겠습니까?&#39;,
+ *              fn: function (btn) {
+ *                  if (btn === &#39;yes&#39;) {
+ *                      Util.CommonAjax({
+ *                          method: &#39;POST&#39;,
+ *                          url: &#39;resources/data/success.json&#39;,
+ *                          params: Util.getDatasetParam(grid.store),
+ *                          pCallback: function (v, params, result) {
+ *                              if (result.success) {
+ *                                  Ext.Msg.alert(&#39;저장성공&#39;, result.message);
+ *                                  grid.store.reload();
+ *                              } else {
+ *                                  Ext.Msg.alert(&#39;저장실패&#39;, result.message);
+ *                              }
+ *                          }
+ *                      });
+ *                  }
+ *              }
+ *          });
+ *        }
+ *     });
+ *
+ * See also the {@link #listConfig} option for additional configuration of the dropdown.
+ *
  */
 Ext.define(&#39;eui.grid.column.Date&#39;, {
     extend: &#39;Ext.grid.column.Date&#39;,
     alias: &#39;widget.euidatecolumn&#39;,
-<span id='eui-grid-column-Date-property-format'>    format: &#39;Y/m/d&#39;,
+<span id='eui-grid-column-Date-property-format'>    format: &#39;Y-m-d&#39;,
 </span><span id='eui-grid-column-Date-property-align'>	align : &#39;center&#39;,
 </span><span id='eui-grid-column-Date-property-width'>	width : 100,
 </span>    mixins: [

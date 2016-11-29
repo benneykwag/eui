@@ -1,3 +1,119 @@
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/slicer.scss:83 */
+.x-cmd-slicer.x-tab-disabled.x-tab-default-top:before {
+    /*<if slicer>*/
+    display: none;
+    content: "x-slicer:, corners:url(images/tab/tab-default-top-disabled-corners.gif), sides:url(images/tab/tab-default-top-disabled-sides.gif), frame-bg:url(images/tab/tab-default-top-disabled-fbg.gif), frame:4px 4px 4px 4px, stretch:bottom" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/slicer.scss:83 */
+.x-cmd-slicer.x-tab-disabled.x-tab-default-right:before {
+    /*<if slicer>*/
+    display: none;
+    content: "x-slicer:, corners:url(images/tab/tab-default-right-disabled-corners.gif), sides:url(images/tab/tab-default-right-disabled-sides.gif), frame-bg:url(images/tab/tab-default-right-disabled-fbg.gif), frame:4px 4px 4px 4px, stretch:left" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/slicer.scss:83 */
+.x-cmd-slicer.x-tab-disabled.x-tab-default-bottom:before {
+    /*<if slicer>*/
+    display: none;
+    content: "x-slicer:, corners:url(images/tab/tab-default-bottom-disabled-corners.gif), sides:url(images/tab/tab-default-bottom-disabled-sides.gif), frame-bg:url(images/tab/tab-default-bottom-disabled-fbg.gif), frame:4px 4px 4px 4px, stretch:top" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-base/sass/etc/mixins/slicer.scss:83 */
+.x-cmd-slicer.x-tab-disabled.x-tab-default-left:before {
+    /*<if slicer>*/
+    display: none;
+    content: "x-slicer:, corners:url(images/tab/tab-default-left-disabled-corners.gif), sides:url(images/tab/tab-default-left-disabled-sides.gif), frame-bg:url(images/tab/tab-default-left-disabled-fbg.gif), frame:4px 4px 4px 4px, stretch:right" !important;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:168 */
+.x-tab-bar-default {
+    background-color: #d2d2d2;
+    border-style: solid;
+    border-color: #d0d0d0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:177 */
+.x-tab-bar-default-top {
+    border-width: 1px 1px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:181 */
+.x-tab-bar-default-bottom {
+    border-width: 0 1px 1px 1px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:185 */
+.x-tab-bar-default-left {
+    border-width: 1px 0 1px 1px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:195 */
+.x-tab-bar-default-right {
+    border-width: 1px 1px 1px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:207 */
+.x-tab-bar-default-top > .x-tab-bar-body-default {
+    padding: 1px 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:211 */
+.x-tab-bar-default-bottom > .x-tab-bar-body-default {
+    padding: 0 0 1px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:215 */
+.x-tab-bar-default-left > .x-tab-bar-body-default {
+    padding: 0 0 0 1px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:225 */
+.x-tab-bar-default-right > .x-tab-bar-body-default {
+    padding: 0 1px 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:269 */
+.x-tab-bar-plain.x-tab-bar-default-horizontal {
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:276 */
+.x-tab-bar-plain.x-tab-bar-default-vertical {
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:288 */
+.x-tab-bar-top > .x-tab-bar-body-default {
+    padding-bottom: 2px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:292 */
+.x-tab-bar-bottom > .x-tab-bar-body-default {
+    padding-top: 2px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:296 */
+.x-tab-bar-left > .x-tab-bar-body-default {
+    padding-right: 2px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:307 */
+.x-tab-bar-right > .x-tab-bar-body-default {
+    padding-left: 2px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:319 */
+.x-tab-bar-strip-default {
+    border-style: solid;
+    border-color: #d0d0d0;
+    background-color: #eaeaea;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:326 */
+.x-tab-bar-top > .x-tab-bar-strip-default {
+    border-width: 1px 0 0;
+    height: 3px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:330 */
+.x-tab-bar-top.x-tab-bar-plain > .x-tab-bar-strip-default {
+    border-width: 1px 1px 0 1px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:336 */
+.x-tab-bar-bottom > .x-tab-bar-strip-default {
+    border-width: 0 0 1px 0;
+    height: 3px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:340 */
+.x-tab-bar-bottom.x-tab-bar-plain > .x-tab-bar-strip-default {
+    border-width: 0 1px 1px 1px;
+}
 /* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Bar.scss:346 */
 .x-tab-bar-left > .x-tab-bar-strip-default {
     border-width: 0 0 0 1px;

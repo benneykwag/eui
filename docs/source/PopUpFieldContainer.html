@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-PopUpFieldContainer'>/***
+</span> *
+ * ## Summary
+ *
+ * code &amp; code name을 같이 사용하는 팝업 전용 fieldcontainer
+ *
+ **/
+Ext.define(&#39;eui.form.PopUpFieldContainer&#39;, {
+    extend: &#39;eui.form.FieldContainer&#39;,
+    alias: &#39;widget.euipopupfieldcontainer&#39;,
+
+    config: {
+<span id='eui-form-PopUpFieldContainer-cfg-searchKeyField'>        // 서버에 전달할 파라메터의 key
+</span>        searchKeyField : &#39;SEARCHKEY&#39;,
+<span id='eui-form-PopUpFieldContainer-cfg-simpleColumns'>        // 우측 콤보 형태로 변경 시 그리드 컬럼 정보.
+</span>        simpleColumns:[],
+<span id='eui-form-PopUpFieldContainer-cfg-normalColumns'>        // 좌측 텍스트 필드로 팝업 호출시 보여줄 그리드 컬럼 정보.
+</span>        normalColumns:[],
+<span id='eui-form-PopUpFieldContainer-cfg-formConfig'>        // 팝업 내부 검색용 폼 정보.
+</span>        formConfig : null,
+<span id='eui-form-PopUpFieldContainer-cfg-popupConfig'>        // 호출할 팝업 정보.
+</span>        popupConfig : {}
+    },
+
+<span id='eui-form-PopUpFieldContainer-property-bindVar'>    bindVar: {
+</span>        FIELD1: null,
+        FIELD2: null
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-setPopupValues'>    /***
+</span>     * 팝업 내부에서 값을 결정하면 이 메소드를 구현해야한다.
+     */
+    setPopupValues : Ext.emptyFn,
+
+<span id='eui-form-PopUpFieldContainer-property-listeners'>    listeners: {
+</span>        specialkey: &#39;setSpecialKey&#39;,
+        blur: &#39;onBlur&#39;
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-setSpecialKey'>    /***
+</span>     * Enter, Tab 에 대한 반응 처리.
+     * @param field
+     * @param e
+     * @param eOpts
+     */
+    setSpecialKey: function (field, e, eOpts) {
+        var me = this,
+            firstField = this.down(&#39;#firstField&#39;),
+            secondField = this.down(&#39;#secondField&#39;);
+//        if ((e.getKey() === Ext.EventObject.ENTER
+//            &amp;&amp; !Ext.isEmpty(field.getValue()))
+//            || (e.getKey() === Ext.EventObject.TAB &amp;&amp; !Ext.isEmpty(field.getValue()))) {
+//            if (!me.checkSingleResult(field)) {
+//                secondField.expand(field.simpleMode);
+//            }
+//        }
+        if (e.getKey() === Ext.EventObject.ENTER
+//            &amp;&amp; !Ext.isEmpty(field.getValue())
+            ) {
+            if (!me.checkSingleResult(field)) {
+                // senchaField가 expand시 blur발생 방지 ..
+                firstField.suspendEvent(&#39;blur&#39;);
+
+                if (field.simpleMode) { // 그리드에 선택된 로우를 세팅
+                    // collapse 되어 있는 경우 하지 않고 열기만 한다.
+                    if(secondField.isExpanded){
+                        // 값이 변경되었을 경우.
+                        if(secondField.getValue() != secondField._tmpValue){
+                            //
+                            secondField.fireEvent(&#39;load&#39;,{ params : { key: secondField.getValue() }})
+                            secondField._tmpValue = secondField.getValue();
+                            secondField.picker.down(&#39;grid&#39;).store.getProxy().extraParams[me.searchKeyField] = secondField.getValue();
+                            secondField.picker.down(&#39;grid&#39;).store.load({
+                                /*params : {
+                                    SEARCH_KEYWORD : secondField.getValue(),
+                                    groupCode: &quot;SP9997&quot;,
+                                    SQL: {
+                                        &quot;HQCODE&quot;: &quot;&quot;,
+                                        &quot;HQNAME&quot;: secondField.getValue(),
+                                        &quot;HQLOCNAME&quot;: &quot;&quot;
+                                    }
+                                }*/
+                            })
+                        }else{
+                            secondField.picker.items.items[0].fireEvent(&#39;enterdblclick&#39;);
+                        }
+                    }else{
+                        secondField._tmpValue = secondField.getValue();
+                        secondField.expand(field.simpleMode);
+                    }
+
+                } else {  // 상세 검색
+                    secondField.expand(field.simpleMode);
+                }
+
+                secondField.picker.on(&#39;hide&#39;, function () {
+                    firstField.resumeEvent(&#39;blur&#39;);
+                })
+            }
+        }
+
+        // 화살표 상하 키.
+        // 우측 simpleMode use
+        if (e.getKey() == 40 || e.getKey() == 38) {
+            console.log(&#39;key... &#39;, e.getKey());
+            if (secondField.picker) {
+                secondField.expand(field.simpleMode);
+                secondField.picker.items.items[0].fireEvent(&#39;keydown&#39;, e.getKey());
+
+            }
+        }
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-checkBlur'>    /***
+</span>     * 수정하다 포커스 밖으로 나갈 경우 리셋한다.
+     * @param field
+     */
+    checkBlur: function (field) {
+        var firstField = this.down(&#39;#firstField&#39;),
+            secondField = this.down(&#39;#secondField&#39;);
+        if (field.isFormField) {
+            if (field.originalValue != field.getValue()) {
+                firstField.setValue(&#39;&#39;);
+                secondField.setValue(&#39;&#39;);
+            }
+        }
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-checkSingleResult'>    /***
+</span>     * Enter &amp; Tab 시 한건 이면 false, 두건 이상이면  true 리턴.
+     *
+     * @param field
+     * @returns {boolean}
+     */
+    checkSingleResult: function (field) {
+        var me = this;
+
+
+        return false;
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-initComponent'>    initComponent: function () {
+</span>        var me = this;
+        Ext.apply(this, {
+            items: [
+                {
+                    bind: me.bindVar.FIELD1,
+                    hideLabel: true,
+                    itemId: &#39;firstField&#39;,
+                    xtype: &#39;euitext&#39;,
+//                    triggerCls: &#39;x-form-search-trigger&#39;,
+//                    triggers: {
+//                        search: {
+//                            cls: &#39;x-form-search-trigger&#39;,
+//                            handler: &#39;onTriggerClick&#39;,
+//                            scope: &#39;this&#39;
+//                        }
+//                    },
+                    simpleMode: false,
+                    listeners: {
+                        blur: &#39;checkBlur&#39;,
+                        afterrender: {
+                            delay: 1000,
+                            fn: function (cmp) {
+                                cmp.resetOriginalValue();
+                            }
+                        },
+                        render: function () {
+                            me.relayEvents(this, [
+                                &#39;specialkey&#39;
+                            ]);
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euipopuppicker&#39;,
+                    hideLabel: true,
+                    simpleMode: true,
+                    triggerCls: &#39;x-form-arrow-trigger&#39;,
+                    itemId: &#39;secondField&#39;,
+                    bind: me.bindVar.FIELD2,
+                    valueField: &#39;CUSTOMER_NAME&#39;,
+                    searchKeyField : me.searchKeyField,
+                    expand: me.expand,
+                    doAlign: me.doAlign,
+
+                    listeners: {
+                        render: function () {
+                            me.relayEvents(this, [
+                                &#39;blur&#39;, &#39;specialkey&#39;
+                            ]);
+                        },
+                        popupsetvalues: &#39;setPopupValues&#39;
+                    },
+                    simpleColumns: me.simpleColumns,
+                    normalColumns: me.normalColumns,
+                    formConfig: me.formConfig,
+                    popupConfig: me.popupConfig
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+
+<span id='eui-form-PopUpFieldContainer-method-doAlign'>    doAlign: function () {
+</span>        var me = this,
+            picker = me.picker,
+            aboveSfx = &#39;-above&#39;,
+            newPos,
+            isAbove;
+
+
+        if (me.picker.simpleMode) {
+            // Align to the trigger wrap because the border isn&#39;t always on the input element, which
+            // can cause the offset to be off
+            picker.el.alignTo(me.triggerWrap, me.pickerAlign, me.pickerOffset);
+        } else {
+            picker.el.alignTo(me.triggerWrap, me.pickerAlign, [-120, 0]);
+        }
+        // We used *element* alignTo to bypass the automatic reposition on scroll which
+        // Floating#alignTo does. So we must sync the Component state.
+        newPos = picker.floatParent ? picker.getOffsetsTo(picker.floatParent.getTargetEl()) : picker.getXY();
+        picker.x = newPos[0];
+        picker.y = newPos[1];
+
+        // add the {openCls}-above class if the picker was aligned above
+        // the field due to hitting the bottom of the viewport
+        isAbove = picker.el.getY() &lt; me.inputEl.getY();
+        me.bodyEl[isAbove ? &#39;addCls&#39; : &#39;removeCls&#39;](me.openCls + aboveSfx);
+        picker[isAbove ? &#39;addCls&#39; : &#39;removeCls&#39;](picker.baseCls + aboveSfx);
+    },
+
+
+<span id='eui-form-PopUpFieldContainer-method-expand'>    expand: function (simpleMode) {
+</span>        var me = this,
+            bodyEl, picker, doc;
+
+        if (me.rendered &amp;&amp; !me.isExpanded &amp;&amp; !me.destroyed) {
+            bodyEl = me.bodyEl;
+            picker = me.getPicker();
+            doc = Ext.getDoc();
+            picker.setMaxHeight(picker.initialConfig.maxHeight);
+
+            picker.simpleMode = (Ext.isEmpty(simpleMode) ? me.simpleMode : simpleMode);
+
+            if (picker.simpleMode) {
+                me.matchFieldWidth = true;
+                picker.setWidth(me.bodyEl.getWidth());
+                picker.setHeight(100)
+            } else {
+                me.matchFieldWidth = false;
+
+                picker.setWidth(me.popupConfig.width);
+                picker.setHeight(me.popupConfig.height)
+            }
+
+            // Show the picker and set isExpanded flag. alignPicker only works if isExpanded.
+            picker.show();
+
+            if (picker.simpleMode) {
+                picker.down(&#39;header&#39;).hide();
+            } else {
+                picker.down(&#39;header&#39;).show();
+            }
+
+
+            me.isExpanded = true;
+            me.alignPicker();
+            bodyEl.addCls(me.openCls);
+
+            if (!me.ariaStaticRoles[me.ariaRole]) {
+                if (!me.ariaEl.dom.hasAttribute(&#39;aria-owns&#39;)) {
+                    me.ariaEl.dom.setAttribute(&#39;aria-owns&#39;, picker.listEl ? picker.listEl.id : picker.el.id);
+                }
+
+                me.ariaEl.dom.setAttribute(&#39;aria-expanded&#39;, true);
+            }
+
+            // Collapse on touch outside this component tree.
+            // Because touch platforms do not focus document.body on touch
+            // so no focusleave would occur to trigger a collapse.
+            me.touchListeners = doc.on({
+                // Do not translate on non-touch platforms.
+                // mousedown will blur the field.
+                translate: false,
+                touchstart: me.collapseIf,
+                scope: me,
+                delegated: false,
+                destroyable: true
+            });
+
+            // Scrolling of anything which causes this field to move should collapse
+            me.scrollListeners = Ext.on({
+                scroll: me.onGlobalScroll,
+                scope: me,
+                destroyable: true
+            });
+
+            // Buffer is used to allow any layouts to complete before we align
+            Ext.on(&#39;resize&#39;, me.alignPicker, me, {buffer: 1});
+            me.fireEvent(&#39;expand&#39;, me);
+            me.onExpand();
+        }
+    }
+});</pre>
+</body>
+</html>

@@ -1,15 +1,172 @@
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2121 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1693 */
+.x-tab-default-top.x-tab-focus {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1706 */
+.x-tab-default-top.x-tab-over {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1735 */
+.x-tab-default-top.x-tab.x-tab-active {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1764 */
+.x-tab-default-top.x-tab.x-tab-disabled {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1777 */
+.x-tab-default-right {
+    margin: 2px 0 0 0;
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1781 */
+.x-tab-default-right.x-rtl {
+    margin: 2px 0 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1786 */
+.x-tab-default-right.x-tab-rotate-right {
+    margin: 0 0 2px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1790 */
+.x-tab-default-right.x-tab-rotate-right.x-rtl {
+    margin: 0 0 2px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1808 */
+.x-tab-default-right.x-tab-focus {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1821 */
+.x-tab-default-right.x-tab-over {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1850 */
+.x-tab-default-right.x-tab.x-tab-active {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1879 */
+.x-tab-default-right.x-tab.x-tab-disabled {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff -1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1892 */
+.x-tab-default-bottom {
+    margin: 0 0 0 2px;
+    -webkit-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1896 */
+.x-tab-default-bottom.x-rtl {
+    margin: 0 2px 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1901 */
+.x-tab-default-bottom.x-tab-rotate-left {
+    margin: 0 2px 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1905 */
+.x-tab-default-bottom.x-tab-rotate-left.x-rtl {
+    margin: 0 0 0 2px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1923 */
+.x-tab-default-bottom.x-tab-focus {
+    -webkit-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1936 */
+.x-tab-default-bottom.x-tab-over {
+    -webkit-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1965 */
+.x-tab-default-bottom.x-tab.x-tab-active {
+    -webkit-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:1994 */
+.x-tab-default-bottom.x-tab.x-tab-disabled {
+    -webkit-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 -1px 0px 0 inset, #fff -1px 0 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2007 */
+.x-tab-default-left {
+    margin: 2px 0 0 0;
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2011 */
+.x-tab-default-left.x-rtl {
+    margin: 2px 0 0 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2016 */
+.x-tab-default-left.x-tab-rotate-right {
+    margin: 0 0 2px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2020 */
+.x-tab-default-left.x-tab-rotate-right.x-rtl {
+    margin: 0 0 2px 0;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2038 */
+.x-tab-default-left.x-tab-focus {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2051 */
+.x-tab-default-left.x-tab-over {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2080 */
+.x-tab-default-left.x-tab.x-tab-active {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2109 */
+.x-tab-default-left.x-tab.x-tab-disabled {
+    -webkit-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    -moz-box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+    box-shadow: #fff 0 1px 0px 0 inset, #fff 1px 0 0px 0 inset;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2122 */
+.x-tab-button-default {
+    height: 16px;
+}
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2127 */
 .x-tab-inner-default {
     font: bold 11px/13px tahoma, arial, verdana, sans-serif;
     color: #6f6f6f;
     max-width: 100%;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2137 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2143 */
 .x-tab-icon-right > .x-tab-inner-default,
 .x-tab-icon-left > .x-tab-inner-default {
     max-width: calc(100% - 16px);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2145 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2151 */
 .x-tab-icon-el-default {
     min-height: 16px;
     background-position: center center;
@@ -17,56 +174,56 @@
     line-height: 16px;
     color: #6f6f6f;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2146 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2152 */
 .x-tab-icon-left > .x-tab-icon-el-default,
 .x-tab-icon-right > .x-tab-icon-el-default {
     width: 16px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2151 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2157 */
 .x-tab-icon-top > .x-tab-icon-el-default,
 .x-tab-icon-bottom > .x-tab-icon-el-default {
     min-width: 16px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2167 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2173 */
 .x-tab-icon-el-default.x-tab-glyph {
     opacity: 0.5;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2180 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2186 */
 .x-ie8 .x-tab-icon-el-default.x-tab-glyph {
     color: #acacac;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2187 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2193 */
 .x-tab-text.x-tab-icon-left > .x-tab-icon-el-default {
     margin-right: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2191 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2197 */
 .x-tab-text.x-tab-icon-left > .x-tab-icon-el-default.x-rtl {
     margin-right: 0;
     margin-left: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2198 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2204 */
 .x-tab-text.x-tab-icon-right > .x-tab-icon-el-default {
     margin-left: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2202 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2208 */
 .x-tab-text.x-tab-icon-right > .x-tab-icon-el-default.x-rtl {
     margin-left: 0;
     margin-right: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2209 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2215 */
 .x-tab-text.x-tab-icon-top > .x-tab-icon-el-default {
     margin-bottom: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2213 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2219 */
 .x-tab-text.x-tab-icon-bottom > .x-tab-icon-el-default {
     margin-top: 4px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2218 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2224 */
 .x-tab-focus.x-tab-default {
     border-color: #b5b5b5;
     background-color: #eaeaea;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2284 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2290 */
 .x-tab-focus.x-tab-default .x-tab-button:before {
     position: absolute;
     content: ' ';
@@ -77,16 +234,16 @@
     pointer-events: none;
     outline: 1px dotted #6f6f6f;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2301 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2307 */
 .x-tab-focus.x-tab-default.x-tab-closable .x-tab-button:before {
     right: 14px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2354 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2360 */
 .x-tab-over.x-tab-default {
     border-color: #b5b5b5;
     background-color: #f2eeee;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2454 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2460 */
 .x-tab-over.x-tab-default-top,
 .x-tab-over.x-tab-default-left,
 .x-tab-over.x-tab-default-right {
@@ -99,7 +256,7 @@
     background-image: -ms-linear-gradient(top, #fff, #f0f0f0);
     background-image: linear-gradient(top, #fff, #f0f0f0);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2459 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2465 */
 .x-tab-over.x-tab-default-bottom {
     background-image: none;
     background-color: #f2eeee;
@@ -110,29 +267,29 @@
     background-image: -ms-linear-gradient(bottom, #fff, #f0f0f0);
     background-image: linear-gradient(bottom, #fff, #f0f0f0);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2466 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2472 */
 .x-tab-focus.x-tab-over.x-tab-default {
     border-color: #b5b5b5;
     background-color: #f2eeee;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2581 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2587 */
 .x-tab.x-tab-active.x-tab-default {
     border-color: #b5b5b5;
     background-color: #eaeaea;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2637 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2643 */
 .x-tab.x-tab-active.x-tab-default .x-tab-inner-default {
     color: #333;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2657 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2663 */
 .x-tab.x-tab-active.x-tab-default .x-tab-icon-el {
     color: #333;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2665 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2671 */
 .x-ie8 .x-tab.x-tab-active.x-tab-default .x-tab-icon-el {
     color: #8f8f8f;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2679 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2685 */
 .x-tab.x-tab-active.x-tab-default-top,
 .x-tab.x-tab-active.x-tab-default-left,
 .x-tab.x-tab-active.x-tab-default-right {
@@ -145,7 +302,7 @@
     background-image: -ms-linear-gradient(top, #fff, #eaeaea);
     background-image: linear-gradient(top, #fff, #eaeaea);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2685 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2691 */
 .x-tab.x-tab-active.x-tab-default-bottom {
     background-image: none;
     background-color: #eaeaea;
@@ -156,37 +313,37 @@
     background-image: -ms-linear-gradient(bottom, #fff, #eaeaea);
     background-image: linear-gradient(bottom, #fff, #eaeaea);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2692 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2698 */
 .x-tab-focus.x-tab-active.x-tab-default {
     border-color: #b5b5b5;
     background-color: #eaeaea;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2808 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2814 */
 .x-tab.x-tab-disabled.x-tab-default {
     border-color: #dadada;
     background-color: #eee;
     cursor: default;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2868 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2874 */
 .x-tab.x-tab-disabled.x-tab-default .x-tab-inner-default {
     color: #b7b7b7;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2892 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2898 */
 .x-tab.x-tab-disabled.x-tab-default .x-tab-icon-el-default {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: 0.5;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2897 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2903 */
 .x-tab.x-tab-disabled.x-tab-default .x-tab-icon-el {
     color: #b7b7b7;
     opacity: 0.3;
     filter: none;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2912 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2918 */
 .x-ie8 .x-tab.x-tab-disabled.x-tab-default .x-tab-icon-el {
     color: #dedede;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2925 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2931 */
 .x-tab.x-tab-disabled.x-tab-default-top,
 .x-tab.x-tab-disabled.x-tab-default-left,
 .x-tab.x-tab-disabled.x-tab-default-right {
@@ -199,7 +356,7 @@
     background-image: -ms-linear-gradient(top, #eee, #f4f4f4);
     background-image: linear-gradient(top, #eee, #f4f4f4);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2931 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2937 */
 .x-tab.x-tab-disabled.x-tab-default-bottom {
     background-image: none;
     background-color: #eee;
@@ -210,11 +367,11 @@
     background-image: -ms-linear-gradient(bottom, #eee, #f4f4f4);
     background-image: linear-gradient(bottom, #eee, #f4f4f4);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2938 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2944 */
 .x-nbr .x-tab-default {
     background-image: none;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-over .x-tab-default-top-tl,
 .x-tab-over .x-tab-default-top-bl,
 .x-tab-over .x-tab-default-top-tr,
@@ -223,17 +380,17 @@
 .x-tab-over .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-over .x-tab-default-top-ml,
 .x-tab-over .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-over .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus .x-tab-default-top-tl,
 .x-tab-focus .x-tab-default-top-bl,
 .x-tab-focus .x-tab-default-top-tr,
@@ -242,17 +399,17 @@
 .x-tab-focus .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-focus-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus .x-tab-default-top-ml,
 .x-tab-focus .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-focus-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-focus-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-over .x-tab-default-top-tl,
 .x-tab-focus.x-tab-over .x-tab-default-top-bl,
 .x-tab-focus.x-tab-over .x-tab-default-top-tr,
@@ -261,17 +418,17 @@
 .x-tab-focus.x-tab-over .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-focus-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-over .x-tab-default-top-ml,
 .x-tab-focus.x-tab-over .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-focus-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-over .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-focus-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-active .x-tab-default-top-tl,
 .x-tab.x-tab-active .x-tab-default-top-bl,
 .x-tab.x-tab-active .x-tab-default-top-tr,
@@ -280,17 +437,17 @@
 .x-tab.x-tab-active .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-active .x-tab-default-top-ml,
 .x-tab.x-tab-active .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-active .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-active .x-tab-default-top-tl,
 .x-tab-focus.x-tab-active .x-tab-default-top-bl,
 .x-tab-focus.x-tab-active .x-tab-default-top-tr,
@@ -299,17 +456,17 @@
 .x-tab-focus.x-tab-active .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-focus-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-active .x-tab-default-top-ml,
 .x-tab-focus.x-tab-active .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-focus-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-active .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-focus-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-disabled .x-tab-default-top-tl,
 .x-tab.x-tab-disabled .x-tab-default-top-bl,
 .x-tab.x-tab-disabled .x-tab-default-top-tr,
@@ -318,17 +475,17 @@
 .x-tab.x-tab-disabled .x-tab-default-top-bc {
     background-image: url(images/tab/tab-default-top-disabled-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-disabled .x-tab-default-top-ml,
 .x-tab.x-tab-disabled .x-tab-default-top-mr {
     background-image: url(images/tab/tab-default-top-disabled-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-disabled .x-tab-default-top-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-top-disabled-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-over .x-tab-default-right-tl,
 .x-tab-over .x-tab-default-right-bl,
 .x-tab-over .x-tab-default-right-tr,
@@ -337,17 +494,17 @@
 .x-tab-over .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-over .x-tab-default-right-ml,
 .x-tab-over .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-over .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus .x-tab-default-right-tl,
 .x-tab-focus .x-tab-default-right-bl,
 .x-tab-focus .x-tab-default-right-tr,
@@ -356,17 +513,17 @@
 .x-tab-focus .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-focus-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus .x-tab-default-right-ml,
 .x-tab-focus .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-focus-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-focus-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-over .x-tab-default-right-tl,
 .x-tab-focus.x-tab-over .x-tab-default-right-bl,
 .x-tab-focus.x-tab-over .x-tab-default-right-tr,
@@ -375,17 +532,17 @@
 .x-tab-focus.x-tab-over .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-focus-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-over .x-tab-default-right-ml,
 .x-tab-focus.x-tab-over .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-focus-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-over .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-focus-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-active .x-tab-default-right-tl,
 .x-tab.x-tab-active .x-tab-default-right-bl,
 .x-tab.x-tab-active .x-tab-default-right-tr,
@@ -394,17 +551,17 @@
 .x-tab.x-tab-active .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-active .x-tab-default-right-ml,
 .x-tab.x-tab-active .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-active .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-active .x-tab-default-right-tl,
 .x-tab-focus.x-tab-active .x-tab-default-right-bl,
 .x-tab-focus.x-tab-active .x-tab-default-right-tr,
@@ -413,17 +570,17 @@
 .x-tab-focus.x-tab-active .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-focus-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-active .x-tab-default-right-ml,
 .x-tab-focus.x-tab-active .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-focus-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-active .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-focus-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-disabled .x-tab-default-right-tl,
 .x-tab.x-tab-disabled .x-tab-default-right-bl,
 .x-tab.x-tab-disabled .x-tab-default-right-tr,
@@ -432,17 +589,17 @@
 .x-tab.x-tab-disabled .x-tab-default-right-bc {
     background-image: url(images/tab/tab-default-right-disabled-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-disabled .x-tab-default-right-ml,
 .x-tab.x-tab-disabled .x-tab-default-right-mr {
     background-image: url(images/tab/tab-default-right-disabled-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-disabled .x-tab-default-right-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-right-disabled-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-over .x-tab-default-bottom-tl,
 .x-tab-over .x-tab-default-bottom-bl,
 .x-tab-over .x-tab-default-bottom-tr,
@@ -451,17 +608,17 @@
 .x-tab-over .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-over .x-tab-default-bottom-ml,
 .x-tab-over .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-over .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus .x-tab-default-bottom-tl,
 .x-tab-focus .x-tab-default-bottom-bl,
 .x-tab-focus .x-tab-default-bottom-tr,
@@ -470,17 +627,17 @@
 .x-tab-focus .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-focus-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus .x-tab-default-bottom-ml,
 .x-tab-focus .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-focus-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-focus-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-over .x-tab-default-bottom-tl,
 .x-tab-focus.x-tab-over .x-tab-default-bottom-bl,
 .x-tab-focus.x-tab-over .x-tab-default-bottom-tr,
@@ -489,17 +646,17 @@
 .x-tab-focus.x-tab-over .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-focus-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-over .x-tab-default-bottom-ml,
 .x-tab-focus.x-tab-over .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-focus-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-over .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-focus-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-active .x-tab-default-bottom-tl,
 .x-tab.x-tab-active .x-tab-default-bottom-bl,
 .x-tab.x-tab-active .x-tab-default-bottom-tr,
@@ -508,17 +665,17 @@
 .x-tab.x-tab-active .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-active .x-tab-default-bottom-ml,
 .x-tab.x-tab-active .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-active .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-active .x-tab-default-bottom-tl,
 .x-tab-focus.x-tab-active .x-tab-default-bottom-bl,
 .x-tab-focus.x-tab-active .x-tab-default-bottom-tr,
@@ -527,17 +684,17 @@
 .x-tab-focus.x-tab-active .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-focus-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-active .x-tab-default-bottom-ml,
 .x-tab-focus.x-tab-active .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-focus-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-active .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-focus-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-disabled .x-tab-default-bottom-tl,
 .x-tab.x-tab-disabled .x-tab-default-bottom-bl,
 .x-tab.x-tab-disabled .x-tab-default-bottom-tr,
@@ -546,17 +703,17 @@
 .x-tab.x-tab-disabled .x-tab-default-bottom-bc {
     background-image: url(images/tab/tab-default-bottom-disabled-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-disabled .x-tab-default-bottom-ml,
 .x-tab.x-tab-disabled .x-tab-default-bottom-mr {
     background-image: url(images/tab/tab-default-bottom-disabled-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-disabled .x-tab-default-bottom-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-bottom-disabled-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-over .x-tab-default-left-tl,
 .x-tab-over .x-tab-default-left-bl,
 .x-tab-over .x-tab-default-left-tr,
@@ -565,17 +722,17 @@
 .x-tab-over .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-over .x-tab-default-left-ml,
 .x-tab-over .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-over .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus .x-tab-default-left-tl,
 .x-tab-focus .x-tab-default-left-bl,
 .x-tab-focus .x-tab-default-left-tr,
@@ -584,17 +741,17 @@
 .x-tab-focus .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-focus-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus .x-tab-default-left-ml,
 .x-tab-focus .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-focus-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-focus-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-over .x-tab-default-left-tl,
 .x-tab-focus.x-tab-over .x-tab-default-left-bl,
 .x-tab-focus.x-tab-over .x-tab-default-left-tr,
@@ -603,17 +760,17 @@
 .x-tab-focus.x-tab-over .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-focus-over-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-over .x-tab-default-left-ml,
 .x-tab-focus.x-tab-over .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-focus-over-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-over .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-focus-over-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-active .x-tab-default-left-tl,
 .x-tab.x-tab-active .x-tab-default-left-bl,
 .x-tab.x-tab-active .x-tab-default-left-tr,
@@ -622,17 +779,17 @@
 .x-tab.x-tab-active .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-active .x-tab-default-left-ml,
 .x-tab.x-tab-active .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-active .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab-focus.x-tab-active .x-tab-default-left-tl,
 .x-tab-focus.x-tab-active .x-tab-default-left-bl,
 .x-tab-focus.x-tab-active .x-tab-default-left-tr,
@@ -641,17 +798,17 @@
 .x-tab-focus.x-tab-active .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-focus-active-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab-focus.x-tab-active .x-tab-default-left-ml,
 .x-tab-focus.x-tab-active .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-focus-active-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab-focus.x-tab-active .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-focus-active-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2957 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2963 */
 .x-tab.x-tab-disabled .x-tab-default-left-tl,
 .x-tab.x-tab-disabled .x-tab-default-left-bl,
 .x-tab.x-tab-disabled .x-tab-default-left-tr,
@@ -660,24 +817,24 @@
 .x-tab.x-tab-disabled .x-tab-default-left-bc {
     background-image: url(images/tab/tab-default-left-disabled-corners.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2966 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2972 */
 .x-tab.x-tab-disabled .x-tab-default-left-ml,
 .x-tab.x-tab-disabled .x-tab-default-left-mr {
     background-image: url(images/tab/tab-default-left-disabled-sides.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2971 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2977 */
 .x-tab.x-tab-disabled .x-tab-default-left-mc {
     background-repeat: repeat-x;
     background-image: url(images/tab/tab-default-left-disabled-fbg.gif);
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2981 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2987 */
 .x-tab-default-tl,
 .x-tab-default-bl,
 .x-tab-default-tr,
 .x-tab-default-br {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2991 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:2997 */
 .x-tab-default .x-tab-close-btn {
     top: 2px;
     right: 2px;
@@ -687,30 +844,30 @@
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
     opacity: 0.6;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3013 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3019 */
 .x-tab-default .x-tab-close-btn-over {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3082 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3088 */
 .x-tab-default.x-tab-active .x-tab-close-btn {
     background-position: 0 -11px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3115 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3121 */
 .x-tab-default.x-tab-disabled .x-tab-close-btn {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
     opacity: 0.3;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3136 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3142 */
 .x-rtl.x-tab-default .x-tab-close-btn {
     right: auto;
     left: 2px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3142 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3148 */
 .x-tab-closable.x-tab-default .x-tab-button {
     padding-right: 14px;
 }
-/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3147 */
+/* /Volumes/Disk2/git.projects/eui-workspace/ext/classic/theme-neutral/sass/src/tab/Tab.scss:3153 */
 .x-rtl.x-tab-closable.x-tab-default .x-tab-button {
     padding-right: 0px;
     padding-left: 14px;
