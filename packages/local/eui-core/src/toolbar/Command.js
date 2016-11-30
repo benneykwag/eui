@@ -2,7 +2,7 @@
  *
  * ## Summary
  *
- * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
  **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
@@ -10,6 +10,14 @@ Ext.define('eui.toolbar.Command', {
     ui: 'plain',
 
     config: {
+        /**
+         * @cfg {Object} [null]
+         * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
+         * 대상 그리드를 명시하는 config
+         * ownerGrid : 'sample-basic-grid@mygrid',
+         * 상위컴포넌트@그리드itemId 또는 그리드의 itemId만 명시한다.
+         */
+        ownerGrid: null,
         showText: true,
         showRowAddBtn: false,
         showRowDelBtn: false,
@@ -25,13 +33,21 @@ Ext.define('eui.toolbar.Command', {
     initComponent: function () {
         var me = this,
             owner = this.up('grid,form');
+
+        var query = (this.ownerGrid||'').split('@');
+        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+        } else if (query.length == 2) {
+            owner = me.up(query[0]).down('#' + query[1])
+        }
+
         Ext.apply(me, {
             items: [
                 {
                     xtype: 'component',
                     itemId: 'status',
                     tpl: '({count}개)',
-                    margin : '0 10 0 20',
+                    margin: '0 10 0 20',
                     hidden: !me.getShowGridCount()
                 },
                 {
@@ -126,6 +142,7 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
+                    targetGrid: owner,
                     xtype: 'exporterbutton'
 //                    targetGrid: owner
                     //Or you can use
