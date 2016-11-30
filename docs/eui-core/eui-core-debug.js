@@ -3361,7 +3361,125 @@ Ext.define('eui.form.field.ComboBoxController', {
  *
  * ## Summary
  *
- * Ext.form.field.ComboBox 를 확장
+ * Ext.form.field.ComboBox를 확장한다.
+ *
+ * ## ProxyUrl
+ * store를 별도로 정의하지 않을 경우 주소를 설정한다
+ *
+ * ## groupCode
+ * 콤보 값이 groupCode라는 키값으로 데이터 로드시 전달된다.
+ *
+ *
+ * ## 사용예
+ *
+ *      {
+ *          fieldLabel: '콤보박스 TYPE2',
+ *          xtype: 'euicombo',
+ *          proxyUrl : 'resources/data/companys.json',  // store를 정의하지 않을 경우
+ *          displayField: 'name',
+ *          valueField: 'code',
+ *          groupCode: 'A001',
+ *          bind: '{RECORD.COMBOBOX02}'
+ *      }
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define('Combo', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: '체크박스',
+ *          items: [
+ *             {
+ *               fieldLabel: '체크박스',
+ *               itemId: 'checkbox1',
+ *               xtype: 'euicheckbox',
+ *               bind: '{RECORD.CHECKBOX1}'
+ *             },
+ *             {
+ *               fieldLabel: '체크박스',
+ *               xtype: 'euicheckbox',
+ *               bind: {
+ *                  value : 'Y'
+ *               }
+ *             },
+ *             {
+ *               fieldLabel: '체크박스',
+ *               xtype: 'euicheckbox',
+ *               bind: {
+ *                  value : 'N'
+ *               }
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '체크',
+ *                  xtype : 'euibutton',
+ *                  handler: 'checkboxHandler'
+ *              },
+ *              {
+ *                  text: '체크해제',
+ *                  xtype : 'euibutton',
+ *                  handler: 'unCheckboxHandler'
+ *              },
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOX1 : 'N'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('Y');
+ *              //this.down('#checkbox1').setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('N');
+ *              this.down('#checkbox1').setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create('Checkbox',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
 Ext.define('eui.form.field.ComboBox', {
@@ -7425,10 +7543,11 @@ Ext.define('eui.mvvm.GridRenderer', {
  *
  * # 날자 데이터의 서버사이드 전달
  * 아래 샘플처럼 Util.getDatasetParam(grid.store)를 사용하거나
- * model.getData()를 통해 데이터를 추출 할경우  eui.Config.modelGetDataDateFormat에
- * 정의 된 형태로 설정된다
+ * model.getData()를 통해 데이터를 추출 할경우  eui.Config클래스의
+ * modelGetDataDateFormat에 정의 된 형태로 설정된다
  *
  *  기본값
+ *
  *  modelGetDataDateFormat: 'Ymd',
  *
  *
@@ -8053,13 +8172,21 @@ Ext.define('eui.tab.Panel', {
  *
  * ## Summary
  *
- * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
  **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',
     ui: 'plain',
     config: {
+        /**
+         * @cfg {Object} [null]
+         * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
+         * 대상 그리드를 명시하는 config
+         * ownerGrid : 'sample-basic-grid@mygrid',
+         * 상위컴포넌트@그리드itemId 또는 그리드의 itemId만 명시한다.
+         */
+        ownerGrid: null,
         showText: true,
         showRowAddBtn: false,
         showRowDelBtn: false,
@@ -8074,6 +8201,12 @@ Ext.define('eui.toolbar.Command', {
     initComponent: function() {
         var me = this,
             owner = this.up('grid,form');
+        var query = (this.ownerGrid || '').split('@');
+        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+        } else if (query.length == 2) {
+            owner = me.up(query[0]).down('#' + query[1]);
+        }
         Ext.apply(me, {
             items: [
                 {
@@ -8175,6 +8308,7 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
+                    targetGrid: owner,
                     xtype: 'exporterbutton'
                 },
                 //                    targetGrid: owner

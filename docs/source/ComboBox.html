@@ -19,9 +19,128 @@
 </span> *
  * ## Summary
  *
- * Ext.form.field.ComboBox 를 확장
+ * Ext.form.field.ComboBox를 확장한다.
+ *
+ * ## ProxyUrl
+ * store를 별도로 정의하지 않을 경우 주소를 설정한다
+ *
+ * ## groupCode
+ * 콤보 값이 groupCode라는 키값으로 데이터 로드시 전달된다.
+ *
+ *
+ * ## 사용예
+ *
+ *      {
+ *          fieldLabel: &#39;콤보박스 TYPE2&#39;,
+ *          xtype: &#39;euicombo&#39;,
+ *          proxyUrl : &#39;resources/data/companys.json&#39;,  // store를 정의하지 않을 경우
+ *          displayField: &#39;name&#39;,
+ *          valueField: &#39;code&#39;,
+ *          groupCode: &#39;A001&#39;,
+ *          bind: &#39;{RECORD.COMBOBOX02}&#39;
+ *      }
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;Combo&#39;, {
+ *          extend: &#39;eui.form.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: &#39;체크박스&#39;,
+ *          items: [
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               itemId: &#39;checkbox1&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: &#39;{RECORD.CHECKBOX1}&#39;
+ *             },
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: {
+ *                  value : &#39;Y&#39;
+ *               }
+ *             },
+ *             {
+ *               fieldLabel: &#39;체크박스&#39;,
+ *               xtype: &#39;euicheckbox&#39;,
+ *               bind: {
+ *                  value : &#39;N&#39;
+ *               }
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: &#39;체크&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;checkboxHandler&#39;
+ *              },
+ *              {
+ *                  text: &#39;체크해제&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;unCheckboxHandler&#39;
+ *              },
+ *              {
+ *                  text: &#39;서버로전송&#39;,
+ *                  xtype: &#39;euibutton&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: &#39;setRecord&#39;
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
+ *                  CHECKBOX1 : &#39;N&#39;
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get(&#39;RECORD&#39;).getData();
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down(&#39;#checkbox1&#39;).setValue(&#39;Y&#39;);
+ *              //this.down(&#39;#checkbox1&#39;).setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down(&#39;#checkbox1&#39;).setValue(&#39;N&#39;);
+ *              this.down(&#39;#checkbox1&#39;).setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;Checkbox&#39;,{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
+
 
 Ext.define(&#39;eui.form.field.ComboBox&#39;, {
     extend: &#39;Ext.form.field.ComboBox&#39;,
