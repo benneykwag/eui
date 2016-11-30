@@ -28,6 +28,7 @@ Ext.define('eui.toolbar.Command', {
         showCloseBtn: false,
         showGridCount: false,
         showExcelDownBtn: false
+        
     },
 
     initComponent: function () {
