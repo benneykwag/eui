@@ -127,6 +127,7 @@
             <fileset dir="${workspace.dir}/ext/build/classic/theme-gray"></fileset>
         </copy>
 
+        <delete dir="/Volumes/Disk2/git.projects/eui-site/docs"/>
         <copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">
             <fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>
         </copy>
