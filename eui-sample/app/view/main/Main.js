@@ -9,14 +9,14 @@ Ext.define('Eui.sample.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
     requires: [
-        'Eui.sample.view.grid.MergeGrid',
-        'Ext.plugin.Viewport',
-        'Ext.window.MessageBox',
-        'Eui.sample.view.main.MainController',
-        'Eui.sample.view.main.MainModel',
-        'Eui.sample.view.frame.Header',
-        'Eui.sample.view.frame.SideBar',
-        'Eui.sample.view.template.tmp008.TMP008V'
+//        'Eui.sample.view.grid.MergeGrid',
+//        'Ext.plugin.Viewport',
+//        'Ext.window.MessageBox',
+//        'Eui.sample.view.main.MainController',
+//        'Eui.sample.view.main.MainModel',
+//        'Eui.sample.view.frame.Header',
+//        'Eui.sample.view.frame.SideBar',
+//        'Eui.sample.view.template.tmp008.TMP008V'
     ],
 
     controller: 'main',
@@ -58,7 +58,8 @@ Ext.define('Eui.sample.view.main.Main', {
                     items: [
                         {
                             title: 'HOME',
-                            xtype: 'TMP010V'
+//                            xtype: 'sample-basic-grid'
+                            xtype: 'sample-combo'
                         }
                     ]
                 }

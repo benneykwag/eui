@@ -11,7 +11,7 @@ Ext.define('eui.toolbar.Command', {
 
     config: {
         /**
-         * @cfg {Object} [null]
+         * @cfg {Object} [ownerGrid:'sample-basic-grid@mygrid']
          * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
          * 대상 그리드를 명시하는 config
          * ownerGrid : 'sample-basic-grid@mygrid',
@@ -28,19 +28,18 @@ Ext.define('eui.toolbar.Command', {
         showCloseBtn: false,
         showGridCount: false,
         showExcelDownBtn: false
-        
+
     },
 
     initComponent: function () {
         var me = this,
             owner = this.up('grid,form');
-
-        var query = (this.ownerGrid||'').split('@');
-        if (query.length == 1 && !Ext.isEmpty(query[0])) {
-            owner = Ext.ComponentQuery.query('#' + query[0])[0];
-        } else if (query.length == 2) {
-            owner = me.up(query[0]).down('#' + query[1])
-        }
+//        var query = (this.ownerGrid||'').split('@');
+//        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+//            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+//        } else if (query.length == 2) {
+//            owner = me.up(query[0]).down('#' + query[1])
+//        }
 
         Ext.apply(me, {
             items: [
@@ -143,7 +142,6 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
-                    targetGrid: owner,
                     xtype: 'exporterbutton'
 //                    targetGrid: owner
                     //Or you can use

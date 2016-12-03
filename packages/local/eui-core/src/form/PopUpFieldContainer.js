@@ -9,19 +9,6 @@ Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
     alias: 'widget.euipopupfieldcontainer',
 
-    config: {
-        // 서버에 전달할 파라메터의 key
-        searchKeyField : 'SEARCHKEY',
-        // 우측 콤보 형태로 변경 시 그리드 컬럼 정보.
-        simpleColumns:[],
-        // 좌측 텍스트 필드로 팝업 호출시 보여줄 그리드 컬럼 정보.
-        normalColumns:[],
-        // 팝업 내부 검색용 폼 정보.
-        formConfig : null,
-        // 호출할 팝업 정보.
-        popupConfig : {}
-    },
-
     bindVar: {
         FIELD1: null,
         FIELD2: null
@@ -134,13 +121,78 @@ Ext.define('eui.form.PopUpFieldContainer', {
      */
     checkSingleResult: function (field) {
         var me = this;
+        // 좌측 만 적용.
+        if(field.simpleMode){
+            return false;
+        }
+        if(Ext.isEmpty(field.getValue())){
+            return false;
+        }
+        var params = {},
+            retValue = false;
 
+        params['page'] = 1;
+        params['start'] = 0;
+        params['limit'] = 2;
+        params[me.searchKeyField] = field.getValue();
 
-        return false;
+        Util.CommonAjax({
+            method: 'POST',
+            url: me.popupConfig.proxyUrl,
+            params: params,
+            pSync: false,
+            pCallback: function (v, params, result) {
+                if (result.success && result.total == 1) {
+                    retValue = true;
+                    me.setPopupValues(field, Ext.create('Ext.data.Model', result.data[0]));
+                    me.setOriginValues();
+                }
+            }
+        });
+
+        return retValue;
+    },
+
+    setOriginValues: function () {
+        var firstField = this.down('#firstField'),
+            secondField = this.down('#secondField');
+        firstField.resetOriginalValue();
+        secondField.resetOriginalValue();
+    },
+
+    /***
+     * popupConfig를 전달하고 기존코드를 수용하기 위한
+     * 메소드이다.
+     * 기존 코드는 아래와 같으며 향후 사용하지 않는다.
+     * popupConfig: {
+     *  popupWidget: 'popup03',
+     *  title: '사업자 검색',
+     *  width: 500,
+     *  height: 250
+    },
+     */
+    setPopupConfig: function () {
+        var me = this;
+        if(!me.popupConfig){
+            me.popupConfig = {};
+        }
+        Ext.applyIf(me.popupConfig,{
+            searchKeyField : me.searchKeyField,
+            multiSelect: me.multiSelect,
+            proxyUrl : me.proxyUrl,
+            simpleColumns: me.simpleColumns,
+            normalColumns: me.normalColumns,
+            formConfig: me.formConfig,
+            width: me.popupWidth,
+            heigh: me.popupHeight
+        });
     },
 
     initComponent: function () {
         var me = this;
+
+       me.setPopupConfig();
+
         Ext.apply(this, {
             items: [
                 {
@@ -180,11 +232,15 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,
                     valueField: 'CUSTOMER_NAME',
-                    searchKeyField : me.searchKeyField,
+//                    searchKeyField : me.searchKeyField,
                     expand: me.expand,
                     doAlign: me.doAlign,
 
+
                     listeners: {
+                        blur: function () {
+                          me.checkBlur(this);
+                        },
                         render: function () {
                             me.relayEvents(this, [
                                 'blur', 'specialkey'
@@ -192,10 +248,11 @@ Ext.define('eui.form.PopUpFieldContainer', {
                         },
                         popupsetvalues: 'setPopupValues'
                     },
-                    simpleColumns: me.simpleColumns,
-                    normalColumns: me.normalColumns,
-                    formConfig: me.formConfig,
+//                    simpleColumns: me.simpleColumns,
+//                    normalColumns: me.normalColumns,
+//                    formConfig: me.formConfig,
                     popupConfig: me.popupConfig
+//                    multiSelect: me.multiSelect
                 }
             ]
         });

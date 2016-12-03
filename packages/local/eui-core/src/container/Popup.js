@@ -39,33 +39,32 @@ Ext.define('eui.container.Popup', {
     transform: function () {
         var me = this,
             grid = this.down('euigrid'),
-            searchKeyField = me.ownerCt.ownerCmp.searchKeyField;
+            searchKeyField = me.popupConfig.searchKeyField;
         var simpleMode = this.ownerCt.simpleMode;
         if (simpleMode) {
             grid.setMargin(0);
             me.down('euiform').setHidden(true);
-            grid.reconfigure(grid.store, me.simpleColumns);
+            grid.reconfigure(grid.store, me.popupConfig.simpleColumns);
 
             grid.hideHeaders = true;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.getValue();
             grid.store.load();
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(true);
             }
-
-
         } else {
             grid.setMargin(5);
             me.down('euiform').setHidden(false);
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(false);
             }
-            grid.reconfigure(grid.store, me.normalColumns);
+            grid.reconfigure(grid.store, me.popupConfig.normalColumns);
             grid.hideHeaders = false;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.previousSibling().getValue();
             grid.store.load();
+            me.ownerCt.setHeight(me.popupConfig.height);
         }
     },
 
@@ -78,7 +77,7 @@ Ext.define('eui.container.Popup', {
         var grid = this.down('grid'),
             selmodel = grid.getSelectionModel(),
             selection = selmodel.getSelection();
-        if(selection.length == 0){
+        if (selection.length == 0) {
             return;
         }
 
@@ -102,37 +101,88 @@ Ext.define('eui.container.Popup', {
         align: 'stretch'
     },
 
+    onSearch: function () {
+        var form = this.down('form'),
+            values = form.getForm().getValues(),
+            grid = this.down('grid'),
+            extraParams = grid.store.getProxy().getExtraParams();
+        extraParams['page'] = 1;
+        extraParams['start'] = 0;
+        Ext.apply(extraParams, values);
+        grid.store.load();
+    },
+
     initComponent: function () {
         var me = this,
             config = me.popupConfig,
             items = [],
-            grid = {
-                xtype: 'euigrid',
-                flex: 1,
-                selModel: {
-                    pruneRemoved: false
-                },
-                store: me.store,
-                listeners: {
-                    itemdblclick: 'parentCallBack'
-                },
-                forceFit: true,
-                columns: {
-                    defaults: {
-                        width: 120
-                    },
-                    items: [
-                        {
-                            text: '-',
-                            dataIndex: 'temp'
-                        }
-                    ]
+            store = {
+                type: 'buffered',
+                remoteSort: true,
+                fields: [],
+                leadingBufferZone: 50,
+                pageSize: 50,
+                proxy: {
+                    type: 'rest',
+                    url: config.proxyUrl,
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
                 }
             };
-        if (me.formConfig) {
-            items.push(me.formConfig);
+
+
+        var grid = {
+            xtype: 'euigrid',
+            flex: 1,
+            selModel: {
+                pruneRemoved: false
+            },
+            store: store,
+            listeners: {
+                itemdblclick: 'parentCallBack'
+            },
+            forceFit: true,
+            columns: {
+                defaults: {
+                    width: 120
+                },
+                items: [
+                    {
+                        text: '-',
+                        dataIndex: 'temp'
+                    }
+                ]
+            }
+        };
+        if (me.popupConfig.formConfig) {
+            Ext.apply(me.popupConfig.formConfig, {
+                header: {
+                    xtype: 'header',
+                    titlePosition: 0,
+                    items: [
+                        {
+                            xtype: 'button',
+                            handler: 'onSearch',
+                            iconCls: 'fa fa-search',
+                            text: '검색'
+                        }
+                    ]
+                },
+                defaults: {
+                    listeners: {
+                        specialkey: function (field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                me.onSearch(field);
+                            }
+                        }
+                    }
+                }
+            });
+            items.push(me.popupConfig.formConfig);
         }
-        if (me.multiSelect) {
+        if (me.popupConfig.multiSelect) {
             Ext.apply(grid, {
                 selModel: {     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
                     mode: 'SIMPLE',

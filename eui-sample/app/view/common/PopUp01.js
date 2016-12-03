@@ -12,7 +12,8 @@ Ext.define('Eui.sample.view.common.PopUp01', {
     },
 
     parentCallBack: function (view, record) {
-        this.callParent([record])
+        this.callParent([record]);
+        this.ownerCt.hide();
     },
 
     onFormSend: function (button) {

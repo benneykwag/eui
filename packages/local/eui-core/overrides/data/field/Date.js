@@ -1,3 +1,7 @@
+/**
+ * Date Field Override
+ *
+ */
 Ext.define('Override.data.field.Date', {
     override: 'Ext.data.field.Date',
 
@@ -11,7 +15,6 @@ Ext.define('Override.data.field.Date', {
         if (!v) {
             return null;
         }
-
         // instanceof check ~10 times faster than Ext.isDate. Values here will not be
         // cross-document objects
         if (v instanceof Date) {
@@ -22,6 +25,7 @@ Ext.define('Override.data.field.Date', {
             parsed;
 
         if (dateFormat) {
+            console.log(Ext.Date.parse(v, dateFormat));
             return Ext.Date.parse(v, dateFormat, this.useStrict);
         }
 

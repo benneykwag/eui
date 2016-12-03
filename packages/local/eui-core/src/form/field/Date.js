@@ -10,7 +10,7 @@ Ext.define('eui.form.field.Date', {
     extend: 'Ext.form.field.Date',
     alias: 'widget.euidate',
     submitFormat: 'Ymd',
-    format: 'Y.m.d',
+    format: 'Y-m-d',
     altFormats: 'Ymd',
     value: new Date(),
     dateNum : null,

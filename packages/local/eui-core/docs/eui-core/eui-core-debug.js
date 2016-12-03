@@ -107,6 +107,43 @@ Ext.define('Override.Component', {
     }
 });
 
+/**
+ * Date Field Override
+ *
+ */
+Ext.define('Override.data.field.Date', {
+    override: 'Ext.data.field.Date',
+    /***
+     * Ymd 포맷 데이터를 date type으로 지정할 경우
+     * 데이터 자체가 보이지 않는 현상  해결
+     * @param v
+     * @returns {*}
+     */
+    convert: function(v) {
+        if (!v) {
+            return null;
+        }
+        // instanceof check ~10 times faster than Ext.isDate. Values here will not be
+        // cross-document objects
+        if (v instanceof Date) {
+            return v;
+        }
+        var dateFormat = this.dateReadFormat || this.dateFormat,
+            parsed;
+        if (dateFormat) {
+            console.log(Ext.Date.parse(v, dateFormat));
+            return Ext.Date.parse(v, dateFormat, this.useStrict);
+        }
+        parsed = Date.parse(v);
+        // 아래 코드 두줄 추가.
+        // 20110101 포맷 인식 못하는 문제 해결.
+        if (!parsed) {
+            parsed = Ext.Date.parse(v, 'Ymd');
+        }
+        return parsed ? new Date(parsed) : v;
+    }
+});
+
 Ext.define('Override.data.Model', {
     override: 'Ext.data.Model',
     /***
@@ -169,11 +206,13 @@ Ext.define('Override.data.Model', {
                     }
                     // 서버로 전송되는 날자의 포맷지정.(model field 설정될 경우.
                     if (field.type === 'date') {
+                        //                        debugger;
                         if (field.dateFormat) {
                             value = Ext.Date.format(value, field.dateFormat);
                         } else {
                             value = Ext.Date.format(value, eui.Config.modelGetDataDateFormat);
                         }
+                        console.log('value : ', value);
                     }
                 } else if (Ext.isDate(value)) {
                     // 모델 필드 설정안한 날자는
@@ -268,6 +307,31 @@ Ext.define('Override.data.ProxyStore', {
             }
         }
         return this;
+    }
+});
+
+/*
+ * proxy Rest 관련 Default 설정
+ * */
+Ext.define('Override.data.proxy.Server', {
+    override: 'Ext.data.proxy.Server',
+    buildUrl: function(request) {
+        var me = this,
+            url = me.getUrl(request);
+        if (!url) {
+            Ext.raise("You are using a ServerProxy but have not supplied it with a url.");
+        }
+        if (me.getNoCache()) {
+            url = Ext.urlAppend(url, Ext.String.format("{0}={1}", me.getCacheString(), Ext.Date.now()));
+        }
+        // 주소 조정.
+        if (!Ext.isEmpty(Config.baseUrlPrifix)) {
+            if (url.substring(0, 1) == "/") {
+                // 상대경로는 처리하지 않는다
+                url = Config.baseUrlPrifix + url;
+            }
+        }
+        return url;
     }
 });
 
@@ -450,10 +514,12 @@ Ext.define('eui.Config', {
     localeCode: 'kr',
     localeValueField: 'MSG_ID',
     localeDisplayField: 'MSG_LABEL',
-    defaultDateFormat: 'Y.m.d',
-    defaultDateTimeFormat: 'Y.m.d H:i:s',
+    defaultDateFormat: 'Y-m-d',
+    defaultDateTimeFormat: 'Y-m-d H:i:s',
+    // Override.data.proxy.Server 에서 사용
+    baseUrlPrifix: null,
     // model.getData() 시 euidate, euimonthfield
-    modelGetDataDateFormat: 'Y.m.d',
+    modelGetDataDateFormat: 'Ymd',
     /***
      * 메시지 제공용 서버사이드 주소.
      *
@@ -1044,6 +1110,13 @@ Ext.define('eui.Util', {
         } else {
             timeoutSeq = 30000;
         }
+        // 주소 조정.
+        if (!Ext.isEmpty(Config.baseUrlPrifix)) {
+            if (pURL.substring(0, 1) == "/") {
+                // 상대경로는 처리하지 않는다
+                pURL = Config.baseUrlPrifix + pURL;
+            }
+        }
         var rtnData = "";
         var options = {
                 async: (pSync == null ? true : pSync),
@@ -1566,30 +1639,31 @@ Ext.define('eui.container.Popup', {
     transform: function() {
         var me = this,
             grid = this.down('euigrid'),
-            searchKeyField = me.ownerCt.ownerCmp.searchKeyField;
+            searchKeyField = me.popupConfig.searchKeyField;
         var simpleMode = this.ownerCt.simpleMode;
         if (simpleMode) {
             grid.setMargin(0);
             me.down('euiform').setHidden(true);
-            grid.reconfigure(grid.store, me.simpleColumns);
+            grid.reconfigure(grid.store, me.popupConfig.simpleColumns);
             grid.hideHeaders = true;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.getValue();
             grid.store.load();
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(true);
             }
         } else {
             grid.setMargin(5);
             me.down('euiform').setHidden(false);
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(false);
             }
-            grid.reconfigure(grid.store, me.normalColumns);
+            grid.reconfigure(grid.store, me.popupConfig.normalColumns);
             grid.hideHeaders = false;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.previousSibling().getValue();
             grid.store.load();
+            me.ownerCt.setHeight(me.popupConfig.height);
         }
     },
     parentCallBack: function(view, record) {
@@ -1620,17 +1694,42 @@ Ext.define('eui.container.Popup', {
         type: 'vbox',
         align: 'stretch'
     },
+    onSearch: function() {
+        var form = this.down('form'),
+            values = form.getForm().getValues(),
+            grid = this.down('grid'),
+            extraParams = grid.store.getProxy().getExtraParams();
+        extraParams['page'] = 1;
+        extraParams['start'] = 0;
+        Ext.apply(extraParams, values);
+        grid.store.load();
+    },
     initComponent: function() {
         var me = this,
             config = me.popupConfig,
             items = [],
-            grid = {
+            store = {
+                type: 'buffered',
+                remoteSort: true,
+                fields: [],
+                leadingBufferZone: 50,
+                pageSize: 50,
+                proxy: {
+                    type: 'rest',
+                    url: config.proxyUrl,
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                }
+            };
+        var grid = {
                 xtype: 'euigrid',
                 flex: 1,
                 selModel: {
                     pruneRemoved: false
                 },
-                store: me.store,
+                store: store,
                 listeners: {
                     itemdblclick: 'parentCallBack'
                 },
@@ -1647,10 +1746,33 @@ Ext.define('eui.container.Popup', {
                     ]
                 }
             };
-        if (me.formConfig) {
-            items.push(me.formConfig);
+        if (me.popupConfig.formConfig) {
+            Ext.apply(me.popupConfig.formConfig, {
+                header: {
+                    xtype: 'header',
+                    titlePosition: 0,
+                    items: [
+                        {
+                            xtype: 'button',
+                            handler: 'onSearch',
+                            iconCls: 'fa fa-search',
+                            text: '검색'
+                        }
+                    ]
+                },
+                defaults: {
+                    listeners: {
+                        specialkey: function(field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                me.onSearch(field);
+                            }
+                        }
+                    }
+                }
+            });
+            items.push(me.popupConfig.formConfig);
         }
-        if (me.multiSelect) {
+        if (me.popupConfig.multiSelect) {
             Ext.apply(grid, {
                 selModel: {
                     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
@@ -2446,18 +2568,6 @@ Ext.define('eui.form.Panel', {
 Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
     alias: 'widget.euipopupfieldcontainer',
-    config: {
-        // 서버에 전달할 파라메터의 key
-        searchKeyField: 'SEARCHKEY',
-        // 우측 콤보 형태로 변경 시 그리드 컬럼 정보.
-        simpleColumns: [],
-        // 좌측 텍스트 필드로 팝업 호출시 보여줄 그리드 컬럼 정보.
-        normalColumns: [],
-        // 팝업 내부 검색용 폼 정보.
-        formConfig: null,
-        // 호출할 팝업 정보.
-        popupConfig: {}
-    },
     bindVar: {
         FIELD1: null,
         FIELD2: null
@@ -2564,10 +2674,70 @@ Ext.define('eui.form.PopUpFieldContainer', {
      */
     checkSingleResult: function(field) {
         var me = this;
-        return false;
+        // 좌측 만 적용.
+        if (field.simpleMode) {
+            return false;
+        }
+        if (Ext.isEmpty(field.getValue())) {
+            return false;
+        }
+        var params = {},
+            retValue = false;
+        params['page'] = 1;
+        params['start'] = 0;
+        params['limit'] = 2;
+        params[me.searchKeyField] = field.getValue();
+        Util.CommonAjax({
+            method: 'POST',
+            url: me.popupConfig.proxyUrl,
+            params: params,
+            pSync: false,
+            pCallback: function(v, params, result) {
+                if (result.success && result.total == 1) {
+                    retValue = true;
+                    me.setPopupValues(field, Ext.create('Ext.data.Model', result.data[0]));
+                    me.setOriginValues();
+                }
+            }
+        });
+        return retValue;
+    },
+    setOriginValues: function() {
+        var firstField = this.down('#firstField'),
+            secondField = this.down('#secondField');
+        firstField.resetOriginalValue();
+        secondField.resetOriginalValue();
+    },
+    /***
+     * popupConfig를 전달하고 기존코드를 수용하기 위한
+     * 메소드이다.
+     * 기존 코드는 아래와 같으며 향후 사용하지 않는다.
+     * popupConfig: {
+     *  popupWidget: 'popup03',
+     *  title: '사업자 검색',
+     *  width: 500,
+     *  height: 250
+    },
+     */
+    setPopupConfig: function() {
+        var me = this;
+        if (!me.popupConfig) {
+            me.popupConfig = {};
+        }
+        Ext.applyIf(me.popupConfig, {
+            searchKeyField: me.searchKeyField,
+            multiSelect: me.multiSelect,
+            proxyUrl: me.proxyUrl,
+            simpleColumns: me.simpleColumns,
+            normalColumns: me.normalColumns,
+            formConfig: me.formConfig,
+            width: me.popupWidth,
+            heigh: me.popupHeight
+        });
     },
     initComponent: function() {
         var me = this;
+        me.setPopupConfig();
         Ext.apply(this, {
             items: [
                 {
@@ -2607,10 +2777,13 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,
                     valueField: 'CUSTOMER_NAME',
-                    searchKeyField: me.searchKeyField,
+                    //                    searchKeyField : me.searchKeyField,
                     expand: me.expand,
                     doAlign: me.doAlign,
                     listeners: {
+                        blur: function() {
+                            me.checkBlur(this);
+                        },
                         render: function() {
                             me.relayEvents(this, [
                                 'blur',
@@ -2619,13 +2792,14 @@ Ext.define('eui.form.PopUpFieldContainer', {
                         },
                         popupsetvalues: 'setPopupValues'
                     },
-                    simpleColumns: me.simpleColumns,
-                    normalColumns: me.normalColumns,
-                    formConfig: me.formConfig,
+                    //                    simpleColumns: me.simpleColumns,
+                    //                    normalColumns: me.normalColumns,
+                    //                    formConfig: me.formConfig,
                     popupConfig: me.popupConfig
                 }
             ]
         });
+        //                    multiSelect: me.multiSelect
         this.callParent(arguments);
     },
     doAlign: function() {
@@ -3322,7 +3496,139 @@ Ext.define('eui.form.field.ComboBoxController', {
  *
  * ## Summary
  *
- * Ext.form.field.ComboBox 를 확장
+ * Ext.form.field.ComboBox를 확장한다.
+ *
+ * ## ProxyUrl
+ * store를 별도로 정의하지 않을 경우 주소를 설정한다
+ *
+ * ## groupCode
+ * 콤보 값이 groupCode라는 키값으로 데이터 로드시 전달된다.
+ *
+ *
+ * ## 사용예
+ *
+ *      {
+ *          fieldLabel: '콤보박스 TYPE2',
+ *          xtype: 'euicombo',
+ *          proxyUrl : 'resources/data/companys.json',  // store를 정의하지 않을 경우
+ *          displayField: 'name',
+ *          valueField: 'code',
+ *          groupCode: 'A001',
+ *          bind: '{RECORD.COMBOBOX02}'
+ *      }
+ *
+ *      // resources/data/companys.json data
+ *      {
+ *          "success":true,
+ *          "data":[
+ *              {
+ *                  "name":"마이크로소프트",
+ *                  "code":"MICROSOFT"
+ *              },
+ *              {
+ *                  "name":"B회사",
+ *                  "code":"BCMP"
+ *              },
+ *              {
+ *                  "name":"C회사",
+ *                  "code":"CCMP"
+ *              },
+ *              {
+ *                  "name":"D회사",
+ *                  "code":"DCMP"
+ *              }
+ *          ],
+ *          "message":""
+ *      }
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.ux.ajax.SimManager.init({
+ *          delay: 300,
+ *          defaultSimlet: null
+ *      }).register({
+ *          'Numbers': {
+ *              data: [[123,'One Hundred Twenty Three'],
+ *                  ['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five'],
+ *                  ['6', 'Six'], ['7', 'Seven'], ['8', 'Eight'], ['9', 'Nine']],
+ *              stype: 'json'
+ *         }
+ *      });
+ *      Ext.define('ComboBox', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: '체크박스',
+ *          items: [
+ *             {
+ *                  fieldLabel: '콤보박스 TYPE2',
+ *                  xtype: 'euicombo',
+ *                  proxyUrl : 'resources/data/companys.json',
+ *                  displayField: 'name',
+ *                  valueField: 'code',
+ *                  groupCode: 'A001',
+ *                  bind: '{RECORD.COMBOBOX01}'
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  COMBOBOX01 : 'MICROSOFT'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('Y');
+ *              //this.down('#checkbox1').setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('N');
+ *              this.down('#checkbox1').setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create('ComboBox',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
 Ext.define('eui.form.field.ComboBox', {
@@ -4485,7 +4791,7 @@ Ext.define('eui.form.field.Date', {
     extend: 'Ext.form.field.Date',
     alias: 'widget.euidate',
     submitFormat: 'Ymd',
-    format: 'Y.m.d',
+    format: 'Y-m-d',
     altFormats: 'Ymd',
     value: new Date(),
     dateNum: null,
@@ -4985,13 +5291,11 @@ Ext.define('eui.form.field.PopUpPicker', {
     triggerCls: 'x-form-search-trigger',
     cellCls: 'fo-table-row-td',
     callBack: 'onTriggerCallback',
+    defaultListenerScope: true,
     config: {
-        simpleColumns: [],
-        normalColumns: [],
         simpleMode: false,
         displayField: 'NAME',
-        valueField: 'CODE',
-        formConfig: null
+        valueField: 'CODE'
     },
     matchFieldWidth: false,
     onTriggerCallback: function(trigger, record, valueField, displayField) {
@@ -5000,14 +5304,14 @@ Ext.define('eui.form.field.PopUpPicker', {
         }
     },
     enableKeyEvents: true,
-    checkBlur: function() {
-        var me = this;
-        if (me.originalValue != me.getValue()) {
-            me.setValue('');
-        }
-    },
+    //    checkBlur: function () {
+    //        var me = this;
+    //        if (me.originalValue != me.getValue()) {
+    //            me.setValue('');
+    //        }
+    //    },
     listeners: {
-        blur: 'checkBlur',
+        //        blur: 'checkBlur',
         // 팝업 내부에서 값설정후 close
         popupclose: {
             delay: 100,
@@ -5043,10 +5347,11 @@ Ext.define('eui.form.field.PopUpPicker', {
                 layout: 'fit',
                 items: [
                     {
-                        xtype: me.popupConfig.popupWidget,
-                        formConfig: me.formConfig,
-                        simpleColumns: me.simpleColumns,
-                        normalColumns: me.normalColumns,
+                        xtype: (me.popupConfig.popupWidget ? me.popupConfig.popupWidget : 'euipopup'),
+                        //                        formConfig : me.formConfig,
+                        //                        multiSelect : me.multiSelect,
+                        //                        simpleColumns : me.popupConfig.simpleColumns,
+                        //                        normalColumns : me.popupConfig.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,
@@ -7321,10 +7626,27 @@ Ext.define('eui.grid.column.Column', {
 Ext.define('eui.mvvm.GridRenderer', {
     extend: 'Ext.Mixin',
     mixinId: 'gridrenderer',
-    dateRenderer: function(v) {
-        var date;
+    /***
+     * 데이트 포맷에 맞지 않는 형식을 조정한다
+     * @param v
+     * @returns {*}
+     */
+    dateRenderer: function(v, meta) {
+        var date,
+            columnFormat = meta.column.format;
+        //        var f1 = new Date('2012-02-19');      getHours() : 9
+        //        var f2 = new Date('10/12/2012');      getHours() : 0
         if (Ext.isDate(v)) {
-            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            if ((v.getHours() == 9 || v.getHours() == 0) && v.getMinutes() == 0 && v.getSeconds() == 0 && v.getMilliseconds() == 0) {
+                if (columnFormat) {
+                    return Ext.Date.format(v, columnFormat);
+                }
+                return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            }
+            if (columnFormat) {
+                return Ext.Date.format(v, columnFormat);
+            }
+            return Ext.Date.format(v, eui.Config.defaultDateTimeFormat);
         } else if (Ext.Date.parse(v, 'Ymd')) {
             date = Ext.Date.parse(v, 'Ymd');
             return Ext.Date.format(date, eui.Config.defaultDateFormat);
@@ -7349,16 +7671,217 @@ Ext.define('eui.mvvm.GridRenderer', {
     }
 });
 
-/***
- *
- * ## Summary
- *
+/**
+ * # Summary
  * 날자 표시용 그리드 컬럼 클래스 .
+ *
+ * # 날자형 데이터 정의
+ *
+ * 서버사이드에서 전달되는 날자데이터를 표시한다
+ * 아래 형태의 데이터를 'YYYY-MM-DD'형태로 그리드에 표시한다.
+ *
+ *  -   YYYYMMDD : 20110109
+ *  -   YYYY-MM-DD : 2011-09-01
+ *  -   YYYY-MM-DD : 2011-09-01 hh:m:s
+ *
+ * # 포맷 변경
+ * 아래 처럼 포맷을 지정하여 표시형식을 변경가능함
+ *
+ *  format: 'Y-m-d H:i:s',
+ *
+ * # 날자 데이터의 서버사이드 전달
+ * 아래 샘플처럼 Util.getDatasetParam(grid.store)를 사용하거나
+ * model.getData()를 통해 데이터를 추출 할경우  eui.Config클래스의
+ * modelGetDataDateFormat에 정의 된 형태로 설정된다
+ *
+ *  기본값
+ *
+ *  modelGetDataDateFormat: 'Ymd',
+ *
+ *
+ * ## 사용예
+ *     columns: [
+ *          {
+ *              // "OUTPUT_DT" : "20101011",
+ *              text: 'YYYYMMDD',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'OUTPUT_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              //  "INPUT_DT" : "10/12/2012",
+ *              text: 'MM/DD/YYYY',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'INPUT_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              // "UPDATE_DT" : "2012-02-19",
+ *              text: 'YYYY-MM-DD',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'UPDATE_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              // "RELEASE_DT" : "2012-01-10 13:12:34"
+ *              width: 200,
+ *              text: 'YYYY-MM-DD HH:MI:S',
+ *              format: 'Y-m-d H:i:s',
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'RELEASE_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          }
+ *      ]
+ *
+ * # Sample
+ *
+ *     @example
+ *     var store = Ext.create('Ext.data.Store', {
+ *         fields: [
+ *              {
+ *                  name: "OUTPUT_DT",
+ *                  type: "date"
+ *              },
+ *              {
+ *                  name: "INPUT_DT",
+ *                  type: "date"
+ *              },
+ *              {
+ *                  name: "UPDATE_DT",
+ *                  type: "date"
+ *              },
+ *              {
+ *                  name: "RELEASE_DT",
+ *                  type: "date"
+ *              }
+ *         ],
+ *         data : [
+ *          {
+ *              "OUTPUT_DT" : "20101011",
+ *              "INPUT_DT" : "10/12/2012",
+ *              "UPDATE_DT" : "2012-02-19",
+ *              "RELEASE_DT" : "2012-01-10 13:12:34"
+ *          },
+ *          {
+ *              "OUTPUT_DT" : "20101011",
+ *              "INPUT_DT" : "10/12/2012",
+ *              "UPDATE_DT" : "2012-02-19",
+ *              "RELEASE_DT" : "2012-01-10 13:12:34"
+ *          }
+ *         ]
+ *     });
+ *
+ *     Ext.create('eui.grid.Panel', {
+ *      store: store,
+ *      defaultListenerScope: true,
+ *      plugins: {
+ *          ptype: 'cellediting',   // 셀에디터를 추가.
+ *          clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+ *      },
+ *      tbar: [
+ *          {
+ *              showRowAddBtn: true,    // 행추가 버튼 활성화
+ *              showSaveBtn: true,      // 저장 버튼 활성화
+ *              xtype: 'commandtoolbar' // eui.toolbar.Command 클래스
+ *      }
+ *      ],
+ *      listeners: {
+ *          savebtnclick: 'onRowSave'
+ *      },
+ *      columns: [
+ *          {
+ *              // "OUTPUT_DT" : "20101011",
+ *              text: 'YYYYMMDD',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'OUTPUT_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              //  "INPUT_DT" : "10/12/2012",
+ *              text: 'MM/DD/YYYY',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'INPUT_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              // "UPDATE_DT" : "2012-02-19",
+ *              text: 'YYYY-MM-DD',
+ *              width: 100,
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'UPDATE_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          },
+ *          {
+ *              // "RELEASE_DT" : "2012-01-10 13:12:34"
+ *              width: 200,
+ *              text: 'YYYY-MM-DD HH:MI:S',
+ *              format: 'Y-m-d H:i:s',
+ *              xtype: 'euidatecolumn',
+ *              dataIndex: 'RELEASE_DT',
+ *              editor: {
+ *                  xtype: 'euidate'
+ *              }
+ *          }
+ *        ],
+ *        height: 400,
+ *        renderTo: document.body,
+ *        onRowSave: function (grid) {
+ *          // validation check
+ *          if (!grid.store.recordsValidationCheck()) {
+ *              return;
+ *          }
+ *          Ext.Msg.show({
+ *              title: '확인',
+ *              buttons: Ext.Msg.YESNO,
+ *              icon: Ext.Msg.QUESTION,
+ *              message: '저장하시겠습니까?',
+ *              fn: function (btn) {
+ *                  if (btn === 'yes') {
+ *                      Util.CommonAjax({
+ *                          method: 'POST',
+ *                          url: 'resources/data/success.json',
+ *                          params: Util.getDatasetParam(grid.store),
+ *                          pCallback: function (v, params, result) {
+ *                              if (result.success) {
+ *                                  Ext.Msg.alert('저장성공', result.message);
+ *                                  grid.store.reload();
+ *                              } else {
+ *                                  Ext.Msg.alert('저장실패', result.message);
+ *                              }
+ *                          }
+ *                      });
+ *                  }
+ *              }
+ *          });
+ *        }
+ *     });
+ *
+ * See also the {@link #listConfig} option for additional configuration of the dropdown.
+ *
  */
 Ext.define('eui.grid.column.Date', {
     extend: 'Ext.grid.column.Date',
     alias: 'widget.euidatecolumn',
-    format: 'Y/m/d',
+    format: 'Y-m-d',
     align: 'center',
     width: 100,
     mixins: [
@@ -7797,13 +8320,21 @@ Ext.define('eui.tab.Panel', {
  *
  * ## Summary
  *
- * 명령 버튼 (CRUD 등) 주로 그리드에 탑재해 사용한다.
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
  **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',
     ui: 'plain',
     config: {
+        /**
+         * @cfg {Object} [ownerGrid:'sample-basic-grid@mygrid']
+         * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
+         * 대상 그리드를 명시하는 config
+         * ownerGrid : 'sample-basic-grid@mygrid',
+         * 상위컴포넌트@그리드itemId 또는 그리드의 itemId만 명시한다.
+         */
+        ownerGrid: null,
         showText: true,
         showRowAddBtn: false,
         showRowDelBtn: false,
@@ -7818,6 +8349,12 @@ Ext.define('eui.toolbar.Command', {
     initComponent: function() {
         var me = this,
             owner = this.up('grid,form');
+        //        var query = (this.ownerGrid||'').split('@');
+        //        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+        //            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+        //        } else if (query.length == 2) {
+        //            owner = me.up(query[0]).down('#' + query[1])
+        //        }
         Ext.apply(me, {
             items: [
                 {

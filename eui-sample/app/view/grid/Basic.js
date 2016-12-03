@@ -12,8 +12,10 @@ Ext.define('Eui.sample.view.grid.Basic', {
     controller: 'sample-basic-grid',
     viewModel: 'sample-basic-grid',
     layout: 'fit',
+
     items: [
         {
+//            itemId: 'mygrid',
             xtype: 'euigrid',
             plugins: {
                 ptype: 'cellediting',   // 셀에디터를 추가.
@@ -24,9 +26,11 @@ Ext.define('Eui.sample.view.grid.Basic', {
                 selType: 'checkboxmodel'
             },
 //            그리드에 페이징 툴바를 추가.
-            usePagingToolbar: true,
+//            usePagingToolbar: true,
+
             tbar: [
                 {
+//            ownerGrid : 'sample-basic-grid@mygrid',
                     showRowAddBtn: true,    // 행추가 버튼 활성화
                     showRowDelBtn: true,    // 행삭제 버튼 활성화
                     showRegBtn: true,       // 등록 버튼 활성화

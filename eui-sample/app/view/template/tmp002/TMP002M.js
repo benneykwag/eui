@@ -8,16 +8,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
             lastName: 'Barr'
         }
     },
-    formulas: {
-        radioValue: {
-            bind: '{customerRecord.field5}',
-            get: function (value) {
-                return {
-                    field5: value
-                };
-            }
-        }
-    },
+
     stores: {
         STORE01: {
             autoLoad: true,
@@ -32,9 +23,21 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
                     ]
                 },
                 {
-                    name: "field5",
-                    type: "date",
-                    dateFormat: "Ymd"
+                    name: "OUTPUT_DT",
+                    type: "date"
+                },
+                {
+                    name: "INPUT_DT",
+                    type: "date"
+                },
+                {
+                    name: "UPDATE_DT",
+//                    dateFormat: 'Y.m.d',
+                    type: "date"
+                },
+                {
+                    name: "RELEASE_DT",
+                    type: "date"
                 }
             ],
             proxy: {

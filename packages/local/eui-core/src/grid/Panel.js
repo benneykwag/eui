@@ -473,7 +473,7 @@ Ext.define('eui.grid.Panel', {
                     plugins: [
                         {
                             ptype: "pagesize",
-                            pageSize: 50
+                            pageSize: 25
                         }
                     ]
                 }

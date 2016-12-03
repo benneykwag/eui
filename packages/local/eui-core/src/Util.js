@@ -477,6 +477,13 @@ Ext.define('eui.Util', {
             timeoutSeq = 30000;
         }
 
+        // 주소 조정.
+        if(!Ext.isEmpty(Config.baseUrlPrifix)){
+            if(pURL.substring(0,1) == "/"){  // 상대경로는 처리하지 않는다
+                pURL = Config.baseUrlPrifix + pURL;
+            }
+        }
+
         var rtnData = "";
         var options = {
             async: (pSync == null ? true: pSync),

@@ -13,14 +13,12 @@ Ext.define('eui.form.field.PopUpPicker', {
     cellCls: 'fo-table-row-td',
     callBack: 'onTriggerCallback',
 
-    config: {
-        simpleColumns:[],
-        normalColumns:[],
+    defaultListenerScope: true,
 
+    config: {
         simpleMode: false,
         displayField: 'NAME',
-        valueField: 'CODE',
-        formConfig : null
+        valueField: 'CODE'
     },
 
     matchFieldWidth: false,
@@ -33,15 +31,15 @@ Ext.define('eui.form.field.PopUpPicker', {
 
     enableKeyEvents: true,
 
-    checkBlur: function () {
-        var me = this;
-        if (me.originalValue != me.getValue()) {
-            me.setValue('');
-        }
-    },
+//    checkBlur: function () {
+//        var me = this;
+//        if (me.originalValue != me.getValue()) {
+//            me.setValue('');
+//        }
+//    },
 
     listeners: {
-        blur: 'checkBlur',
+//        blur: 'checkBlur',
         // 팝업 내부에서 값설정후 close
         popupclose : {
             delay: 100,
@@ -77,10 +75,11 @@ Ext.define('eui.form.field.PopUpPicker', {
                 layout: 'fit',
                 items: [
                     {
-                        xtype: me.popupConfig.popupWidget,
-                        formConfig : me.formConfig,
-                        simpleColumns : me.simpleColumns,
-                        normalColumns : me.normalColumns,
+                        xtype: (me.popupConfig.popupWidget?me.popupConfig.popupWidget:'euipopup'),
+//                        formConfig : me.formConfig,
+//                        multiSelect : me.multiSelect,
+//                        simpleColumns : me.popupConfig.simpleColumns,
+//                        normalColumns : me.popupConfig.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,

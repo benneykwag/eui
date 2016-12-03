@@ -2,9 +2,142 @@
  *
  * ## Summary
  *
- * Ext.form.field.ComboBox 를 확장
+ * Ext.form.field.ComboBox를 확장한다.
+ *
+ * ## ProxyUrl
+ * store를 별도로 정의하지 않을 경우 주소를 설정한다
+ *
+ * ## groupCode
+ * 콤보 값이 groupCode라는 키값으로 데이터 로드시 전달된다.
+ *
+ *
+ * ## 사용예
+ *
+ *      {
+ *          fieldLabel: '콤보박스 TYPE2',
+ *          xtype: 'euicombo',
+ *          proxyUrl : 'resources/data/companys.json',  // store를 정의하지 않을 경우
+ *          displayField: 'name',
+ *          valueField: 'code',
+ *          groupCode: 'A001',
+ *          bind: '{RECORD.COMBOBOX02}'
+ *      }
+ *
+ *      // resources/data/companys.json data
+ *      {
+ *          "success":true,
+ *          "data":[
+ *              {
+ *                  "name":"마이크로소프트",
+ *                  "code":"MICROSOFT"
+ *              },
+ *              {
+ *                  "name":"B회사",
+ *                  "code":"BCMP"
+ *              },
+ *              {
+ *                  "name":"C회사",
+ *                  "code":"CCMP"
+ *              },
+ *              {
+ *                  "name":"D회사",
+ *                  "code":"DCMP"
+ *              }
+ *          ],
+ *          "message":""
+ *      }
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.ux.ajax.SimManager.init({
+ *          delay: 300,
+ *          defaultSimlet: null
+ *      }).register({
+ *          'Numbers': {
+ *              data: [[123,'One Hundred Twenty Three'],
+ *                  ['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five'],
+ *                  ['6', 'Six'], ['7', 'Seven'], ['8', 'Eight'], ['9', 'Nine']],
+ *              stype: 'json'
+ *         }
+ *      });
+ *      Ext.define('ComboBox', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          title: '체크박스',
+ *          items: [
+ *             {
+ *                  fieldLabel: '콤보박스 TYPE2',
+ *                  xtype: 'euicombo',
+ *                  proxyUrl : 'resources/data/companys.json',
+ *                  displayField: 'name',
+ *                  valueField: 'code',
+ *                  groupCode: 'A001',
+ *                  bind: '{RECORD.COMBOBOX01}'
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: '서버로전송',
+ *                  xtype: 'euibutton',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  COMBOBOX01 : 'MICROSOFT'
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('Y');
+ *              //this.down('#checkbox1').setValue(true);
+ *          },
+ *
+ *          unCheckboxHandler: function(button){
+ *              this.down('#checkbox1').setValue('N');
+ *              this.down('#checkbox1').setValue(false);
+ *          }
+ *      });
+ *
+ *      Ext.create('ComboBox',{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
  *
  **/
+
 
 Ext.define('eui.form.field.ComboBox', {
     extend: 'Ext.form.field.ComboBox',

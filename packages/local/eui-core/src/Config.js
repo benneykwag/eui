@@ -11,11 +11,14 @@ Ext.define('eui.Config', {
     localeCode : 'kr',
     localeValueField: 'MSG_ID',
     localeDisplayField : 'MSG_LABEL',
-    defaultDateFormat : 'Y.m.d',
-    defaultDateTimeFormat : 'Y.m.d H:i:s',
+    defaultDateFormat : 'Y-m-d',
+    defaultDateTimeFormat : 'Y-m-d H:i:s',
+
+    // Override.data.proxy.Server 에서 사용
+    baseUrlPrifix: null,
 
     // model.getData() 시 euidate, euimonthfield
-    modelGetDataDateFormat: 'Y.m.d',
+    modelGetDataDateFormat: 'Ymd',
 
     /***
      * 메시지 제공용 서버사이드 주소.

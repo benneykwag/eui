@@ -25,10 +25,28 @@ Ext.define(&#39;eui.mvvm.GridRenderer&#39;, {
     extend: &#39;Ext.Mixin&#39;,
 <span id='eui-mvvm-GridRenderer-property-mixinId'>    mixinId: &#39;gridrenderer&#39;,
 </span>
-<span id='eui-mvvm-GridRenderer-method-dateRenderer'>    dateRenderer: function (v) {
-</span>        var date;
+<span id='eui-mvvm-GridRenderer-method-dateRenderer'>    /***
+</span>     * 데이트 포맷에 맞지 않는 형식을 조정한다
+     * @param v
+     * @returns {*}
+     */
+    dateRenderer: function (v, meta) {
+        var date,
+            columnFormat = meta.column.format;
+//        var f1 = new Date(&#39;2012-02-19&#39;);      getHours() : 9
+//        var f2 = new Date(&#39;10/12/2012&#39;);      getHours() : 0
         if (Ext.isDate(v)) {
-            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            if((v.getHours() == 9 || v.getHours() == 0) &amp;&amp; v.getMinutes() == 0 &amp;&amp;
+                v.getSeconds() == 0 &amp;&amp; v.getMilliseconds() == 0){
+                if(columnFormat){
+                    return Ext.Date.format(v, columnFormat);
+                }
+                return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            }
+            if(columnFormat){
+                return Ext.Date.format(v, columnFormat);
+            }
+            return Ext.Date.format(v, eui.Config.defaultDateTimeFormat);
         } else if (Ext.Date.parse(v, &#39;Ymd&#39;)) {
             date = Ext.Date.parse(v, &#39;Ymd&#39;);
             return Ext.Date.format(date, eui.Config.defaultDateFormat);

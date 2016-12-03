@@ -28,11 +28,14 @@ Ext.define(&#39;eui.Config&#39;, {
 <span id='eui-Config-property-localeCode'>    localeCode : &#39;kr&#39;,
 </span><span id='eui-Config-property-localeValueField'>    localeValueField: &#39;MSG_ID&#39;,
 </span><span id='eui-Config-property-localeDisplayField'>    localeDisplayField : &#39;MSG_LABEL&#39;,
-</span><span id='eui-Config-property-defaultDateFormat'>    defaultDateFormat : &#39;Y.m.d&#39;,
-</span><span id='eui-Config-property-defaultDateTimeFormat'>    defaultDateTimeFormat : &#39;Y.m.d H:i:s&#39;,
+</span><span id='eui-Config-property-defaultDateFormat'>    defaultDateFormat : &#39;Y-m-d&#39;,
+</span><span id='eui-Config-property-defaultDateTimeFormat'>    defaultDateTimeFormat : &#39;Y-m-d H:i:s&#39;,
 </span>
+<span id='eui-Config-property-baseUrlPrifix'>    // Override.data.proxy.Server 에서 사용
+</span>    baseUrlPrifix: null,
+
 <span id='eui-Config-property-modelGetDataDateFormat'>    // model.getData() 시 euidate, euimonthfield
-</span>    modelGetDataDateFormat: &#39;Y.m.d&#39;,
+</span>    modelGetDataDateFormat: &#39;Ymd&#39;,
 
 <span id='eui-Config-property-localeUrl'>    /***
 </span>     * 메시지 제공용 서버사이드 주소.

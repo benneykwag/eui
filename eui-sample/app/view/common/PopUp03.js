@@ -2,7 +2,8 @@ Ext.define('Eui.sample.view.common.PopUp03', {
     extend: 'eui.container.Popup',
     alias: 'widget.popup03',
 
-    multiSelect: true,
+    multiSelect: false,
+    html: 'aaa',
     store: {
         type: 'buffered',
         remoteSort: true,

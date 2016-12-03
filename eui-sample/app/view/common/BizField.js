@@ -6,14 +6,25 @@ Ext.define('Eui.sample.view.common.BizField', {
     defaultListenerScope: true,
     allowBlank: false,
 
-
     searchKeyField : 'SEARCHKEY',
-    popupConfig: {
-        popupWidget: 'popup03',
-        title: '사업자 검색',
-        width: 500,
-        height: 250
-    },
+
+    multiSelect: false,
+    proxyUrl : 'resources/data/template/data04.json',
+
+    popupWidth: 500,
+
+    popupHeight: 250,
+
+    // 별도 팝업을 띄울 경우 없다면 기본 팝업 호출.
+//    popupWidget: 'popup03',
+
+//    popupConfig: {
+//        popupWidget: 'popup03',
+//        title: '사업자 검색',
+//        width: 500,
+//        height: 250
+//    },
+
     simpleColumns: [
         {
             text: 'CUSTOMER_NAME',
@@ -41,10 +52,12 @@ Ext.define('Eui.sample.view.common.BizField', {
         items: [
             {
                 xtype: 'euitext',
+                name: 'SEARCHKEY',
                 fieldLabel: '사업자코드'
             },
             {
                 xtype: 'euitext',
+                name: 'SEARCHKEYNAME',
                 fieldLabel: '사업자명'
             }
         ]

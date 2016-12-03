@@ -13,15 +13,21 @@ Ext.define('eui.mvvm.GridRenderer', {
      * @param v
      * @returns {*}
      */
-    dateRenderer: function (v) {
-        var date;
-
+    dateRenderer: function (v, meta) {
+        var date,
+            columnFormat = meta.column.format;
 //        var f1 = new Date('2012-02-19');      getHours() : 9
 //        var f2 = new Date('10/12/2012');      getHours() : 0
         if (Ext.isDate(v)) {
             if((v.getHours() == 9 || v.getHours() == 0) && v.getMinutes() == 0 &&
                 v.getSeconds() == 0 && v.getMilliseconds() == 0){
+                if(columnFormat){
+                    return Ext.Date.format(v, columnFormat);
+                }
                 return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            }
+            if(columnFormat){
+                return Ext.Date.format(v, columnFormat);
             }
             return Ext.Date.format(v, eui.Config.defaultDateTimeFormat);
         } else if (Ext.Date.parse(v, 'Ymd')) {
