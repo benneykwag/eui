@@ -30,14 +30,12 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
 </span><span id='eui-form-field-PopUpPicker-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
 </span><span id='eui-form-field-PopUpPicker-property-callBack'>    callBack: &#39;onTriggerCallback&#39;,
 </span>
-    config: {
-<span id='eui-form-field-PopUpPicker-cfg-simpleColumns'>        simpleColumns:[],
-</span><span id='eui-form-field-PopUpPicker-cfg-normalColumns'>        normalColumns:[],
+<span id='eui-form-field-PopUpPicker-property-defaultListenerScope'>    defaultListenerScope: true,
 </span>
+    config: {
 <span id='eui-form-field-PopUpPicker-cfg-simpleMode'>        simpleMode: false,
 </span><span id='eui-form-field-PopUpPicker-cfg-displayField'>        displayField: &#39;NAME&#39;,
-</span><span id='eui-form-field-PopUpPicker-cfg-valueField'>        valueField: &#39;CODE&#39;,
-</span><span id='eui-form-field-PopUpPicker-cfg-formConfig'>        formConfig : null
+</span><span id='eui-form-field-PopUpPicker-cfg-valueField'>        valueField: &#39;CODE&#39;
 </span>    },
 
 <span id='eui-form-field-PopUpPicker-property-matchFieldWidth'>    matchFieldWidth: false,
@@ -50,15 +48,15 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
 
 <span id='eui-form-field-PopUpPicker-property-enableKeyEvents'>    enableKeyEvents: true,
 </span>
-<span id='eui-form-field-PopUpPicker-method-checkBlur'>    checkBlur: function () {
-</span>        var me = this;
-        if (me.originalValue != me.getValue()) {
-            me.setValue(&#39;&#39;);
-        }
-    },
+<span id='eui-form-field-PopUpPicker-property-listeners'>//    checkBlur: function () {
+</span>//        var me = this;
+//        if (me.originalValue != me.getValue()) {
+//            me.setValue(&#39;&#39;);
+//        }
+//    },
 
-<span id='eui-form-field-PopUpPicker-property-listeners'>    listeners: {
-</span>        blur: &#39;checkBlur&#39;,
+    listeners: {
+//        blur: &#39;checkBlur&#39;,
         // 팝업 내부에서 값설정후 close
         popupclose : {
             delay: 100,
@@ -94,10 +92,11 @@ Ext.define(&#39;eui.form.field.PopUpPicker&#39;, {
                 layout: &#39;fit&#39;,
                 items: [
                     {
-                        xtype: me.popupConfig.popupWidget,
-                        formConfig : me.formConfig,
-                        simpleColumns : me.simpleColumns,
-                        normalColumns : me.normalColumns,
+                        xtype: (me.popupConfig.popupWidget?me.popupConfig.popupWidget:&#39;euipopup&#39;),
+//                        formConfig : me.formConfig,
+//                        multiSelect : me.multiSelect,
+//                        simpleColumns : me.popupConfig.simpleColumns,
+//                        normalColumns : me.popupConfig.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,

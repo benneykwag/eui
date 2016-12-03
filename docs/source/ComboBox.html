@@ -40,6 +40,30 @@
  *          bind: &#39;{RECORD.COMBOBOX02}&#39;
  *      }
  *
+ *      // resources/data/companys.json data
+ *      {
+ *          &quot;success&quot;:true,
+ *          &quot;data&quot;:[
+ *              {
+ *                  &quot;name&quot;:&quot;마이크로소프트&quot;,
+ *                  &quot;code&quot;:&quot;MICROSOFT&quot;
+ *              },
+ *              {
+ *                  &quot;name&quot;:&quot;B회사&quot;,
+ *                  &quot;code&quot;:&quot;BCMP&quot;
+ *              },
+ *              {
+ *                  &quot;name&quot;:&quot;C회사&quot;,
+ *                  &quot;code&quot;:&quot;CCMP&quot;
+ *              },
+ *              {
+ *                  &quot;name&quot;:&quot;D회사&quot;,
+ *                  &quot;code&quot;:&quot;DCMP&quot;
+ *              }
+ *          ],
+ *          &quot;message&quot;:&quot;&quot;
+ *      }
+ *
  * # Sample
  *
  * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
@@ -47,7 +71,18 @@
  *
  *     @example
  *
- *      Ext.define(&#39;Combo&#39;, {
+ *      Ext.ux.ajax.SimManager.init({
+ *          delay: 300,
+ *          defaultSimlet: null
+ *      }).register({
+ *          &#39;Numbers&#39;: {
+ *              data: [[123,&#39;One Hundred Twenty Three&#39;],
+ *                  [&#39;1&#39;, &#39;One&#39;], [&#39;2&#39;, &#39;Two&#39;], [&#39;3&#39;, &#39;Three&#39;], [&#39;4&#39;, &#39;Four&#39;], [&#39;5&#39;, &#39;Five&#39;],
+ *                  [&#39;6&#39;, &#39;Six&#39;], [&#39;7&#39;, &#39;Seven&#39;], [&#39;8&#39;, &#39;Eight&#39;], [&#39;9&#39;, &#39;Nine&#39;]],
+ *              stype: &#39;json&#39;
+ *         }
+ *      });
+ *      Ext.define(&#39;ComboBox&#39;, {
  *          extend: &#39;eui.form.Panel&#39;,
  *          defaultListenerScope: true,
  *          viewModel: {
@@ -57,37 +92,16 @@
  *          title: &#39;체크박스&#39;,
  *          items: [
  *             {
- *               fieldLabel: &#39;체크박스&#39;,
- *               itemId: &#39;checkbox1&#39;,
- *               xtype: &#39;euicheckbox&#39;,
- *               bind: &#39;{RECORD.CHECKBOX1}&#39;
- *             },
- *             {
- *               fieldLabel: &#39;체크박스&#39;,
- *               xtype: &#39;euicheckbox&#39;,
- *               bind: {
- *                  value : &#39;Y&#39;
- *               }
- *             },
- *             {
- *               fieldLabel: &#39;체크박스&#39;,
- *               xtype: &#39;euicheckbox&#39;,
- *               bind: {
- *                  value : &#39;N&#39;
- *               }
+ *                  fieldLabel: &#39;콤보박스 TYPE2&#39;,
+ *                  xtype: &#39;euicombo&#39;,
+ *                  proxyUrl : &#39;resources/data/companys.json&#39;,
+ *                  displayField: &#39;name&#39;,
+ *                  valueField: &#39;code&#39;,
+ *                  groupCode: &#39;A001&#39;,
+ *                  bind: &#39;{RECORD.COMBOBOX01}&#39;
  *             }
  *          ],
  *          bbar: [
- *              {
- *                  text: &#39;체크&#39;,
- *                  xtype : &#39;euibutton&#39;,
- *                  handler: &#39;checkboxHandler&#39;
- *              },
- *              {
- *                  text: &#39;체크해제&#39;,
- *                  xtype : &#39;euibutton&#39;,
- *                  handler: &#39;unCheckboxHandler&#39;
- *              },
  *              {
  *                  text: &#39;서버로전송&#39;,
  *                  xtype: &#39;euibutton&#39;,
@@ -101,7 +115,7 @@
  *
  *         setRecord: function () {
  *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
- *                  CHECKBOX1 : &#39;N&#39;
+ *                  COMBOBOX01 : &#39;MICROSOFT&#39;
  *               }));
  *         },
  *
@@ -134,7 +148,7 @@
  *          }
  *      });
  *
- *      Ext.create(&#39;Checkbox&#39;,{
+ *      Ext.create(&#39;ComboBox&#39;,{
  *          width: 300,
  *          renderTo: Ext.getBody()
  *      });

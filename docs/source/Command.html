@@ -27,8 +27,8 @@ Ext.define(&#39;eui.toolbar.Command&#39;, {
 <span id='eui-toolbar-Command-property-ui'>    ui: &#39;plain&#39;,
 </span>
     config: {
-<span id='eui-toolbar-Command-cfg-null'>        /**
-</span>         * @cfg {Object} [null]
+<span id='eui-toolbar-Command-cfg-ownerGrid'>        /**
+</span>         * @cfg {Object} [ownerGrid:&#39;sample-basic-grid@mygrid&#39;]
          * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
          * 대상 그리드를 명시하는 config
          * ownerGrid : &#39;sample-basic-grid@mygrid&#39;,
@@ -51,13 +51,12 @@ Ext.define(&#39;eui.toolbar.Command&#39;, {
 <span id='eui-toolbar-Command-method-initComponent'>    initComponent: function () {
 </span>        var me = this,
             owner = this.up(&#39;grid,form&#39;);
-
-        var query = (this.ownerGrid||&#39;&#39;).split(&#39;@&#39;);
-        if (query.length == 1 &amp;&amp; !Ext.isEmpty(query[0])) {
-            owner = Ext.ComponentQuery.query(&#39;#&#39; + query[0])[0];
-        } else if (query.length == 2) {
-            owner = me.up(query[0]).down(&#39;#&#39; + query[1])
-        }
+//        var query = (this.ownerGrid||&#39;&#39;).split(&#39;@&#39;);
+//        if (query.length == 1 &amp;&amp; !Ext.isEmpty(query[0])) {
+//            owner = Ext.ComponentQuery.query(&#39;#&#39; + query[0])[0];
+//        } else if (query.length == 2) {
+//            owner = me.up(query[0]).down(&#39;#&#39; + query[1])
+//        }
 
         Ext.apply(me, {
             items: [
@@ -160,7 +159,6 @@ Ext.define(&#39;eui.toolbar.Command&#39;, {
                     text: &#39;#{엑셀다운로드}&#39;,
                     iconCls: &#39;#{엑셀다운로드아이콘}&#39;,
                     hidden: !me.getShowExcelDownBtn(),
-                    targetGrid: owner,
                     xtype: &#39;exporterbutton&#39;
 //                    targetGrid: owner
                     //Or you can use

@@ -310,6 +310,31 @@ Ext.define('Override.data.ProxyStore', {
     }
 });
 
+/*
+ * proxy Rest 관련 Default 설정
+ * */
+Ext.define('Override.data.proxy.Server', {
+    override: 'Ext.data.proxy.Server',
+    buildUrl: function(request) {
+        var me = this,
+            url = me.getUrl(request);
+        if (!url) {
+            Ext.raise("You are using a ServerProxy but have not supplied it with a url.");
+        }
+        if (me.getNoCache()) {
+            url = Ext.urlAppend(url, Ext.String.format("{0}={1}", me.getCacheString(), Ext.Date.now()));
+        }
+        // 주소 조정.
+        if (!Ext.isEmpty(Config.baseUrlPrifix)) {
+            if (url.substring(0, 1) == "/") {
+                // 상대경로는 처리하지 않는다
+                url = Config.baseUrlPrifix + url;
+            }
+        }
+        return url;
+    }
+});
+
 Ext.define('Override.Ext.data.TreeModel', {
     override: 'Ext.data.TreeModel',
     listeners: {
@@ -491,6 +516,8 @@ Ext.define('eui.Config', {
     localeDisplayField: 'MSG_LABEL',
     defaultDateFormat: 'Y-m-d',
     defaultDateTimeFormat: 'Y-m-d H:i:s',
+    // Override.data.proxy.Server 에서 사용
+    baseUrlPrifix: null,
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
     /***
@@ -1083,6 +1110,13 @@ Ext.define('eui.Util', {
         } else {
             timeoutSeq = 30000;
         }
+        // 주소 조정.
+        if (!Ext.isEmpty(Config.baseUrlPrifix)) {
+            if (pURL.substring(0, 1) == "/") {
+                // 상대경로는 처리하지 않는다
+                pURL = Config.baseUrlPrifix + pURL;
+            }
+        }
         var rtnData = "";
         var options = {
                 async: (pSync == null ? true : pSync),
@@ -1605,30 +1639,31 @@ Ext.define('eui.container.Popup', {
     transform: function() {
         var me = this,
             grid = this.down('euigrid'),
-            searchKeyField = me.ownerCt.ownerCmp.searchKeyField;
+            searchKeyField = me.popupConfig.searchKeyField;
         var simpleMode = this.ownerCt.simpleMode;
         if (simpleMode) {
             grid.setMargin(0);
             me.down('euiform').setHidden(true);
-            grid.reconfigure(grid.store, me.simpleColumns);
+            grid.reconfigure(grid.store, me.popupConfig.simpleColumns);
             grid.hideHeaders = true;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.getValue();
             grid.store.load();
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(true);
             }
         } else {
             grid.setMargin(5);
             me.down('euiform').setHidden(false);
-            if (!me.multiSelect) {
+            if (!me.popupConfig.multiSelect) {
                 me.down('toolbar').setHidden(false);
             }
-            grid.reconfigure(grid.store, me.normalColumns);
+            grid.reconfigure(grid.store, me.popupConfig.normalColumns);
             grid.hideHeaders = false;
             grid.updateHideHeaders();
             grid.store.getProxy().extraParams[searchKeyField] = me.trigger.previousSibling().getValue();
             grid.store.load();
+            me.ownerCt.setHeight(me.popupConfig.height);
         }
     },
     parentCallBack: function(view, record) {
@@ -1659,17 +1694,42 @@ Ext.define('eui.container.Popup', {
         type: 'vbox',
         align: 'stretch'
     },
+    onSearch: function() {
+        var form = this.down('form'),
+            values = form.getForm().getValues(),
+            grid = this.down('grid'),
+            extraParams = grid.store.getProxy().getExtraParams();
+        extraParams['page'] = 1;
+        extraParams['start'] = 0;
+        Ext.apply(extraParams, values);
+        grid.store.load();
+    },
     initComponent: function() {
         var me = this,
             config = me.popupConfig,
             items = [],
-            grid = {
+            store = {
+                type: 'buffered',
+                remoteSort: true,
+                fields: [],
+                leadingBufferZone: 50,
+                pageSize: 50,
+                proxy: {
+                    type: 'rest',
+                    url: config.proxyUrl,
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                }
+            };
+        var grid = {
                 xtype: 'euigrid',
                 flex: 1,
                 selModel: {
                     pruneRemoved: false
                 },
-                store: me.store,
+                store: store,
                 listeners: {
                     itemdblclick: 'parentCallBack'
                 },
@@ -1686,10 +1746,33 @@ Ext.define('eui.container.Popup', {
                     ]
                 }
             };
-        if (me.formConfig) {
-            items.push(me.formConfig);
+        if (me.popupConfig.formConfig) {
+            Ext.apply(me.popupConfig.formConfig, {
+                header: {
+                    xtype: 'header',
+                    titlePosition: 0,
+                    items: [
+                        {
+                            xtype: 'button',
+                            handler: 'onSearch',
+                            iconCls: 'fa fa-search',
+                            text: '검색'
+                        }
+                    ]
+                },
+                defaults: {
+                    listeners: {
+                        specialkey: function(field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                me.onSearch(field);
+                            }
+                        }
+                    }
+                }
+            });
+            items.push(me.popupConfig.formConfig);
         }
-        if (me.multiSelect) {
+        if (me.popupConfig.multiSelect) {
             Ext.apply(grid, {
                 selModel: {
                     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
@@ -2485,18 +2568,6 @@ Ext.define('eui.form.Panel', {
 Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
     alias: 'widget.euipopupfieldcontainer',
-    config: {
-        // 서버에 전달할 파라메터의 key
-        searchKeyField: 'SEARCHKEY',
-        // 우측 콤보 형태로 변경 시 그리드 컬럼 정보.
-        simpleColumns: [],
-        // 좌측 텍스트 필드로 팝업 호출시 보여줄 그리드 컬럼 정보.
-        normalColumns: [],
-        // 팝업 내부 검색용 폼 정보.
-        formConfig: null,
-        // 호출할 팝업 정보.
-        popupConfig: {}
-    },
     bindVar: {
         FIELD1: null,
         FIELD2: null
@@ -2603,10 +2674,70 @@ Ext.define('eui.form.PopUpFieldContainer', {
      */
     checkSingleResult: function(field) {
         var me = this;
-        return false;
+        // 좌측 만 적용.
+        if (field.simpleMode) {
+            return false;
+        }
+        if (Ext.isEmpty(field.getValue())) {
+            return false;
+        }
+        var params = {},
+            retValue = false;
+        params['page'] = 1;
+        params['start'] = 0;
+        params['limit'] = 2;
+        params[me.searchKeyField] = field.getValue();
+        Util.CommonAjax({
+            method: 'POST',
+            url: me.popupConfig.proxyUrl,
+            params: params,
+            pSync: false,
+            pCallback: function(v, params, result) {
+                if (result.success && result.total == 1) {
+                    retValue = true;
+                    me.setPopupValues(field, Ext.create('Ext.data.Model', result.data[0]));
+                    me.setOriginValues();
+                }
+            }
+        });
+        return retValue;
+    },
+    setOriginValues: function() {
+        var firstField = this.down('#firstField'),
+            secondField = this.down('#secondField');
+        firstField.resetOriginalValue();
+        secondField.resetOriginalValue();
+    },
+    /***
+     * popupConfig를 전달하고 기존코드를 수용하기 위한
+     * 메소드이다.
+     * 기존 코드는 아래와 같으며 향후 사용하지 않는다.
+     * popupConfig: {
+     *  popupWidget: 'popup03',
+     *  title: '사업자 검색',
+     *  width: 500,
+     *  height: 250
+    },
+     */
+    setPopupConfig: function() {
+        var me = this;
+        if (!me.popupConfig) {
+            me.popupConfig = {};
+        }
+        Ext.applyIf(me.popupConfig, {
+            searchKeyField: me.searchKeyField,
+            multiSelect: me.multiSelect,
+            proxyUrl: me.proxyUrl,
+            simpleColumns: me.simpleColumns,
+            normalColumns: me.normalColumns,
+            formConfig: me.formConfig,
+            width: me.popupWidth,
+            heigh: me.popupHeight
+        });
     },
     initComponent: function() {
         var me = this;
+        me.setPopupConfig();
         Ext.apply(this, {
             items: [
                 {
@@ -2646,10 +2777,13 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,
                     valueField: 'CUSTOMER_NAME',
-                    searchKeyField: me.searchKeyField,
+                    //                    searchKeyField : me.searchKeyField,
                     expand: me.expand,
                     doAlign: me.doAlign,
                     listeners: {
+                        blur: function() {
+                            me.checkBlur(this);
+                        },
                         render: function() {
                             me.relayEvents(this, [
                                 'blur',
@@ -2658,13 +2792,14 @@ Ext.define('eui.form.PopUpFieldContainer', {
                         },
                         popupsetvalues: 'setPopupValues'
                     },
-                    simpleColumns: me.simpleColumns,
-                    normalColumns: me.normalColumns,
-                    formConfig: me.formConfig,
+                    //                    simpleColumns: me.simpleColumns,
+                    //                    normalColumns: me.normalColumns,
+                    //                    formConfig: me.formConfig,
                     popupConfig: me.popupConfig
                 }
             ]
         });
+        //                    multiSelect: me.multiSelect
         this.callParent(arguments);
     },
     doAlign: function() {
@@ -3382,6 +3517,30 @@ Ext.define('eui.form.field.ComboBoxController', {
  *          bind: '{RECORD.COMBOBOX02}'
  *      }
  *
+ *      // resources/data/companys.json data
+ *      {
+ *          "success":true,
+ *          "data":[
+ *              {
+ *                  "name":"마이크로소프트",
+ *                  "code":"MICROSOFT"
+ *              },
+ *              {
+ *                  "name":"B회사",
+ *                  "code":"BCMP"
+ *              },
+ *              {
+ *                  "name":"C회사",
+ *                  "code":"CCMP"
+ *              },
+ *              {
+ *                  "name":"D회사",
+ *                  "code":"DCMP"
+ *              }
+ *          ],
+ *          "message":""
+ *      }
+ *
  * # Sample
  *
  * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
@@ -3389,7 +3548,18 @@ Ext.define('eui.form.field.ComboBoxController', {
  *
  *     @example
  *
- *      Ext.define('Combo', {
+ *      Ext.ux.ajax.SimManager.init({
+ *          delay: 300,
+ *          defaultSimlet: null
+ *      }).register({
+ *          'Numbers': {
+ *              data: [[123,'One Hundred Twenty Three'],
+ *                  ['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five'],
+ *                  ['6', 'Six'], ['7', 'Seven'], ['8', 'Eight'], ['9', 'Nine']],
+ *              stype: 'json'
+ *         }
+ *      });
+ *      Ext.define('ComboBox', {
  *          extend: 'eui.form.Panel',
  *          defaultListenerScope: true,
  *          viewModel: {
@@ -3399,37 +3569,16 @@ Ext.define('eui.form.field.ComboBoxController', {
  *          title: '체크박스',
  *          items: [
  *             {
- *               fieldLabel: '체크박스',
- *               itemId: 'checkbox1',
- *               xtype: 'euicheckbox',
- *               bind: '{RECORD.CHECKBOX1}'
- *             },
- *             {
- *               fieldLabel: '체크박스',
- *               xtype: 'euicheckbox',
- *               bind: {
- *                  value : 'Y'
- *               }
- *             },
- *             {
- *               fieldLabel: '체크박스',
- *               xtype: 'euicheckbox',
- *               bind: {
- *                  value : 'N'
- *               }
+ *                  fieldLabel: '콤보박스 TYPE2',
+ *                  xtype: 'euicombo',
+ *                  proxyUrl : 'resources/data/companys.json',
+ *                  displayField: 'name',
+ *                  valueField: 'code',
+ *                  groupCode: 'A001',
+ *                  bind: '{RECORD.COMBOBOX01}'
  *             }
  *          ],
  *          bbar: [
- *              {
- *                  text: '체크',
- *                  xtype : 'euibutton',
- *                  handler: 'checkboxHandler'
- *              },
- *              {
- *                  text: '체크해제',
- *                  xtype : 'euibutton',
- *                  handler: 'unCheckboxHandler'
- *              },
  *              {
  *                  text: '서버로전송',
  *                  xtype: 'euibutton',
@@ -3443,7 +3592,7 @@ Ext.define('eui.form.field.ComboBoxController', {
  *
  *         setRecord: function () {
  *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
- *                  CHECKBOX1 : 'N'
+ *                  COMBOBOX01 : 'MICROSOFT'
  *               }));
  *         },
  *
@@ -3476,7 +3625,7 @@ Ext.define('eui.form.field.ComboBoxController', {
  *          }
  *      });
  *
- *      Ext.create('Checkbox',{
+ *      Ext.create('ComboBox',{
  *          width: 300,
  *          renderTo: Ext.getBody()
  *      });
@@ -5142,13 +5291,11 @@ Ext.define('eui.form.field.PopUpPicker', {
     triggerCls: 'x-form-search-trigger',
     cellCls: 'fo-table-row-td',
     callBack: 'onTriggerCallback',
+    defaultListenerScope: true,
     config: {
-        simpleColumns: [],
-        normalColumns: [],
         simpleMode: false,
         displayField: 'NAME',
-        valueField: 'CODE',
-        formConfig: null
+        valueField: 'CODE'
     },
     matchFieldWidth: false,
     onTriggerCallback: function(trigger, record, valueField, displayField) {
@@ -5157,14 +5304,14 @@ Ext.define('eui.form.field.PopUpPicker', {
         }
     },
     enableKeyEvents: true,
-    checkBlur: function() {
-        var me = this;
-        if (me.originalValue != me.getValue()) {
-            me.setValue('');
-        }
-    },
+    //    checkBlur: function () {
+    //        var me = this;
+    //        if (me.originalValue != me.getValue()) {
+    //            me.setValue('');
+    //        }
+    //    },
     listeners: {
-        blur: 'checkBlur',
+        //        blur: 'checkBlur',
         // 팝업 내부에서 값설정후 close
         popupclose: {
             delay: 100,
@@ -5200,10 +5347,11 @@ Ext.define('eui.form.field.PopUpPicker', {
                 layout: 'fit',
                 items: [
                     {
-                        xtype: me.popupConfig.popupWidget,
-                        formConfig: me.formConfig,
-                        simpleColumns: me.simpleColumns,
-                        normalColumns: me.normalColumns,
+                        xtype: (me.popupConfig.popupWidget ? me.popupConfig.popupWidget : 'euipopup'),
+                        //                        formConfig : me.formConfig,
+                        //                        multiSelect : me.multiSelect,
+                        //                        simpleColumns : me.popupConfig.simpleColumns,
+                        //                        normalColumns : me.popupConfig.normalColumns,
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,
@@ -8180,7 +8328,7 @@ Ext.define('eui.toolbar.Command', {
     ui: 'plain',
     config: {
         /**
-         * @cfg {Object} [null]
+         * @cfg {Object} [ownerGrid:'sample-basic-grid@mygrid']
          * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
          * 대상 그리드를 명시하는 config
          * ownerGrid : 'sample-basic-grid@mygrid',
@@ -8201,12 +8349,12 @@ Ext.define('eui.toolbar.Command', {
     initComponent: function() {
         var me = this,
             owner = this.up('grid,form');
-        var query = (this.ownerGrid || '').split('@');
-        if (query.length == 1 && !Ext.isEmpty(query[0])) {
-            owner = Ext.ComponentQuery.query('#' + query[0])[0];
-        } else if (query.length == 2) {
-            owner = me.up(query[0]).down('#' + query[1]);
-        }
+        //        var query = (this.ownerGrid||'').split('@');
+        //        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+        //            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+        //        } else if (query.length == 2) {
+        //            owner = me.up(query[0]).down('#' + query[1])
+        //        }
         Ext.apply(me, {
             items: [
                 {
@@ -8308,7 +8456,6 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
-                    targetGrid: owner,
                     xtype: 'exporterbutton'
                 },
                 //                    targetGrid: owner
