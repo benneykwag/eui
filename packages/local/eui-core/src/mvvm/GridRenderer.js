@@ -14,6 +14,12 @@ Ext.define('eui.mvvm.GridRenderer', {
      * @returns {*}
      */
     dateRenderer: function (v, meta) {
+        if(!v){
+            return v;
+        }
+        if(Ext.Object.getSize(meta) == 0){
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+        }
         var date,
             columnFormat = meta.column.format;
 //        var f1 = new Date('2012-02-19');      getHours() : 9
