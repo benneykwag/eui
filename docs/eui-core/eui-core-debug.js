@@ -2012,6 +2012,230 @@ Ext.define('eui.store.LocaleStore', {
  *
  * ## Summary
  *
+ * Ext.data.validator.Validator 확장. 한글 영문 숫자 문자에 대한 처리
+ * 그리드 field정의 시 사용.
+ *
+ *      {
+ *          name: 'USEPRSN_NM',
+ *          validators: [
+ *              {
+ *                  type: "presence",
+ *                  message :"성명은 필수 입력 필드입니다."
+ *              },
+ *              {
+ *                  type: 'euiformat',
+ *                  chkType:  'K',
+ *                  message :"성명은 한글만 허용합니다"
+ *              }
+ *          ]
+ *      },
+ *      {
+ *          name: 'MSG',
+ *          validators: [
+ *              {
+ *                  type: 'euiformat',
+ *                  chkType:  'C'
+ *              }
+ *          ]
+ *      }
+ *
+ * # chkType
+ * K : 한글만 허용.
+ *
+ * N : 숫자만 허용
+ *
+ * E : 알파벳 대문자만 허용
+ *
+ * Ee : 알파벳 대소문자만 허용
+ *
+ * # chkString
+ * chkType에 맞는 정규식과 메시지 출력.
+ *
+ *     K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     K_MSG: '한글만 허용합니다',
+ *
+ *     E: /^[A-Z]*$/,
+ *
+ *     E_MSG: '영문 대문자만 허용합니다',
+ *
+ *     e: /^[a-z]*$/,
+ *
+ *     e_MSG: '영문 소문자만 허용합니다',
+ *
+ *     Ee: /^[A-Za-z]*$/,
+ *
+ *     Ee_MSG: '영문 대소문자만 허용합니다',
+ *
+ *     N: /^[0-9+]*$/,
+ *
+ *     N_MSG: '숫자만 허용합니다',
+ *
+ *     C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     C_MSG: '일반문자(한글&알파벳)만 허용합니다'
+ *
+ *
+ *
+ * # Sample
+ *
+ *     @example
+ *
+ *      Ext.define('Panel', {
+ *          extend: 'eui.grid.Panel',
+ *          defaultListenerScope: true,
+ *          title: '체크박스그룹',
+ *          plugins: {
+ *              ptype: 'cellediting',   // 셀에디터를 추가.
+ *              clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+ *          },
+ *          store: {
+ *              fields: [
+ *                  {
+ *                      name: 'USEPRSN_NM',
+ *                      validators: [
+ *                          {
+ *                              type: 'euiformat',
+ *                              chkType: 'K',
+ *                              message: "성명은 한글만 허용합니다"
+ *                          }
+ *                      ]
+ *                  },
+ *                  {
+ *                      name: 'MSG',
+ *                      validators: [
+ *                          {
+ *                              type: 'euiformat',
+ *                              chkType: 'Ee',
+ *                              message: "메시지는 영문대소문자만 허용합니다"
+ *                          }
+ *                      ]
+ *                  }
+ *              ],
+ *              data: [
+ *                  {
+ *                      USEPRSN_NM : '홍길동',
+ *                      MSG : 'Error Message'
+ *                  }
+ *              ]
+ *          },
+ *
+ *          columns: [
+ *              {
+ *                  text: '이름',
+ *                  dataIndex: 'USEPRSN_NM',
+ *                  editor: {
+ *                      xtype: 'textfield'
+ *                  }
+ *              },
+ *              {
+ *                  text: '메시지',
+ *                  dataIndex: 'MSG',
+ *                  editor: {
+ *                      xtype: 'textfield'
+ *                  }
+ *              }
+ *          ],
+ *
+ *          bbar: [
+ *              {
+ *                  text: '저장',
+ *                  xtype: 'button',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         onSaveMember: function () {
+ *              var grid = this;
+ *              if (!grid.store.recordsValidationCheck()) {
+ *                  return;
+ *              }
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: Util.getDatasetParam(grid.store),
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create('Panel',{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+Ext.define('eui.data.validator.Format', {
+    extend: 'Ext.data.validator.Validator',
+    alias: 'data.validator.euiformat',
+    type: 'euiformat',
+    config: {
+        chkType: null,
+        /***
+         * @cfg {Object} chkString
+         *
+         * chkType에 따른 정규식 및 메시지 설정
+         */
+        chkString: {
+            K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            K_MSG: '한글만 허용합니다',
+            E: /^[A-Z]*$/,
+            E_MSG: '영문 대문자만 허용합니다',
+            e: /^[a-z]*$/,
+            e_MSG: '영문 소문자만 허용합니다',
+            Ee: /^[A-Za-z]*$/,
+            Ee_MSG: '영문 대소문자만 허용합니다',
+            N: /^[0-9+]*$/,
+            N_MSG: '숫자만 허용합니다',
+            C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            C_MSG: '일반문자(한글&알파벳)만 허용합니다'
+        },
+        /**
+         * @cfg {String} message
+         * The error message to return when the value does not match the format.
+         */
+        message: null,
+        /**
+         * @cfg {RegExp} matcher (required) The matcher regex to test against the value.
+         */
+        matcher: undefined
+    },
+    constructor: function() {
+        this.callParent(arguments);
+        if (!this.getChkType()) {
+            Ext.raise('체크할 형식의 타입을 지정해야합니다.');
+        }
+    },
+    validate: function(value) {
+        var me = this,
+            matcher = this.getMatcher(),
+            result = matcher && matcher.test(value),
+            chkTypeString = me.getChkString()[me.getChkType()],
+            chkTypeMessage = me.getChkString()[me.getChkType() + '_MSG'];
+        if (this.getChkType()) {
+            value = value.replace(/(\s*)/g, "");
+            for (var i = 0; i < value.length; i++) {
+                console.log(value, value.substring(i, i + 1));
+                result = me.getChkString()[me.getChkType()].test(value.substring(i, i + 1));
+                if (!result) {
+                    break;
+                }
+            }
+        }
+        return result ? result : this.getMessage() || chkTypeMessage;
+    }
+});
+
+/***
+ *
+ * ## Summary
+ *
  * Ext.form.CheckboxGroup 확장. 스타일 적용
  *
  *      fieldLabel: '체크박스그룹',
@@ -2564,6 +2788,143 @@ Ext.define('eui.form.Panel', {
  *
  * code & code name을 같이 사용하는 팝업 전용 fieldcontainer
  *
+ * # Sample
+ *
+ *     @example
+ *
+ *     Ext.define('BizField', {
+ *          extend: 'eui.form.PopUpFieldContainer',
+ *          alias: 'widget.bizfield',
+ *          //requires: ['Eui.sample.view.common.PopUp03'],   // 공용 팝업을 사용하지 않고 따로 정의 할 경우
+ *          fieldLabel: '사업자',
+ *          defaultListenerScope: true,
+ *          allowBlank: false,
+ *          // 검색 파라메터
+ *          searchKeyField : 'SEARCHKEY',
+ *          // 다중 선택 가능.
+ *          multiSelect: false,
+ *         // 검색창 내부 서버사이드 주소.
+ *         proxyUrl : 'eui-core/resources/data/data04.json',
+ *
+ *         // 팝업 너비
+ *         popupWidth: 500,
+ *         // 팝업 높이
+ *         popupHeight: 250,
+ *
+ *         // 별도 팝업 정의 시 클래스 위젯명(정의하지 않으면 기본 팝업)
+ *         //    popupWidget: 'popup03',
+ *         simpleColumns: [
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             }
+ *         ],
+ *         normalColumns: [
+ *             {
+ *                 text: 'CUSTOMER_CODE',
+ *                 dataIndex: 'CUSTOMER_CODE'
+ *             },
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             },
+ *             {
+ *                 text: 'ADDR_ENG',
+ *                 dataIndex: 'ADDR_ENG'
+ *             }
+ *         ],
+ *
+ *         formConfig: {
+ *             xtype: 'euiform',
+ *             title: '사업자 검색1',
+ *             tableColumns: 1,
+ *             items: [
+ *                 {
+ *                     xtype: 'euitext',
+ *                     name: 'SEARCHKEY',
+ *                     fieldLabel: '사업자코드'
+ *                 },
+ *             {
+ *                 xtype: 'euitext',
+ *                 name: 'SEARCHKEYNAME',
+ *                 fieldLabel: '사업자명'
+ *             }
+ *         ]
+ *     },
+ *
+ *     setPopupValues: function (trigger, record, valueField, displayField) {
+ *         var me = this,
+ *         firstField = this.down('#firstField'),
+ *         secondField = this.down('#secondField');
+ *
+ *         if(Ext.isArray(record)) {
+ *         // 복수 선택 처리.
+ *         }else{
+ *             firstField.setValue(record.get('CUSTOMER_CODE'));
+ *             firstField.resetOriginalValue();
+ *             secondField.setValue(record.get('CUSTOMER_NAME'));
+ *             secondField.resetOriginalValue();
+ *         }
+ *     }
+ *      });
+ *
+ *      Ext.define('CheckboxGroup', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          requires: ['BizField'],
+ *          viewModel: {
+ *
+ *          },
+ *          title: '체크박스그룹',
+ *          items: [
+ *             {
+ *               xtype: 'bizfield',
+ *               fieldLabel: '체크박스그룹',
+ *             }
+ *          ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOXGROUP : ['KOREA','JAPAN','USA']
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkBoxgroupAllCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue(['KOREA','JAPAN','USA','RUSIA']);
+ *          },
+ *
+ *          checkBoxgroupAllUnCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue();
+ *          }
+ *      });
+ *
+ *      Ext.create('CheckboxGroup',{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
  **/
 Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
@@ -2572,6 +2933,8 @@ Ext.define('eui.form.PopUpFieldContainer', {
         FIELD1: null,
         FIELD2: null
     },
+    firstReadOnly: false,
+    secondReadOnly: false,
     /***
      * 팝업 내부에서 값을 결정하면 이 메소드를 구현해야한다.
      */
@@ -2732,7 +3095,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
             normalColumns: me.normalColumns,
             formConfig: me.formConfig,
             width: me.popupWidth,
-            heigh: me.popupHeight
+            height: me.popupHeight
         });
     },
     initComponent: function() {
@@ -2744,6 +3107,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     bind: me.bindVar.FIELD1,
                     hideLabel: true,
                     itemId: 'firstField',
+                    readOnly: me.firstReadOnly,
                     xtype: 'euitext',
                     //                    triggerCls: 'x-form-search-trigger',
                     //                    triggers: {
@@ -2773,6 +3137,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     xtype: 'euipopuppicker',
                     hideLabel: true,
                     simpleMode: true,
+                    readOnly: me.secondReadOnly,
                     triggerCls: 'x-form-arrow-trigger',
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,
@@ -7632,6 +7997,12 @@ Ext.define('eui.mvvm.GridRenderer', {
      * @returns {*}
      */
     dateRenderer: function(v, meta) {
+        if (!v) {
+            return v;
+        }
+        if (Ext.Object.getSize(meta) == 0) {
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+        }
         var date,
             columnFormat = meta.column.format;
         //        var f1 = new Date('2012-02-19');      getHours() : 9
