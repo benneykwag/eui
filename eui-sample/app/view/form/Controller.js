@@ -21,6 +21,7 @@ Ext.define('Eui.sample.view.form.Controller', {
             COMBOBOX01 : 'VW',
             COMBOBOX02 : 'MICROSOFT',
             CHECKBOXGROUP: ['KOREA','JAPAN','USA','RUSIA'],
+            BIGTEXT: 'AAAA',
             NUMBER01 : 1100090
         }));
     },

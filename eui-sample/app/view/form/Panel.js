@@ -1,5 +1,5 @@
 Ext.define('Eui.sample.view.form.Panel', {
-    extend: 'Ext.panel.Panel',
+    extend: 'eui.panel.BasePanel',
     xtype: 'sample-form',
     title: 'EUI 사용하기',
 
@@ -20,7 +20,6 @@ Ext.define('Eui.sample.view.form.Panel', {
         'eui.form.field.Text',
         'eui.form.field.PopUpPicker'
     ],
-
     controller: 'sample-form',
     viewModel: {
 
@@ -28,12 +27,7 @@ Ext.define('Eui.sample.view.form.Panel', {
     defaults: {
         margin: 5
     },
-
-    layout: {
-        type: 'hbox',
-        align: 'stretch'
-    },
-
+    layout: 'auto',
     items: [
         {
             flex: 1,
@@ -181,6 +175,14 @@ Ext.define('Eui.sample.view.form.Panel', {
                     },
                     xtype: 'addressfield'
 
+                },
+                {
+                    colspan: 2,
+                    bind: {
+                        rawValue: '{RECORD.BIGTEXT}'
+                    },
+                    fieldLabel: 'tinymcetextarea',
+                    xtype: 'tinymcetextarea'
                 }
             ],
             buttons: [
