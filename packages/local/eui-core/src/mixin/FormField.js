@@ -17,10 +17,9 @@ Ext.define("eui.mixin.FormField", {
      */
     setAllowBlank: function () {
         if(this.allowBlank!==undefined && !this.allowBlank){
-            if(!this.fieldLabel){
-                this.fieldLabel = "";
+            if(this.fieldLabel){
+                this.fieldLabel = '<span style="color:red">*</span>'+this.fieldLabel;
             }
-            this.fieldLabel = '<span style="color:red">*</span>'+this.fieldLabel;
         }
     },
 
