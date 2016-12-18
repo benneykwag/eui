@@ -52,7 +52,7 @@
      * The name of the theme for this application.
      */
     
-    "theme": "my-classic-theme",
+    "theme": "theme-gray",
     
     
     /**
@@ -68,7 +68,8 @@
         "ext-ux",
         "font-awesome",
         "eui-core",
-        "ext-locale"
+        "ext-locale",
+        "ext_tinymce_editor"
     ],
     "locale": "ko",
 

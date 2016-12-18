@@ -103,7 +103,10 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
 </span><span id='eui-grid-Panel-property-localeProperties'>//    ui: &#39;basicgrid&#39;,
 </span>
     localeProperties: [&#39;title&#39;],
-    requires: [&#39;Ext.ux.grid.PageSize&#39;],
+    requires: [
+        &#39;Ext.ux.statusbar.StatusBar&#39;,
+        &#39;Ext.ux.grid.PageSize&#39;
+    ],
     mixins: [
         &#39;eui.mixin.Panel&#39;
     ],
@@ -176,6 +179,32 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
         }
         me.callParent(arguments);
 
+    },
+
+<span id='eui-grid-Panel-method-startEditByPosition'>    /***
+</span>     * CellEditor사용시 로우와 컬럼을 명시해 에디터를 열수 있다.
+     * @param {int} rowPosition
+     * @param {int} columnPosition
+     */
+    startEditByPosition: function (rowPosition, columnPosition) {
+        var editor = null;
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i &lt; plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        }
+        else {
+            if (Ext.getClassName(plugins) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                editor = plugins;
+            }
+        }
+        if (editor) {
+            editor.startEditByPosition({ row: rowPosition, column: columnPosition });
+        }
     },
 
 <span id='eui-grid-Panel-method-checkComplete'>    checkComplete: function (editor, context) {

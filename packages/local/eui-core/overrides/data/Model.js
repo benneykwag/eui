@@ -122,7 +122,11 @@ Ext.define('Override.data.Model', {
         }
         // 기본 신규 레코드로 처리.
         if(Ext.isEmpty(ret['__rowStatus'])){
-            ret['__rowStatus'] = 'I';
+            var flag = me.crudState;
+            if(flag == 'C'){
+                flag = 'I';
+            }
+            ret['__rowStatus'] = flag;
         }
         return ret;
     }

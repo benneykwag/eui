@@ -4,6 +4,143 @@
  *
  * code & code name을 같이 사용하는 팝업 전용 fieldcontainer
  *
+ * # Sample
+ *
+ *     @example
+ *
+ *     Ext.define('BizField', {
+ *          extend: 'eui.form.PopUpFieldContainer',
+ *          alias: 'widget.bizfield',
+ *          //requires: ['Eui.sample.view.common.PopUp03'],   // 공용 팝업을 사용하지 않고 따로 정의 할 경우
+ *          fieldLabel: '사업자',
+ *          defaultListenerScope: true,
+ *          allowBlank: false,
+ *          // 검색 파라메터
+ *          searchKeyField : 'SEARCHKEY',
+ *          // 다중 선택 가능.
+ *          multiSelect: false,
+ *         // 검색창 내부 서버사이드 주소.
+ *         proxyUrl : 'eui-core/resources/data/data04.json',
+ *
+ *         // 팝업 너비
+ *         popupWidth: 500,
+ *         // 팝업 높이
+ *         popupHeight: 250,
+ *
+ *         // 별도 팝업 정의 시 클래스 위젯명(정의하지 않으면 기본 팝업)
+ *         //    popupWidget: 'popup03',
+ *         simpleColumns: [
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             }
+ *         ],
+ *         normalColumns: [
+ *             {
+ *                 text: 'CUSTOMER_CODE',
+ *                 dataIndex: 'CUSTOMER_CODE'
+ *             },
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             },
+ *             {
+ *                 text: 'ADDR_ENG',
+ *                 dataIndex: 'ADDR_ENG'
+ *             }
+ *         ],
+ *
+ *         formConfig: {
+ *             xtype: 'euiform',
+ *             title: '사업자 검색1',
+ *             tableColumns: 1,
+ *             items: [
+ *                 {
+ *                     xtype: 'euitext',
+ *                     name: 'SEARCHKEY',
+ *                     fieldLabel: '사업자코드'
+ *                 },
+ *             {
+ *                 xtype: 'euitext',
+ *                 name: 'SEARCHKEYNAME',
+ *                 fieldLabel: '사업자명'
+ *             }
+ *         ]
+ *     },
+ *
+ *     setPopupValues: function (trigger, record, valueField, displayField) {
+ *         var me = this,
+ *         firstField = this.down('#firstField'),
+ *         secondField = this.down('#secondField');
+ *
+ *         if(Ext.isArray(record)) {
+ *         // 복수 선택 처리.
+ *         }else{
+ *             firstField.setValue(record.get('CUSTOMER_CODE'));
+ *             firstField.resetOriginalValue();
+ *             secondField.setValue(record.get('CUSTOMER_NAME'));
+ *             secondField.resetOriginalValue();
+ *         }
+ *     }
+ *      });
+ *
+ *      Ext.define('CheckboxGroup', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          requires: ['BizField'],
+ *          viewModel: {
+ *
+ *          },
+ *          title: '체크박스그룹',
+ *          items: [
+ *             {
+ *               xtype: 'bizfield',
+ *               fieldLabel: '체크박스그룹',
+ *             }
+ *          ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOXGROUP : ['KOREA','JAPAN','USA']
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkBoxgroupAllCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue(['KOREA','JAPAN','USA','RUSIA']);
+ *          },
+ *
+ *          checkBoxgroupAllUnCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue();
+ *          }
+ *      });
+ *
+ *      Ext.create('CheckboxGroup',{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
  **/
 Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
@@ -13,6 +150,9 @@ Ext.define('eui.form.PopUpFieldContainer', {
         FIELD1: null,
         FIELD2: null
     },
+
+    firstReadOnly : false,
+    secondReadOnly: false,
 
     /***
      * 팝업 내부에서 값을 결정하면 이 메소드를 구현해야한다.
@@ -184,7 +324,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
             normalColumns: me.normalColumns,
             formConfig: me.formConfig,
             width: me.popupWidth,
-            heigh: me.popupHeight
+            height: me.popupHeight
         });
     },
 
@@ -199,6 +339,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     bind: me.bindVar.FIELD1,
                     hideLabel: true,
                     itemId: 'firstField',
+                    readOnly: me.firstReadOnly,
                     xtype: 'euitext',
 //                    triggerCls: 'x-form-search-trigger',
 //                    triggers: {
@@ -228,6 +369,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     xtype: 'euipopuppicker',
                     hideLabel: true,
                     simpleMode: true,
+                    readOnly: me.secondReadOnly,
                     triggerCls: 'x-form-arrow-trigger',
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,

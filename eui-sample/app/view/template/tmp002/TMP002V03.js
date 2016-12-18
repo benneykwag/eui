@@ -47,7 +47,21 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
     },
 
     items: [
-
+        {
+            xtype: 'euidisplay',
+            fieldLabel: '입력상태',
+            bind: '{customerRecord.__rowStatus}'
+        },
+        {
+            xtype: 'euidate',
+            fieldLabel: '입력일',
+            bind: '{customerRecord.INPUT_DT}'
+        },
+        {
+            xtype: 'euidate',
+            fieldLabel: '수정일',
+            bind: '{customerRecord.UPDATE_DT}'
+        },
         {
             xtype: 'euitext',
             fieldLabel: '사용자',

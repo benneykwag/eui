@@ -12,7 +12,7 @@ Ext.define('eui.form.field.Date', {
     submitFormat: 'Ymd',
     format: 'Y-m-d',
     altFormats: 'Ymd',
-    value: new Date(),
+//    value: new Date(),
     dateNum : null,
     width: '100%',
     cellCls: 'fo-table-row-td',

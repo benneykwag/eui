@@ -14,11 +14,11 @@ Ext.define('eui.container.PopupContainer', {
             //화면에서 호출시 리턴 함수 호출 ( popupCallback )
             this.__PARENT.popupCallback([record, valueField, displayField]);
         }
-        var owner = Util.getOwnerCt(this);
-        if (owner.xtype.indexOf('window') != -1) {
-            owner.close();
-        } else {
-//            owner.hide();
-        }
+//        var owner = Util.getOwnerCt(this);
+//        if (owner.xtype.indexOf('window') != -1) {
+//            owner.close();
+//        } else {
+////            owner.hide();
+//        }
     }
 });

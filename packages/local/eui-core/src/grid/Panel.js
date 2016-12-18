@@ -86,7 +86,10 @@ Ext.define('eui.grid.Panel', {
 //    ui: 'basicgrid',
 
     localeProperties: ['title'],
-    requires: ['Ext.ux.grid.PageSize'],
+    requires: [
+        'Ext.ux.statusbar.StatusBar',
+        'Ext.ux.grid.PageSize'
+    ],
     mixins: [
         'eui.mixin.Panel'
     ],
@@ -159,6 +162,32 @@ Ext.define('eui.grid.Panel', {
         }
         me.callParent(arguments);
 
+    },
+
+    /***
+     * CellEditor사용시 로우와 컬럼을 명시해 에디터를 열수 있다.
+     * @param {int} rowPosition
+     * @param {int} columnPosition
+     */
+    startEditByPosition: function (rowPosition, columnPosition) {
+        var editor = null;
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        }
+        else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        if (editor) {
+            editor.startEditByPosition({ row: rowPosition, column: columnPosition });
+        }
     },
 
     checkComplete: function (editor, context) {

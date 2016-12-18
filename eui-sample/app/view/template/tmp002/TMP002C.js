@@ -8,6 +8,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
     dataSearch: function (button) {
         var cmpKey = this.lookupReference('cmpKey').getValue(),
             grid = this.lookupReference('cusGrid');
+//        grid.startEditByPosition(0, 2);
         grid.store.load({
             params: {
                 cmpKey: cmpKey
@@ -15,14 +16,31 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
         });
     },
 
+    ExcelUpload : function(btn){
+        Util.callExcelUploader(this.view,'api/WMSMS001SVC/save');
+    },
+
+    openEditor: function () {
+        var grid = this.lookupReference('cusGrid'),
+            rowPosition = this.vm.get('ROWPOSITION')||0,
+            colPosition = this.vm.get('COLPOSITION')||0;
+        grid.startEditByPosition(rowPosition, colPosition);
+    },
+
     openWindow: function (record) {
-        var popup = Util.commonPopup(this.getView(), '고객약속 수정', 'Eui.sample.view.template.tmp002.TMP002V03', 530, 320, {
-            customerRecord: record
-        }, {
-            modal: true
-        }, false);
+        var popup = Util.commonPopup(this.getView(),
+            '고객약속 수정',
+            'Eui.sample.view.template.tmp002.TMP002V03',
+            530,
+            420,
+            {}, {
+                modal: true
+            }, false);
 
         popup.down('TMP002V03').on('onsaveform', function (rec) {
+            debugger;
+            console.log('rec', rec.getData());
+
             this.onSaveForm(rec, popup, function () {
                 popup.close();
             });
@@ -35,8 +53,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
         }, this);
 
         popup.down('TMP002V03').on('render', function (rec) {
-            var rec = this.__PARAMS.customerRecord;
-            this.getViewModel().set('customerRecord', rec);
+            this.getViewModel().set('customerRecord', record);
         });
         popup.show();
     },

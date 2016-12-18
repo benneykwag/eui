@@ -131,6 +131,11 @@
         <copy todir="/Volumes/Disk2/git.projects/eui-site/docs" overwrite="true">
             <fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>
         </copy>
+
+        <delete dir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/docs"/>
+        <copy todir="/Users/benney/Documents/DevRoot/java_workspace/np/src/main/webapp/docs" overwrite="true">
+            <fileset dir="${workspace.dir}/packages/local/eui-core/docs"></fileset>
+        </copy>
     </target>
 
     <!--<target name="copy.test">

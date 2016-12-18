@@ -142,7 +142,12 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
-                    xtype: 'exporterbutton'
+                    xtype: 'exporterbutton',
+                    listeners: {
+                        click: function () {
+                            this.onClick2();
+                        }
+                    }
 //                    targetGrid: owner
                     //Or you can use
                     //component: someGrid

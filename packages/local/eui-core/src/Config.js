@@ -16,6 +16,10 @@ Ext.define('eui.Config', {
 
     // Override.data.proxy.Server 에서 사용
     baseUrlPrifix: null,
+    subUrlPrifix : null,
+
+    // 명령 툴바용 데이터
+    commandButtonControllerUrl : null,
 
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
@@ -104,6 +108,8 @@ Ext.define('eui.Config', {
             {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"},
             {"MSG_ID": "조회", "MSG_LABEL": "조회"},
             {"MSG_ID": "조회아이콘", "MSG_LABEL": "x-fa fa-search"},
+            {"MSG_ID": "인쇄", "MSG_LABEL": "인쇄"},
+            {"MSG_ID": "인쇄아이콘", "MSG_LABEL": "x-fa fa-print"},
             {"MSG_ID": "CONFIRM", "MSG_LABEL": "확인"},
             {"MSG_ID": "RECORD_DIRTY", "MSG_LABEL": "레코드가 수정중 입니다"},
             {"MSG_ID": "RECORD_DELETE", "MSG_LABEL": "레코드를 삭제하시겠습니까.?"},

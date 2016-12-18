@@ -494,6 +494,9 @@ Ext.define(&#39;eui.Util&#39;, {
             timeoutSeq = 30000;
         }
 
+        if(!Ext.isEmpty(Config.subUrlPrifix)){
+            pURL = Config.subUrlPrifix + pURL;
+        }
         // 주소 조정.
         if(!Ext.isEmpty(Config.baseUrlPrifix)){
             if(pURL.substring(0,1) == &quot;/&quot;){  // 상대경로는 처리하지 않는다

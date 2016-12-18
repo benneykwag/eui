@@ -24,6 +24,7 @@ Ext.define('Eui.sample.view.common.BizField', {
 //        width: 500,
 //        height: 250
 //    },
+    secondReadOnly: true,
 
     simpleColumns: [
         {

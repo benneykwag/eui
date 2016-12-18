@@ -20,6 +20,10 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V',{
             xtype: 'TMP002V01'
         },
         {
+            xtype: 'TMP002V04'
+        },
+        {
+            itemId: 'excelgrid',
             reference: 'cusGrid',
             xtype: 'TMP002V02',
             bind: '{STORE01}'

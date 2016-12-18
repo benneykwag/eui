@@ -192,6 +192,7 @@
      * classes must be explicitly required to be included in the build.
      */
     "classpath": [
+        "${workspace.dir}/ext/packages/ux/classic/src/statusbar/StatusBar.js",
         "${package.dir}/src",
         "${package.dir}/${toolkit.name}/src",
         "${package.dir}/lib"

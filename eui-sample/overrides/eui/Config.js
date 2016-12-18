@@ -5,6 +5,8 @@ Ext.define('Override.eui.Config', {
     override: 'eui.Config',
     localeUrl: 'resources/data/i18n.json',
 //    baseUrlPrifix : 'http://localhost:8080',
+
+    commandButtonControllerUrl : 'resources/data/buttonControl.json',
     message: [
         {"MSG_ID": "행추가2", "MSG_LABEL": "신청일자를 입력해 주세요."},
         {"MSG_ID": "CONFIRM", "MSG_LABEL": "확인"},

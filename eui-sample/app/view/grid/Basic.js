@@ -12,7 +12,23 @@ Ext.define('Eui.sample.view.grid.Basic', {
     controller: 'sample-basic-grid',
     viewModel: 'sample-basic-grid',
     layout: 'fit',
-
+//    tbar: [
+//        {
+//            bind: '{mystore}',
+//            xtype: 'euicommand',
+//            params: {
+//                PGMID: 'A000',
+//                POSIT: '1'
+//            },
+//            listeners: {
+//                rowaddbtnclick: 'onRowAdd',
+//                regbtnclick: 'onRowReg',
+//                rowdeletebtnclick: 'onRowDelete',
+//                modbtnclick: 'onRowMod',
+//                savebtnclick: 'onRowSave'
+//            }
+//        }
+//    ],
     items: [
         {
 //            itemId: 'mygrid',
@@ -30,28 +46,23 @@ Ext.define('Eui.sample.view.grid.Basic', {
 
             tbar: [
                 {
-//            ownerGrid : 'sample-basic-grid@mygrid',
-                    showRowAddBtn: true,    // 행추가 버튼 활성화
-                    showRowDelBtn: true,    // 행삭제 버튼 활성화
-                    showRegBtn: true,       // 등록 버튼 활성화
-                    showModBtn: true,       // 수정 버튼 활성화
-                    showSaveBtn: true,      // 저장 버튼 활성화
-                    showReloadBtn: true,    // 조회 버튼 활성화
-                    showExcelDownBtn: true,
-                    xtype: 'commandtoolbar' // eui.toolbar.Command 클래스
+                    xtype: 'euicommand',
+                    params: {
+                        PGMID: 'A000',
+                        POSIT: '1'
+                    },
+                    listeners: {
+                        rowaddbtnclick: 'onRowAdd',
+                        regbtnclick: 'onRowReg',
+                        rowdeletebtnclick: 'onRowDelete',
+                        modbtnclick: 'onRowMod',
+                        savebtnclick: 'onRowSave'
+                    }
                 }
             ],
-            bind: {
-                store: '{mystore}'      // ViewModel클래스에 정의됨.
-            },
-            listeners: {                // ViewController클래스에 정의됨.
-                select: 'onGridSelect',
-                regbtnclick: 'onRowReg',
-                rowdeletebtnclick: 'onRowDelete',
-                modbtnclick: 'onRowMod',
-                rowaddbtnclick: 'onRowAdd',
-                savebtnclick: 'onRowSave'
-            },
+
+            bind: '{mystore}',
+
             columns: [
                 {
                     text: '#{행추가2}',

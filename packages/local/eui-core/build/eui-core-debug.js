@@ -265,7 +265,11 @@ Ext.define('Override.data.Model', {
         // pass ret so new data is added to our object
         // 기본 신규 레코드로 처리.
         if (Ext.isEmpty(ret['__rowStatus'])) {
-            ret['__rowStatus'] = 'I';
+            var flag = me.crudState;
+            if (flag == 'C') {
+                flag = 'I';
+            }
+            ret['__rowStatus'] = flag;
         }
         return ret;
     }
@@ -323,6 +327,9 @@ Ext.define('Override.data.proxy.Server', {
         }
         if (me.getNoCache()) {
             url = Ext.urlAppend(url, Ext.String.format("{0}={1}", me.getCacheString(), Ext.Date.now()));
+        }
+        if (!Ext.isEmpty(Config.subUrlPrifix)) {
+            url = Config.subUrlPrifix + url;
         }
         // 주소 조정.
         if (!Ext.isEmpty(Config.baseUrlPrifix)) {
@@ -411,10 +418,9 @@ Ext.define("eui.mixin.FormField", {
      */
     setAllowBlank: function() {
         if (this.allowBlank !== undefined && !this.allowBlank) {
-            if (!this.fieldLabel) {
-                this.fieldLabel = "";
+            if (this.fieldLabel) {
+                this.fieldLabel = '<span style="color:red">*</span>' + this.fieldLabel;
             }
-            this.fieldLabel = '<span style="color:red">*</span>' + this.fieldLabel;
         }
     },
     /**
@@ -494,8 +500,406 @@ Ext.define('Override.grid.column.Column', {
     localeProperties: [
         'text'
     ],
+    style: 'text-align:center',
     initComponent: function() {
         this.callParent(arguments);
+    }
+});
+
+/**
+ * Basic status bar component that can be used as the bottom toolbar of any {@link Ext.Panel}.  In addition to
+ * supporting the standard {@link Ext.toolbar.Toolbar} interface for adding buttons, menus and other items, the StatusBar
+ * provides a greedy status element that can be aligned to either side and has convenient methods for setting the
+ * status text and icon.  You can also indicate that something is processing using the {@link #showBusy} method.
+ *
+ *     Ext.create('Ext.Panel', {
+ *         title: 'StatusBar',
+ *         // etc.
+ *         bbar: Ext.create('Ext.ux.StatusBar', {
+ *             id: 'my-status',
+ *      
+ *             // defaults to use when the status is cleared:
+ *             defaultText: 'Default status text',
+ *             defaultIconCls: 'default-icon',
+ *      
+ *             // values to set initially:
+ *             text: 'Ready',
+ *             iconCls: 'ready-icon',
+ *      
+ *             // any standard Toolbar items:
+ *             items: [{
+ *                 text: 'A Button'
+ *             }, '-', 'Plain Text']
+ *         })
+ *     });
+ *
+ *     // Update the status bar later in code:
+ *     var sb = Ext.getCmp('my-status');
+ *     sb.setStatus({
+ *         text: 'OK',
+ *         iconCls: 'ok-icon',
+ *         clear: true // auto-clear after a set interval
+ *     });
+ *
+ *     // Set the status bar to show that something is processing:
+ *     sb.showBusy();
+ *
+ *     // processing....
+ *
+ *     sb.clearStatus(); // once completeed
+ *
+ */
+Ext.define('Ext.ux.statusbar.StatusBar', {
+    extend: 'Ext.toolbar.Toolbar',
+    alternateClassName: 'Ext.ux.StatusBar',
+    alias: 'widget.statusbar',
+    requires: [
+        'Ext.toolbar.TextItem'
+    ],
+    /**
+     * @cfg {String} statusAlign
+     * The alignment of the status element within the overall StatusBar layout.  When the StatusBar is rendered,
+     * it creates an internal div containing the status text and icon.  Any additional Toolbar items added in the
+     * StatusBar's {@link #cfg-items} config, or added via {@link #method-add} or any of the supported add* methods, will be
+     * rendered, in added order, to the opposite side.  The status element is greedy, so it will automatically
+     * expand to take up all sapce left over by any other items.  Example usage:
+     *
+     *     // Create a left-aligned status bar containing a button,
+     *     // separator and text item that will be right-aligned (default):
+     *     Ext.create('Ext.Panel', {
+     *         title: 'StatusBar',
+     *         // etc.
+     *         bbar: Ext.create('Ext.ux.statusbar.StatusBar', {
+     *             defaultText: 'Default status text',
+     *             id: 'status-id',
+     *             items: [{
+     *                 text: 'A Button'
+     *             }, '-', 'Plain Text']
+     *         })
+     *     });
+     *
+     *     // By adding the statusAlign config, this will create the
+     *     // exact same toolbar, except the status and toolbar item
+     *     // layout will be reversed from the previous example:
+     *     Ext.create('Ext.Panel', {
+     *         title: 'StatusBar',
+     *         // etc.
+     *         bbar: Ext.create('Ext.ux.statusbar.StatusBar', {
+     *             defaultText: 'Default status text',
+     *             id: 'status-id',
+     *             statusAlign: 'right',
+     *             items: [{
+     *                 text: 'A Button'
+     *             }, '-', 'Plain Text']
+     *         })
+     *     });
+     */
+    /**
+     * @cfg {String} [defaultText='']
+     * The default {@link #text} value.  This will be used anytime the status bar is cleared with the
+     * `useDefaults:true` option.
+     */
+    /**
+     * @cfg {String} [defaultIconCls='']
+     * The default {@link #iconCls} value (see the iconCls docs for additional details about customizing the icon).
+     * This will be used anytime the status bar is cleared with the `useDefaults:true` option.
+     */
+    /**
+     * @cfg {String} text
+     * A string that will be <b>initially</b> set as the status message.  This string
+     * will be set as innerHTML (html tags are accepted) for the toolbar item.
+     * If not specified, the value set for {@link #defaultText} will be used.
+     */
+    /**
+     * @cfg {String} [iconCls='']
+     * @inheritdoc Ext.panel.Header#cfg-iconCls
+     * @localdoc **Note:** This CSS class will be **initially** set as the status bar 
+     * icon.  See also {@link #defaultIconCls} and {@link #busyIconCls}.
+     *
+     * Example usage:
+     *
+     *     // Example CSS rule:
+     *     .x-statusbar .x-status-custom {
+     *         padding-left: 25px;
+     *         background: transparent url(images/custom-icon.gif) no-repeat 3px 2px;
+     *     }
+     *
+     *     // Setting a default icon:
+     *     var sb = Ext.create('Ext.ux.statusbar.StatusBar', {
+     *         defaultIconCls: 'x-status-custom'
+     *     });
+     *
+     *     // Changing the icon:
+     *     sb.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom'
+     *     });
+     */
+    /**
+     * @cfg {String} cls
+     * The base class applied to the containing element for this component on render.
+     */
+    cls: 'x-statusbar',
+    /**
+     * @cfg {String} busyIconCls
+     * The default {@link #iconCls} applied when calling {@link #showBusy}.
+     * It can be overridden at any time by passing the `iconCls` argument into {@link #showBusy}.
+     */
+    busyIconCls: 'x-status-busy',
+    /**
+     * @cfg {String} busyText
+     * The default {@link #text} applied when calling {@link #showBusy}.
+     * It can be overridden at any time by passing the `text` argument into {@link #showBusy}.
+     */
+    busyText: 'Loading...',
+    /**
+     * @cfg {Number} autoClear
+     * The number of milliseconds to wait after setting the status via
+     * {@link #setStatus} before automatically clearing the status text and icon.
+     * Note that this only applies when passing the `clear` argument to {@link #setStatus}
+     * since that is the only way to defer clearing the status.  This can
+     * be overridden by specifying a different `wait` value in {@link #setStatus}.
+     * Calls to {@link #clearStatus} always clear the status bar immediately and ignore this value.
+     */
+    autoClear: 5000,
+    /**
+     * @cfg {String} emptyText
+     * The text string to use if no text has been set. If there are no other items in
+     * the toolbar using an empty string (`''`) for this value would end up in the toolbar
+     * height collapsing since the empty string will not maintain the toolbar height.
+     * Use `''` if the toolbar should collapse in height vertically when no text is
+     * specified and there are no other items in the toolbar.
+     */
+    emptyText: '&#160;',
+    /**
+     * @private
+     */
+    activeThreadId: 0,
+    initComponent: function() {
+        var right = this.statusAlign === 'right';
+        this.callParent(arguments);
+        this.currIconCls = this.iconCls || this.defaultIconCls;
+        this.statusEl = Ext.create('Ext.toolbar.TextItem', {
+            cls: 'x-status-text ' + (this.currIconCls || ''),
+            text: this.text || this.defaultText || ''
+        });
+        if (right) {
+            this.cls += ' x-status-right';
+            this.add('->');
+            this.add(this.statusEl);
+        } else {
+            this.insert(0, this.statusEl);
+            this.insert(1, '->');
+        }
+    },
+    /**
+     * Sets the status {@link #text} and/or {@link #iconCls}. Also supports automatically clearing the
+     * status that was set after a specified interval.
+     *
+     * Example usage:
+     *
+     *     // Simple call to update the text
+     *     statusBar.setStatus('New status');
+     *
+     *     // Set the status and icon, auto-clearing with default options:
+     *     statusBar.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom',
+     *         clear: true
+     *     });
+     *
+     *     // Auto-clear with custom options:
+     *     statusBar.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom',
+     *         clear: {
+     *             wait: 8000,
+     *             anim: false,
+     *             useDefaults: false
+     *         }
+     *     });
+     *
+     * @param {Object/String} config A config object specifying what status to set, or a string assumed
+     * to be the status text (and all other options are defaulted as explained below). A config
+     * object containing any or all of the following properties can be passed:
+     *
+     * @param {String} config.text The status text to display.  If not specified, any current
+     * status text will remain unchanged.
+     *
+     * @param {String} config.iconCls The CSS class used to customize the status icon (see
+     * {@link #iconCls} for details). If not specified, any current iconCls will remain unchanged.
+     *
+     * @param {Boolean/Number/Object} config.clear Allows you to set an internal callback that will
+     * automatically clear the status text and iconCls after a specified amount of time has passed. If clear is not
+     * specified, the new status will not be auto-cleared and will stay until updated again or cleared using
+     * {@link #clearStatus}. If `true` is passed, the status will be cleared using {@link #autoClear},
+     * {@link #defaultText} and {@link #defaultIconCls} via a fade out animation. If a numeric value is passed,
+     * it will be used as the callback interval (in milliseconds), overriding the {@link #autoClear} value.
+     * All other options will be defaulted as with the boolean option.  To customize any other options,
+     * you can pass an object in the format:
+     * 
+     * @param {Number} config.clear.wait The number of milliseconds to wait before clearing
+     * (defaults to {@link #autoClear}).
+     * @param {Boolean} config.clear.anim False to clear the status immediately once the callback
+     * executes (defaults to true which fades the status out).
+     * @param {Boolean} config.clear.useDefaults False to completely clear the status text and iconCls
+     * (defaults to true which uses {@link #defaultText} and {@link #defaultIconCls}).
+     *
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setStatus: function(o) {
+        var me = this;
+        o = o || {};
+        Ext.suspendLayouts();
+        if (Ext.isString(o)) {
+            o = {
+                text: o
+            };
+        }
+        if (o.text !== undefined) {
+            me.setText(o.text);
+        }
+        if (o.iconCls !== undefined) {
+            me.setIcon(o.iconCls);
+        }
+        if (o.clear) {
+            var c = o.clear,
+                wait = me.autoClear,
+                defaults = {
+                    useDefaults: true,
+                    anim: true
+                };
+            if (Ext.isObject(c)) {
+                c = Ext.applyIf(c, defaults);
+                if (c.wait) {
+                    wait = c.wait;
+                }
+            } else if (Ext.isNumber(c)) {
+                wait = c;
+                c = defaults;
+            } else if (Ext.isBoolean(c)) {
+                c = defaults;
+            }
+            c.threadId = this.activeThreadId;
+            Ext.defer(me.clearStatus, wait, me, [
+                c
+            ]);
+        }
+        Ext.resumeLayouts(true);
+        return me;
+    },
+    /**
+     * Clears the status {@link #text} and {@link #iconCls}. Also supports clearing via an optional fade out animation.
+     *
+     * @param {Object} [config] A config object containing any or all of the following properties.  If this
+     * object is not specified the status will be cleared using the defaults below:
+     * @param {Boolean} config.anim True to clear the status by fading out the status element (defaults
+     * to false which clears immediately).
+     * @param {Boolean} config.useDefaults True to reset the text and icon using {@link #defaultText} and
+     * {@link #defaultIconCls} (defaults to false which sets the text to '' and removes any existing icon class).
+     *
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    clearStatus: function(o) {
+        o = o || {};
+        var me = this,
+            statusEl = me.statusEl;
+        if (me.destroyed || o.threadId && o.threadId !== me.activeThreadId) {
+            // this means the current call was made internally, but a newer
+            // thread has set a message since this call was deferred.  Since
+            // we don't want to overwrite a newer message just ignore.
+            return me;
+        }
+        var text = o.useDefaults ? me.defaultText : me.emptyText,
+            iconCls = o.useDefaults ? (me.defaultIconCls ? me.defaultIconCls : '') : '';
+        if (o.anim) {
+            // animate the statusEl Ext.Element
+            statusEl.el.puff({
+                remove: false,
+                useDisplay: true,
+                callback: function() {
+                    statusEl.el.show();
+                    me.setStatus({
+                        text: text,
+                        iconCls: iconCls
+                    });
+                }
+            });
+        } else {
+            me.setStatus({
+                text: text,
+                iconCls: iconCls
+            });
+        }
+        return me;
+    },
+    /**
+     * Convenience method for setting the status text directly.  For more flexible options see {@link #setStatus}.
+     * @param {String} text (optional) The text to set (defaults to '')
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setText: function(text) {
+        var me = this;
+        me.activeThreadId++;
+        me.text = text || '';
+        if (me.rendered) {
+            me.statusEl.setText(me.text);
+        }
+        return me;
+    },
+    /**
+     * Returns the current status text.
+     * @return {String} The status text
+     */
+    getText: function() {
+        return this.text;
+    },
+    /**
+     * Convenience method for setting the status icon directly.  For more flexible options see {@link #setStatus}.
+     * See {@link #iconCls} for complete details about customizing the icon.
+     * @param {String} iconCls (optional) The icon class to set (defaults to '', and any current icon class is removed)
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setIcon: function(cls) {
+        var me = this;
+        me.activeThreadId++;
+        cls = cls || '';
+        if (me.rendered) {
+            if (me.currIconCls) {
+                me.statusEl.removeCls(me.currIconCls);
+                me.currIconCls = null;
+            }
+            if (cls.length > 0) {
+                me.statusEl.addCls(cls);
+                me.currIconCls = cls;
+            }
+        } else {
+            me.currIconCls = cls;
+        }
+        return me;
+    },
+    /**
+     * Convenience method for setting the status text and icon to special values that are pre-configured to indicate
+     * a "busy" state, usually for loading or processing activities.
+     *
+     * @param {Object/String} config (optional) A config object in the same format supported by {@link #setStatus}, or a
+     * string to use as the status text (in which case all other options for setStatus will be defaulted).  Use the
+     * `text` and/or `iconCls` properties on the config to override the default {@link #busyText}
+     * and {@link #busyIconCls} settings. If the config argument is not specified, {@link #busyText} and
+     * {@link #busyIconCls} will be used in conjunction with all of the default options for {@link #setStatus}.
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    showBusy: function(o) {
+        if (Ext.isString(o)) {
+            o = {
+                text: o
+            };
+        }
+        o = Ext.applyIf(o || {}, {
+            text: this.busyText,
+            iconCls: this.busyIconCls
+        });
+        return this.setStatus(o);
     }
 });
 
@@ -518,6 +922,9 @@ Ext.define('eui.Config', {
     defaultDateTimeFormat: 'Y-m-d H:i:s',
     // Override.data.proxy.Server 에서 사용
     baseUrlPrifix: null,
+    subUrlPrifix: null,
+    // 명령 툴바용 데이터
+    commandButtonControllerUrl: null,
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
     /***
@@ -643,6 +1050,14 @@ Ext.define('eui.Config', {
             {
                 "MSG_ID": "조회아이콘",
                 "MSG_LABEL": "x-fa fa-search"
+            },
+            {
+                "MSG_ID": "인쇄",
+                "MSG_LABEL": "인쇄"
+            },
+            {
+                "MSG_ID": "인쇄아이콘",
+                "MSG_LABEL": "x-fa fa-print"
             },
             {
                 "MSG_ID": "CONFIRM",
@@ -1109,6 +1524,9 @@ Ext.define('eui.Util', {
             timeoutSeq = timeoutSeq * 1000;
         } else {
             timeoutSeq = 30000;
+        }
+        if (!Ext.isEmpty(Config.subUrlPrifix)) {
+            pURL = Config.subUrlPrifix + pURL;
         }
         // 주소 조정.
         if (!Ext.isEmpty(Config.baseUrlPrifix)) {
@@ -1593,13 +2011,14 @@ Ext.define('eui.container.PopupContainer', {
                 displayField
             ]);
         }
-        var owner = Util.getOwnerCt(this);
-        if (owner.xtype.indexOf('window') != -1) {
-            owner.close();
-        } else {}
     }
 });
-//            owner.hide();
+//        var owner = Util.getOwnerCt(this);
+//        if (owner.xtype.indexOf('window') != -1) {
+//            owner.close();
+//        } else {
+////            owner.hide();
+//        }
 
 Ext.define('eui.container.Popup', {
     extend: 'eui.container.PopupContainer',
@@ -2007,6 +2426,230 @@ Ext.define('eui.store.LocaleStore', {
 
 
     }*/
+
+/***
+ *
+ * ## Summary
+ *
+ * Ext.data.validator.Validator 확장. 한글 영문 숫자 문자에 대한 처리
+ * 그리드 field정의 시 사용.
+ *
+ *      {
+ *          name: 'USEPRSN_NM',
+ *          validators: [
+ *              {
+ *                  type: "presence",
+ *                  message :"성명은 필수 입력 필드입니다."
+ *              },
+ *              {
+ *                  type: 'euiformat',
+ *                  chkType:  'K',
+ *                  message :"성명은 한글만 허용합니다"
+ *              }
+ *          ]
+ *      },
+ *      {
+ *          name: 'MSG',
+ *          validators: [
+ *              {
+ *                  type: 'euiformat',
+ *                  chkType:  'C'
+ *              }
+ *          ]
+ *      }
+ *
+ * # chkType
+ * K : 한글만 허용.
+ *
+ * N : 숫자만 허용
+ *
+ * E : 알파벳 대문자만 허용
+ *
+ * Ee : 알파벳 대소문자만 허용
+ *
+ * # chkString
+ * chkType에 맞는 정규식과 메시지 출력.
+ *
+ *     K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     K_MSG: '한글만 허용합니다',
+ *
+ *     E: /^[A-Z]*$/,
+ *
+ *     E_MSG: '영문 대문자만 허용합니다',
+ *
+ *     e: /^[a-z]*$/,
+ *
+ *     e_MSG: '영문 소문자만 허용합니다',
+ *
+ *     Ee: /^[A-Za-z]*$/,
+ *
+ *     Ee_MSG: '영문 대소문자만 허용합니다',
+ *
+ *     N: /^[0-9+]*$/,
+ *
+ *     N_MSG: '숫자만 허용합니다',
+ *
+ *     C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     C_MSG: '일반문자(한글&알파벳)만 허용합니다'
+ *
+ *
+ *
+ * # Sample
+ *
+ *     @example
+ *
+ *      Ext.define('Panel', {
+ *          extend: 'eui.grid.Panel',
+ *          defaultListenerScope: true,
+ *          title: '체크박스그룹',
+ *          plugins: {
+ *              ptype: 'cellediting',   // 셀에디터를 추가.
+ *              clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+ *          },
+ *          store: {
+ *              fields: [
+ *                  {
+ *                      name: 'USEPRSN_NM',
+ *                      validators: [
+ *                          {
+ *                              type: 'euiformat',
+ *                              chkType: 'K',
+ *                              message: "성명은 한글만 허용합니다"
+ *                          }
+ *                      ]
+ *                  },
+ *                  {
+ *                      name: 'MSG',
+ *                      validators: [
+ *                          {
+ *                              type: 'euiformat',
+ *                              chkType: 'Ee',
+ *                              message: "메시지는 영문대소문자만 허용합니다"
+ *                          }
+ *                      ]
+ *                  }
+ *              ],
+ *              data: [
+ *                  {
+ *                      USEPRSN_NM : '홍길동',
+ *                      MSG : 'Error Message'
+ *                  }
+ *              ]
+ *          },
+ *
+ *          columns: [
+ *              {
+ *                  text: '이름',
+ *                  dataIndex: 'USEPRSN_NM',
+ *                  editor: {
+ *                      xtype: 'textfield'
+ *                  }
+ *              },
+ *              {
+ *                  text: '메시지',
+ *                  dataIndex: 'MSG',
+ *                  editor: {
+ *                      xtype: 'textfield'
+ *                  }
+ *              }
+ *          ],
+ *
+ *          bbar: [
+ *              {
+ *                  text: '저장',
+ *                  xtype: 'button',
+ *                  handler: 'onSaveMember'
+ *              }
+ *         ],
+ *
+ *         onSaveMember: function () {
+ *              var grid = this;
+ *              if (!grid.store.recordsValidationCheck()) {
+ *                  return;
+ *              }
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: Util.getDatasetParam(grid.store),
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create('Panel',{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+Ext.define('eui.data.validator.Format', {
+    extend: 'Ext.data.validator.Validator',
+    alias: 'data.validator.euiformat',
+    type: 'euiformat',
+    config: {
+        chkType: null,
+        /***
+         * @cfg {Object} chkString
+         *
+         * chkType에 따른 정규식 및 메시지 설정
+         */
+        chkString: {
+            K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            K_MSG: '한글만 허용합니다',
+            E: /^[A-Z]*$/,
+            E_MSG: '영문 대문자만 허용합니다',
+            e: /^[a-z]*$/,
+            e_MSG: '영문 소문자만 허용합니다',
+            Ee: /^[A-Za-z]*$/,
+            Ee_MSG: '영문 대소문자만 허용합니다',
+            N: /^[0-9+]*$/,
+            N_MSG: '숫자만 허용합니다',
+            C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            C_MSG: '일반문자(한글&알파벳)만 허용합니다'
+        },
+        /**
+         * @cfg {String} message
+         * The error message to return when the value does not match the format.
+         */
+        message: null,
+        /**
+         * @cfg {RegExp} matcher (required) The matcher regex to test against the value.
+         */
+        matcher: undefined
+    },
+    constructor: function() {
+        this.callParent(arguments);
+        if (!this.getChkType()) {
+            Ext.raise('체크할 형식의 타입을 지정해야합니다.');
+        }
+    },
+    validate: function(value) {
+        var me = this,
+            matcher = this.getMatcher(),
+            result = matcher && matcher.test(value),
+            chkTypeString = me.getChkString()[me.getChkType()],
+            chkTypeMessage = me.getChkString()[me.getChkType() + '_MSG'];
+        if (this.getChkType()) {
+            value = value.replace(/(\s*)/g, "");
+            for (var i = 0; i < value.length; i++) {
+                console.log(value, value.substring(i, i + 1));
+                result = me.getChkString()[me.getChkType()].test(value.substring(i, i + 1));
+                if (!result) {
+                    break;
+                }
+            }
+        }
+        return result ? result : this.getMessage() || chkTypeMessage;
+    }
+});
 
 /***
  *
@@ -2564,6 +3207,143 @@ Ext.define('eui.form.Panel', {
  *
  * code & code name을 같이 사용하는 팝업 전용 fieldcontainer
  *
+ * # Sample
+ *
+ *     @example
+ *
+ *     Ext.define('BizField', {
+ *          extend: 'eui.form.PopUpFieldContainer',
+ *          alias: 'widget.bizfield',
+ *          //requires: ['Eui.sample.view.common.PopUp03'],   // 공용 팝업을 사용하지 않고 따로 정의 할 경우
+ *          fieldLabel: '사업자',
+ *          defaultListenerScope: true,
+ *          allowBlank: false,
+ *          // 검색 파라메터
+ *          searchKeyField : 'SEARCHKEY',
+ *          // 다중 선택 가능.
+ *          multiSelect: false,
+ *         // 검색창 내부 서버사이드 주소.
+ *         proxyUrl : 'eui-core/resources/data/data04.json',
+ *
+ *         // 팝업 너비
+ *         popupWidth: 500,
+ *         // 팝업 높이
+ *         popupHeight: 250,
+ *
+ *         // 별도 팝업 정의 시 클래스 위젯명(정의하지 않으면 기본 팝업)
+ *         //    popupWidget: 'popup03',
+ *         simpleColumns: [
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             }
+ *         ],
+ *         normalColumns: [
+ *             {
+ *                 text: 'CUSTOMER_CODE',
+ *                 dataIndex: 'CUSTOMER_CODE'
+ *             },
+ *             {
+ *                 text: 'CUSTOMER_NAME',
+ *                 dataIndex: 'CUSTOMER_NAME'
+ *             },
+ *             {
+ *                 text: 'ADDR_ENG',
+ *                 dataIndex: 'ADDR_ENG'
+ *             }
+ *         ],
+ *
+ *         formConfig: {
+ *             xtype: 'euiform',
+ *             title: '사업자 검색1',
+ *             tableColumns: 1,
+ *             items: [
+ *                 {
+ *                     xtype: 'euitext',
+ *                     name: 'SEARCHKEY',
+ *                     fieldLabel: '사업자코드'
+ *                 },
+ *             {
+ *                 xtype: 'euitext',
+ *                 name: 'SEARCHKEYNAME',
+ *                 fieldLabel: '사업자명'
+ *             }
+ *         ]
+ *     },
+ *
+ *     setPopupValues: function (trigger, record, valueField, displayField) {
+ *         var me = this,
+ *         firstField = this.down('#firstField'),
+ *         secondField = this.down('#secondField');
+ *
+ *         if(Ext.isArray(record)) {
+ *         // 복수 선택 처리.
+ *         }else{
+ *             firstField.setValue(record.get('CUSTOMER_CODE'));
+ *             firstField.resetOriginalValue();
+ *             secondField.setValue(record.get('CUSTOMER_NAME'));
+ *             secondField.resetOriginalValue();
+ *         }
+ *     }
+ *      });
+ *
+ *      Ext.define('CheckboxGroup', {
+ *          extend: 'eui.form.Panel',
+ *          defaultListenerScope: true,
+ *          requires: ['BizField'],
+ *          viewModel: {
+ *
+ *          },
+ *          title: '체크박스그룹',
+ *          items: [
+ *             {
+ *               xtype: 'bizfield',
+ *               fieldLabel: '체크박스그룹',
+ *             }
+ *          ],
+ *
+ *         listeners : {
+ *              render: 'setRecord'
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set('RECORD', Ext.create('Ext.data.Model', {
+ *                  CHECKBOXGROUP : ['KOREA','JAPAN','USA']
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get('RECORD').getData();
+ *              Util.CommonAjax({
+ *                  method: 'POST',
+ *                  url: 'resources/data/success.json',
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert('저장성공', '정상적으로 저장되었습니다.');
+ *                      } else {
+ *                          Ext.Msg.alert('저장실패', '저장에 실패했습니다...');
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkBoxgroupAllCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue(['KOREA','JAPAN','USA','RUSIA']);
+ *          },
+ *
+ *          checkBoxgroupAllUnCheck: function(button){
+ *              this.down('#euicheckboxgroup').setValue();
+ *          }
+ *      });
+ *
+ *      Ext.create('CheckboxGroup',{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
  **/
 Ext.define('eui.form.PopUpFieldContainer', {
     extend: 'eui.form.FieldContainer',
@@ -2572,6 +3352,8 @@ Ext.define('eui.form.PopUpFieldContainer', {
         FIELD1: null,
         FIELD2: null
     },
+    firstReadOnly: false,
+    secondReadOnly: false,
     /***
      * 팝업 내부에서 값을 결정하면 이 메소드를 구현해야한다.
      */
@@ -2732,7 +3514,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
             normalColumns: me.normalColumns,
             formConfig: me.formConfig,
             width: me.popupWidth,
-            heigh: me.popupHeight
+            height: me.popupHeight
         });
     },
     initComponent: function() {
@@ -2744,6 +3526,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     bind: me.bindVar.FIELD1,
                     hideLabel: true,
                     itemId: 'firstField',
+                    readOnly: me.firstReadOnly,
                     xtype: 'euitext',
                     //                    triggerCls: 'x-form-search-trigger',
                     //                    triggers: {
@@ -2773,6 +3556,7 @@ Ext.define('eui.form.PopUpFieldContainer', {
                     xtype: 'euipopuppicker',
                     hideLabel: true,
                     simpleMode: true,
+                    readOnly: me.secondReadOnly,
                     triggerCls: 'x-form-arrow-trigger',
                     itemId: 'secondField',
                     bind: me.bindVar.FIELD2,
@@ -4793,7 +5577,7 @@ Ext.define('eui.form.field.Date', {
     submitFormat: 'Ymd',
     format: 'Y-m-d',
     altFormats: 'Ymd',
-    value: new Date(),
+    //    value: new Date(),
     dateNum: null,
     width: '100%',
     cellCls: 'fo-table-row-td',
@@ -7166,6 +7950,7 @@ Ext.define('eui.grid.Panel', {
         'title'
     ],
     requires: [
+        'Ext.ux.statusbar.StatusBar',
         'Ext.ux.grid.PageSize'
     ],
     mixins: [
@@ -7228,6 +8013,33 @@ Ext.define('eui.grid.Panel', {
             });
         }
         me.callParent(arguments);
+    },
+    /***
+     * CellEditor사용시 로우와 컬럼을 명시해 에디터를 열수 있다.
+     * @param {int} rowPosition
+     * @param {int} columnPosition
+     */
+    startEditByPosition: function(rowPosition, columnPosition) {
+        var editor = null;
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        } else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        if (editor) {
+            editor.startEditByPosition({
+                row: rowPosition,
+                column: columnPosition
+            });
+        }
     },
     checkComplete: function(editor, context) {
         var view = context.grid.getView(),
@@ -7632,6 +8444,12 @@ Ext.define('eui.mvvm.GridRenderer', {
      * @returns {*}
      */
     dateRenderer: function(v, meta) {
+        if (!v) {
+            return v;
+        }
+        if (Ext.Object.getSize(meta) == 0) {
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+        }
         var date,
             columnFormat = meta.column.format;
         //        var f1 = new Date('2012-02-19');      getHours() : 9
@@ -8268,6 +9086,61 @@ Ext.define('eui.panel.BasePanel', {
 
 /***
  *
+ */
+Ext.define('eui.panel.Header', {
+    extend: 'Ext.Component',
+    xtype: 'euiheader',
+    height: 30,
+    margin: '10 10 0 5',
+    config: {
+        title: null,
+        iconCls: 'x-fa fa-pencil-square'
+    },
+    tpl: [
+        '<div class="eui-form-table">',
+        '<div  class="eui-form-table x-panel-header x-header x-docked x-unselectable x-panel-header-default x-horizontal x-panel-header-horizontal x-panel-header-default-horizontal x-top x-panel-header-top x-panel-header-default-top x-docked-top x-panel-header-docked-top x-panel-header-default-docked-top x-box-layout-ct" role="presentation" style="width: 771px; right: auto; left: 0px; top: 0px;">',
+        '<span data-ref="tabGuardBeforeEl" aria-hidden="true" class="x-tab-guard x-tab-guard-" style="width:0px;height:0px;">',
+        '</span>',
+        '<div data-ref="innerCt" role="presentation" class="x-box-inner" style="width: 761px; height: 16px;">' + '<div data-ref="targetEl" class="x-box-target" role="presentation" style="width: 761px;">' + '<div class="x-title x-panel-header-title x-panel-header-title-default x-box-item x-title-default x-title-rotate-none x-title-align-left" role="presentation" unselectable="on" style="right: auto; left: 0px; top: 0px; margin: 0px; width: 761px;">' + '<div data-ref="iconWrapEl" role="presentation" class="x-title-icon-wrap x-title-icon-wrap-default x-title-icon-left x-title-item">' + '<div data-ref="iconEl" role="presentation" unselectable="on" class="x-title-icon x-title-icon-default {iconCls} " style=""></div>' + '</div>' + '<div data-ref="textEl" class="x-title-text x-title-text-default x-title-item" unselectable="on" role="presentation">{title}</div>' + '</div>' + '</div>' + '</div>' + '<span data-ref="tabGuardAfterEl" aria-hidden="true" class="x-tab-guard x-tab-guard-" style="width:0px;height:0px;"></span>' + '</div>',
+        '</div>'
+    ],
+    initComponent: function() {
+        Ext.apply(this, {
+            data: {
+                iconCls: this.iconCls,
+                title: this.title
+            }
+        });
+        this.callParent(arguments);
+    }
+});
+
+/***
+ *  화면 상단 네비게이션
+ */
+Ext.define('eui.panel.Nav', {
+    extend: 'Ext.Component',
+    xtype: 'euiheadernav',
+    config: {
+        text: null
+    },
+    tpl: [
+        '<div class="eui-form-table">',
+        '<div>{text}</div>',
+        '</div>'
+    ],
+    initComponent: function() {
+        Ext.apply(this, {
+            data: {
+                text: this.text
+            }
+        });
+        this.callParent(arguments);
+    }
+});
+
+/***
+ *
  * ## Summary
  * Ext.tab.Panel클래스를 확장했다.
  *
@@ -8456,7 +9329,12 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
-                    xtype: 'exporterbutton'
+                    xtype: 'exporterbutton',
+                    listeners: {
+                        click: function() {
+                            this.onClick2();
+                        }
+                    }
                 },
                 //                    targetGrid: owner
                 //Or you can use
@@ -8493,6 +9371,281 @@ Ext.define('eui.toolbar.Command', {
                 count: store.getTotalCount()
             });
         });
+    }
+});
+
+/***
+ *
+ * ## Summary
+ *
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
+ **/
+Ext.define('eui.toolbar.EuiCommand', {
+    extend: 'Ext.toolbar.Toolbar',
+    xtype: 'euicommand',
+    ui: 'plain',
+    defaultBindProperty: 'store',
+    config: {
+        /**
+         * @cfg {String} [null]
+         * 프린트 버튼의 텍스트 정보
+         */
+        printBtnText: null,
+        rowAddBtnText: null,
+        rowDelBtnText: null,
+        regBtnText: null,
+        reloadBtnText: null,
+        modBtnText: null,
+        saveBtnText: null,
+        closeBtnText: null,
+        gridCountText: null,
+        excelDownBtnText: null,
+        showText: true,
+        hideTextPrintBtn: true,
+        hideTextReloadBtn: true,
+        showPrintBtn: false,
+        showRowAddBtn: false,
+        showRowDelBtn: false,
+        showRegBtn: false,
+        showReloadBtn: false,
+        showModBtn: false,
+        showSaveBtn: false,
+        showCloseBtn: false,
+        showGridCount: false,
+        showExcelDownBtn: false,
+        btnInfo: {
+            PRINT: 'showPrintBtn',
+            ADD: 'showRowAddBtn',
+            DEL: 'showRowDelBtn',
+            REG: 'showRegBtn',
+            LOAD: 'showReloadBtn',
+            MOD: 'showModBtn',
+            SAVE: 'showSaveBtn',
+            CLOSE: 'showCloseBtn',
+            EXLDWN: 'showExcelDownBtn'
+        }
+    },
+    setStore: function(store) {
+        this.store = store;
+    },
+    setTextHide: function() {
+        if (this.getHideTextPrintBtn()) {
+            this.down('#PRINT').setText(null);
+        }
+        if (this.getHideTextReloadBtn()) {
+            this.down('#LOAD').setText(null);
+        }
+    },
+    /***
+     * store 가 bind된 경우 바인딩 스토어의
+     * 그리드 및 트리그리드를 찾는다
+     */
+    getStoreOwner: function() {
+        var me = this;
+        if (me.store) {
+            Ext.each(Ext.ComponentQuery.query('grid,treepanel'), function(cmp) {
+                if (cmp.getStore().getId() === me.store.getId()) {
+                    me = cmp;
+                }
+            });
+        } else {
+            // euicommand에 바로 바인드 할수 없는 경우.
+            me = this.up('grid,treepanel');
+        }
+        return me;
+    },
+    buttonsAdd: function() {
+        var me = this;
+        me.add([
+            {
+                xtype: 'euibutton',
+                text: me.reloadBtnText || '#{조회}',
+                itemId: 'LOAD',
+                iconCls: '#{조회아이콘}',
+                hidden: !me.getShowReloadBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                            me.fireEvent('reloadbtnclick', owner);
+                        } else {
+                            owner.onReload();
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.printBtnText || '#{인쇄}',
+                itemId: 'PRINT',
+                iconCls: '#{인쇄아이콘}',
+                hidden: !me.getShowPrintBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['printbtnclick'.toLowerCase()]) {
+                            me.fireEvent('printbtnclick', owner, me);
+                        }
+                    }
+                }
+            },
+            {
+                text: me.excelDownBtnText || '#{엑셀다운로드}',
+                itemId: 'EXLDWN',
+                iconCls: '#{엑셀다운로드아이콘}',
+                hidden: !me.getShowExcelDownBtn(),
+                xtype: 'exporterbutton',
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        this.setComponent(owner);
+                        this.onClick2();
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.rowAddBtnText || '#{행추가}',
+                iconCls: '#{행추가아이콘}',
+                scope: me,
+                itemId: 'ADD',
+                showText: me.getShowText(),
+                hidden: !me.getShowRowAddBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                            me.fireEvent('rowaddbtnclick', owner);
+                        } else {
+                            owner.onRowAdd(owner, {
+                                randomInt: Ext.Number.randomInt(1, 1.0E12)
+                            }, 0, null);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                iconCls: '#{행삭제아이콘}',
+                text: me.rowDelBtnText || '#{행삭제}',
+                itemId: 'DEL',
+                scope: me,
+                hidden: !me.getShowRowDelBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                            me.fireEvent('rowdeletebtnclick', owner);
+                        } else {
+                            owner.onRowDelete(owner, null, owner);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.regBtnText || '#{등록}',
+                itemId: 'REG',
+                iconCls: '#{등록아이콘}',
+                hidden: !me.getShowRegBtn(),
+                listeners: {
+                    click: function() {
+                        me.fireEvent('regbtnclick', me);
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.modBtnText || '#{수정}',
+                itemId: 'MOD',
+                iconCls: '#{수정아이콘}',
+                hidden: !me.getShowModBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        me.fireEvent('modbtnclick', owner);
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.saveBtnText || '#{저장}',
+                formBind: true,
+                itemId: 'SAVE',
+                iconCls: '#{저장아이콘}',
+                hidden: !me.getShowSaveBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['savebtnclick'.toLowerCase()]) {
+                            me.fireEvent('savebtnclick', owner);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                text: me.closeBtnText || '#{닫기}',
+                itemId: 'CLOSE',
+                iconCls: 'x-fa fa-sign-out',
+                hidden: !me.getShowCloseBtn(),
+                listeners: {
+                    click: function() {
+                        var window = Util.getOwnerCt(this);
+                        if (Util.getOwnerCt(this).xtype === 'window') {
+                            window.close();
+                        } else {
+                            Ext.Error.raise({
+                                msg: '닫기 버튼은 팝업에서만 사용가능합니다.'
+                            });
+                        }
+                    }
+                }
+            }
+        ]);
+        me.setTextHide();
+    },
+    /***
+     * 통신을 통해 버튼을 제어하기 전에 미리 초기화 한다
+     */
+    setAllButtonShow: function(visible) {},
+    //        this.setShowPrintBtn(visible);
+    //        this.setShowRowAddBtn(visible);
+    //        this.setShowRowDelBtn(visible);
+    //        this.setShowRegBtn(visible);
+    //        this.setShowReloadBtn(visible);
+    //        this.setShowModBtn(visible);
+    //        this.setShowSaveBtn(visible);
+    //        this.setShowGridCount(visible);
+    //        this.setShowExcelDownBtn(visible);
+    setButtonStatus: function(data) {
+        var me = this;
+        //        debugger;
+        Ext.each(data, function(status) {
+            if (me.initialConfig[me.getBtnInfo()[status.button]] == true) {
+                me.down('#' + status.button).setHidden(false);
+            }
+        });
+    },
+    beforeRender: function() {
+        var me = this;
+        this.callParent(arguments);
+        if (Config.commandButtonControllerUrl) {
+            Util.CommonAjax({
+                method: 'POST',
+                url: Config.commandButtonControllerUrl,
+                params: me.params,
+                pCallback: function(v, params, result) {
+                    if (result.success) {
+                        me.setAllButtonShow(false);
+                        me.buttonsAdd();
+                        me.setButtonStatus(result.data);
+                    }
+                }
+            });
+        } else {
+            me.buttonsAdd();
+        }
     }
 });
 
@@ -10261,10 +11414,12 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
             if (me.component) {
                 me.component = !Ext.isString(me.component) ? me.component : Ext.ComponentQuery.query(me.component)[0];
             }
-            me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            try {
+                me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            } catch (e) {}
         });
     },
-    onClick: function(e) {
+    onClick2: function(e) {
         var me = this,
             blobURL = "",
             format = me.format,
@@ -10279,8 +11434,8 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
         });
         filename = title + "_" + Ext.Date.format(dt, "Y-m-d h:i:s") + "." + res.ext;
         Ext.ux.exporter.FileSaver.saveAs(res.data, res.mimeType, res.charset, filename, link, remote, me.onComplete, me);
-        me.callParent(arguments);
     },
+    //        me.callParent(arguments);
     setComponent: function(component, config) {
         var me = this;
         me.component = component;

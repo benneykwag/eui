@@ -10,26 +10,11 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
     selModel: {     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
         selType: 'checkboxmodel'
     },
-    tbar: [
-        {
-            showRowAddBtn: true,    // 행추가 버튼 활성화
-            showRowDelBtn: true,    // 행삭제 버튼 활성화
-            showRegBtn: true,       // 등록 버튼 활성화
-            showModBtn: true,       // 수정 버튼 활성화
-            showSaveBtn: true,      // 저장 버튼 활성화
-            showReloadBtn: true,    // 조회 버튼 활성화
-            showExcelDownBtn: true,    // 조회 버튼 활성화
-            xtype: 'commandtoolbar' // eui.toolbar.Command 클래스
-        }
-    ],
+
     listeners: {                // ViewController클래스에 정의됨.
-        select: 'onGridSelect',
-        regbtnclick: 'onRowReg',
-        rowdeletebtnclick: 'onRowDelete',
-        modbtnclick: 'onRowMod',
-        rowaddbtnclick: 'onRowAdd',
-        savebtnclick: 'onRowSave'
+        select: 'onGridSelect'
     },
+
     columns: [
         {
             xtype: 'rownumberer'
@@ -78,7 +63,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
         {
             // "OUTPUT_DT" : "20101011",
             text: 'OUTPUT_DT',
-            format: 'Y.m.d',
+//            format: 'Y.m.d',
             xtype: 'euidatecolumn',
             dataIndex: 'OUTPUT_DT',
             editor: {
@@ -88,17 +73,16 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
         {
 //            "INPUT_DT" : "10/12/2012",
             text: '입력',
-            format: 'Y.m.d',
             xtype: 'euidatecolumn',
             dataIndex: 'INPUT_DT',
             editor: {
+                allowBlank: false,
                 xtype: 'euidate'
             }
         },
         {
             // "UPDATE_DT" : "2012-02-19",
             text: '수정',
-            format: 'Y.m.d',
             xtype: 'euidatecolumn',
             dataIndex: 'UPDATE_DT',
             editor: {

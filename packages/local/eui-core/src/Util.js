@@ -477,6 +477,9 @@ Ext.define('eui.Util', {
             timeoutSeq = 30000;
         }
 
+        if(!Ext.isEmpty(Config.subUrlPrifix)){
+            pURL = Config.subUrlPrifix + pURL;
+        }
         // 주소 조정.
         if(!Ext.isEmpty(Config.baseUrlPrifix)){
             if(pURL.substring(0,1) == "/"){  // 상대경로는 처리하지 않는다
@@ -881,5 +884,23 @@ Ext.define('eui.Util', {
         }
 
         return results;
+    },
+
+    //엑셀 업로드
+    /*++ 함수 호출할 때 넘겨받는 파라미터 추가
+     * 기존 -> callExcelUploader: function (cmp, target) {
+     * 변경 후 -> callExcelUploader: function (cmp, target, columns) { ++
+     * 2016. 11. 23 Add By syyoon */
+    callExcelUploader: function (cmp, target, columns) {
+        var xtp = 'eui.ux.grid.CsvUploader';
+        var params = {
+            SAVE_TARGET : target
+            /*++ 파라미터 셋팅 추가 2016. 11. 23 Add By syyoon ++*/
+//            DATAINDEX : columns.DATAINDEX,
+//            NAME : columns.NAME,
+//            TEXT : columns.TEXT
+            /*-- --*/
+        };
+        Util.commonPopup(cmp, 'Excel Uploader', xtp, 800, 600, params, null, true).show();
     }
 });

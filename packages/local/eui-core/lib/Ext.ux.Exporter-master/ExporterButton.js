@@ -66,11 +66,16 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
             if (me.component) {
                 me.component = !Ext.isString(me.component) ? me.component : Ext.ComponentQuery.query(me.component)[0];
             }
-            me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            try{
+                me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            }catch(e){
+
+            }
+
         });
     },
 
-    onClick: function (e) {
+    onClick2: function (e) {
         var me = this,
             blobURL = "",
             format = me.format,
@@ -85,7 +90,7 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
         filename = title + "_" + Ext.Date.format(dt, "Y-m-d h:i:s") + "." + res.ext;
         Ext.ux.exporter.FileSaver.saveAs(res.data, res.mimeType, res.charset, filename, link, remote, me.onComplete, me);
 
-        me.callParent(arguments);
+//        me.callParent(arguments);
     },
 
     setComponent: function (component, config) {

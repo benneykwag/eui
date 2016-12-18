@@ -18,7 +18,22 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
                     validators: [
                         {
                             type: "presence",
-                            message :"성명은 필수 입력 필드입니다."
+                            message: "성명은 필수 입력 필드입니다."
+                        },
+                        {
+                            type: 'euiformat',
+                            chkType: 'K',
+                            message: "성명은 한글만 허용합니다"
+                        }
+                    ]
+                },
+                {
+                    name: 'MSG',
+                    validators: [
+                        {
+                            type: 'euiformat',
+                            chkType: 'Ee',
+                            message: "메시지는 영문대소문자 만 허용합니다"
                         }
                     ]
                 },
