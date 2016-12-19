@@ -1,0 +1,24 @@
+{
+    "success":true,
+    "data":[
+        {
+            "button":"ADD"
+        },
+        {
+            "button":"DEL"
+        },
+        {
+            "button":"REG"
+        },
+        {
+            "button":"MOD"
+        },
+        {
+            "button":"SAVE"
+        },
+        {
+            "button":"LOAD"
+        }
+    ],
+    "message":""
+}

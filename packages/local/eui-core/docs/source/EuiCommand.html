@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-toolbar-EuiCommand'>/***
+</span> *
+ * ## Summary
+ *
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
+ **/
+Ext.define(&#39;eui.toolbar.EuiCommand&#39;, {
+    extend: &#39;Ext.toolbar.Toolbar&#39;,
+    xtype: &#39;euicommand&#39;,
+<span id='eui-toolbar-EuiCommand-property-ui'>    ui: &#39;plain&#39;,
+</span><span id='eui-toolbar-EuiCommand-property-defaultBindProperty'>    defaultBindProperty: &#39;store&#39;,
+</span>
+    config: {
+<span id='eui-toolbar-EuiCommand-cfg-null'>        /**
+</span>         * @cfg {String} [null]
+         * 프린트 버튼의 텍스트 정보
+         */
+        printBtnText: null,
+<span id='eui-toolbar-EuiCommand-cfg-rowAddBtnText'>        rowAddBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-rowDelBtnText'>        rowDelBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-regBtnText'>        regBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-reloadBtnText'>        reloadBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-modBtnText'>        modBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-saveBtnText'>        saveBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-closeBtnText'>        closeBtnText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-gridCountText'>        gridCountText: null,
+</span><span id='eui-toolbar-EuiCommand-cfg-excelDownBtnText'>        excelDownBtnText: null,
+</span>
+<span id='eui-toolbar-EuiCommand-cfg-showText'>        showText: true,
+</span><span id='eui-toolbar-EuiCommand-cfg-hideTextPrintBtn'>        hideTextPrintBtn: true,
+</span><span id='eui-toolbar-EuiCommand-cfg-hideTextReloadBtn'>        hideTextReloadBtn: true,
+</span>
+<span id='eui-toolbar-EuiCommand-cfg-showPrintBtn'>        showPrintBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showRowAddBtn'>        showRowAddBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showRowDelBtn'>        showRowDelBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showRegBtn'>        showRegBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showReloadBtn'>        showReloadBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showModBtn'>        showModBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showSaveBtn'>        showSaveBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showCloseBtn'>        showCloseBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showGridCount'>        showGridCount: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-showExcelDownBtn'>        showExcelDownBtn: false,
+</span><span id='eui-toolbar-EuiCommand-cfg-btnInfo'>        btnInfo: {
+</span>            PRINT: &#39;showPrintBtn&#39;,
+            ADD: &#39;showRowAddBtn&#39;,
+            DEL: &#39;showRowDelBtn&#39;,
+            REG: &#39;showRegBtn&#39;,
+            LOAD: &#39;showReloadBtn&#39;,
+            MOD: &#39;showModBtn&#39;,
+            SAVE: &#39;showSaveBtn&#39;,
+            CLOSE: &#39;showCloseBtn&#39;,
+            EXLDWN: &#39;showExcelDownBtn&#39;
+        }
+    },
+
+<span id='eui-toolbar-EuiCommand-method-setStore'>    setStore: function (store) {
+</span>        this.store = store;
+    },
+
+<span id='eui-toolbar-EuiCommand-method-setTextHide'>    setTextHide: function () {
+</span>        if (this.getHideTextPrintBtn()) {
+            this.down(&#39;#PRINT&#39;).setText(null);
+        }
+        if (this.getHideTextReloadBtn()) {
+            this.down(&#39;#LOAD&#39;).setText(null);
+        }
+    },
+
+<span id='eui-toolbar-EuiCommand-method-getStoreOwner'>    /***
+</span>     * store 가 bind된 경우 바인딩 스토어의
+     * 그리드 및 트리그리드를 찾는다
+     */
+    getStoreOwner: function () {
+        var me = this;
+        if (me.store) {
+            Ext.each(Ext.ComponentQuery.query(&#39;grid,treepanel&#39;), function (cmp) {
+                if (cmp.getStore().getId() === me.store.getId()) {
+                    me = cmp;
+                }
+            });
+        } else {
+            // euicommand에 바로 바인드 할수 없는 경우.
+            me = this.up(&#39;grid,treepanel&#39;);
+        }
+        return me;
+    },
+
+<span id='eui-toolbar-EuiCommand-method-buttonsAdd'>    buttonsAdd: function () {
+</span>        var me = this;
+        me.add([
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.reloadBtnText||&#39;#{조회}&#39;,
+                itemId: &#39;LOAD&#39;,
+                iconCls: &#39;#{조회아이콘}&#39;,
+                hidden: !me.getShowReloadBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners[&#39;reloadbtnclick&#39;.toLowerCase()]) {
+                            me.fireEvent(&#39;reloadbtnclick&#39;, owner);
+                        } else {
+                            owner.onReload();
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.printBtnText||&#39;#{인쇄}&#39;,
+                itemId: &#39;PRINT&#39;,
+                iconCls: &#39;#{인쇄아이콘}&#39;,
+                hidden: !me.getShowPrintBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners[&#39;printbtnclick&#39;.toLowerCase()]) {
+                            me.fireEvent(&#39;printbtnclick&#39;, owner, me);
+                        }
+                    }
+                }
+            },
+            {
+                text: me.excelDownBtnText||&#39;#{엑셀다운로드}&#39;,
+                itemId: &#39;EXLDWN&#39;,
+                iconCls: &#39;#{엑셀다운로드아이콘}&#39;,
+                hidden: !me.getShowExcelDownBtn(),
+                xtype: &#39;exporterbutton&#39;,
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        this.setComponent(owner);
+                        this.onClick2();
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.rowAddBtnText||&#39;#{행추가}&#39;,
+                iconCls: &#39;#{행추가아이콘}&#39;,
+                scope: me,
+                itemId: &#39;ADD&#39;,
+                showText: me.getShowText(),
+                hidden: !me.getShowRowAddBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners[&#39;rowaddbtnclick&#39;.toLowerCase()]) {
+                            me.fireEvent(&#39;rowaddbtnclick&#39;, owner);
+                        } else {
+                            owner.onRowAdd(owner, {
+                                randomInt: Ext.Number.randomInt(1, 1000000000000)
+                            }, 0, null);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                iconCls: &#39;#{행삭제아이콘}&#39;,
+                text: me.rowDelBtnText||&#39;#{행삭제}&#39;,
+                itemId: &#39;DEL&#39;,
+                scope: me,
+                hidden: !me.getShowRowDelBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners[&#39;rowdeletebtnclick&#39;.toLowerCase()]) {
+                            me.fireEvent(&#39;rowdeletebtnclick&#39;, owner);
+                        } else {
+                            owner.onRowDelete(owner, null, owner);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.regBtnText||&#39;#{등록}&#39;,
+                itemId: &#39;REG&#39;,
+                iconCls: &#39;#{등록아이콘}&#39;,
+                hidden: !me.getShowRegBtn(),
+                listeners: {
+                    click: function () {
+                        me.fireEvent(&#39;regbtnclick&#39;, me);
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.modBtnText||&#39;#{수정}&#39;,
+                itemId: &#39;MOD&#39;,
+                iconCls: &#39;#{수정아이콘}&#39;,
+                hidden: !me.getShowModBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        me.fireEvent(&#39;modbtnclick&#39;, owner);
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.saveBtnText||&#39;#{저장}&#39;,
+                formBind: true,
+                itemId: &#39;SAVE&#39;,
+                iconCls: &#39;#{저장아이콘}&#39;,
+                hidden: !me.getShowSaveBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners[&#39;savebtnclick&#39;.toLowerCase()]) {
+                            me.fireEvent(&#39;savebtnclick&#39;, owner);
+                        }
+                    }
+                }
+            },
+
+            {
+                xtype: &#39;euibutton&#39;,
+                text: me.closeBtnText||&#39;#{닫기}&#39;,
+                itemId: &#39;CLOSE&#39;,
+                iconCls: &#39;x-fa fa-sign-out&#39;,
+                hidden: !me.getShowCloseBtn(),
+                listeners: {
+                    click: function () {
+                        var window = Util.getOwnerCt(this);
+                        if (Util.getOwnerCt(this).xtype === &#39;window&#39;) {
+                            window.close();
+                        } else {
+                            Ext.Error.raise({
+                                msg: &#39;닫기 버튼은 팝업에서만 사용가능합니다.&#39;
+                            });
+                        }
+                    }
+                }
+            }
+        ]);
+
+        me.setTextHide();
+    },
+
+<span id='eui-toolbar-EuiCommand-method-setAllButtonShow'>    /***
+</span>     * 통신을 통해 버튼을 제어하기 전에 미리 초기화 한다
+     */
+    setAllButtonShow: function (visible) {
+//        this.setShowPrintBtn(visible);
+//        this.setShowRowAddBtn(visible);
+//        this.setShowRowDelBtn(visible);
+//        this.setShowRegBtn(visible);
+//        this.setShowReloadBtn(visible);
+//        this.setShowModBtn(visible);
+//        this.setShowSaveBtn(visible);
+//        this.setShowGridCount(visible);
+//        this.setShowExcelDownBtn(visible);
+    },
+
+<span id='eui-toolbar-EuiCommand-method-setButtonStatus'>    setButtonStatus: function (data) {
+</span>        var me = this;
+//        debugger;
+        Ext.each(data, function (status) {
+            if (me.initialConfig[me.getBtnInfo()[status.button]] == true) {
+                me.down(&#39;#&#39; + status.button).setHidden(false);
+            }
+
+        })
+    },
+
+<span id='eui-toolbar-EuiCommand-method-beforeRender'>    beforeRender: function () {
+</span>        var me = this;
+        this.callParent(arguments);
+        if (Config.commandButtonControllerUrl) {
+            Util.CommonAjax({
+                method: &#39;POST&#39;,
+                url: Config.commandButtonControllerUrl,
+                params: me.params,
+                pCallback: function (v, params, result) {
+                    if (result.success) {
+                        me.setAllButtonShow(false);
+                        me.buttonsAdd();
+                        me.setButtonStatus(result.data)
+                    }
+                }
+            });
+        } else {
+            me.buttonsAdd();
+        }
+    }
+
+});</pre>
+</body>
+</html>

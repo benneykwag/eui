@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-data-validator-Format'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.data.validator.Validator 확장. 한글 영문 숫자 문자에 대한 처리
+ * 그리드 field정의 시 사용.
+ *
+ *      {
+ *          name: &#39;USEPRSN_NM&#39;,
+ *          validators: [
+ *              {
+ *                  type: &quot;presence&quot;,
+ *                  message :&quot;성명은 필수 입력 필드입니다.&quot;
+ *              },
+ *              {
+ *                  type: &#39;euiformat&#39;,
+ *                  chkType:  &#39;K&#39;,
+ *                  message :&quot;성명은 한글만 허용합니다&quot;
+ *              }
+ *          ]
+ *      },
+ *      {
+ *          name: &#39;MSG&#39;,
+ *          validators: [
+ *              {
+ *                  type: &#39;euiformat&#39;,
+ *                  chkType:  &#39;C&#39;
+ *              }
+ *          ]
+ *      }
+ *
+ * # chkType
+ * K : 한글만 허용.
+ *
+ * N : 숫자만 허용
+ *
+ * E : 알파벳 대문자만 허용
+ *
+ * Ee : 알파벳 대소문자만 허용
+ *
+ * # chkString
+ * chkType에 맞는 정규식과 메시지 출력.
+ *
+ *     K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     K_MSG: &#39;한글만 허용합니다&#39;,
+ *
+ *     E: /^[A-Z]*$/,
+ *
+ *     E_MSG: &#39;영문 대문자만 허용합니다&#39;,
+ *
+ *     e: /^[a-z]*$/,
+ *
+ *     e_MSG: &#39;영문 소문자만 허용합니다&#39;,
+ *
+ *     Ee: /^[A-Za-z]*$/,
+ *
+ *     Ee_MSG: &#39;영문 대소문자만 허용합니다&#39;,
+ *
+ *     N: /^[0-9+]*$/,
+ *
+ *     N_MSG: &#39;숫자만 허용합니다&#39;,
+ *
+ *     C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+ *
+ *     C_MSG: &#39;일반문자(한글&amp;알파벳)만 허용합니다&#39;
+ *
+ *
+ *
+ * # Sample
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;Panel&#39;, {
+ *          extend: &#39;eui.grid.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          title: &#39;체크박스그룹&#39;,
+ *          plugins: {
+ *              ptype: &#39;cellediting&#39;,   // 셀에디터를 추가.
+ *              clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+ *          },
+ *          store: {
+ *              fields: [
+ *                  {
+ *                      name: &#39;USEPRSN_NM&#39;,
+ *                      validators: [
+ *                          {
+ *                              type: &#39;euiformat&#39;,
+ *                              chkType: &#39;K&#39;,
+ *                              message: &quot;성명은 한글만 허용합니다&quot;
+ *                          }
+ *                      ]
+ *                  },
+ *                  {
+ *                      name: &#39;MSG&#39;,
+ *                      validators: [
+ *                          {
+ *                              type: &#39;euiformat&#39;,
+ *                              chkType: &#39;Ee&#39;,
+ *                              message: &quot;메시지는 영문대소문자만 허용합니다&quot;
+ *                          }
+ *                      ]
+ *                  }
+ *              ],
+ *              data: [
+ *                  {
+ *                      USEPRSN_NM : &#39;홍길동&#39;,
+ *                      MSG : &#39;Error Message&#39;
+ *                  }
+ *              ]
+ *          },
+ *
+ *          columns: [
+ *              {
+ *                  text: &#39;이름&#39;,
+ *                  dataIndex: &#39;USEPRSN_NM&#39;,
+ *                  editor: {
+ *                      xtype: &#39;textfield&#39;
+ *                  }
+ *              },
+ *              {
+ *                  text: &#39;메시지&#39;,
+ *                  dataIndex: &#39;MSG&#39;,
+ *                  editor: {
+ *                      xtype: &#39;textfield&#39;
+ *                  }
+ *              }
+ *          ],
+ *
+ *          bbar: [
+ *              {
+ *                  text: &#39;저장&#39;,
+ *                  xtype: &#39;button&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         onSaveMember: function () {
+ *              var grid = this;
+ *              if (!grid.store.recordsValidationCheck()) {
+ *                  return;
+ *              }
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: Util.getDatasetParam(grid.store),
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;Panel&#39;,{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+Ext.define(&#39;eui.data.validator.Format&#39;, {
+    extend: &#39;Ext.data.validator.Validator&#39;,
+    alias: &#39;data.validator.euiformat&#39;,
+
+<span id='eui-data-validator-Format-property-type'>    type: &#39;euiformat&#39;,
+</span>
+    config: {
+<span id='eui-data-validator-Format-cfg-chkType'>        chkType: null,
+</span>
+<span id='eui-data-validator-Format-cfg-chkString'>        /***
+</span>         * @cfg {Object} chkString
+         *
+         * chkType에 따른 정규식 및 메시지 설정
+         */
+        chkString: {
+            K: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            K_MSG: &#39;한글만 허용합니다&#39;,
+            E: /^[A-Z]*$/,
+            E_MSG: &#39;영문 대문자만 허용합니다&#39;,
+            e: /^[a-z]*$/,
+            e_MSG: &#39;영문 소문자만 허용합니다&#39;,
+            Ee: /^[A-Za-z]*$/,
+            Ee_MSG: &#39;영문 대소문자만 허용합니다&#39;,
+            N: /^[0-9+]*$/,
+            N_MSG: &#39;숫자만 허용합니다&#39;,
+            C: /[A-Za-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]/,
+            C_MSG: &#39;일반문자(한글&amp;알파벳)만 허용합니다&#39;
+        },
+<span id='eui-data-validator-Format-cfg-message'>        /**
+</span>         * @cfg {String} message
+         * The error message to return when the value does not match the format.
+         */
+        message: null,
+
+<span id='eui-data-validator-Format-cfg-matcher'>        /**
+</span>         * @cfg {RegExp} matcher (required) The matcher regex to test against the value.
+         */
+        matcher: undefined
+    },
+
+<span id='eui-data-validator-Format-method-constructor'>    //&lt;debug&gt;
+</span>    constructor: function () {
+        this.callParent(arguments);
+        if (!this.getChkType()) {
+            Ext.raise(&#39;체크할 형식의 타입을 지정해야합니다.&#39;);
+        }
+    },
+<span id='eui-data-validator-Format-method-validate'>    //&lt;/debug&gt;
+</span>
+    validate: function (value) {
+        var me = this,
+            matcher = this.getMatcher(),
+            result = matcher &amp;&amp; matcher.test(value),
+            chkTypeString = me.getChkString()[me.getChkType()],
+            chkTypeMessage = me.getChkString()[me.getChkType() + &#39;_MSG&#39;];
+
+        if (this.getChkType()) {
+            value = value.replace( /(\s*)/g, &quot;&quot;);
+            for (var i = 0; i &lt; value.length; i++) {
+                console.log(value, value.substring(i, i + 1));
+                result = me.getChkString()[me.getChkType()].test(value.substring(i, i + 1));
+                if (!result) {
+                    break;
+                }
+            }
+        }
+        return result ? result : this.getMessage() || chkTypeMessage;
+    }
+});</pre>
+</body>
+</html>
