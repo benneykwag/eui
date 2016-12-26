@@ -181,6 +181,24 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
 
     },
 
+<span id='eui-grid-Panel-method-getCellEditor'>    getCellEditor: function () {
+</span>        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i &lt; plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        }
+        else {
+            if (Ext.getClassName(plugins) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                editor = plugins;
+            }
+        }
+        return editor;
+    },
+
 <span id='eui-grid-Panel-method-startEditByPosition'>    /***
 </span>     * CellEditor사용시 로우와 컬럼을 명시해 에디터를 열수 있다.
      * @param {int} rowPosition

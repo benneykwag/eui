@@ -62,11 +62,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V04', {
                         }
                     ]
                 },
-                {
-                    xtype: 'euibutton',
-                    text: 'CSV업로드',
-                    handler: 'ExcelUpload'
-                },
+
                 '->',
                 {
                     bind: '{STORE01}',

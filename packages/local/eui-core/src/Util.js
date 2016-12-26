@@ -886,21 +886,144 @@ Ext.define('eui.Util', {
         return results;
     },
 
-    //엑셀 업로드
-    /*++ 함수 호출할 때 넘겨받는 파라미터 추가
-     * 기존 -> callExcelUploader: function (cmp, target) {
-     * 변경 후 -> callExcelUploader: function (cmp, target, columns) { ++
-     * 2016. 11. 23 Add By syyoon */
-    callExcelUploader: function (cmp, target, columns) {
+    /***
+     * excel csv 파일 업로드.
+     * delimiter는 필수로 "|" 지정할 것
+     * @param params
+     * @returns {*}
+     */
+    callExcelUploader: function (params) {
         var xtp = 'eui.ux.grid.CsvUploader';
-        var params = {
-            SAVE_TARGET : target
-            /*++ 파라미터 셋팅 추가 2016. 11. 23 Add By syyoon ++*/
-//            DATAINDEX : columns.DATAINDEX,
-//            NAME : columns.NAME,
-//            TEXT : columns.TEXT
-            /*-- --*/
+        return Util.commonPopup(null, 'Excel Uploader', xtp, 500, 400, params, {}, false).show();
+    },
+
+    callFileManager: function (cfg, msgSend) {
+
+        var me = this;
+        var uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+            uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+            uploaderOptions: {
+                params: cfg,
+                url: Config.fileuploadUrl
+            },
+            synchronous: true//appPanel.syncCheckbox.getValue()
+        });
+
+        var uploadComplete = function (items, t) {
+            t.up('window').close();
+
+            var i = 0;
+            var task = {
+                run: function () {
+                    if (items.length <= (i + 1)) {
+                        Ext.TaskManager.stop(task);
+                    }
+                    var file = items[i];
+
+                    i++;
+                },
+                interval: 1000
+            }
+            if(Ext.isBoolean(msgSend) && msgSend == true) {
+                Ext.TaskManager.start(task);
+            }
+        }
+
+        var rept = Ext.create('Ext.window.Window', {
+            height: 330,
+            width: 560,
+            layout: 'fit',
+            title: 'File Manager',
+            scrollable: false,
+            maximizable: true,
+            buttons: [
+                {
+                    xtype: 'button',
+                    text: 'Close',
+                    handler: function () {
+                        this.up('window').close();
+                    }
+                }
+            ],
+            items: [
+                {
+                    xtype: 'tabpanel',
+                    items: [
+                        {
+                            xtype: 'filemanager',
+                            title: 'File List',
+                            fileParams: cfg
+                        },
+                        {
+                            title: 'File Add',
+                            xtype: 'uploaddialog',
+                            panel: uploadPanel,
+                            listeners: {
+                                uploadcomplete: function (uploadPanel, manager, items, errorCount) {
+                                    uploadComplete(items, this);
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        }).show();
+
+
+        return rept;
+    },
+
+
+    fileClick : function (S_FUNC_CODE, FILE_MGT_CODE, FILE_NAME) {
+        var formData = new FormData();
+        formData.append("S_FUNC_CODE", S_FUNC_CODE);
+        formData.append("FILE_MGT_CODE", FILE_MGT_CODE);
+
+        this.fileClickApi(formData, FILE_NAME,'api/file/download')
+    },
+
+    fileClickApi : function (formData, FILE_NAME, API_PATH) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', encodeURI(globalVar.HurlPrefix + API_PATH));
+        xhr.responseType = 'arraybuffer';
+        if (!window.devMode) {
+            xhr.setRequestHeader('X-CSRF-TOKEN', globalVar.csrfToken);
+        }
+        xhr.onload = function () {
+            if (this.status === 200) {
+                var type = xhr.getResponseHeader('Content-Type');
+
+                var blob = new Blob([this.response], { type: type });
+                if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                    window.navigator.msSaveBlob(blob, filename);
+                } else {
+                    var URL = window.URL || window.webkitURL;
+                    var downloadUrl = URL.createObjectURL(blob);
+
+                    if (FILE_NAME) {
+                        // use HTML5 a[download] attribute to specify filename
+                        var a = document.createElement("a");
+                        // safari doesn't support this yet
+                        if (typeof a.download === 'undefined') {
+                            window.location = downloadUrl;
+                        } else {
+                            a.href = downloadUrl;
+                            a.download = FILE_NAME;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    } else {
+                        window.location = downloadUrl;
+                    }
+
+                    setTimeout(function () {
+                        URL.revokeObjectURL(downloadUrl);
+                    }, 100); // cleanup
+                }
+            }
         };
-        Util.commonPopup(cmp, 'Excel Uploader', xtp, 800, 600, params, null, true).show();
+        xhr.send(formData);
     }
 });

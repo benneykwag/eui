@@ -11,17 +11,31 @@ Ext.define('Ext.ux.exporter.FileSaver', {
                     var blob = new Blob([data], { //safari 5 throws error
                         type: mimeType + ";charset=" + charset + ","
                     });
-                    if (link && "download" in link) {
-                        blobURL = window.URL.createObjectURL(blob);
-                        link.href = blobURL;
-                        link.download = filename;
-                        if(cb) cb.call(scope);
-                        this.cleanBlobURL(blobURL);
-                        return;
-                    } else if (window.navigator.msSaveOrOpenBlob) { //IE 10+
+
+                    blobURL = window.URL.createObjectURL(blob);
+//                    link.href = blobURL;
+//                    link.download = filename;
+
+                    if (window.navigator.msSaveOrOpenBlob) { //IE 10+
                         window.navigator.msSaveOrOpenBlob(blob, filename);
                         if(cb) cb.call(scope);
                         return;
+                    } else {
+                        var a = document.createElement("a");
+                        // safari doesn't support this yet
+                        if (typeof a.download === 'undefined') {
+                            window.location = downloadUrl;
+                        } else {
+                            a.href = blobURL;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+
+                        if(cb) cb.call(scope);
+                        this.cleanBlobURL(blobURL);
+                        return;
+
                     }
                 } catch (e) { //open using data:URI 
                 	Ext.log("Browser doesn't support Blob: " + e.message);

@@ -21,6 +21,11 @@ Ext.define('eui.Config', {
     // 명령 툴바용 데이터
     commandButtonControllerUrl : null,
 
+    // 파일 리스트
+    fileuploadListUrl : '',
+    filedeleteUrl : '',
+    fileuploadUrl: '',
+
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
 

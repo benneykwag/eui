@@ -13,7 +13,7 @@ Ext.define('Eui.sample.view.form.Controller', {
 
     setRecord: function () {
         this.getViewModel().set('RECORD', Ext.create('Eui.sample.model.Base', {
-            CHECKBOX1 : 'N',
+            CHECKBOX1 : 'Y',
             RADIOGROUP: 'A',
             MONTHFIELD : '2011.09',
             DATEFIELD : '2011.09.22',

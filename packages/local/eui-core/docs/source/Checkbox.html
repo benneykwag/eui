@@ -153,7 +153,11 @@ Ext.define(&#39;eui.form.field.Checkbox&#39;, {
 </span>
 <span id='eui-form-field-Checkbox-method-initComponent'>    initComponent: function() {
 </span>        var me = this;
+        me.suspendEvent(&#39;change&#39;);
         me.callParent(arguments);
+        me.on(&#39;beforerender&#39;, function () {
+            me.resumeEvent(&#39;change&#39;);
+        })
     },
 
 <span id='eui-form-field-Checkbox-method-getValue'>    /***

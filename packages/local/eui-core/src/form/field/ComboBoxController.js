@@ -6,13 +6,8 @@ Ext.define('eui.form.field.ComboBoxController', {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column && combo.valueColumnDataIndex) {
-            var grid = combo.column.up('tablepanel');
-
-            var selModel = grid.getSelectionModel();
-            var rec = selModel.getLastSelected();
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
+            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
         }
-
         me.nextBindFields(record);
     },
 
@@ -253,7 +248,11 @@ Ext.define('eui.form.field.ComboBoxController', {
             combo = this.getView();
 
         param[combo.defaultParam] = combo[combo.defaultParam];
-
+//        // 외부 파라메터 전달시
+//        // params: {  aa : '11' }
+//        if(combo.params){
+//            Ext.apply(param, combo.params);
+//        }
         /***
          * 외부 폼필드 연계 처리
          * 뷰모델의 바인드를 이용.
@@ -268,7 +267,7 @@ Ext.define('eui.form.field.ComboBoxController', {
             param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
         });
 
-
+       // console.log('combo.getProxyParams()', combo.getProxyParams())
         Ext.apply(param, combo.getProxyParams())
         return param;
     },

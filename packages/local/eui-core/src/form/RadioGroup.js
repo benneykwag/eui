@@ -128,6 +128,7 @@ Ext.define('eui.form.RadioGroup', {
     mixins: [
         'eui.mixin.FormField'
     ],
+
     cellCls: 'fo-table-row-td',
     width: '100%',
 

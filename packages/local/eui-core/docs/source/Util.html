@@ -901,6 +901,147 @@ Ext.define(&#39;eui.Util&#39;, {
         }
 
         return results;
+    },
+
+<span id='eui-Util-method-callExcelUploader'>    /***
+</span>     * excel csv 파일 업로드.
+     * delimiter는 필수로 &quot;|&quot; 지정할 것
+     * @param params
+     * @returns {*}
+     */
+    callExcelUploader: function (params) {
+        var xtp = &#39;eui.ux.grid.CsvUploader&#39;;
+        return Util.commonPopup(null, &#39;Excel Uploader&#39;, xtp, 500, 400, params, {}, false).show();
+    },
+
+<span id='eui-Util-method-callFileManager'>    callFileManager: function (cfg, msgSend) {
+</span>
+        var me = this;
+        var uploadPanel = Ext.create(&#39;Ext.ux.upload.Panel&#39;, {
+            uploader: &#39;Ext.ux.upload.uploader.FormDataUploader&#39;,
+            uploaderOptions: {
+                params: cfg,
+                url: Config.fileuploadUrl
+            },
+            synchronous: true//appPanel.syncCheckbox.getValue()
+        });
+
+        var uploadComplete = function (items, t) {
+            t.up(&#39;window&#39;).close();
+
+            var i = 0;
+            var task = {
+                run: function () {
+                    if (items.length &lt;= (i + 1)) {
+                        Ext.TaskManager.stop(task);
+                    }
+                    var file = items[i];
+
+                    i++;
+                },
+                interval: 1000
+            }
+            if(Ext.isBoolean(msgSend) &amp;&amp; msgSend == true) {
+                Ext.TaskManager.start(task);
+            }
+        }
+
+        var rept = Ext.create(&#39;Ext.window.Window&#39;, {
+            height: 330,
+            width: 560,
+            layout: &#39;fit&#39;,
+            title: &#39;File Manager&#39;,
+            scrollable: false,
+            maximizable: true,
+            buttons: [
+                {
+                    xtype: &#39;button&#39;,
+                    text: &#39;Close&#39;,
+                    handler: function () {
+                        this.up(&#39;window&#39;).close();
+                    }
+                }
+            ],
+            items: [
+                {
+                    xtype: &#39;tabpanel&#39;,
+                    items: [
+                        {
+                            xtype: &#39;filemanager&#39;,
+                            title: &#39;File List&#39;,
+                            fileParams: cfg
+                        },
+                        {
+                            title: &#39;File Add&#39;,
+                            xtype: &#39;uploaddialog&#39;,
+                            panel: uploadPanel,
+                            listeners: {
+                                uploadcomplete: function (uploadPanel, manager, items, errorCount) {
+                                    uploadComplete(items, this);
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        }).show();
+
+
+        return rept;
+    },
+
+
+<span id='eui-Util-method-fileClick'>    fileClick : function (S_FUNC_CODE, FILE_MGT_CODE, FILE_NAME) {
+</span>        var formData = new FormData();
+        formData.append(&quot;S_FUNC_CODE&quot;, S_FUNC_CODE);
+        formData.append(&quot;FILE_MGT_CODE&quot;, FILE_MGT_CODE);
+
+        this.fileClickApi(formData, FILE_NAME,&#39;api/file/download&#39;)
+    },
+
+<span id='eui-Util-method-fileClickApi'>    fileClickApi : function (formData, FILE_NAME, API_PATH) {
+</span>
+        var xhr = new XMLHttpRequest();
+        xhr.open(&#39;POST&#39;, encodeURI(globalVar.HurlPrefix + API_PATH));
+        xhr.responseType = &#39;arraybuffer&#39;;
+        if (!window.devMode) {
+            xhr.setRequestHeader(&#39;X-CSRF-TOKEN&#39;, globalVar.csrfToken);
+        }
+        xhr.onload = function () {
+            if (this.status === 200) {
+                var type = xhr.getResponseHeader(&#39;Content-Type&#39;);
+
+                var blob = new Blob([this.response], { type: type });
+                if (typeof window.navigator.msSaveBlob !== &#39;undefined&#39;) {
+                    window.navigator.msSaveBlob(blob, filename);
+                } else {
+                    var URL = window.URL || window.webkitURL;
+                    var downloadUrl = URL.createObjectURL(blob);
+
+                    if (FILE_NAME) {
+                        // use HTML5 a[download] attribute to specify filename
+                        var a = document.createElement(&quot;a&quot;);
+                        // safari doesn&#39;t support this yet
+                        if (typeof a.download === &#39;undefined&#39;) {
+                            window.location = downloadUrl;
+                        } else {
+                            a.href = downloadUrl;
+                            a.download = FILE_NAME;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    } else {
+                        window.location = downloadUrl;
+                    }
+
+                    setTimeout(function () {
+                        URL.revokeObjectURL(downloadUrl);
+                    }, 100); // cleanup
+                }
+            }
+        };
+        xhr.send(formData);
     }
 });
 </pre>

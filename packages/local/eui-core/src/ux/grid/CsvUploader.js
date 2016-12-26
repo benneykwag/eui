@@ -3,7 +3,7 @@
  */
 
 Ext.define('eui.ux.grid.CsvUploader', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.csvuploader',
 
     layout: {
@@ -11,11 +11,13 @@ Ext.define('eui.ux.grid.CsvUploader', {
         align: 'stretch'
     },
 
+    margin: 5,
+
     onSearch: function (result, headers) {
         var me = this,
             grid = me.down('grid');
         var store = Ext.create('Ext.data.Store', {
-            fields : [],
+            fields: [],
             data: result
         });
         grid.bindStore(store);
@@ -70,28 +72,23 @@ Ext.define('eui.ux.grid.CsvUploader', {
     onSave: function (btn) {
         var me = this,
             grid = me.down('grid');
-        var data = me.getGridData(grid);
-        /*Back 단 필요 JKM*/
+        var data = me.getGridData(grid),
+            param = {
+                data: data
+            };
+        if (me.__PARAMS.params) {
+            Ext.apply(param, me.__PARAMS.params);
+        }
+
         Util.CommonAjax({
-            url: me.__PARAMS.SAVE_TARGET,
-            params: {
-                EXCELDATA : data	//데이터
-            },
-            pCallback: function (scope, param, ret) {
-                if (ret.TYPE == 1) {
-                    HMsg.show({
-                        title: 'Success',
-                        icon: Ext.Msg.INFO,
-                        buttons: Ext.Msg.OK,
-                        message: ret.MSG
-                    });
-                }else{
-                    HMsg.show({
-                        title: 'Error',
-                        icon: Ext.Msg.ERROR,
-                        buttons: Ext.Msg.OK,
-                        message: ret.DESC
-                    });
+            url: me.__PARAMS.url,
+            params: param,
+            pCallback: function (scope, param, result) {
+                if (result.success) {
+                    me.ownerCt.fireEvent('complete', me.ownerCt, data)
+                } else {
+                    me.ownerCt.fireEvent('fail', me.ownerCt, data)
+                    Ext.Msg.alert('저장실패', result.message);
                 }
             }
         });
@@ -102,7 +99,7 @@ Ext.define('eui.ux.grid.CsvUploader', {
         var list = grid.getStore().getData().items,
             ret = [];
         Ext.Array.each(list, function (itm) {
-            ret.push(Ext.apply({}, itm.getData(), data));
+            ret.push(Ext.applyIf({__rowStatus: 'I' }, itm.getData(), data));
         });
         return ret;
     },
@@ -119,30 +116,30 @@ Ext.define('eui.ux.grid.CsvUploader', {
         reader.onload = function (oFREvent) {
             myCsv = oFREvent.target.result;
 
-            var lines=myCsv.split("\n");
+            var lines = myCsv.split("\n");
 
             var result = [];
 
-            var headers=lines[0].split("|");
-            for(var i=1;i<lines.length;i++){
+            var headers = lines[0].split("|");
+            for (var i = 1; i < lines.length; i++) {
                 var obj = {};
-                if(lines[i]){
-                    var currentline=lines[i].split("|");
+                if (lines[i]) {
+                    var currentline = lines[i].split("|");
 
-                    for(var j=0;j<headers.length;j++){
+                    for (var j = 0; j < headers.length; j++) {
                         var header = headers[j].trim();
                         /* ++ 2016. 11. 24 Add by. syyoon
                          * 엑셀업로드를 호출한 Front에서 Grid가 있는지 체크
                          * Grid에서 엑셀업로드 기능을 호출하면 me.__PARAMS안에 name, dataIndex, text가 들어있음
                          * 없으면 field0, field1, field2.... 순서대로 셋팅됨
                          * ++*/
-                        if(typeof(me.__PARAMS.DATAINDEX) == "undefined"){
-                            obj['field'+j] = ''+currentline[j];
-                        }else {
-                            if(me.__PARAMS.DATAINDEX[j] == null){
-                                obj['field'+j] = ''+currentline[j];
-                            }else{
-                                obj[me.__PARAMS.DATAINDEX[j]] = ''+currentline[j];
+                        if (typeof(me.__PARAMS.DATAINDEX) == "undefined") {
+                            obj['field' + j] = '' + currentline[j];
+                        } else {
+                            if (me.__PARAMS.DATAINDEX[j] == null) {
+                                obj['field' + j] = '' + currentline[j];
+                            } else {
+                                obj[me.__PARAMS.DATAINDEX[j]] = '' + currentline[j];
                             }
                         }
                         // 기존 방식
@@ -163,69 +160,75 @@ Ext.define('eui.ux.grid.CsvUploader', {
     initComponent: function () {
         var me = this;
         Ext.apply(me, {
-            items: [{
-                xtype : 'container',
-                flex : 1,
-                items : [
-                    {
-                        title : 'Excel Upload',
-                        xtype: 'euiform',
-                        items: [
-                            {
-                                xtype: 'euilabel',
-                                text : 'File'
-                            },
-                            {
-                                xtype: 'filefield',
-                                cellCls: 'fo-table-row-td',
-                                colspan : 3,
-                                regex     : (/.(csv)$/i),
-                                regexText : 'Only CSV files allowed for upload',
-                                id:'uploadExcel'
-                            }
-                        ],
-                        buttons : [{
-                            xtype:'button',
-                            text:'Upload',
-                            handler: function(){
+            defaults: {
+                margin: 5
+            },
+
+            items: [
+                {
+                    title: 'Excel Upload',
+                    xtype: 'euiform',
+                    tableColumns: 1,
+                    items: [
+                        {
+                            xtype: 'euidisplay',
+                            value: '제어판 -> 국가 및 언어 -> 숫자탭의 "목록 구분 기호"를 "|"로 꼭 변경하세요'
+                        },
+                        {
+                            fieldLabel: '파일',
+                            xtype: 'filefield',
+                            cellCls: 'fo-table-row-td',
+                            colspan: 3,
+                            regex: (/.(csv)$/i),
+                            regexText: 'Only CSV files allowed for upload',
+                            id: 'uploadExcel'
+                        }
+                    ],
+                    buttons: [
+                        {
+                            xtype: 'button',
+                            text: 'Upload',
+                            handler: function () {
                                 me.toJson();
                             }
-                        },{
-                            xtype:'button',
-                            text:'Save',
-                            handler: function(){
+                        },
+                        {
+                            xtype: 'button',
+                            text: 'Save',
+                            handler: function () {
                                 me.onSave();
                             }
-                        }]
-                    },
-                    {
-                        xtype: 'grid',
-                        flex: 1,
-                        height : 400,
-                        usePagingToolbar: false,
-                        bind: {
-                            store: '{excelStore}'
-                        },
-                        listeners: {
-                            itemdblclick: {
-                                fn: me.parentCallBack,
-                                scope: me
-                            }
-                        },
-                        forceFit: true,
-                        columns: {
-                            defaults: {
-                                width: 120
-                            },
-                            items: [
-                                {
-                                    text: '-',
-                                    dataIndex: 'temp'
-                                }
-                            ]
                         }
-                    }]
-            }]
+                    ]
+                },
+                {
+                    xtype: 'grid',
+                    flex: 1,
+                    height: 400,
+                    usePagingToolbar: false,
+                    bind: {
+                        store: '{excelStore}'
+                    },
+                    listeners: {
+                        itemdblclick: {
+                            fn: me.parentCallBack,
+                            scope: me
+                        }
+                    },
+                    forceFit: true,
+                    columns: {
+                        defaults: {
+                            width: 120
+                        },
+                        items: [
+                            {
+                                text: '-',
+                                dataIndex: 'temp'
+                            }
+                        ]
+                    }
+                }
+            ]
         });
         this.callParent(arguments);
         this.on('afterrender', function () {

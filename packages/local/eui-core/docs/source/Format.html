@@ -235,9 +235,11 @@ Ext.define(&#39;eui.data.validator.Format&#39;, {
             chkTypeMessage = me.getChkString()[me.getChkType() + &#39;_MSG&#39;];
 
         if (this.getChkType()) {
-            value = value.replace( /(\s*)/g, &quot;&quot;);
+            if(!Ext.isNumber(value)){
+                value = value.replace( /(\s*)/g, &quot;&quot;);
+            }
+
             for (var i = 0; i &lt; value.length; i++) {
-                console.log(value, value.substring(i, i + 1));
                 result = me.getChkString()[me.getChkType()].test(value.substring(i, i + 1));
                 if (!result) {
                     break;

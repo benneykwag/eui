@@ -40,11 +40,50 @@ Ext.define('Eui.sample.view.form.Panel', {
             },
             items: [
                 {
+                    fieldLabel : '파일업로드',
+                    xtype: 'euifieldcontainer',
+                    items: [
+                        {
+                            xtype: 'button',
+                            width: 150,
+                            text: '파일업로드',
+                            handler: function () {
+                                Util.callFileManager({
+                                    REF_NO: '11',
+                                    S_FUNC_CODE: "CO",
+                                    REF_TYPE : 'CU'
+                                })
+                            }
+                        },
+                        {
+                            xtype: 'button',
+                            width: 150,
+                            text: '파일업로드(CSV)',
+                            handler: function () {
+                                var uploader = Util.callExcelUploader({
+                                    url : 'resources/data/success.json',
+                                    params: {
+                                        gubun: '111'
+                                    }
+                                });
+                                uploader.on('complete', function (upd, data) {
+                                    upd.close();
+                                    console.log(data);
+                                });
+                                uploader.on('fail', function (upd, data) {
+
+                                })
+                            }
+                        }
+                    ]
+                },
+
+                {
                     fieldLabel: '체크박스',
                     xtype: 'euicheckbox',
                     listeners: {
                         change: function (c, newValue, oldValue) {
-                            console.log(newValue, oldValue)
+                            console.log('체크박스', c.rendered, newValue, oldValue)
                         }
                     },
                     bind: '{RECORD.CHECKBOX1}'

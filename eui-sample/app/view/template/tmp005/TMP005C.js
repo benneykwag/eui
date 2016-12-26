@@ -30,22 +30,28 @@ Ext.define('Eui.sample.view.template.tmp005.TMP005C', {
 
     onLoadData: function () {
         var me = this;
-        Util.CommonAjax({
-            method: 'GET',
-            url: 'TMP004S_FORM.do',
-            params:  {
-
-            },
-            pCallback: function (v, params, result) {
-                if (result.success) {
-                    me.getViewModel().set('RECORD', new Ext.data.Model(
-                        result.data[0]
-                    ));
-                } else {
-                    Ext.Msg.alert('실패', result.message);
-                }
+        var grid = this.lookupReference('tree');
+        grid.store.load({
+            params: {
             }
         });
+
+//        Util.CommonAjax({
+//            method: 'GET',
+//            url: 'TMP004S_FORM.do',
+//            params:  {
+//
+//            },
+//            pCallback: function (v, params, result) {
+//                if (result.success) {
+//                    me.getViewModel().set('RECORD', new Ext.data.Model(
+//                        result.data[0]
+//                    ));
+//                } else {
+//                    Ext.Msg.alert('실패', result.message);
+//                }
+//            }
+//        });
     },
 
     onSave: function () {

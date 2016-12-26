@@ -41,7 +41,28 @@
         </delete>
     </target>-->
 
+    <!--<target name="-after-page">-->
+        <!---->
+    <!--</target>-->
+
     <target name="-after-build">
+        <tstamp>
+            <format property="THISYEAR" pattern="yyyy.mm.dd H:m:s"/>
+        </tstamp>
+        <move file="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js" tofile="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js.tmp"/>
+
+        <concat destfile="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js">
+            <header filtering="no" trimleading="yes">
+                /*
+                * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
+                * ${THISYEAR}.
+                */
+            </header>
+            <fileset file="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js.tmp"/>
+        </concat>
+
+        <delete file="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js.tmp" />
+
         <!--<copy todir="${workspace.dir}/packages/local/eui-core/resources/css">
             <fileset dir="${workspace.dir}/packages/local/eui-core/build/resources">
                 <include name="**/eui-core-all*.css"/>

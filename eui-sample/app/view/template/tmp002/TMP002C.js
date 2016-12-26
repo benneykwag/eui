@@ -17,7 +17,14 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
     },
 
     ExcelUpload : function(btn){
-        Util.callExcelUploader(this.view,'api/WMSMS001SVC/save');
+        var uploader = Util.callExcelUploader(this.view,'resources/data/success.json');
+        uploader.on('complete', function (upd, data) {
+            upd.close();
+            console.log(data);
+        });
+        uploader.on('fail', function (upd, data) {
+
+        })
     },
 
     openEditor: function () {

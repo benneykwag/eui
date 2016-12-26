@@ -3,7 +3,7 @@
     "settings": {
         "cmd": {
             "license": "commercial",
-            "cmdVersion": "6.1.2.15",
+            "cmdVersion": "6.2.1.29",
             "frameworkVersion": "6.0.2.437"
         },
         "canvasControls": {

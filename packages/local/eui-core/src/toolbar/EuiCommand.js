@@ -254,15 +254,16 @@ Ext.define('eui.toolbar.EuiCommand', {
 //        this.setShowExcelDownBtn(visible);
     },
 
-    setButtonStatus: function (data) {
+    setButtonStatus: function(data) {
         var me = this;
-//        debugger;
-        Ext.each(data, function (status) {
-            if (me.initialConfig[me.getBtnInfo()[status.button]] == true) {
+        Ext.each(data, function(status) {
+            var config = me.initialConfig[me.getBtnInfo()[status.button]];
+            if(config === undefined){
                 me.down('#' + status.button).setHidden(false);
+            }else if(Ext.isBoolean(config)){
+                me.down('#' + status.button).setHidden(!config);
             }
-
-        })
+        });
     },
 
     beforeRender: function () {

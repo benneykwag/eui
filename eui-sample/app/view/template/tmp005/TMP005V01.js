@@ -22,7 +22,8 @@ Ext.define('Eui.sample.view.template.tmp005.TMP005V01',{
             xtype: 'euibutton',
             iconCls: 'x-fa fa-filter',
             width: 50,
-            text: '검색'
+            text: '검색',
+            handler:'onLoadData'
         },
         {
             xtype: 'tbseparator'

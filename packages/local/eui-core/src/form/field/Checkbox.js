@@ -136,7 +136,11 @@ Ext.define('eui.form.field.Checkbox', {
 
     initComponent: function() {
         var me = this;
+        me.suspendEvent('change');
         me.callParent(arguments);
+        me.on('beforerender', function () {
+            me.resumeEvent('change');
+        })
     },
 
     /***

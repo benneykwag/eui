@@ -1,0 +1,22 @@
+{
+    "MSG": "정상적으로 처리되었습니다.",
+    "data": [
+    {
+        "FILE_SIZE": "3K",
+        "REF_TYPE": "RM",
+        "ADD_USER_ID": "tnsrnr",
+        "ADD_USER_NAME": "장순국",
+        "YYMMDD": "20161219",
+        "S_FUNC_CODE": "CH",
+        "REMARKS": "",
+        "FILE_MGT_CODE": "884c2e791821433696b4374558cf05f1",
+        "FILE_NAME": "login.txt",
+        "CHANGE_USER_NAME": "",
+        "STATUS": "C",
+        "TIME_ZONE": "GMT +09:00",
+        "ADD_DATE": "Dec 19, 2016 8:56:09 PM",
+        "CHANGE_USER_ID": "",
+        "REF_NO": "tnsrnr",
+        "COMPANY_CODE": "HTNS"
+    }
+], "TYPE": 1}

@@ -224,7 +224,7 @@ Ext.define(&#39;eui.form.field.ComboBox&#39;, {
          *  이 설정을 이용하면 뷰모델과 상관없이 특정 이름으로 정해진 값을 전달할 수도 있다.
          *  @example
          *
-         *  xtype: &#39;spcombo&#39;,
+         *  xtype: &#39;euicombo&#39;,
          *  editable: true,
          *  relBindVars: [&#39;CUSTOMER_CODE|CSCODE@2000&#39;],
          *
@@ -266,8 +266,13 @@ Ext.define(&#39;eui.form.field.ComboBox&#39;, {
 
 <span id='eui-form-field-ComboBox-method-initComponent'>    initComponent: function () {
 </span>        var me = this;
-//        console.log(&#39;initComponent..&#39;, me.getId())
+        
         if (me.column &amp;&amp; me.valueColumnDataIndex) {
+            // tab 키로 그리드 내부에서 이동하면 select되지 않는다.
+            me.column.ownerCt.grid.getCellEditor().on(&#39;beforeedit&#39;, function (editor, context) {
+                me.selectedRecord = context.record;
+            })
+            
             Ext.apply(me, {
                 originalValueField: me.valueField,
                 valueField: me.displayField
@@ -311,10 +316,15 @@ Ext.define(&#39;eui.form.field.ComboBox&#39;, {
      * 않도록 한다.
      */
     checkAutoLoad: function () {
+
         if (this.value) {
             return true;
         }
         if (this.getBind() &amp;&amp; this.getBind()[&#39;value&#39;] &amp;&amp; this.getBind().value.stub.hadValue) {
+            return true;
+        }
+        // 값이 설정되지 않을 경우. 콤보가 로드 되지 않는 현상 해결..
+        if(this.column &amp;&amp; !this.value){
             return true;
         }
         return false;
