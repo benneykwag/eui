@@ -25,6 +25,7 @@ Ext.define('eui.Config', {
     fileuploadListUrl : '',
     filedeleteUrl : '',
     fileuploadUrl: '',
+    fileDownloadUrl : '',
 
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',

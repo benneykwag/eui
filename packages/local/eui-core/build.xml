@@ -55,7 +55,7 @@
             <header filtering="no" trimleading="yes">
                 /*
                 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-                * ${THISYEAR}.
+                * ${THISYEAR}
                 */
             </header>
             <fileset file="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js.tmp"/>
