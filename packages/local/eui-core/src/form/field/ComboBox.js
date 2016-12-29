@@ -249,12 +249,11 @@ Ext.define('eui.form.field.ComboBox', {
 
     initComponent: function () {
         var me = this;
-        
         if (me.column && me.valueColumnDataIndex) {
             // tab 키로 그리드 내부에서 이동하면 select되지 않는다.
-            me.column.ownerCt.grid.getCellEditor().on('beforeedit', function (editor, context) {
+            me.column.getView().ownerGrid.getCellEditor().on('beforeedit', function (editor, context) {
                 me.selectedRecord = context.record;
-            })
+            });
             
             Ext.apply(me, {
                 originalValueField: me.valueField,
