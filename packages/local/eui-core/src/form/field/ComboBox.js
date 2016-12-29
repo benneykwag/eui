@@ -274,7 +274,7 @@ Ext.define('eui.form.field.ComboBox', {
      * }
      */
     setProxyParams: function () {
-        return {}
+        return this.initialConfig.proxyParams;
     },
 
     clearValue: function () {
