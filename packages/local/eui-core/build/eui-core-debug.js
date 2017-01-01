@@ -1,7 +1,7 @@
 
 /*
 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2016.13.26 18:13:14.
+* 2016.45.30 6:45:35
 */
 /*
  * 기본 ajax 요청관련 기본 설정 수정
@@ -934,6 +934,7 @@ Ext.define('eui.Config', {
     fileuploadListUrl: '',
     filedeleteUrl: '',
     fileuploadUrl: '',
+    fileDownloadUrl: '',
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
     /***
@@ -2008,15 +2009,12 @@ Ext.define('eui.Util', {
         var formData = new FormData();
         formData.append("S_FUNC_CODE", S_FUNC_CODE);
         formData.append("FILE_MGT_CODE", FILE_MGT_CODE);
-        this.fileClickApi(formData, FILE_NAME, 'api/file/download');
+        this.fileClickApi(formData, FILE_NAME, Util.fileDownloadUrl);
     },
     fileClickApi: function(formData, FILE_NAME, API_PATH) {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', encodeURI(globalVar.HurlPrefix + API_PATH));
+        xhr.open('POST', encodeURI(API_PATH));
         xhr.responseType = 'arraybuffer';
-        if (!window.devMode) {
-            xhr.setRequestHeader('X-CSRF-TOKEN', globalVar.csrfToken);
-        }
         xhr.onload = function() {
             if (this.status === 200) {
                 var type = xhr.getResponseHeader('Content-Type');
@@ -4667,7 +4665,7 @@ Ext.define('eui.form.field.ComboBox', {
         var me = this;
         if (me.column && me.valueColumnDataIndex) {
             // tab 키로 그리드 내부에서 이동하면 select되지 않는다.
-            me.column.ownerCt.grid.getCellEditor().on('beforeedit', function(editor, context) {
+            me.column.getView().ownerGrid.getCellEditor().on('beforeedit', function(editor, context) {
                 me.selectedRecord = context.record;
             });
             Ext.apply(me, {
@@ -4686,7 +4684,7 @@ Ext.define('eui.form.field.ComboBox', {
      * }
      */
     setProxyParams: function() {
-        return {};
+        return this.initialConfig.proxyParams;
     },
     clearValue: function() {
         this.callParent(arguments);
@@ -9845,6 +9843,97 @@ Ext.define('eui.tree.Panel', {
             });
         }
         me.callParent(arguments);
+    },
+    getCellEditor: function() {
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        } else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        return editor;
+    }
+});
+
+Ext.define('eui.ux.field.plugin.Clearable', {
+    extend: 'Ext.plugin.Abstract',
+    alias: 'plugin.clearable',
+    config: {
+        toggleEvent: 'change',
+        weight: -100
+    },
+    init: function(field) {
+        var plugin = this;
+        var toggleEvent = field.clearableEvent || plugin.getToggleEvent();
+        var weight = plugin.getWeight();
+        if (!field.isXType('textfield')) {
+            Ext.Error.raise({
+                msg: 'Ext.form.field.plugin.Clearable: This plugin is intended for usage with textfield-derived components',
+                field: field,
+                fieldXtypes: field.getXTypes()
+            });
+        }
+        field.setTriggers(Ext.applyIf(field.getTriggers(), {
+            clear: {
+                cls: Ext.baseCSSPrefix + 'form-clear-trigger',
+                weight: weight,
+                handler: function() {
+                    if (Ext.isFunction(field.clearValue)) {
+                        field.clearValue();
+                    } else {
+                        field.setValue(null);
+                    }
+                    field.getTrigger('clear').hide();
+                },
+                hidden: !field.getValue()
+            }
+        }));
+        field.on('render', function() {
+            var listeners = {
+                    destroyable: true
+                };
+            listeners[toggleEvent] = function(field) {
+                var fieldValue = field.getValue();
+                var hasValue = false;
+                switch (field.getXType()) {
+                    case 'numberfield':
+                        hasValue = fieldValue !== null;
+                        break;
+                    default:
+                        hasValue = fieldValue;
+                }
+                field.getTrigger('clear')[hasValue ? 'show' : 'hide']();
+            };
+            field.clearableListeners = field.on(listeners);
+        }, field, {
+            single: true
+        });
+        Ext.Function.interceptAfter(field, 'setReadOnly', plugin.syncClearTriggerVisibility, plugin);
+    },
+    destroy: function() {
+        var field = this.getCmp();
+        if (field.clearableListeners) {
+            field.clearableListeners.destroy();
+        }
+    },
+    /**
+     * Considers all conditions to set trigger visibility.
+     * Can be overridden to influence when trigger is made
+     * visible.
+     */
+    syncClearTriggerVisibility: function() {
+        var field = this.getCmp();
+        var value = field.getValue();
+        var clearTrigger = field.getTrigger('clear');
+        var isReadOnly = field.readOnly;
+        clearTrigger[value && !isReadOnly ? 'show' : 'hide']();
     }
 });
 

@@ -4,6 +4,7 @@ Ext.define('Eui.sample.view.form.Panel', {
     title: 'EUI 사용하기',
 
     requires: [
+        'eui.ux.field.plugin.Clearable',
         'eui.form.field.Month',
         'eui.form.field.Checkbox',
         'eui.form.field.TextArea',
@@ -137,7 +138,10 @@ Ext.define('Eui.sample.view.form.Panel', {
                     bind: '{RECORD.TEXTFIELD}'
                 },
                 {
-                    fieldLabel: '비밀번호',
+                    fieldLabel: '비밀번호2',
+                    plugins: [{
+                        ptype: 'clearable'
+                    }],
                     xtype: 'euitext',
                     inputType: 'password',
                     bind: '{RECORD.TEXTFIELD}'

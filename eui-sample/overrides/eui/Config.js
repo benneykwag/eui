@@ -90,6 +90,16 @@ Ext.define('Override.eui.Config', {
             "CODE": "FORM02",
             "PCODE": "FORM"
         },
+        {
+            "ICONCLS": "fa-circle-o text-aqua",
+            "SWIDGET": "sample-combo",
+            "TEXT": "eui.form.field.ComboBox",
+            "LEVEL": 2,
+            "SCLASS": "Eui.sample.view.form.Combo",
+            "CODE": "FORM02",
+            "PCODE": "FORM"
+        },
+
         // Form End..
         // Template Start..
         {

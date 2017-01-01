@@ -45,6 +45,24 @@ Ext.define(&#39;eui.tree.Panel&#39;, {
         }
         me.callParent(arguments);
 
+    },
+
+<span id='eui-tree-Panel-method-getCellEditor'>    getCellEditor: function () {
+</span>        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i &lt; plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        }
+        else {
+            if (Ext.getClassName(plugins) == &#39;Ext.grid.plugin.CellEditing&#39;) {
+                editor = plugins;
+            }
+        }
+        return editor;
     }
 });</pre>
 </body>

@@ -997,17 +997,14 @@ Ext.define(&#39;eui.Util&#39;, {
         formData.append(&quot;S_FUNC_CODE&quot;, S_FUNC_CODE);
         formData.append(&quot;FILE_MGT_CODE&quot;, FILE_MGT_CODE);
 
-        this.fileClickApi(formData, FILE_NAME,&#39;api/file/download&#39;)
+        this.fileClickApi(formData, FILE_NAME, Util.fileDownloadUrl);
     },
 
 <span id='eui-Util-method-fileClickApi'>    fileClickApi : function (formData, FILE_NAME, API_PATH) {
-</span>
-        var xhr = new XMLHttpRequest();
-        xhr.open(&#39;POST&#39;, encodeURI(globalVar.HurlPrefix + API_PATH));
+</span>        var xhr = new XMLHttpRequest();
+        xhr.open(&#39;POST&#39;, encodeURI(API_PATH));
         xhr.responseType = &#39;arraybuffer&#39;;
-        if (!window.devMode) {
-            xhr.setRequestHeader(&#39;X-CSRF-TOKEN&#39;, globalVar.csrfToken);
-        }
+
         xhr.onload = function () {
             if (this.status === 200) {
                 var type = xhr.getResponseHeader(&#39;Content-Type&#39;);
