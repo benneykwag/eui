@@ -50,12 +50,10 @@ Ext.define('TinymceEditor', {
      */
     liquidLayout: false,
 
-    //-----------------------------------------------------------------
     afterRender: function () {
         var me = this;
 
         me.callParent(arguments);
-
         me.on('blur', function (elm, ev, eOpts) {
 
             var ctrl = document.getElementById(me.getInputId());
@@ -234,7 +232,7 @@ Ext.define('TinymceEditor', {
 
                 var setContent = ed.setContent;
                 ed.setContent = function () {
-                   // debugger;
+                    // debugger;
                     setContent.apply(ed, arguments);
                     ed.fire('change', {});
                 };
@@ -249,7 +247,6 @@ Ext.define('TinymceEditor', {
             });
 
             // Catch and propagate the change event
-
             ed.on('change', function (e) {
                 var oldval = me.getValue();
                 var newval = ed.getContent();
@@ -257,7 +254,7 @@ Ext.define('TinymceEditor', {
                 ed.save();
 
                 me.fireEvent('change', me, newval, oldval, {});
-                me.publishState('rawValue', newval);
+                me.publishState('value', newval);
                 me.checkDirty();
 
                 if (me.validateOnChange) {
@@ -484,19 +481,21 @@ Ext.define('TinymceEditor', {
     //-----------------------------------------------------------------
     setValue: function (v) {
         var me = this;
-
         var res = me.callParent(arguments);
-
         if (me.wysiwygIntialized) {
             // The editor does some preformatting of the HTML text
             // entered by the user.
             // The method setValue sets the value of the textarea.
             // We have to load the text into editor for the
             // preformatting and then to save it back to the textarea.
-
-            var ed = tinymce.get(me.getInputId());
-            if (ed) {
-                ed.load();
+            if(!me.cnt){
+                Ext.defer(function () {
+                    var ed = tinymce.get(me.getInputId());
+                    ed.load();
+                    me.cnt = 1;
+                }, 500);
+            }else{
+                var ed = tinymce.get(me.getInputId());
                 ed.save();
             }
         }
