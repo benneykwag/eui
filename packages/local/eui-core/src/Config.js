@@ -44,33 +44,40 @@ Ext.define('eui.Config', {
 
     /***
      * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
      */
-    initLocaleMessage: function () {
-        var me = this,
-            store = Ext.create('Ext.data.Store', {
-                fields: [],
-                storeId: 'i18n'
-            });
-        var cfg = {
-            pMethod: 'GET',
-            url : Config.localeUrl,
-            params: {
-                locale: Config.localeCode
-            },
-            pSync: false,
-            pCallback: function (pScope, params, retData) {
-                store.loadData(retData.data);
-                store.add(Config.data.message);
-                me.mergeMessageData();
-            }
-        };
-        if(Config.localeUrl){
-            Util.CommonAjax(cfg);
-        }else{
-            store.add(Config.data.message);
-            me.mergeMessageData();
-        }
-    },
+     initLocaleMessage: function(callback) {
+         var me = this,
+             store = Ext.create('Ext.data.Store', {
+                 fields: [],
+                 storeId: 'i18n'
+             });
+         var cfg = {
+                 pMethod: 'GET',
+                 url: Config.localeUrl,
+                 params: {
+                     locale: Config.localeCode
+                 },
+                 pSync: false,
+                 pCallback: function(pScope, params, retData) {
+                     store.loadData(retData.data);
+                     store.add(Config.data.message);
+                     me.mergeMessageData();
+                     if (Ext.isFunction(callback)) {
+                         callback();
+                     }
+                 }
+             };
+         if (Config.localeUrl) {
+             Util.CommonAjax(cfg);
+         } else {
+             store.add(Config.data.message);
+             me.mergeMessageData();
+             if (Ext.isFunction(callback)) {
+                 callback();
+             }
+         }
+     },
 
     /***
      * 사용자가 data.message의 일부를 교체할 경우사용된다.
