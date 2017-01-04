@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*!
+ * Ext JS GridFilter plugin v0.1
+ * https://github.com/roberto-rodriguez/ExtJs_GridFilterPlugin
+ *
+ *
+ * Copyright 2016 Roberto Rodriguez
+ * Licensed under GNU General Public License v3.
+ * http://www.gnu.org/licenses/
+ *
+ *
+ * @class Ext.ux.grid.GridFilter
+ * @extends Ext.AbstractPlugin
+ *
+ * Grid plugin that adds filtering row below grid header.
+ * Allows remote filtering, supports pagination grids.
+ *
+ * To add filtering to column, define &quot;filter&quot; property in the column configuration
+ *
+ *
+ * &lt;b&gt;What it does?&lt;/b&gt;
+ * When the user adds criterias to the filter and hits enter,
+ * The plugin reload the grid, including in the query params the values of the filters
+ *
+ * The values are collected just for the filters that are not empty,
+ *  and are sent to the server in the format:
+ *   dataIndex:VALUE    // Example  firstName: &#39;Roberto&#39;
+ *
+ *
+ *
+ Example:
+
+ var grid = new Ext.grid.GridPanel({
+ columns: [
+ {
+ text: &quot;User ID&quot;,
+ dataIndex: &#39;userId&#39;,
+ filter: true
+ },
+ {
+ text: &quot;First Name&quot;,
+ dataIndex: &#39;firstName&#39;,
+ filter: true
+ },
+ {
+ text: &quot;First Name&quot;,
+ dataIndex: &#39;firstName&#39;,
+ filter: lastName
+ }
+ ],
+ plugins:[{ptype:&quot;gridFilter&quot;}]
+ ...
+ });
+ */
+Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
+    extend: &#39;Ext.AbstractPlugin&#39;,
+    alias: &#39;plugin.gridFilter&#39;,
+    init: function (grid) {
+        var me = this;
+        grid.relayEvents(grid.getStore(), [&#39;viewready&#39;, &#39;load&#39;, &#39;beforeload&#39;, &#39;sortchange&#39;]);
+        grid.addListener(&#39;beforeload&#39;, me.onBeforeLoad);
+        grid.addListener(&#39;viewready&#39;, me.storeload);
+        grid.addListener(&#39;load&#39;, me.storeload);
+        grid.addListener(&#39;sortchange&#39;, me.storeload);
+    },
+    storeload: function () {
+        console.log(&#39;storeload&#39;);
+        var me = this;
+        var body = me.body.dom;
+
+        var container = body.getElementsByClassName(&#39;x-grid-item-container&#39;)[0];
+        var __table = container.childNodes[0];
+        if (!__table) {
+            return;
+        }
+        var __tbody = __table.getElementsByTagName(&#39;tbody&#39;)[0];
+        var tr1 = __tbody.childNodes[0];
+
+        if (tr1) {
+            me[&#39;tr1&#39;] = tr1;
+        } else {
+            if (me[&#39;tr1&#39;]) {
+                tr1 = me[&#39;tr1&#39;];
+            } else {
+                return;
+            }
+        }
+
+        var table = document.createElement(&#39;table&#39;);
+        var tbody = document.createElement(&#39;tbody&#39;);
+        table.appendChild(tbody);
+
+        var newTr = document.createElement(&#39;tr&#39;);
+
+        for (var i = 0; i &lt; tr1.childNodes.length; i++) {
+            console.log(tr1.childNodes[i].getAttribute(&#39;style&#39;));
+            var td = document.createElement(&#39;td&#39;);
+            td.setAttribute(&quot;style&quot;, tr1.childNodes[i].getAttribute(&#39;style&#39;)+&quot;padding:1px 1px;border: solid gray 1px;&quot;);
+            if (me.columns[i].initialConfig.filter) {
+
+
+                var input = document.createElement(&#39;input&#39;);
+                input.setAttribute(&quot;style&quot;, &quot;width:100%&quot;);
+                input.setAttribute(&quot;name&quot;, me.columns[i].initialConfig.dataIndex);
+
+                if (me.filters &amp;&amp; me.filters[me.columns[i].initialConfig.dataIndex]) {
+                    input.value = me.filters[me.columns[i].initialConfig.dataIndex];
+                }
+
+                input.onkeyup = function (event) {
+                    if (event.keyCode === 13) {
+                        var tr = event.target.parentNode.parentNode;
+
+                        var searchParams = {};
+
+                        for (var j = 0; j &lt; tr.childNodes.length; j++) {
+                            if (tr.childNodes[j].childNodes[0] &amp;&amp; tr.childNodes[j].childNodes[0].value) {
+                                searchParams[tr.childNodes[j].childNodes[0].name] = tr.childNodes[j].childNodes[0].value;
+                            }
+                        }
+                        me[&#39;filters&#39;] = searchParams;
+
+                        var clonedSearchParams = {//for avoid include start and page in the global var
+                            start: 0,
+                            page: 1
+                        };
+
+                        for (var key in searchParams) {
+                            clonedSearchParams[key] = searchParams[key];
+                        }
+
+                        me.store.load({params: clonedSearchParams});
+                        me.store.currentPage = 1;
+                    }
+                };
+                td.appendChild(input);
+            }
+
+            newTr.appendChild(td);
+        }
+        tbody.appendChild(newTr);
+        container.insertBefore(table, __table);
+    },
+    onBeforeLoad: function (store, operation, eOpts) {
+        var me = this;
+
+        if (me.filters) {
+            store.getProxy().extraParams = me.filters;
+        }
+
+        if (!me[&#39;pageSize&#39;]) {
+            me[&#39;pageSize&#39;] = --store.pageSize;
+            store.getProxy().extraParams[&#39;limit&#39;] = me[&#39;pageSize&#39;];
+        }
+    }
+});
+</pre>
+</body>
+</html>
