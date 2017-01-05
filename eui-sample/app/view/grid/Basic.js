@@ -33,10 +33,15 @@ Ext.define('Eui.sample.view.grid.Basic', {
         {
 //            itemId: 'mygrid',
             xtype: 'euigrid',
-            plugins: {
-                ptype: 'cellediting',   // 셀에디터를 추가.
-                clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
-            },
+            plugins: [
+                {
+                    ptype: 'cellediting',   // 셀에디터를 추가.
+                    clicksToEdit: 2         // 더블클릭을 통해 에디터로 변환됨.
+                },
+                {
+                    ptype: "gridFilter"
+                }
+            ],
             selModel: {     // 그리로우를 클릭시 체크박스를 통해 선택되며 체크와 체크해제
                 mode: 'SIMPLE',
                 selType: 'checkboxmodel'
@@ -62,12 +67,22 @@ Ext.define('Eui.sample.view.grid.Basic', {
             ],
 
             bind: '{mystore}',
+//            store: {
+//                model: 'Eui.sample.model.Message',
+//                autoLoad: true
+//            },
+            listeners: {
+                viewready: function () {
+                    console.log('사우이 .....viewready')
+                }
+            },
 
             columns: [
                 {
                     text: '#{행추가2}',
                     width: 100,
                     dataIndex: 'MSG_ID',
+                    filter: true,
                     editor: {
                         bind: "{messageRecord.MSG_ID}",
                         xtype: 'textfield'

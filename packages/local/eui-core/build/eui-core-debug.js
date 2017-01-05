@@ -1,7 +1,7 @@
 
 /*
 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2017.20.01 22:20:2
+* 2017.00.04 21:0:0
 */
 /*
  * 기본 ajax 요청관련 기본 설정 수정
@@ -950,8 +950,9 @@ Ext.define('eui.Config', {
     localeUrl: null,
     /***
      * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
      */
-    initLocaleMessage: function() {
+    initLocaleMessage: function(callback) {
         var me = this,
             store = Ext.create('Ext.data.Store', {
                 fields: [],
@@ -968,6 +969,9 @@ Ext.define('eui.Config', {
                     store.loadData(retData.data);
                     store.add(Config.data.message);
                     me.mergeMessageData();
+                    if (Ext.isFunction(callback)) {
+                        callback();
+                    }
                 }
             };
         if (Config.localeUrl) {
@@ -975,6 +979,9 @@ Ext.define('eui.Config', {
         } else {
             store.add(Config.data.message);
             me.mergeMessageData();
+            if (Ext.isFunction(callback)) {
+                callback();
+            }
         }
     },
     /***
@@ -12061,9 +12068,9 @@ Ext.define('eui.ux.grid.GridFilter', {
         grid.addListener('sortchange', me.storeload);
     },
     storeload: function() {
-        console.log('storeload');
         var me = this;
         var body = me.body.dom;
+        //        Ext.defer(function () {
         var container = body.getElementsByClassName('x-grid-item-container')[0];
         var __table = container.childNodes[0];
         if (!__table) {
@@ -12084,16 +12091,25 @@ Ext.define('eui.ux.grid.GridFilter', {
         var tbody = document.createElement('tbody');
         table.appendChild(tbody);
         var newTr = document.createElement('tr');
-        for (var i = 0; i < tr1.childNodes.length; i++) {
-            console.log(tr1.childNodes[i].getAttribute('style'));
+        var tr_nodes = Ext.Array.clone(tr1.childNodes);
+        var columns = Ext.pluck(Ext.Array.clone(me.columns), 'initialConfig');
+        if (tr_nodes[0].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1) {
+            columns.unshift({
+                filter: false
+            });
+        }
+        for (var i = 0; i < tr_nodes.length; i++) {
             var td = document.createElement('td');
-            td.setAttribute("style", tr1.childNodes[i].getAttribute('style') + "padding:1px 1px;border: solid gray 1px;");
-            if (me.columns[i].initialConfig.filter) {
+            td.setAttribute("style", tr_nodes[i].getAttribute('style') + "padding:1px 1px;border: solid gray 1px;");
+            //            if (tr_nodes[i].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1){
+            //
+            //            }else {
+            if (columns[i].filter) {
                 var input = document.createElement('input');
                 input.setAttribute("style", "width:100%");
-                input.setAttribute("name", me.columns[i].initialConfig.dataIndex);
-                if (me.filters && me.filters[me.columns[i].initialConfig.dataIndex]) {
-                    input.value = me.filters[me.columns[i].initialConfig.dataIndex];
+                input.setAttribute("name", columns[i].dataIndex);
+                if (me.filters && me.filters[columns[i].dataIndex]) {
+                    input.value = me.filters[columns[i].dataIndex];
                 }
                 input.onkeyup = function(event) {
                     if (event.keyCode === 13) {
@@ -12126,6 +12142,7 @@ Ext.define('eui.ux.grid.GridFilter', {
         tbody.appendChild(newTr);
         container.insertBefore(table, __table);
     },
+    //        },1000)
     onBeforeLoad: function(store, operation, eOpts) {
         var me = this;
         if (me.filters) {

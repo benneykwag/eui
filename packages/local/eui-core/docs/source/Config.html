@@ -61,33 +61,40 @@ Ext.define(&#39;eui.Config&#39;, {
 
 <span id='eui-Config-method-initLocaleMessage'>    /***
 </span>     * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
      */
-    initLocaleMessage: function () {
-        var me = this,
-            store = Ext.create(&#39;Ext.data.Store&#39;, {
-                fields: [],
-                storeId: &#39;i18n&#39;
-            });
-        var cfg = {
-            pMethod: &#39;GET&#39;,
-            url : Config.localeUrl,
-            params: {
-                locale: Config.localeCode
-            },
-            pSync: false,
-            pCallback: function (pScope, params, retData) {
-                store.loadData(retData.data);
-                store.add(Config.data.message);
-                me.mergeMessageData();
-            }
-        };
-        if(Config.localeUrl){
-            Util.CommonAjax(cfg);
-        }else{
-            store.add(Config.data.message);
-            me.mergeMessageData();
-        }
-    },
+     initLocaleMessage: function(callback) {
+         var me = this,
+             store = Ext.create(&#39;Ext.data.Store&#39;, {
+                 fields: [],
+                 storeId: &#39;i18n&#39;
+             });
+         var cfg = {
+                 pMethod: &#39;GET&#39;,
+                 url: Config.localeUrl,
+                 params: {
+                     locale: Config.localeCode
+                 },
+                 pSync: false,
+                 pCallback: function(pScope, params, retData) {
+                     store.loadData(retData.data);
+                     store.add(Config.data.message);
+                     me.mergeMessageData();
+                     if (Ext.isFunction(callback)) {
+                         callback();
+                     }
+                 }
+             };
+         if (Config.localeUrl) {
+             Util.CommonAjax(cfg);
+         } else {
+             store.add(Config.data.message);
+             me.mergeMessageData();
+             if (Ext.isFunction(callback)) {
+                 callback();
+             }
+         }
+     },
 
 <span id='eui-Config-method-mergeMessageData'>    /***
 </span>     * 사용자가 data.message의 일부를 교체할 경우사용된다.
@@ -139,6 +146,7 @@ Ext.define(&#39;eui.Config&#39;, {
             {&quot;MSG_ID&quot;: &quot;RECORD_DELETED&quot;, &quot;MSG_LABEL&quot;: &quot;레코드가 삭제되었습니다&quot;}
         ]
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

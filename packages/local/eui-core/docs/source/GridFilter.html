@@ -71,19 +71,24 @@
 Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
     extend: &#39;Ext.AbstractPlugin&#39;,
     alias: &#39;plugin.gridFilter&#39;,
-    init: function (grid) {
+    init: function(grid) {
         var me = this;
-        grid.relayEvents(grid.getStore(), [&#39;viewready&#39;, &#39;load&#39;, &#39;beforeload&#39;, &#39;sortchange&#39;]);
+        grid.relayEvents(grid.getStore(), [
+            &#39;viewready&#39;,
+            &#39;load&#39;,
+            &#39;beforeload&#39;,
+            &#39;sortchange&#39;
+        ]);
         grid.addListener(&#39;beforeload&#39;, me.onBeforeLoad);
         grid.addListener(&#39;viewready&#39;, me.storeload);
         grid.addListener(&#39;load&#39;, me.storeload);
         grid.addListener(&#39;sortchange&#39;, me.storeload);
     },
-    storeload: function () {
-        console.log(&#39;storeload&#39;);
+    storeload: function() {
         var me = this;
         var body = me.body.dom;
 
+//        Ext.defer(function () {
         var container = body.getElementsByClassName(&#39;x-grid-item-container&#39;)[0];
         var __table = container.childNodes[0];
         if (!__table) {
@@ -91,7 +96,6 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
         }
         var __tbody = __table.getElementsByTagName(&#39;tbody&#39;)[0];
         var tr1 = __tbody.childNodes[0];
-
         if (tr1) {
             me[&#39;tr1&#39;] = tr1;
         } else {
@@ -101,75 +105,76 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
                 return;
             }
         }
-
         var table = document.createElement(&#39;table&#39;);
         var tbody = document.createElement(&#39;tbody&#39;);
         table.appendChild(tbody);
-
         var newTr = document.createElement(&#39;tr&#39;);
 
-        for (var i = 0; i &lt; tr1.childNodes.length; i++) {
-            console.log(tr1.childNodes[i].getAttribute(&#39;style&#39;));
+        var tr_nodes = Ext.Array.clone(tr1.childNodes);
+        var columns = Ext.pluck(Ext.Array.clone(me.columns), &#39;initialConfig&#39;);
+        if (tr_nodes[0].getAttribute(&#39;class&#39;).indexOf(&#39;x-grid-cell-checkcolumn&#39;) != -1){
+            columns.unshift({
+                filter: false
+            })
+        }
+
+        for (var i = 0; i &lt; tr_nodes.length; i++) {
             var td = document.createElement(&#39;td&#39;);
-            td.setAttribute(&quot;style&quot;, tr1.childNodes[i].getAttribute(&#39;style&#39;)+&quot;padding:1px 1px;border: solid gray 1px;&quot;);
-            if (me.columns[i].initialConfig.filter) {
-
-
+            td.setAttribute(&quot;style&quot;, tr_nodes[i].getAttribute(&#39;style&#39;) + &quot;padding:1px 1px;border: solid gray 1px;&quot;);
+//            if (tr_nodes[i].getAttribute(&#39;class&#39;).indexOf(&#39;x-grid-cell-checkcolumn&#39;) != -1){
+//
+//            }else {
+            if( columns[i].filter ) {
                 var input = document.createElement(&#39;input&#39;);
                 input.setAttribute(&quot;style&quot;, &quot;width:100%&quot;);
-                input.setAttribute(&quot;name&quot;, me.columns[i].initialConfig.dataIndex);
-
-                if (me.filters &amp;&amp; me.filters[me.columns[i].initialConfig.dataIndex]) {
-                    input.value = me.filters[me.columns[i].initialConfig.dataIndex];
+                input.setAttribute(&quot;name&quot;, columns[i].dataIndex);
+                if (me.filters &amp;&amp; me.filters[columns[i].dataIndex]) {
+                    input.value = me.filters[columns[i].dataIndex];
                 }
-
-                input.onkeyup = function (event) {
+                input.onkeyup = function(event) {
                     if (event.keyCode === 13) {
                         var tr = event.target.parentNode.parentNode;
-
                         var searchParams = {};
-
                         for (var j = 0; j &lt; tr.childNodes.length; j++) {
                             if (tr.childNodes[j].childNodes[0] &amp;&amp; tr.childNodes[j].childNodes[0].value) {
                                 searchParams[tr.childNodes[j].childNodes[0].name] = tr.childNodes[j].childNodes[0].value;
                             }
                         }
                         me[&#39;filters&#39;] = searchParams;
-
-                        var clonedSearchParams = {//for avoid include start and page in the global var
+                        var clonedSearchParams = {
+                            //for avoid include start and page in the global var
                             start: 0,
                             page: 1
                         };
-
                         for (var key in searchParams) {
                             clonedSearchParams[key] = searchParams[key];
                         }
-
-                        me.store.load({params: clonedSearchParams});
+                        me.store.load({
+                            params: clonedSearchParams
+                        });
                         me.store.currentPage = 1;
                     }
                 };
                 td.appendChild(input);
             }
-
             newTr.appendChild(td);
         }
         tbody.appendChild(newTr);
         container.insertBefore(table, __table);
-    },
-    onBeforeLoad: function (store, operation, eOpts) {
-        var me = this;
+//        },1000)
 
+
+    },
+    onBeforeLoad: function(store, operation, eOpts) {
+        var me = this;
         if (me.filters) {
             store.getProxy().extraParams = me.filters;
         }
-
         if (!me[&#39;pageSize&#39;]) {
             me[&#39;pageSize&#39;] = --store.pageSize;
             store.getProxy().extraParams[&#39;limit&#39;] = me[&#39;pageSize&#39;];
         }
     }
-});
-</pre>
+});</pre>
 </body>
 </html>

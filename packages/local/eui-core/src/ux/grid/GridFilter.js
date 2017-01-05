@@ -54,21 +54,50 @@
 Ext.define('eui.ux.grid.GridFilter', {
     extend: 'Ext.AbstractPlugin',
     alias: 'plugin.gridFilter',
-    init: function(grid) {
+    init: function (grid) {
         var me = this;
-        grid.relayEvents(grid.getStore(), [
+        var store = grid.getStore();
+        if (grid.getBind()['store']) {
+            store = grid.lookupViewModel().getStore(grid.getBind()['store'].stub.name);
+            store.on('load', function () {
+//               debugger;
+            });
+        }
+        console.log('store', store)
+        grid.relayEvents(store, [
             'viewready',
             'load',
             'beforeload',
             'sortchange'
         ]);
         grid.addListener('beforeload', me.onBeforeLoad);
-        grid.addListener('viewready', me.storeload);
-        grid.addListener('load', me.storeload);
-        grid.addListener('sortchange', me.storeload);
+        grid.addListener('viewready', function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 300)
+        });
+        grid.addListener('load', function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 200)
+        });
+        grid.on('resize', function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 300)
+        })
+//
+//        grid.addListener('sortchange', function () {
+//            me.storeload(grid)
+//        });
     },
-    storeload: function() {
+    storeload: function (gg) {
+//debugger;
         var me = this;
+        if (gg) {
+            me = gg;
+        }
+        console.log('storeload..', me);
         var body = me.body.dom;
 
 //        Ext.defer(function () {
@@ -77,6 +106,12 @@ Ext.define('eui.ux.grid.GridFilter', {
         if (!__table) {
             return;
         }
+        if( me.el.dom.getElementsByClassName('filter-table')[0]){
+//            debugger;
+            Ext.get(me.el.dom.getElementsByClassName('filter-table')[0]).destroy();
+        }
+
+
         var __tbody = __table.getElementsByTagName('tbody')[0];
         var tr1 = __tbody.childNodes[0];
         if (tr1) {
@@ -89,13 +124,14 @@ Ext.define('eui.ux.grid.GridFilter', {
             }
         }
         var table = document.createElement('table');
+        table.setAttribute('class','filter-table');
         var tbody = document.createElement('tbody');
         table.appendChild(tbody);
         var newTr = document.createElement('tr');
 
         var tr_nodes = Ext.Array.clone(tr1.childNodes);
         var columns = Ext.pluck(Ext.Array.clone(me.columns), 'initialConfig');
-        if (tr_nodes[0].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1){
+        if (tr_nodes[0].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1) {
             columns.unshift({
                 filter: false
             })
@@ -107,14 +143,14 @@ Ext.define('eui.ux.grid.GridFilter', {
 //            if (tr_nodes[i].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1){
 //
 //            }else {
-            if( columns[i].filter ) {
+            if (columns[i].filter) {
                 var input = document.createElement('input');
                 input.setAttribute("style", "width:100%");
                 input.setAttribute("name", columns[i].dataIndex);
                 if (me.filters && me.filters[columns[i].dataIndex]) {
                     input.value = me.filters[columns[i].dataIndex];
                 }
-                input.onkeyup = function(event) {
+                input.onkeyup = function (event) {
                     if (event.keyCode === 13) {
                         var tr = event.target.parentNode.parentNode;
                         var searchParams = {};
@@ -139,16 +175,22 @@ Ext.define('eui.ux.grid.GridFilter', {
                     }
                 };
                 td.appendChild(input);
+            }else{
+                td.setAttribute('class','x-grid-item x-grid-item-selected');
             }
             newTr.appendChild(td);
         }
         tbody.appendChild(newTr);
-        container.insertBefore(table, __table);
+//        container.insertBefore(table, __table);
+        me.el.dom.getElementsByClassName('x-grid-body')[0].insertBefore(table, me.el.dom.getElementsByClassName('x-grid-view')[0]);
+//debugger;
+//        me.el.dom.getElementsByClassName('x-grid-view')[0]
+//        me.el.dom.getElementsByClassName('x-grid-body')[0]
 //        },1000)
 
 
     },
-    onBeforeLoad: function(store, operation, eOpts) {
+    onBeforeLoad: function (store, operation, eOpts) {
         var me = this;
         if (me.filters) {
             store.getProxy().extraParams = me.filters;
