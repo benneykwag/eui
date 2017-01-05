@@ -193,7 +193,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                         var editor = field.config.editor;
                         if (!field.hasEditor()) {
                             console.log('editor 존재하지 않아 obj에 설정함. :', fieldParam, combo.getId())
-                            var proxyParams = editor.setProxyParams();
+                            var proxyParams = editor.getProxyParams();
                             proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
 
                             editor.setProxyParams = function () {
@@ -319,21 +319,7 @@ Ext.define('eui.form.field.ComboBoxController', {
         if (view.store.storeId != 'ext-empty-store') {
             return;
         }
-//        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-//            var retValue = true;
-//            console.log('editor:', idx, field.getEditor())
-////            if (field.getEditor()) {
-////                retValue = true;
-////            }
-//            return retValue;
-//        });
-//        Ext.defer(function () {
-//        if(view.getId() === 'NEXT12') {
 
-//        }
-//        },1000)
-
-//        console.log('editorColumns1', view.getId(), editorColumns)
         view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = 'local';

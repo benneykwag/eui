@@ -13,7 +13,7 @@ Ext.define('eui.Util', {
      */
     localeStoreValueField: 'MSG_ID',
     localeStoreDisplayField: 'MSG_CONTENTS',
-
+    fileDownloadUrl: 'api/file/download',
     UrlPrefix: null,
     localeLang: "ko",
     webosShowWindowId: null,

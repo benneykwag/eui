@@ -1,8 +1,3 @@
-
-/*
-* Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2016.45.30 6:45:35
-*/
 /*
  * 기본 ajax 요청관련 기본 설정 수정
  * */
@@ -950,8 +945,9 @@ Ext.define('eui.Config', {
     localeUrl: null,
     /***
      * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
      */
-    initLocaleMessage: function() {
+    initLocaleMessage: function(callback) {
         var me = this,
             store = Ext.create('Ext.data.Store', {
                 fields: [],
@@ -968,6 +964,9 @@ Ext.define('eui.Config', {
                     store.loadData(retData.data);
                     store.add(Config.data.message);
                     me.mergeMessageData();
+                    if (Ext.isFunction(callback)) {
+                        callback();
+                    }
                 }
             };
         if (Config.localeUrl) {
@@ -975,6 +974,9 @@ Ext.define('eui.Config', {
         } else {
             store.add(Config.data.message);
             me.mergeMessageData();
+            if (Ext.isFunction(callback)) {
+                callback();
+            }
         }
     },
     /***
@@ -1107,6 +1109,7 @@ Ext.define('eui.Util', {
      */
     localeStoreValueField: 'MSG_ID',
     localeStoreDisplayField: 'MSG_CONTENTS',
+    fileDownloadUrl: 'api/file/download',
     UrlPrefix: null,
     localeLang: "ko",
     webosShowWindowId: null,
@@ -4275,7 +4278,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                         var editor = field.config.editor;
                         if (!field.hasEditor()) {
                             console.log('editor 존재하지 않아 obj에 설정함. :', fieldParam, combo.getId());
-                            var proxyParams = editor.setProxyParams();
+                            var proxyParams = editor.getProxyParams();
                             proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
                             editor.setProxyParams = function() {
                                 return proxyParams;
@@ -4388,19 +4391,6 @@ Ext.define('eui.form.field.ComboBoxController', {
         if (view.store.storeId != 'ext-empty-store') {
             return;
         }
-        //        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //            var retValue = true;
-        //            console.log('editor:', idx, field.getEditor())
-        ////            if (field.getEditor()) {
-        ////                retValue = true;
-        ////            }
-        //            return retValue;
-        //        });
-        //        Ext.defer(function () {
-        //        if(view.getId() === 'NEXT12') {
-        //        }
-        //        },1000)
-        //        console.log('editorColumns1', view.getId(), editorColumns)
         view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = 'local';
@@ -4674,17 +4664,6 @@ Ext.define('eui.form.field.ComboBox', {
             });
         }
         me.callParent(arguments);
-    },
-    /***
-     * 재정의 용도로 사용한다.
-     * @exmaple
-     * this.proxyParams = {
-     *      myParam1 : '1',
-     *      myParam2 : 'AA'
-     * }
-     */
-    setProxyParams: function() {
-        return this.initialConfig.proxyParams;
     },
     clearValue: function() {
         this.callParent(arguments);
@@ -6189,26 +6168,21 @@ Ext.define('eui.form.field.Number', {
         return (neg ? '-' : '') + formatString.replace(/[\d,?\.?]+/, fnum);
     },
     valueToRaw: function(value) {
-        if (!this.useThousandSeparator)  {
+        if (!this.useThousandSeparator) {
             return this.callParent(arguments);
         }
-        
         var me = this;
         var format = "000,000";
         for (var i = 0; i < me.decimalPrecision; i++) {
             if (i == 0) {
                 format += ".";
             }
-            format += "0";
+            format += "#";
         }
-        //        if (value !== undefined && Ext.Number.toFixed(value, 0) == value) {
-        //            console.log(Ext.Number.toFixed(value, 0),  value)
-        //            format = "000,000";
-        //        }
-        value = me.parseValue(me.exNumber(value, format));
+        value = me.parseValue(Ext.util.Format.number(value.toString(), format));
         value = me.fixPrecision(value);
         value = Ext.isNumber(value) ? value : parseFloat(me.toRawNumber(value));
-        value = isNaN(value) ? '' : String(me.exNumber(value, format)).replace('.', me.decimalSeparator);
+        value = isNaN(value) ? '' : Ext.util.Format.number(value.toString(), format).replace('.', me.decimalSeparator);
         return value;
     }
 });
@@ -9859,81 +9833,6 @@ Ext.define('eui.tree.Panel', {
             }
         }
         return editor;
-    }
-});
-
-Ext.define('eui.ux.field.plugin.Clearable', {
-    extend: 'Ext.plugin.Abstract',
-    alias: 'plugin.clearable',
-    config: {
-        toggleEvent: 'change',
-        weight: -100
-    },
-    init: function(field) {
-        var plugin = this;
-        var toggleEvent = field.clearableEvent || plugin.getToggleEvent();
-        var weight = plugin.getWeight();
-        if (!field.isXType('textfield')) {
-            Ext.Error.raise({
-                msg: 'Ext.form.field.plugin.Clearable: This plugin is intended for usage with textfield-derived components',
-                field: field,
-                fieldXtypes: field.getXTypes()
-            });
-        }
-        field.setTriggers(Ext.applyIf(field.getTriggers(), {
-            clear: {
-                cls: Ext.baseCSSPrefix + 'form-clear-trigger',
-                weight: weight,
-                handler: function() {
-                    if (Ext.isFunction(field.clearValue)) {
-                        field.clearValue();
-                    } else {
-                        field.setValue(null);
-                    }
-                    field.getTrigger('clear').hide();
-                },
-                hidden: !field.getValue()
-            }
-        }));
-        field.on('render', function() {
-            var listeners = {
-                    destroyable: true
-                };
-            listeners[toggleEvent] = function(field) {
-                var fieldValue = field.getValue();
-                var hasValue = false;
-                switch (field.getXType()) {
-                    case 'numberfield':
-                        hasValue = fieldValue !== null;
-                        break;
-                    default:
-                        hasValue = fieldValue;
-                }
-                field.getTrigger('clear')[hasValue ? 'show' : 'hide']();
-            };
-            field.clearableListeners = field.on(listeners);
-        }, field, {
-            single: true
-        });
-        Ext.Function.interceptAfter(field, 'setReadOnly', plugin.syncClearTriggerVisibility, plugin);
-    },
-    destroy: function() {
-        var field = this.getCmp();
-        if (field.clearableListeners) {
-            field.clearableListeners.destroy();
-        }
-    },
-    /**
-     * Considers all conditions to set trigger visibility.
-     * Can be overridden to influence when trigger is made
-     * visible.
-     */
-    syncClearTriggerVisibility: function() {
-        var field = this.getCmp();
-        var value = field.getValue();
-        var clearTrigger = field.getTrigger('clear');
-        var isReadOnly = field.readOnly;
-        clearTrigger[value && !isReadOnly ? 'show' : 'hide']();
     }
 });
 

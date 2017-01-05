@@ -266,27 +266,23 @@ Ext.define('eui.form.field.Number', {
 
         return (neg ? '-' : '') + formatString.replace(/[\d,?\.?]+/, fnum);
     },
-    valueToRaw: function (value) {
-        if (!this.useThousandSeparator)
+    valueToRaw: function(value) {
+        if (!this.useThousandSeparator)  {
             return this.callParent(arguments);
+        }
         var me = this;
-
         var format = "000,000";
-
         for (var i = 0; i < me.decimalPrecision; i++) {
             if (i == 0) {
                 format += ".";
             }
-            format += "0";
+            format += "#";
         }
-//        if (value !== undefined && Ext.Number.toFixed(value, 0) == value) {
-//            console.log(Ext.Number.toFixed(value, 0),  value)
-//            format = "000,000";
-//        }
-        value = me.parseValue(me.exNumber(value, format));
+        value = me.parseValue(Ext.util.Format.number(value.toString(), format));
         value = me.fixPrecision(value);
         value = Ext.isNumber(value) ? value : parseFloat(me.toRawNumber(value));
-        value = isNaN(value) ? '' : String(me.exNumber(value, format)).replace('.', me.decimalSeparator);
+        value = isNaN(value) ? '' : Ext.util.Format.number(value.toString(), format).replace('.', me.decimalSeparator);
+
         return value;
     }
 });

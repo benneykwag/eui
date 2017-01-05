@@ -254,7 +254,7 @@ Ext.define('eui.form.field.ComboBox', {
             me.column.getView().ownerGrid.getCellEditor().on('beforeedit', function (editor, context) {
                 me.selectedRecord = context.record;
             });
-            
+
             Ext.apply(me, {
                 originalValueField: me.valueField,
                 valueField: me.displayField
@@ -262,18 +262,6 @@ Ext.define('eui.form.field.ComboBox', {
         }
 
         me.callParent(arguments);
-    },
-
-    /***
-     * 재정의 용도로 사용한다.
-     * @exmaple
-     * this.proxyParams = {
-     *      myParam1 : '1',
-     *      myParam2 : 'AA'
-     * }
-     */
-    setProxyParams: function () {
-        return this.initialConfig.proxyParams;
     },
 
     clearValue: function () {
