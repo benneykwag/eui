@@ -320,7 +320,6 @@ Ext.define('eui.form.field.ComboBoxController', {
             return;
         }
 
-        view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = 'local';
         }

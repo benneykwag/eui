@@ -4391,7 +4391,6 @@ Ext.define('eui.form.field.ComboBoxController', {
         if (view.store.storeId != 'ext-empty-store') {
             return;
         }
-        view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = 'local';
         }
