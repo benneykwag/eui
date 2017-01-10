@@ -126,7 +126,8 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
                 title = col.name.replace(/_/g, " ");
                 title = Ext.String.capitalize(title);
             }
-
+            title = title.replace(/<\/BR>/gi, '\n\r');
+            title = title.replace(/<BR>/gi, '\n\r');
             cells.push(Ext.String.format('<ss:Cell ss:StyleID="headercell"><ss:Data ss:Type="String">{0}</ss:Data><ss:NamedCell ss:Name="Print_Titles" /></ss:Cell>', title));
             //}
         }, this);
