@@ -192,6 +192,9 @@
     "js": [{
         "path": "${package.dir}/resources/tinymce/tinymce.js"
     }],
+    "css": [{
+        "path": "${package.dir}/resources/tinymce/skins/codepen.min.css"
+    }],
     /**
      * This is the comma-separated list of folders where classes reside. These
      * classes must be explicitly required to be included in the build.

@@ -61,7 +61,28 @@ Ext.define('TinymceEditor', {
     /*
      Config object for the TinyMCE configuration options
      */
-    tinyMCEConfig: {},
+    tinyMCEConfig: {
+        plugins: [
+			'advlist autolink lists link image charmap print preview',
+			'searchreplace visualblocks code fullscreen',
+			'insertdatetime table contextmenu bdesk_photo'
+        ],
+    	language: 'ko_KR',
+    	skin : "lightgray",
+    	
+    	content_css: './codepen.min.css',
+    	
+    	toolbar1: "bold italic underline strikethrough subscript superscript | removeformat | alignleft aligncenter alignright alignjustify | formatselect fontsizeselect",
+    	toolbar2: "table bdesk_photo | searchreplace | bullist numlist | outdent indent | undo redo | link unlink | preview fullscreen print", 
+    	
+//        toolbar1: "newdocument fullpage | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
+//        toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | inserttime preview | forecolor backcolor",
+//        toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | spellchecker | visualchars visualblocks nonbreaking template pagebreak restoredraft",
+//        content_css : "contents.css",
+
+        menubar: true,
+        toolbar_items_size: 'small'
+    },
 
     /*
      In the ExtJS 5.x, the liquid layout is used if possible.
