@@ -195,10 +195,6 @@ Ext.define('eui.form.field.ComboBoxController', {
                             console.log('editor 존재하지 않아 obj에 설정함. :', fieldParam, combo.getId())
                             var proxyParams = editor.getProxyParams();
                             proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
-
-                            editor.setProxyParams = function () {
-                                return proxyParams;
-                            };
                             editor.ownerNextBindVar = fieldArr[0];
                             editor.ownerNextBindParam = fieldParam;
                             editor.ownerNextBindFieldId = combo.getId();

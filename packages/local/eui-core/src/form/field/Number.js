@@ -278,10 +278,10 @@ Ext.define('eui.form.field.Number', {
             }
             format += "#";
         }
-        value = me.parseValue(Ext.util.Format.number(value.toString(), format));
+        value = me.parseValue(Ext.util.Format.number(value && value.toString(), format));
         value = me.fixPrecision(value);
         value = Ext.isNumber(value) ? value : parseFloat(me.toRawNumber(value));
-        value = isNaN(value) ? '' : Ext.util.Format.number(value.toString(), format).replace('.', me.decimalSeparator);
+        value = isNaN(value) ? '' : Ext.util.Format.number(value && value.toString(), format).replace('.', me.decimalSeparator);
 
         return value;
     }
