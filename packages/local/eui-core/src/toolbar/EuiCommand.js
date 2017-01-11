@@ -272,7 +272,7 @@ Ext.define('eui.toolbar.EuiCommand', {
 
     setDisablePrintBtn: function(disable) {
         var me = this,
-            btn = me.rendered && ('#PRINT');
+            btn = me.rendered && me.down('#PRINT');
         if (btn) {
             btn.setDisabled(disable);
         }
