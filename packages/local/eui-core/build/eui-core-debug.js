@@ -9569,6 +9569,15 @@ Ext.define('eui.toolbar.EuiCommand', {
         showText: true,
         hideTextPrintBtn: true,
         hideTextReloadBtn: true,
+        disablePrintBtn: false,
+        disableRowAddBtn: false,
+        disableRowDelBtn: false,
+        disableRegBtn: false,
+        disableReloadBtn: false,
+        disableModBtn: false,
+        disableSaveBtn: false,
+        disableCloseBtn: false,
+        disableExcelDownBtn: false,
         showPrintBtn: false,
         showRowAddBtn: false,
         showRowDelBtn: false,
@@ -9628,6 +9637,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.reloadBtnText || '#{조회}',
                 itemId: 'LOAD',
                 iconCls: '#{조회아이콘}',
+                disabled: me.getDisableReloadBtn(),
                 hidden: !me.getShowReloadBtn(),
                 listeners: {
                     click: function() {
@@ -9645,6 +9655,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.printBtnText || '#{인쇄}',
                 itemId: 'PRINT',
                 iconCls: '#{인쇄아이콘}',
+                disabled: me.getDisablePrintBtn(),
                 hidden: !me.getShowPrintBtn(),
                 listeners: {
                     click: function() {
@@ -9659,6 +9670,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.excelDownBtnText || '#{엑셀다운로드}',
                 itemId: 'EXLDWN',
                 iconCls: '#{엑셀다운로드아이콘}',
+                disabled: me.getDisableExcelDownBtn(),
                 hidden: !me.getShowExcelDownBtn(),
                 xtype: 'exporterbutton',
                 listeners: {
@@ -9676,6 +9688,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 scope: me,
                 itemId: 'ADD',
                 showText: me.getShowText(),
+                disabled: me.getDisableRowAddBtn(),
                 hidden: !me.getShowRowAddBtn(),
                 listeners: {
                     click: function() {
@@ -9696,6 +9709,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.rowDelBtnText || '#{행삭제}',
                 itemId: 'DEL',
                 scope: me,
+                disabled: me.getDisableRowDelBtn(),
                 hidden: !me.getShowRowDelBtn(),
                 listeners: {
                     click: function() {
@@ -9713,6 +9727,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.regBtnText || '#{등록}',
                 itemId: 'REG',
                 iconCls: '#{등록아이콘}',
+                disabled: me.getDisableRegBtn(),
                 hidden: !me.getShowRegBtn(),
                 listeners: {
                     click: function() {
@@ -9725,6 +9740,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.modBtnText || '#{수정}',
                 itemId: 'MOD',
                 iconCls: '#{수정아이콘}',
+                disabled: me.getDisableExcelDownBtn(),
                 hidden: !me.getShowModBtn(),
                 listeners: {
                     click: function() {
@@ -9739,6 +9755,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 formBind: true,
                 itemId: 'SAVE',
                 iconCls: '#{저장아이콘}',
+                disabled: me.getDisableSaveBtn(),
                 hidden: !me.getShowSaveBtn(),
                 listeners: {
                     click: function() {
@@ -9754,6 +9771,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.closeBtnText || '#{닫기}',
                 itemId: 'CLOSE',
                 iconCls: 'x-fa fa-sign-out',
+                disabled: me.getDisableCloseBtn(),
                 hidden: !me.getShowCloseBtn(),
                 listeners: {
                     click: function() {
@@ -9786,7 +9804,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     //        this.setShowExcelDownBtn(visible);
     setDisablePrintBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#PRINT');
+            btn = me.rendered && ('#PRINT');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9794,7 +9812,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableRowAddBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#ADD');
+            btn = me.rendered && me.down('#ADD');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9802,7 +9820,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableRowDelBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#DEL');
+            btn = me.rendered && me.down('#DEL');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9810,7 +9828,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableRegBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#REG');
+            btn = me.rendered && me.down('#REG');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9818,7 +9836,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableReloadBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#LOAD');
+            btn = me.rendered && me.down('#LOAD');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9826,7 +9844,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableModBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#MOD');
+            btn = me.rendered && me.down('#MOD');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9834,7 +9852,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableSaveBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#SAVE');
+            btn = me.rendered && me.down('#SAVE');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9842,7 +9860,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableCloseBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#CLOSE');
+            btn = me.rendered && me.down('#CLOSE');
         if (btn) {
             btn.setDisabled(disable);
         }
@@ -9850,7 +9868,7 @@ Ext.define('eui.toolbar.EuiCommand', {
     },
     setDisableExcelDownBtn: function(disable) {
         var me = this,
-            btn = me.down && me.down('#EXLDWN');
+            btn = me.rendered && me.down('#EXLDWN');
         if (btn) {
             btn.setDisabled(disable);
         }
