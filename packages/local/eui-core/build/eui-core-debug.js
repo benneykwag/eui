@@ -9784,6 +9784,78 @@ Ext.define('eui.toolbar.EuiCommand', {
     //        this.setShowSaveBtn(visible);
     //        this.setShowGridCount(visible);
     //        this.setShowExcelDownBtn(visible);
+    setDisablePrintBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#PRINT');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRowAddBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#ADD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRowDelBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#DEL');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRegBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#REG');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableReloadBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#LOAD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableModBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#MOD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableSaveBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#SAVE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableCloseBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#CLOSE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableExcelDownBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#EXLDWN');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
     setButtonStatus: function(data) {
         var me = this;
         Ext.each(data, function(status) {

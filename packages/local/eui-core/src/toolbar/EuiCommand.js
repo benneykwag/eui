@@ -53,11 +53,11 @@ Ext.define('eui.toolbar.EuiCommand', {
         }
     },
 
-    setStore: function (store) {
+    setStore: function(store) {
         this.store = store;
     },
 
-    setTextHide: function () {
+    setTextHide: function() {
         if (this.getHideTextPrintBtn()) {
             this.down('#PRINT').setText(null);
         }
@@ -70,10 +70,10 @@ Ext.define('eui.toolbar.EuiCommand', {
      * store 가 bind된 경우 바인딩 스토어의
      * 그리드 및 트리그리드를 찾는다
      */
-    getStoreOwner: function () {
+    getStoreOwner: function() {
         var me = this;
         if (me.store) {
-            Ext.each(Ext.ComponentQuery.query('grid,treepanel'), function (cmp) {
+            Ext.each(Ext.ComponentQuery.query('grid,treepanel'), function(cmp) {
                 if (cmp.getStore().getId() === me.store.getId()) {
                     me = cmp;
                 }
@@ -85,17 +85,16 @@ Ext.define('eui.toolbar.EuiCommand', {
         return me;
     },
 
-    buttonsAdd: function () {
+    buttonsAdd: function() {
         var me = this;
-        me.add([
-            {
+        me.add([{
                 xtype: 'euibutton',
-                text: me.reloadBtnText||'#{조회}',
+                text: me.reloadBtnText || '#{조회}',
                 itemId: 'LOAD',
                 iconCls: '#{조회아이콘}',
                 hidden: !me.getShowReloadBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['reloadbtnclick'.toLowerCase()]) {
                             me.fireEvent('reloadbtnclick', owner);
@@ -107,12 +106,12 @@ Ext.define('eui.toolbar.EuiCommand', {
             },
             {
                 xtype: 'euibutton',
-                text: me.printBtnText||'#{인쇄}',
+                text: me.printBtnText || '#{인쇄}',
                 itemId: 'PRINT',
                 iconCls: '#{인쇄아이콘}',
                 hidden: !me.getShowPrintBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['printbtnclick'.toLowerCase()]) {
                             me.fireEvent('printbtnclick', owner, me);
@@ -121,13 +120,13 @@ Ext.define('eui.toolbar.EuiCommand', {
                 }
             },
             {
-                text: me.excelDownBtnText||'#{엑셀다운로드}',
+                text: me.excelDownBtnText || '#{엑셀다운로드}',
                 itemId: 'EXLDWN',
                 iconCls: '#{엑셀다운로드아이콘}',
                 hidden: !me.getShowExcelDownBtn(),
                 xtype: 'exporterbutton',
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         this.setComponent(owner);
                         this.onClick2();
@@ -136,14 +135,14 @@ Ext.define('eui.toolbar.EuiCommand', {
             },
             {
                 xtype: 'euibutton',
-                text: me.rowAddBtnText||'#{행추가}',
+                text: me.rowAddBtnText || '#{행추가}',
                 iconCls: '#{행추가아이콘}',
                 scope: me,
                 itemId: 'ADD',
                 showText: me.getShowText(),
                 hidden: !me.getShowRowAddBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowaddbtnclick'.toLowerCase()]) {
                             me.fireEvent('rowaddbtnclick', owner);
@@ -158,12 +157,12 @@ Ext.define('eui.toolbar.EuiCommand', {
             {
                 xtype: 'euibutton',
                 iconCls: '#{행삭제아이콘}',
-                text: me.rowDelBtnText||'#{행삭제}',
+                text: me.rowDelBtnText || '#{행삭제}',
                 itemId: 'DEL',
                 scope: me,
                 hidden: !me.getShowRowDelBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
                             me.fireEvent('rowdeletebtnclick', owner);
@@ -175,24 +174,24 @@ Ext.define('eui.toolbar.EuiCommand', {
             },
             {
                 xtype: 'euibutton',
-                text: me.regBtnText||'#{등록}',
+                text: me.regBtnText || '#{등록}',
                 itemId: 'REG',
                 iconCls: '#{등록아이콘}',
                 hidden: !me.getShowRegBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         me.fireEvent('regbtnclick', me);
                     }
                 }
             },
             {
                 xtype: 'euibutton',
-                text: me.modBtnText||'#{수정}',
+                text: me.modBtnText || '#{수정}',
                 itemId: 'MOD',
                 iconCls: '#{수정아이콘}',
                 hidden: !me.getShowModBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         me.fireEvent('modbtnclick', owner);
                     }
@@ -200,13 +199,13 @@ Ext.define('eui.toolbar.EuiCommand', {
             },
             {
                 xtype: 'euibutton',
-                text: me.saveBtnText||'#{저장}',
+                text: me.saveBtnText || '#{저장}',
                 formBind: true,
                 itemId: 'SAVE',
                 iconCls: '#{저장아이콘}',
                 hidden: !me.getShowSaveBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['savebtnclick'.toLowerCase()]) {
                             me.fireEvent('savebtnclick', owner);
@@ -217,12 +216,12 @@ Ext.define('eui.toolbar.EuiCommand', {
 
             {
                 xtype: 'euibutton',
-                text: me.closeBtnText||'#{닫기}',
+                text: me.closeBtnText || '#{닫기}',
                 itemId: 'CLOSE',
                 iconCls: 'x-fa fa-sign-out',
                 hidden: !me.getShowCloseBtn(),
                 listeners: {
-                    click: function () {
+                    click: function() {
                         var window = Util.getOwnerCt(this);
                         if (Util.getOwnerCt(this).xtype === 'window') {
                             window.close();
@@ -242,31 +241,112 @@ Ext.define('eui.toolbar.EuiCommand', {
     /***
      * 통신을 통해 버튼을 제어하기 전에 미리 초기화 한다
      */
-    setAllButtonShow: function (visible) {
-//        this.setShowPrintBtn(visible);
-//        this.setShowRowAddBtn(visible);
-//        this.setShowRowDelBtn(visible);
-//        this.setShowRegBtn(visible);
-//        this.setShowReloadBtn(visible);
-//        this.setShowModBtn(visible);
-//        this.setShowSaveBtn(visible);
-//        this.setShowGridCount(visible);
-//        this.setShowExcelDownBtn(visible);
+    setAllButtonShow: function(visible) {
+        //        this.setShowPrintBtn(visible);
+        //        this.setShowRowAddBtn(visible);
+        //        this.setShowRowDelBtn(visible);
+        //        this.setShowRegBtn(visible);
+        //        this.setShowReloadBtn(visible);
+        //        this.setShowModBtn(visible);
+        //        this.setShowSaveBtn(visible);
+        //        this.setShowGridCount(visible);
+        //        this.setShowExcelDownBtn(visible);
+    },
+
+    setDisablePrintBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#PRINT');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableRowAddBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#ADD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableRowDelBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#DEL');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableRegBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#REG');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableReloadBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#LOAD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableModBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#MOD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableSaveBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#SAVE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableCloseBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#CLOSE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+
+    setDisableExcelDownBtn: function(disable) {
+        var me = this,
+            btn = me.down && me.down('#EXLDWN');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
     },
 
     setButtonStatus: function(data) {
         var me = this;
         Ext.each(data, function(status) {
             var config = me.initialConfig[me.getBtnInfo()[status.button]];
-            if(config === undefined){
+            if (config === undefined) {
                 me.down('#' + status.button).setHidden(false);
-            }else if(Ext.isBoolean(config)){
+            } else if (Ext.isBoolean(config)) {
                 me.down('#' + status.button).setHidden(!config);
             }
         });
     },
 
-    beforeRender: function () {
+    beforeRender: function() {
         var me = this;
         this.callParent(arguments);
         if (Config.commandButtonControllerUrl) {
@@ -274,7 +354,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 method: 'POST',
                 url: Config.commandButtonControllerUrl,
                 params: me.params,
-                pCallback: function (v, params, result) {
+                pCallback: function(v, params, result) {
                     if (result.success) {
                         me.setAllButtonShow(false);
                         me.buttonsAdd();
