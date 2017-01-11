@@ -69,12 +69,12 @@ Ext.define('TinymceEditor', {
         ],
     	language: 'ko_KR',
     	skin : "lightgray",
-    	
+
     	content_css: './codepen.min.css',
-    	
+
     	toolbar1: "bold italic underline strikethrough subscript superscript | removeformat | alignleft aligncenter alignright alignjustify | formatselect fontsizeselect",
-    	toolbar2: "table bdesk_photo | searchreplace | bullist numlist | outdent indent | undo redo | link unlink | preview fullscreen print", 
-    	
+    	toolbar2: "table bdesk_photo | searchreplace | bullist numlist | outdent indent | undo redo | link unlink | preview fullscreen print",
+
 //        toolbar1: "newdocument fullpage | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
 //        toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | inserttime preview | forecolor backcolor",
 //        toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | spellchecker | visualchars visualblocks nonbreaking template pagebreak restoredraft",
@@ -96,13 +96,11 @@ Ext.define('TinymceEditor', {
      */
     liquidLayout: false,
 
-    //-----------------------------------------------------------------
-    afterRender: function() {
+    afterRender: function () {
         var me = this;
 
         me.callParent(arguments);
-
-        me.on('blur', function(elm, ev, eOpts) {
+        me.on('blur', function (elm, ev, eOpts) {
 
             var ctrl = document.getElementById(me.getInputId());
 
@@ -113,36 +111,32 @@ Ext.define('TinymceEditor', {
                 // synchronized upon the blur event.
                 if (ed && ed.isHidden()) {
                     if (ctrl) {
-                        me.positionBeforeBlur = {
-                            start: ctrl.selectionStart,
-                            end: ctrl.selectionEnd
-                        };
+                        me.positionBeforeBlur = { start: ctrl.selectionStart, end: ctrl.selectionEnd };
                     }
 
                     ed.load();
                 }
-            } else {
+            }
+            else {
                 if (ctrl) {
-                    me.positionBeforeBlur = {
-                        start: ctrl.selectionStart,
-                        end: ctrl.selectionEnd
-                    };
+                    me.positionBeforeBlur = { start: ctrl.selectionStart, end: ctrl.selectionEnd };
                 }
             }
         }, me);
 
-        me.on('resize', function(elm, width, height, oldWidth, oldHeight, eOpts) {
+        me.on('resize', function (elm, width, height, oldWidth, oldHeight, eOpts) {
 
             /*
-            alert('width:' + width + '\n' +
-            'height:' + height + '\n' +
-            'oldWidth:' + oldWidth + '\n' +
-            'oldHeight:' + oldHeight
-            );*/
+             alert('width:' + width + '\n' +
+             'height:' + height + '\n' +
+             'oldWidth:' + oldWidth + '\n' +
+             'oldHeight:' + oldHeight
+             );*/
 
             if (!me.noWysiwyg && !me.wysiwygIntialized) {
                 me.initEditor(height);
-            } else {
+            }
+            else {
                 me.syncEditorHeight(height);
             }
         }, me);
@@ -281,7 +275,11 @@ Ext.define('TinymceEditor', {
                 // there is no need to call triggerSave
 
                 var setContent = ed.setContent;
+<<<<<<< HEAD
                 ed.setContent = function() {
+=======
+                ed.setContent = function () {
+>>>>>>> master
                     // debugger;
                     setContent.apply(ed, arguments);
                     ed.fire('change', {});
@@ -297,14 +295,22 @@ Ext.define('TinymceEditor', {
             });
 
             // Catch and propagate the change event
+<<<<<<< HEAD
             ed.on('change', function(e) {
+=======
+            ed.on('change', function (e) {
+>>>>>>> master
                 var oldval = me.getValue();
                 var newval = ed.getContent();
 
                 ed.save();
 
                 me.fireEvent('change', me, newval, oldval, {});
+<<<<<<< HEAD
 
+=======
+                me.publishState('value', newval);
+>>>>>>> master
                 me.checkDirty();
 
                 if (me.validateOnChange) {
@@ -531,19 +537,28 @@ Ext.define('TinymceEditor', {
     //-----------------------------------------------------------------
     setValue: function(v) {
         var me = this;
-
         var res = me.callParent(arguments);
-
         if (me.wysiwygIntialized) {
             // The editor does some preformatting of the HTML text
             // entered by the user.
             // The method setValue sets the value of the textarea.
             // We have to load the text into editor for the
             // preformatting and then to save it back to the textarea.
+<<<<<<< HEAD
 
             var ed = this.getEditor();
             if (ed && ed.getDoc()) {
                 ed.load();
+=======
+            if(!me.cnt){
+                Ext.defer(function () {
+                    var ed = tinymce.get(me.getInputId());
+                    ed.load();
+                    me.cnt = 1;
+                }, 500);
+            }else{
+                var ed = tinymce.get(me.getInputId());
+>>>>>>> master
                 ed.save();
             }
         }

@@ -1,9 +1,6 @@
-/*
- * This file is generated and updated by Sencha Cmd. You can edit this file as
- * needed for your application, but these edits will have to be merged by
- * Sencha Cmd when upgrading.
- *
- */
+
+
+
 Ext.application({
     name: 'Eui.sample',
 
@@ -45,7 +42,47 @@ Ext.application({
     // modern toolkit, the main view will be added to the Viewport.
     //
     mainView: 'Eui.sample.view.main.Main',
-    launch: function () {
-
+    launch : function() {
+//        Ext.create('Ext.grid.Panel',{
+//            plugins:[{ptype:"gridFilter"}],
+//            renderTo: document.body,
+//            forceFit: true,
+//            store: {
+//                autoLoad: true,
+//                proxy: {
+//                    fields: [
+//                        'areaNm'
+//                    ],
+//                    type:'rest',
+//                    url : 'http://extuxgroup.com/resources/data/Order.json?_dc=1483275314418&page=1&start=0&limit=10',
+////                    url: '../Data/data1.json',
+//                    reader: {
+//                        type: 'json',
+//                        rootProperty: 'entitys'
+//                    }
+//                }
+//            },
+//            columns: [
+//                {
+//                    text: 'areaNm',
+//                    dataIndex: 'areaNm',
+//                    filter: true
+//                },
+//                {
+//                    text: 'customName',
+//                    dataIndex: 'customName',
+//                    filter: true
+//                },
+//                {
+//                    text: 'areaNm',
+//                    dataIndex: 'areaNm'
+//                },
+//                {
+//                    text: 'areaNm',
+//                    dataIndex: 'areaNm',
+//                    filter: true
+//                }
+//            ]
+//        })
     }
 });
