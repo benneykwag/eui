@@ -2011,7 +2011,7 @@ Ext.define('eui.Util', {
         var formData = new FormData();
         formData.append("S_FUNC_CODE", S_FUNC_CODE);
         formData.append("FILE_MGT_CODE", FILE_MGT_CODE);
-        this.fileClickApi(formData, FILE_NAME, Util.fileDownloadUrl);
+        this.fileClickApi(formData, FILE_NAME, eui.Config.fileDownloadUrl);
     },
     fileClickApi: function(formData, FILE_NAME, API_PATH) {
         var xhr = new XMLHttpRequest();
@@ -12051,25 +12051,57 @@ Ext.define('eui.ux.grid.GridFilter', {
     alias: 'plugin.gridFilter',
     init: function(grid) {
         var me = this;
-        grid.relayEvents(grid.getStore(), [
+        var store = grid.getStore();
+        if (grid.getBind()['store']) {
+            store = grid.lookupViewModel().getStore(grid.getBind()['store'].stub.name);
+            store.on('load', function() {});
+        }
+        //               debugger;
+        console.log('store', store);
+        grid.relayEvents(store, [
             'viewready',
             'load',
             'beforeload',
             'sortchange'
         ]);
         grid.addListener('beforeload', me.onBeforeLoad);
-        grid.addListener('viewready', me.storeload);
-        grid.addListener('load', me.storeload);
-        grid.addListener('sortchange', me.storeload);
+        grid.addListener('viewready', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 300);
+        });
+        grid.addListener('load', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 200);
+        });
+        grid.on('resize', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 300);
+        });
     },
-    storeload: function() {
+    //
+    //        grid.addListener('sortchange', function () {
+    //            me.storeload(grid)
+    //        });
+    storeload: function(gg) {
+        //debugger;
         var me = this;
+        if (gg) {
+            me = gg;
+        }
+        console.log('storeload..', me);
         var body = me.body.dom;
         //        Ext.defer(function () {
         var container = body.getElementsByClassName('x-grid-item-container')[0];
         var __table = container.childNodes[0];
         if (!__table) {
             return;
+        }
+        if (me.el.dom.getElementsByClassName('filter-table')[0]) {
+            //            debugger;
+            Ext.get(me.el.dom.getElementsByClassName('filter-table')[0]).destroy();
         }
         var __tbody = __table.getElementsByTagName('tbody')[0];
         var tr1 = __tbody.childNodes[0];
@@ -12083,6 +12115,7 @@ Ext.define('eui.ux.grid.GridFilter', {
             }
         }
         var table = document.createElement('table');
+        table.setAttribute('class', 'filter-table');
         var tbody = document.createElement('tbody');
         table.appendChild(tbody);
         var newTr = document.createElement('tr');
@@ -12131,12 +12164,18 @@ Ext.define('eui.ux.grid.GridFilter', {
                     }
                 };
                 td.appendChild(input);
+            } else {
+                td.setAttribute('class', 'x-grid-item x-grid-item-selected');
             }
             newTr.appendChild(td);
         }
         tbody.appendChild(newTr);
-        container.insertBefore(table, __table);
+        //        container.insertBefore(table, __table);
+        me.el.dom.getElementsByClassName('x-grid-body')[0].insertBefore(table, me.el.dom.getElementsByClassName('x-grid-view')[0]);
     },
+    //debugger;
+    //        me.el.dom.getElementsByClassName('x-grid-view')[0]
+    //        me.el.dom.getElementsByClassName('x-grid-body')[0]
     //        },1000)
     onBeforeLoad: function(store, operation, eOpts) {
         var me = this;

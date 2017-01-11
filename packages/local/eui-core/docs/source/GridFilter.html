@@ -71,21 +71,50 @@
 Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
     extend: &#39;Ext.AbstractPlugin&#39;,
     alias: &#39;plugin.gridFilter&#39;,
-    init: function(grid) {
+    init: function (grid) {
         var me = this;
-        grid.relayEvents(grid.getStore(), [
+        var store = grid.getStore();
+        if (grid.getBind()[&#39;store&#39;]) {
+            store = grid.lookupViewModel().getStore(grid.getBind()[&#39;store&#39;].stub.name);
+            store.on(&#39;load&#39;, function () {
+//               debugger;
+            });
+        }
+        console.log(&#39;store&#39;, store)
+        grid.relayEvents(store, [
             &#39;viewready&#39;,
             &#39;load&#39;,
             &#39;beforeload&#39;,
             &#39;sortchange&#39;
         ]);
         grid.addListener(&#39;beforeload&#39;, me.onBeforeLoad);
-        grid.addListener(&#39;viewready&#39;, me.storeload);
-        grid.addListener(&#39;load&#39;, me.storeload);
-        grid.addListener(&#39;sortchange&#39;, me.storeload);
+        grid.addListener(&#39;viewready&#39;, function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 300)
+        });
+        grid.addListener(&#39;load&#39;, function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 200)
+        });
+        grid.on(&#39;resize&#39;, function () {
+            Ext.defer(function () {
+                me.storeload(grid)
+            }, 300)
+        })
+//
+//        grid.addListener(&#39;sortchange&#39;, function () {
+//            me.storeload(grid)
+//        });
     },
-    storeload: function() {
+    storeload: function (gg) {
+//debugger;
         var me = this;
+        if (gg) {
+            me = gg;
+        }
+        console.log(&#39;storeload..&#39;, me);
         var body = me.body.dom;
 
 //        Ext.defer(function () {
@@ -94,6 +123,12 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
         if (!__table) {
             return;
         }
+        if( me.el.dom.getElementsByClassName(&#39;filter-table&#39;)[0]){
+//            debugger;
+            Ext.get(me.el.dom.getElementsByClassName(&#39;filter-table&#39;)[0]).destroy();
+        }
+
+
         var __tbody = __table.getElementsByTagName(&#39;tbody&#39;)[0];
         var tr1 = __tbody.childNodes[0];
         if (tr1) {
@@ -106,13 +141,14 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
             }
         }
         var table = document.createElement(&#39;table&#39;);
+        table.setAttribute(&#39;class&#39;,&#39;filter-table&#39;);
         var tbody = document.createElement(&#39;tbody&#39;);
         table.appendChild(tbody);
         var newTr = document.createElement(&#39;tr&#39;);
 
         var tr_nodes = Ext.Array.clone(tr1.childNodes);
         var columns = Ext.pluck(Ext.Array.clone(me.columns), &#39;initialConfig&#39;);
-        if (tr_nodes[0].getAttribute(&#39;class&#39;).indexOf(&#39;x-grid-cell-checkcolumn&#39;) != -1){
+        if (tr_nodes[0].getAttribute(&#39;class&#39;).indexOf(&#39;x-grid-cell-checkcolumn&#39;) != -1) {
             columns.unshift({
                 filter: false
             })
@@ -124,14 +160,14 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
 //            if (tr_nodes[i].getAttribute(&#39;class&#39;).indexOf(&#39;x-grid-cell-checkcolumn&#39;) != -1){
 //
 //            }else {
-            if( columns[i].filter ) {
+            if (columns[i].filter) {
                 var input = document.createElement(&#39;input&#39;);
                 input.setAttribute(&quot;style&quot;, &quot;width:100%&quot;);
                 input.setAttribute(&quot;name&quot;, columns[i].dataIndex);
                 if (me.filters &amp;&amp; me.filters[columns[i].dataIndex]) {
                     input.value = me.filters[columns[i].dataIndex];
                 }
-                input.onkeyup = function(event) {
+                input.onkeyup = function (event) {
                     if (event.keyCode === 13) {
                         var tr = event.target.parentNode.parentNode;
                         var searchParams = {};
@@ -156,16 +192,22 @@ Ext.define(&#39;eui.ux.grid.GridFilter&#39;, {
                     }
                 };
                 td.appendChild(input);
+            }else{
+                td.setAttribute(&#39;class&#39;,&#39;x-grid-item x-grid-item-selected&#39;);
             }
             newTr.appendChild(td);
         }
         tbody.appendChild(newTr);
-        container.insertBefore(table, __table);
+//        container.insertBefore(table, __table);
+        me.el.dom.getElementsByClassName(&#39;x-grid-body&#39;)[0].insertBefore(table, me.el.dom.getElementsByClassName(&#39;x-grid-view&#39;)[0]);
+//debugger;
+//        me.el.dom.getElementsByClassName(&#39;x-grid-view&#39;)[0]
+//        me.el.dom.getElementsByClassName(&#39;x-grid-body&#39;)[0]
 //        },1000)
 
 
     },
-    onBeforeLoad: function(store, operation, eOpts) {
+    onBeforeLoad: function (store, operation, eOpts) {
         var me = this;
         if (me.filters) {
             store.getProxy().extraParams = me.filters;

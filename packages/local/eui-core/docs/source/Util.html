@@ -997,7 +997,7 @@ Ext.define(&#39;eui.Util&#39;, {
         formData.append(&quot;S_FUNC_CODE&quot;, S_FUNC_CODE);
         formData.append(&quot;FILE_MGT_CODE&quot;, FILE_MGT_CODE);
 
-        this.fileClickApi(formData, FILE_NAME, Util.fileDownloadUrl);
+        this.fileClickApi(formData, FILE_NAME, eui.Config.fileDownloadUrl);
     },
 
 <span id='eui-Util-method-fileClickApi'>    fileClickApi : function (formData, FILE_NAME, API_PATH) {
