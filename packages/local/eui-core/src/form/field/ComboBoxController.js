@@ -6,7 +6,7 @@ Ext.define('eui.form.field.ComboBoxController', {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column && combo.valueColumnDataIndex) {
-            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
+            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.valueField));
         }
         me.nextBindFields(record);
     },
@@ -156,7 +156,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                                 field.ownerNextBindParam = fieldParam;
                                 field.ownerNextBindFieldId = combo.getId();
 
-                                field.proxyParams[fieldParam] = record.get((field.column ? combo.originalValueField : combo.valueField));
+                                field.proxyParams[fieldParam] = record.get((combo.valueField));
 //                                console.log('field.proxyParams', field.proxyParams);
                                 // 그리드 에디터일 경우
                                 var enableEditor = true;
@@ -194,7 +194,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                         if (!field.hasEditor()) {
                             console.log('editor 존재하지 않아 obj에 설정함. :', fieldParam, combo.getId())
                             var proxyParams = editor.getProxyParams();
-                            proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
+                            proxyParams[fieldParam] = (record ? record.get(combo.valueField) : null);
                             editor.ownerNextBindVar = fieldArr[0];
                             editor.ownerNextBindParam = fieldParam;
                             editor.ownerNextBindFieldId = combo.getId();
