@@ -20,7 +20,7 @@ Ext.define('eui.ux.file.FilePanel', {
                 uploader: 'Ext.ux.upload.uploader.FormDataUploader',
                 uploaderOptions: {
                     params: me.extraParams,
-                    url: Config.fileuploadUrl
+                    url: Config.baseUrlPrifix||'' + Config.fileuploadUrl
                 },
                 synchronous: true
             });

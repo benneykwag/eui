@@ -1,7 +1,7 @@
 
 /*
 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2017.27.11 16:27:27
+* 2017.24.13 0:24:28
 */
 /*
  * 기본 ajax 요청관련 기본 설정 수정
@@ -11717,6 +11717,55 @@ Ext.define('eui.ux.file.FileManager', {
                 value: value
             });
         }
+    }
+});
+
+Ext.define('eui.ux.file.FilePanel', {
+    extend: 'Ext.tab.Panel',
+    alias: 'widget.euifilepanel',
+    defaultListenerScope: true,
+    config: {
+        extraParams: null
+    },
+    defaultBindProperty: 'extraParams',
+    setExtraParams: function(params) {
+        this.extraParams = params;
+        this.down('filemanager grid').store.getProxy().extraParams = params;
+        this.down('filemanager grid').store.load();
+        this.down('uploaddialog').items.items[0].uploadManager.uploader.params = params;
+    },
+    initComponent: function() {
+        var me = this,
+            uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+                uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+                uploaderOptions: {
+                    params: me.extraParams,
+                    url: Config.fileuploadUrl
+                },
+                synchronous: true
+            });
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: 'filemanager',
+                    fileAutoLoad: false,
+                    title: 'File List',
+                    fileParams: me.extraParams
+                },
+                {
+                    title: 'File Add',
+                    xtype: 'uploaddialog',
+                    panel: uploadPanel,
+                    listeners: {
+                        uploadcomplete: 'onComplete'
+                    }
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+    onComplete: function(uploadPanel, manager, items, errorCount) {
+        this.down('filemanager grid').store.load();
     }
 });
 

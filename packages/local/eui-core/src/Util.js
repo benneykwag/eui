@@ -904,7 +904,7 @@ Ext.define('eui.Util', {
             uploader: 'Ext.ux.upload.uploader.FormDataUploader',
             uploaderOptions: {
                 params: cfg,
-                url: Config.fileuploadUrl
+                url: Config.baseUrlPrifix||'' + Config.fileuploadUrl
             },
             synchronous: true//appPanel.syncCheckbox.getValue()
         });
