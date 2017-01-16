@@ -1,7 +1,7 @@
 
 /*
 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2017.24.13 0:24:28
+* 2017.55.13 18:55:0
 */
 /*
  * 기본 ajax 요청관련 기본 설정 수정
@@ -1949,7 +1949,7 @@ Ext.define('eui.Util', {
                 uploader: 'Ext.ux.upload.uploader.FormDataUploader',
                 uploaderOptions: {
                     params: cfg,
-                    url: Config.fileuploadUrl
+                    url: Config.baseUrlPrifix || '' + Config.fileuploadUrl
                 },
                 synchronous: true
             });
@@ -11740,7 +11740,7 @@ Ext.define('eui.ux.file.FilePanel', {
                 uploader: 'Ext.ux.upload.uploader.FormDataUploader',
                 uploaderOptions: {
                     params: me.extraParams,
-                    url: Config.fileuploadUrl
+                    url: Config.baseUrlPrifix || '' + Config.fileuploadUrl
                 },
                 synchronous: true
             });
