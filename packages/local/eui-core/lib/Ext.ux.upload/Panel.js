@@ -308,6 +308,10 @@ Ext.define('Ext.ux.upload.Panel', {
             return;
         }
 
+        if(this.fireEvent('beforeupload')===false) {
+        	return;
+        }
+        
         this.stateUpload();
         this.startUpload();
     },

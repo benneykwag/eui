@@ -27,49 +27,28 @@ Ext.define('eui.ux.file.FileGrid', {
             }
         });
         me.callParent(arguments);
-//        me.on('afterrender', function () {
-//            var button = $('#file1')
-//            new AjaxUpload(button, {
-//                action: globalVar.HurlPrefix + 'api/file/upload',
-////			action: 'do-nothing.htm',
-//                name: 'file',
-//                data: {
-//                    COMPANY_CODE : 'HTNS',
-//                    REF_NO: 'chat0001',
-//                    REF_TYPE : 'RM',
-//                    S_FUNC_CODE : 'CH'
-//                },
-//                customHeaders: {
-//                    'X-CSRF-TOKEN':+globalVar.csrfToken
-////                    _csrf : '1111'+globalVar.csrfToken
-//                },
-//                onSubmit : function(file, ext){
-//
-//                },
-//                onComplete: function(file, response){
-//
-//                }
-//            });
-//        })
     },
 
     columns: [
         {
             text: 'Filename',
             flex: 1,
-            dataIndex: 'FILE_NAME'
+            dataIndex: 'NM_FILE'
         },
         {
             text: 'Size',
             align: 'right',
             width: 70,
-            dataIndex: 'FILE_SIZE'
+            dataIndex: 'SIZE_FILE',
+            renderer: function (value) {
+                return Ext.util.Format.fileSize(value);
+            }
         },
         {
             text: 'Add User',
             align: 'center',
             width: 70,
-            dataIndex: 'ADD_USER_NAME'
+            dataIndex: 'ID_REV_PRSN'
         },
         {
             xtype: 'datecolumn',
@@ -77,7 +56,7 @@ Ext.define('eui.ux.file.FileGrid', {
             width: 150,
             text: 'Add Date',
             align: 'center',
-            dataIndex: 'ADD_DATE'
+            dataIndex: 'DT_REV'
         },
         {
             xtype: 'actioncolumn',
@@ -87,7 +66,7 @@ Ext.define('eui.ux.file.FileGrid', {
                 {
                     icon: 'resources/images/customui/icon/COM.png',
                     handler: function (view, rowIndex, colIndex, item, e, record, row) {
-                        Util.fileClick(record.get('S_FUNC_CODE'), record.get('FILE_MGT_CODE'), record.get('FILE_NAME'))
+                        Util.fileClick(record.get('S_FUNC_CODE'), record.get('ID_ATCH_FILE'), record.get('NM_FILE'))
                     }
                 }
             ]

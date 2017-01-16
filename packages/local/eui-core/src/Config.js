@@ -25,6 +25,7 @@ Ext.define('eui.Config', {
     fileuploadListUrl : '',
     filedeleteUrl : '',
     fileuploadUrl: '',
+    fileuploadMaxSize: 1048576,
     fileDownloadUrl : '',
 
     // model.getData() 시 euidate, euimonthfield
