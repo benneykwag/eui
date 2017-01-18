@@ -108,9 +108,12 @@ Ext.define('eui.toolbar.EuiCommand', {
                     click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['reloadbtnclick'.toLowerCase()]) {
-                            me.fireEvent('reloadbtnclick', owner);
-                        } else {
-                            owner.onReload();
+                            me.fireEvent('reloadbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('reloadbtnclick', owner);
+                            } else
+                                owner.onReload(owner, null, owner);
                         }
                     }
                 }
@@ -126,7 +129,11 @@ Ext.define('eui.toolbar.EuiCommand', {
                     click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['printbtnclick'.toLowerCase()]) {
-                            me.fireEvent('printbtnclick', owner, me);
+                            me.fireEvent('printbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['printbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('printbtnclick', owner);
+                            }
                         }
                     }
                 }
@@ -160,10 +167,14 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowaddbtnclick'.toLowerCase()]) {
                             me.fireEvent('rowaddbtnclick', owner);
-                        } else {
-                            owner.onRowAdd(owner, {
-                                randomInt: Ext.Number.randomInt(1, 1.0E12)
-                            }, 0, null);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowaddbtnclick', owner);
+                            } else {
+                                owner.onRowAdd(owner, {
+                                    randomInt: Ext.Number.randomInt(1, 1.0E12)
+                                }, 0, null);
+                            }
                         }
                     }
                 }
@@ -181,8 +192,11 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
                             me.fireEvent('rowdeletebtnclick', owner);
-                        } else {
-                            owner.onRowDelete(owner, null, owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
+                            } else
+                                owner.onRowDelete(owner, null, owner);
                         }
                     }
                 }
@@ -196,7 +210,14 @@ Ext.define('eui.toolbar.EuiCommand', {
                 hidden: !me.getShowRegBtn(),
                 listeners: {
                     click: function() {
-                        me.fireEvent('regbtnclick', me);
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['regbtnclick'.toLowerCase()]) {
+                            me.fireEvent('regbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['regbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('regbtnclick', owner);
+                            }
+                        }
                     }
                 }
             },
@@ -210,7 +231,13 @@ Ext.define('eui.toolbar.EuiCommand', {
                 listeners: {
                     click: function() {
                         var owner = me.getStoreOwner();
-                        me.fireEvent('modbtnclick', owner);
+                        if (me.hasListeners['modbtnclick'.toLowerCase()]) {
+                            me.fireEvent('modbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['modbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('modbtnclick', owner);
+                            }
+                        }
                     }
                 }
             },
@@ -227,6 +254,11 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['savebtnclick'.toLowerCase()]) {
                             me.fireEvent('savebtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['savebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('savebtnclick', owner);
+                            } else
+                                owner.onSave(owner);
                         }
                     }
                 }

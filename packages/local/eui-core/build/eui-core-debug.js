@@ -2474,7 +2474,7 @@ Ext.define('eui.Util', {
                         type: type
                     });
                 if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                    window.navigator.msSaveBlob(blob, filename);
+                    window.navigator.msSaveBlob(blob, FILE_NAME);
                 } else {
                     var URL = window.URL || window.webkitURL;
                     var downloadUrl = URL.createObjectURL(blob);
@@ -2508,6 +2508,24 @@ Ext.define('eui.Util', {
             }
         };
         xhr.send(formData);
+    },
+    /***
+     * 특정 view의 viewModel에서 특정 키의 값을 반환
+     * @param selector: Ext.ComponentQuery selector(itemId, xtype)
+     * @param key: viewModel에서 찾을려고 하는 value의 key
+     * @returns {*}
+     */
+    lookupViewModel: function(selector, key) {
+        var str = [
+                '#{0}',
+                '{0}'
+            ].join(),
+            cmp, vm;
+        selector = Ext.String.format(str, selector);
+        cmp = Ext.ComponentQuery.query(selector).length && Ext.ComponentQuery.query(selector)[0];
+        if (cmp && (vm = cmp.getViewModel())) {
+            return vm.get(key);
+        }
     }
 });
 
@@ -4625,7 +4643,7 @@ Ext.define('eui.form.field.ComboBoxController', {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column && combo.valueColumnDataIndex) {
-            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.valueField));
+            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
         }
         me.nextBindFields(record);
     },
@@ -4831,7 +4849,8 @@ Ext.define('eui.form.field.ComboBoxController', {
     getComboData: function() {
         var me = this,
             param = {},
-            combo = this.getView();
+            combo = this.getView(),
+            vm = combo.lookupViewModel();
         param[combo.defaultParam] = combo[combo.defaultParam];
         //        // 외부 파라메터 전달시
         //        // params: {  aa : '11' }
@@ -4848,7 +4867,9 @@ Ext.define('eui.form.field.ComboBoxController', {
                 bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
                 bindFieldName = bindFieldName.split('@')[0],
                 bindValue = bindVar.split('@');
-            param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
+            if (vm) {
+                param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : vm.get(bindVarArr[0]));
+            }
         });
         // console.log('combo.getProxyParams()', combo.getProxyParams())
         Ext.apply(param, combo.getProxyParams());
@@ -10128,9 +10149,14 @@ Ext.define('eui.toolbar.EuiCommand', {
                     click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['reloadbtnclick'.toLowerCase()]) {
-                            me.fireEvent('reloadbtnclick', owner);
-                        } else {
-                            owner.onReload();
+                            me.fireEvent('reloadbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('reloadbtnclick', owner);
+                            } else  {
+                                owner.onReload(owner, null, owner);
+                            }
+                            
                         }
                     }
                 }
@@ -10146,7 +10172,11 @@ Ext.define('eui.toolbar.EuiCommand', {
                     click: function() {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['printbtnclick'.toLowerCase()]) {
-                            me.fireEvent('printbtnclick', owner, me);
+                            me.fireEvent('printbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['printbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('printbtnclick', owner);
+                            }
                         }
                     }
                 }
@@ -10180,10 +10210,14 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowaddbtnclick'.toLowerCase()]) {
                             me.fireEvent('rowaddbtnclick', owner);
-                        } else {
-                            owner.onRowAdd(owner, {
-                                randomInt: Ext.Number.randomInt(1, 1.0E12)
-                            }, 0, null);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowaddbtnclick', owner);
+                            } else {
+                                owner.onRowAdd(owner, {
+                                    randomInt: Ext.Number.randomInt(1, 1.0E12)
+                                }, 0, null);
+                            }
                         }
                     }
                 }
@@ -10201,8 +10235,13 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
                             me.fireEvent('rowdeletebtnclick', owner);
-                        } else {
-                            owner.onRowDelete(owner, null, owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
+                            } else  {
+                                owner.onRowDelete(owner, null, owner);
+                            }
+                            
                         }
                     }
                 }
@@ -10216,7 +10255,14 @@ Ext.define('eui.toolbar.EuiCommand', {
                 hidden: !me.getShowRegBtn(),
                 listeners: {
                     click: function() {
-                        me.fireEvent('regbtnclick', me);
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['regbtnclick'.toLowerCase()]) {
+                            me.fireEvent('regbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['regbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('regbtnclick', owner);
+                            }
+                        }
                     }
                 }
             },
@@ -10230,7 +10276,13 @@ Ext.define('eui.toolbar.EuiCommand', {
                 listeners: {
                     click: function() {
                         var owner = me.getStoreOwner();
-                        me.fireEvent('modbtnclick', owner);
+                        if (me.hasListeners['modbtnclick'.toLowerCase()]) {
+                            me.fireEvent('modbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['modbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('modbtnclick', owner);
+                            }
+                        }
                     }
                 }
             },
@@ -10247,6 +10299,13 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         if (me.hasListeners['savebtnclick'.toLowerCase()]) {
                             me.fireEvent('savebtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['savebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('savebtnclick', owner);
+                            } else  {
+                                owner.onSave(owner);
+                            }
+                            
                         }
                     }
                 }
@@ -10629,6 +10688,12 @@ Ext.define('eui.ux.file.FileFieldContainer', {
             fn = function() {
                 filegrid = me.down('filemanager filegrid');
                 uploadpanel = me.down('uploadpanel');
+                // ID_FILE_DTIL 값이 Integer, String인 경우
+                if (!Ext.isObject(params)) {
+                    params = {
+                        ID_FILE_DTIL: params
+                    };
+                }
                 filegrid.fileParams = params;
                 filegrid.store.proxy.setExtraParams(params);
                 uploadpanel.uploadManager.uploader.params = params;

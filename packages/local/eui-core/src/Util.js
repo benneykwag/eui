@@ -1000,7 +1000,7 @@ Ext.define('eui.Util', {
                     type: type
                 });
                 if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                    window.navigator.msSaveBlob(blob, filename);
+                    window.navigator.msSaveBlob(blob, FILE_NAME);
                 } else {
                     var URL = window.URL || window.webkitURL;
                     var downloadUrl = URL.createObjectURL(blob);
@@ -1035,5 +1035,25 @@ Ext.define('eui.Util', {
             }
         };
         xhr.send(formData);
+    },
+
+    /***
+     * 특정 view의 viewModel에서 특정 키의 값을 반환
+     * @param selector: Ext.ComponentQuery selector(itemId, xtype)
+     * @param key: viewModel에서 찾을려고 하는 value의 key
+     * @returns {*}
+     */
+    lookupViewModel: function (selector, key) {
+        var str = [
+            '#{0}',
+            '{0}'
+        ].join(),
+        cmp, vm;
+
+        selector = Ext.String.format(str, selector);
+        cmp = Ext.ComponentQuery.query(selector).length && Ext.ComponentQuery.query(selector)[0];
+        if (cmp && (vm = cmp.getViewModel())) {
+            return vm.get(key);
+        }
     }
 });
