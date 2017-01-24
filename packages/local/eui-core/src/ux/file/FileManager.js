@@ -39,11 +39,6 @@ Ext.define('eui.ux.file.FileManager', {
                     },
                     fileParams : me.getFileParams()
                 }
-//                ,
-//                {
-//                    xtype: 'fileform',
-//                    height: 70
-//                }
             ]
         });
         me.callParent(arguments);
@@ -65,7 +60,7 @@ Ext.define('eui.ux.file.FileManager', {
 //        this.addHiddenFieldParams(me.fileParams);
         this.callParent(arguments);
     },
-    
+
     addHiddenFieldParams: function (fileParams) {
         this.setFileParams(fileParams);
         var form = this.down('fileform');

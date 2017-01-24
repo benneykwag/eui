@@ -979,10 +979,10 @@ Ext.define('eui.Util', {
     },
 
 
-    fileClick: function(S_FUNC_CODE, ID_ATTACH_FILE, FILE_NAME) {
+    fileClick: function(ID_FILE_DTIL, ID_ATCH_FILE, FILE_NAME) {
         var formData = new FormData();
-        formData.append("S_FUNC_CODE", S_FUNC_CODE);
-        formData.append("ID_ATCH_FILE", ID_ATTACH_FILE);
+        formData.append("ID_FILE_DTIL", ID_FILE_DTIL);
+        formData.append("ID_ATCH_FILE", ID_ATCH_FILE);
 
         this.fileClickApi(formData, FILE_NAME, eui.Config.fileDownloadUrl);
     },

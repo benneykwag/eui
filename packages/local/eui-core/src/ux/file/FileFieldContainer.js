@@ -89,10 +89,10 @@ Ext.define('eui.ux.file.FileFieldContainer', {
             fn = function() {
                 filegrid = me.down('filemanager filegrid');
                 uploadpanel = me.down('uploadpanel');
-                // ID_FILE_DTIL 값이 Integer, String인 경우
+                // ID_ATTACH_FILE 값이 Integer, String인 경우
                 if (!Ext.isObject(params)) {
                     params = {
-                        ID_FILE_DTIL: params
+                        ID_ATTACH_FILE: params
                     }
                 }
                 filegrid.fileParams = params;

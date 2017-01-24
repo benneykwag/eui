@@ -66,7 +66,7 @@ Ext.define('eui.ux.file.FileGrid', {
                 {
                     icon: 'resources/images/customui/icon/COM.png',
                     handler: function (view, rowIndex, colIndex, item, e, record, row) {
-                        Util.fileClick(record.get('S_FUNC_CODE'), record.get('ID_ATCH_FILE'), record.get('NM_FILE'))
+                        Util.fileClick(record.get('ID_FILE_DTIL'), record.get('ID_ATCH_FILE'), record.get('NM_FILE'))
                     }
                 }
             ]
