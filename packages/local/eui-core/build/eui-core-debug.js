@@ -13927,6 +13927,22 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
     }
 });
 
+Ext.define('Override.ux.exporter.excelFormatter.Worksheet', {
+    override: 'Ext.ux.exporter.excelFormatter.Worksheet',
+    buildCell: function(value, type, style) {
+        if (type == "DateTime" && Ext.isFunction(value.format)) {
+            value = value.format(this.dateFormatString);
+        }
+        value = '' + value;
+        value = value.replace(/</g, "&lt;");
+        return new Ext.ux.exporter.excelFormatter.Cell({
+            value: value,
+            type: type,
+            style: style
+        });
+    }
+});
+
 /**
  * @class Ext.ux.exporter.Exporter
  * @author Ed Spencer (http://edspencer.net), with modifications from iwiznia, with modifications from yogesh
