@@ -2,11 +2,11 @@ Ext.define('eui.form.field.ComboBoxController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.spcombo',
 
-    onSelect: function (combo, record) {
+    onSelect: function(combo, record) {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column && combo.valueColumnDataIndex) {
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
+            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.valueField));
         }
         me.nextBindFields(record);
     },
@@ -15,7 +15,7 @@ Ext.define('eui.form.field.ComboBoxController', {
      * lastQuery를 지우면 콤보를 매번재로드한다.
      * 이전 조건이 변경될 경우면 재로드하도록 해야한다.
      */
-    beforeCheckParamValue: function (qe) {
+    beforeCheckParamValue: function(qe) {
         var me = this,
             combo = this.getView(),
             extraParams = combo.store.getProxy().extraParams,
@@ -28,14 +28,14 @@ Ext.define('eui.form.field.ComboBoxController', {
          */
 
 
-//    일단 주석..
-//        if (combo.useLocalFilter && qe.combo.lastQuery == undefined && !combo.checkAutoLoad()) {
-//            combo.store.load({
-//                callback: function () {
-//                    combo.expand()
-//                }
-//            });
-//        }
+        //    일단 주석..
+        //        if (combo.useLocalFilter && qe.combo.lastQuery == undefined && !combo.checkAutoLoad()) {
+        //            combo.store.load({
+        //                callback: function () {
+        //                    combo.expand()
+        //                }
+        //            });
+        //        }
 
         /***
          *
@@ -52,13 +52,13 @@ Ext.define('eui.form.field.ComboBoxController', {
             checkAutoLoad = true;
         }
         if (combo.queryMode == 'remote' && (qe.combo.lastQuery == undefined) && checkAutoLoad) {
-//            console.log(combo.queryMode, qe.combo.lastQuery, combo.checkAutoLoad())
+            //            console.log(combo.queryMode, qe.combo.lastQuery, combo.checkAutoLoad())
             qe.combo.lastQuery = '';
         }
         var ownerCombo = Ext.getCmp(combo.ownerNextBindFieldId);
         // 이 콤보를 참조하고 있는 콤보가 있을 경우.
         if (combo.ownerNextBindVar && combo.column) {
-            if(ownerCombo.column) {
+            if (ownerCombo.column) {
                 var grid = ownerCombo.column.up('tablepanel'),
                     selModel = grid.getSelectionModel(),
                     rec = selModel.getLastSelected(),
@@ -72,8 +72,8 @@ Ext.define('eui.form.field.ComboBoxController', {
 
         // 참조하고 있는 모든 필드 등의 값이 변경되었다면 콤보는 재로드 해야한다.
         // 조건에 부합 할 경우 lastQuery를 지우도록 해 재로드가 가능하게 한다.
-        if (Ext.Object.toQueryString(extraParams)
-            != Ext.Object.toQueryString(currentParams)) {
+        if (Ext.Object.toQueryString(extraParams) !=
+            Ext.Object.toQueryString(currentParams)) {
             console.log('조건이 변경되었음.: ', Ext.Object.toQueryString(extraParams), '||', Ext.Object.toQueryString(currentParams));
 
             Ext.apply(combo.store.getProxy().extraParams, currentParams);
@@ -85,7 +85,7 @@ Ext.define('eui.form.field.ComboBoxController', {
         }
     },
 
-    enableEditor: function (column) {
+    enableEditor: function(column) {
         var combo = this.getView();
         var grid = column.up('tablepanel');
         var plugin = grid.findPlugin('cellediting');
@@ -94,11 +94,14 @@ Ext.define('eui.form.field.ComboBoxController', {
         var row = grid.store.indexOf(rec);
         var node = grid.view.getNode(rec);
         if (rec) {
-            if(plugin) {
-                if (plugin.clicksToEdit == 1){
-                    Ext.get(node).select('.x-grid-cell-'+column.getId()).elements[0].click();
-                }else{
-                    grid.editingPlugin.startEditByPosition({row: row, column: column.fullColumnIndex});
+            if (plugin) {
+                if (plugin.clicksToEdit == 1) {
+                    Ext.get(node).select('.x-grid-cell-' + column.getId()).elements[0].click();
+                } else {
+                    grid.editingPlugin.startEditByPosition({
+                        row: row,
+                        column: column.fullColumnIndex
+                    });
                 }
             }
             return true;
@@ -106,25 +109,25 @@ Ext.define('eui.form.field.ComboBoxController', {
         return false;
     },
 
-    nextBindFields: function (record) {
+    nextBindFields: function(record) {
         var me = this,
             combo = this.getView();
         if (!combo.nextBindFields) {
             return;
         }
 
-        var targetFields = Ext.Array.filter(Ext.ComponentQuery.query('[bind][isFormField]'), function (field) {
+        var targetFields = Ext.Array.filter(Ext.ComponentQuery.query('[bind][isFormField]'), function(field) {
             var retValue = true;
             if (combo.getId() == field.getId()) {
                 retValue = false;
             }
-//            if (field.column) {
-//                retValue = false;
-//            }
+            //            if (field.column) {
+            //                retValue = false;
+            //            }
             return retValue;
         });
 
-        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (column) {
+        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function(column) {
             var retValue = false;
             if (combo.column && combo.column.up('tablepanel').getId() == column.ownerCt.grid.getId() && column.config.editor) {
                 retValue = true;
@@ -132,17 +135,17 @@ Ext.define('eui.form.field.ComboBoxController', {
             return retValue;
         });
 
-        Ext.each(editorColumns, function (column) {
+        Ext.each(editorColumns, function(column) {
 
             targetFields.push(column)
         });
 
 
-        Ext.each(combo.nextBindFields, function (bindFieldInfo) {
+        Ext.each(combo.nextBindFields, function(bindFieldInfo) {
             var fieldArr = bindFieldInfo.split('|'),
                 fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
 
-            Ext.each(targetFields, function (field) {
+            Ext.each(targetFields, function(field) {
                 var className = Ext.ClassManager.getNameByAlias('widget.' + field.xtype);
                 var viewClass = Ext.ClassManager.get(className);
 
@@ -151,30 +154,30 @@ Ext.define('eui.form.field.ComboBoxController', {
                         // 연계 콤보
                         if (viewClass.prototype.xtypesMap['euicombo']) {
                             field.setValue(null);
-                            if (record) {   // select이벤트에 의해 연계처리.
+                            if (record) { // select이벤트에 의해 연계처리.
                                 field.ownerNextBindVar = fieldArr[0];
                                 field.ownerNextBindParam = fieldParam;
                                 field.ownerNextBindFieldId = combo.getId();
 
                                 field.proxyParams[fieldParam] = record.get((combo.valueField));
-//                                console.log('field.proxyParams', field.proxyParams);
+                                //                                console.log('field.proxyParams', field.proxyParams);
                                 // 그리드 에디터일 경우
                                 var enableEditor = true;
                                 if (field.column) {
                                     enableEditor = me.enableEditor(field.column);
                                 }
                                 if (combo.nextBindComboExpand && enableEditor) {
-                                    Ext.defer(function () {
-                                        Ext.get(field.getId()+'-triggerWrap').select('#'+field.getId()+'-trigger-picker').elements[0].click()
-//                                        Ext.get(field.getId()).select('.x-form-arrow-trigger').elements[0].click();
-//                                        Ext.get(field.getId()).select('div#'+field.getId()+'-trigger-picker').elements[0].click();
+                                    Ext.defer(function() {
+                                        Ext.get(field.getId() + '-triggerWrap').select('#' + field.getId() + '-trigger-picker').elements[0].click()
+                                        //                                        Ext.get(field.getId()).select('.x-form-arrow-trigger').elements[0].click();
+                                        //                                        Ext.get(field.getId()).select('div#'+field.getId()+'-trigger-picker').elements[0].click();
                                     }, 500)
                                 }
 
-                            } else {    // clear
+                            } else { // clear
                                 if (field.column) {
                                     me.enableEditor(field.column);
-                                    Ext.defer(function () {
+                                    Ext.defer(function() {
                                         field.column.up('tablepanel').editingPlugin.completeEdit();
                                     }, 100)
 
@@ -182,7 +185,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                                 field.clearValue();
                             }
 
-                        } else {    // 일반적인 폼필드.
+                        } else { // 일반적인 폼필드.
                             field.setValue(null);
                         }
                     }
@@ -204,11 +207,11 @@ Ext.define('eui.form.field.ComboBoxController', {
 
                             if (combo.nextBindComboExpand) {
 
-                                Ext.defer(function () {
+                                Ext.defer(function() {
                                     var fieldId = field.getEditor().getId();
-                                    Ext.get(fieldId+'-triggerWrap').select('#'+fieldId+'-trigger-picker').elements[0].click()
-//                                    Ext.get(field.getEditor().getId()).select('.x-form-arrow-trigger').elements[0].click();
-//                                    Ext.get(field.getEditor().getId()).select('div#'+field.getEditor().getId()+'-trigger-picker').elements[0].click();
+                                    Ext.get(fieldId + '-triggerWrap').select('#' + fieldId + '-trigger-picker').elements[0].click()
+                                    //                                    Ext.get(field.getEditor().getId()).select('.x-form-arrow-trigger').elements[0].click();
+                                    //                                    Ext.get(field.getEditor().getId()).select('div#'+field.getEditor().getId()+'-trigger-picker').elements[0].click();
                                 }, 500)
                             }
                         }
@@ -219,7 +222,7 @@ Ext.define('eui.form.field.ComboBoxController', {
 
     },
 
-    clearValue: function () {
+    clearValue: function() {
         var me = this,
             combo = this.getView();
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
@@ -238,24 +241,24 @@ Ext.define('eui.form.field.ComboBoxController', {
     // 1. groupCode :
     // 2. 연계정보를 다시 읽는다.
     //    다른 폼필드의 값을 연계할 경우는 뷰모델의 변수를 이용한다.
-    getComboData: function () {
+    getComboData: function() {
         var me = this,
             param = {},
             combo = this.getView(),
             vm = combo.lookupViewModel();
 
         param[combo.defaultParam] = combo[combo.defaultParam];
-//        // 외부 파라메터 전달시
-//        // params: {  aa : '11' }
-//        if(combo.params){
-//            Ext.apply(param, combo.params);
-//        }
+        //        // 외부 파라메터 전달시
+        //        // params: {  aa : '11' }
+        //        if(combo.params){
+        //            Ext.apply(param, combo.params);
+        //        }
         /***
          * 외부 폼필드 연계 처리
          * 뷰모델의 바인드를 이용.
          * 바인드변수명:파라메터명@설정값
          */
-        Ext.each(combo.relBindVars, function (bindVar) {
+        Ext.each(combo.relBindVars, function(bindVar) {
             var bindVarArr = bindVar.split('|'),
                 bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
                 bindFieldName = bindFieldName.split('@')[0],
@@ -265,12 +268,12 @@ Ext.define('eui.form.field.ComboBoxController', {
             }
         });
 
-       // console.log('combo.getProxyParams()', combo.getProxyParams())
+        // console.log('combo.getProxyParams()', combo.getProxyParams())
         Ext.apply(param, combo.getProxyParams())
         return param;
     },
 
-    createStore: function (component, options) {
+    createStore: function(component, options) {
         var me = this,
             view = this.getView(),
             store = Ext.create('Ext.data.Store', {
@@ -285,7 +288,9 @@ Ext.define('eui.form.field.ComboBoxController', {
                     pageParam: false, // to remove param "page"
                     startParam: false, // to remove param "start"
                     limitParam: false, // to remove param "limit"
-                    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
                     paramsAsJson: true,
                     actionMethods: {
                         create: 'POST',
@@ -308,7 +313,7 @@ Ext.define('eui.form.field.ComboBoxController', {
     },
 
 
-    init: function () {
+    init: function() {
 
         var me = this,
             view = this.getView();
@@ -322,16 +327,16 @@ Ext.define('eui.form.field.ComboBoxController', {
             view.queryMode = 'local';
         }
         // 공통 코드를 사용하지 않을 경우.
-//        if (!Ext.isEmpty(view.groupCode)) {
+        //        if (!Ext.isEmpty(view.groupCode)) {
         // 공통 코드를 사용할 경우.
         me.createStore(view, {
             url: view.proxyUrl,
             fields: [],
             params: me.getComboData()
         });
-//        }
+        //        }
 
-        me.getView().store.on('load', function (store) {
+        me.getView().store.on('load', function(store) {
             console.log('store load ::', store.getProxy().extraParams);
         });
     }
