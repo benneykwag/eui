@@ -28720,14 +28720,36 @@ var XLS = XLSX;
 Ext.define('eui.ExcelReader', {
     alternateClassName: 'XlReader',
     singleton: true,
-
+    /*
+    * 엑셀 파일을 읽은 후 success callback에서 json array 형태로 리턴한다
+    * @param.file: 읽을 파일
+    * @param.start: parsing 시작하는 cell(ex A1 (o) a1(x))
+    * @param.end: parsing 종료하는 cell(ex A1 (o) a1(x))
+    * @success: callback 메소드 (ret(jsonArray), sheet, workbook)
+    */
     excelToJson: function(param) {
-        var file = param.file,
-    		extension = file.name.split('.')[file.name.split('.').length -1];
-            reader = new FileReader();
-
+        var me = window.XlReader,
+        	file = param.file,
+    		extension,
+            reader = new FileReader(),
+            startCell = param.start,
+            endCell = param.end;
+        if (!file || file.toString() !== '[object File]') {
+        	me.callFormatError();
+        	return;
+        }
+        if (Ext.isString(startCell) && !(/[A-Z]+[0-9]+/.test(startCell))) {
+        	Ext.Msg.alert('Error', '포맷에 맞는 cell을 입력해주세요 ex) A1(o) a1(x)');
+        	return;
+        }
+        if (Ext.isString(endCell) && !(/[A-Z]+[0-9]+/.test(endCell))) {
+        	Ext.Msg.alert('Error', '포맷에 맞는 cell을 입력해주세요 ex) A1(o) a1(x)');
+        	return;
+        }
+        extension = file.name.split('.')[file.name.split('.').length -1];
         reader.onload = function(e) {
-            var data = (function () {
+            var me = window.XlReader,
+            	data = (function () {
             		if (Ext.isIE) {
             			var d = new Uint8Array(e.target.result),
             				arr = [];
@@ -28746,7 +28768,7 @@ Ext.define('eui.ExcelReader', {
                 colNoReg = /[A-Z]+/g,
                 rowNoReg = /[0-9]+/g,
                 cols = [],
-                cellNo, startEnd, start, end, startRow, endRow,
+                cellNo, startEnd, start, end, startCol, endCol, startRow, endRow,
                 ret = [],
                 data;
             if (workbook) {
@@ -28754,18 +28776,27 @@ Ext.define('eui.ExcelReader', {
                     (workbook.Workbook.Sheets || workbook.Workbook.Sheets[0].name);
                 sheet = workbook.Sheets[name];
                 startEnd = sheet["!ref"].split(':');
-                start = startEnd[0];
-                end = startEnd[1];
+                start = startCell || startEnd[0];
+                end = endCell || startEnd[1];
+                startCol = start.match(colNoReg)[0];
+                endCol = end.match(colNoReg)[0];
                 startRow = Number(start.match(rowNoReg)[0]);
                 endRow = Number(end.match(rowNoReg)[0]);
 
                 Ext.Object.each(sheet, function(k, v) {
+                	// cell 항목들만
                     if (/[A-Z]+[0-9]+/.test(k)) {
                         col = k.match(colNoReg)[0];
                         row = k.match(rowNoReg)[0];
+                        if (me.colToNo(col) < me.colToNo(startCol)) {
+                        	return;
+                        }
+                        if (me.colToNo(col) > me.colToNo(endCol)) {
+                        	return;
+                        }
                         if (row == startRow) {
                             cols.push(col);
-                            fields[col] = v['v'];
+                            fields[col] = v && v['v'];
                         }
                     }
                 });
@@ -28773,13 +28804,16 @@ Ext.define('eui.ExcelReader', {
                     data = {};
                     Ext.Object.each(fields, function(k, v) {
                         cellNo = k + i;
-                        data[v] = sheet[cellNo]['v'];
+                        data[v] = sheet[cellNo] && sheet[cellNo]['v'];
                     });
                     ret.push(data);
                 }
                 if (Ext.isFunction(param.success)) {
-                    param.success(ret, sheet);
+                    param.success(ret, sheet, workbook);
                 }
+            } else {
+            	me.callFormatError();
+            	return;
             }
         };
         if (file && (Ext.String.endsWith(file.name, '.xlsx') || Ext.String.endsWith(file.name, '.xls'))) {
@@ -28788,6 +28822,37 @@ Ext.define('eui.ExcelReader', {
         	} else {
         		reader.readAsBinaryString(file);
         	}
+        } else {
+        	me.callFormatError();
+        	return;
         }
+    },
+
+    /*
+    * 'a' -> 65, 'ab' -> '6566' column 값을 양자화
+    * @param col  양자화하려는 column
+    */
+    colToNo: function (col) {
+    	var length = col.length,
+    		c, unit = 100, mul,
+    		sum = 0;
+    	for (var i = 0; i < length; i++) {
+    		c = col[length -i-1];
+    		mul = 1;
+    		for (var j = 0; j != i; j++) {
+    			mul = mul * unit;
+    		}
+    		sum += mul * c.charCodeAt(0)
+    	}
+    	return sum;
+    },
+
+    callFormatError: function () {
+    	Ext.Msg.show({
+    		title: 'Error',
+    		buttons: Ext.Msg.OK,
+    		icon: Ext.Msg.ERROR,
+    		message: '올바른 포맷의 파일이 아닙니다'
+    	});
     }
 });
