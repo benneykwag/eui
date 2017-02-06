@@ -1,3 +1,4 @@
+
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, browser:true */
 /*global Ext, tinymce, tinyMCE */
 

@@ -1,0 +1,1016 @@
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:2 */
+.x-calendar-event {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:5 */
+    /**
+ * @class Ext.calendar.Event
+ */
+    /**
+ * @class Ext.calendar.Event
+ */
+    position: absolute;
+    /**
+ * @class Ext.calendar.Event
+ */
+    overflow: hidden;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:10 */
+.x-calendar-event.x-calendar-event-static {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:9 */
+    position: static;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:14 */
+.x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:14 */
+    user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    cursor: default;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:28 */
+.x-calendar-event-inline-title .x-calendar-event-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:24 */
+    display: inline;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:32 */
+.x-calendar-event-inline-title .x-calendar-event-time-separator,
+.x-calendar-event-inline-title .x-calendar-event-time-end {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:28 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:37 */
+.x-calendar-event-inline-title .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:33 */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:43 */
+.x-calendar-compact .x-calendar-event-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:41 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:47 */
+.x-calendar-compact .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:45 */
+    overflow: hidden;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:51 */
+.x-calendar-event-resizer {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:50 */
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    cursor: s-resize;
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:59 */
+.x-calendar-event-resizable:hover .x-calendar-event-resizer,
+.x-calendar-event-resizing .x-calendar-event-resizer {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/Event.scss:57 */
+    display: block;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:64 */
+.x-calendar-event .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:131 */
+    font-family: tahoma, arial, verdana, sans-serif;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:68 */
+.x-calendar-event .x-calendar-event-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:137 */
+    padding: 0 4px 0 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:72 */
+.x-calendar-event .x-calendar-event-resizer:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:141 */
+    font-size: 14.4px;
+    font-family: monospace;
+    content: "=";
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:78 */
+.x-calendar-event.x-calendar-event-dragging {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:148 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    opacity: 0.8;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:83 */
+.x-calendar-event.x-calendar-event-resizing {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:154 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    opacity: 0.8;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:88 */
+.x-calendar-event-week-span .x-calendar-event-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:175 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:92 */
+.x-calendar-event-week-span {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:125 */
+    margin: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:96 */
+.x-calendar-event-week-span .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:131 */
+    padding: 1px 1px 1px 3px;
+    font-size: 12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:101 */
+.x-calendar-event-week-inline .x-calendar-event-time-separator,
+.x-calendar-event-week-inline .x-calendar-event-time-end {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:190 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:106 */
+.x-calendar-event-week-inline {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:125 */
+    margin: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:110 */
+.x-calendar-event-week-inline .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:131 */
+    padding: 0 0 0 3px;
+    font-size: 12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:115 */
+.x-calendar-event-day {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:125 */
+    margin: 1px 0;
+    border-width: 1px;
+    border-style: solid;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:121 */
+.x-calendar-event-day .x-calendar-event-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/Event.scss:131 */
+    padding: 2px 4px;
+    font-size: 10.2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:126 */
+.x-calendar-list-item {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/List.scss:1 */
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:130 */
+.x-calendar-list-icon {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/List.scss:5 */
+    position: absolute;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:134 */
+.x-calendar-list-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/List.scss:9 */
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:142 */
+.x-calendar-header-table {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/header/Base.scss:5 */
+    /**
+ * @class Ext.calendar.header.Base
+ */
+    /**
+ * @class Ext.calendar.header.Base
+ */
+    table-layout: fixed;
+    /**
+ * @class Ext.calendar.header.Base
+ */
+    border-collapse: collapse;
+    width: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:151 */
+.x-calendar-header-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/header/Base.scss:11 */
+    user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    cursor: default;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:162 */
+.x-calendar-header-hidden-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/header/Base.scss:15 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:166 */
+.x-calendar-header {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:161 */
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:170 */
+.x-calendar-header .x-calendar-header-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:164 */
+    font-weight: normal;
+    line-height: normal;
+    font-family: tahoma, arial, verdana, sans-serif;
+    border: 1px solid #ddd;
+    border-bottom-width: 0;
+    text-align: center;
+    color: #000;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:180 */
+.x-calendar-header .x-calendar-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:173 */
+    background-color: #f7f9fd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:184 */
+.x-calendar-header-large .x-calendar-header-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:164 */
+    font-size: 12px;
+    line-height: normal;
+    border-bottom-width: 0;
+    padding: 8px 2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:191 */
+.x-calendar-header-large .x-calendar-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:173 */
+    width: 4em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:195 */
+.x-calendar-header-compact .x-calendar-header-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:164 */
+    font-size: 12px;
+    line-height: normal;
+    border-bottom-width: 0;
+    padding: 3px 2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:202 */
+.x-calendar-header-compact .x-calendar-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/header/Base.scss:173 */
+    width: 2em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:206 */
+.x-calendar-table {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Base.scss:1 */
+    table-layout: fixed;
+    border-collapse: collapse;
+    width: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:212 */
+.x-calendar-days-table-wrap {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:5 */
+    /**
+ * @class Ext.calendar.view.Days
+ */
+    /**
+ * @class Ext.calendar.view.Days
+ */
+    display: table;
+    /**
+ * @class Ext.calendar.view.Days
+ */
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:221 */
+.x-calendar-days-header-wrap {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:11 */
+    width: 100%;
+    display: table-cell;
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:227 */
+.x-calendar-days-body-row {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:17 */
+    display: table-row;
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:233 */
+.x-calendar-days-body-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:23 */
+    display: table-cell;
+    position: relative;
+    width: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:239 */
+.x-gecko .x-calendar-days-body-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:28 */
+    position: static;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:243 */
+.x-calendar-days-body-wrap {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:33 */
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:249 */
+.x-calendar-days-table {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:39 */
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:256 */
+.x-calendar-days-allday-events {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:46 */
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:260 */
+.x-calendar-days-allday-events td {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:49 */
+    padding: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:264 */
+.x-calendar-days-allday-background-wrap {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:54 */
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:272 */
+.x-calendar-days-body-table {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:62 */
+    position: absolute;
+    height: auto;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:277 */
+.x-calendar-days-body-table td {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:66 */
+    padding: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:281 */
+.x-calendar-days-time,
+.x-calendar-days-allday-empty-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:71 */
+    user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    cursor: default;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:293 */
+.x-calendar-days-day-column {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:76 */
+    position: relative;
+    z-index: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:298 */
+.x-calendar-days-day-event-container {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:82 */
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:306 */
+.x-calendar-days-now-marker {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Days.scss:90 */
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:313 */
+.x-calendar-days {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:323 */
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:317 */
+.x-calendar-days .x-calendar-days-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:332 */
+    background-color: #f7f9fd;
+    border: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:322 */
+.x-calendar-days .x-calendar-days-allday-background-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:338 */
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:327 */
+.x-calendar-days .x-calendar-days-time-ct {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:345 */
+    background-color: #f7f9fd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:333 */
+.x-calendar-days .x-calendar-days-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:354 */
+    height: 42px;
+    color: #666;
+    text-align: right;
+    font-family: tahoma, arial, verdana, sans-serif;
+    border-bottom: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:341 */
+.x-calendar-days .x-calendar-days-time-ampm {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:366 */
+    line-height: 1em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:345 */
+.x-calendar-days .x-calendar-days-day-column {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:370 */
+    border-right: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:349 */
+.x-calendar-days .x-calendar-days-marker {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:376 */
+    height: 42px;
+    border-bottom: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:354 */
+.x-calendar-days .x-calendar-days-marker-alt {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:383 */
+    height: 21px;
+    border-bottom: 1px dotted #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:359 */
+.x-calendar-days .x-calendar-days-now-marker {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:390 */
+    margin: 0 5px;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    opacity: 0.7;
+    border-width: 2px 0 0 0;
+    border-style: solid;
+    border-color: #a94442;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:368 */
+.x-calendar-days .x-calendar-days-allday-empty-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:398 */
+    line-height: 10px;
+    border-bottom: 1px solid #ddd;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:373 */
+.x-calendar-days .x-calendar-days-selection {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:405 */
+    background-color: #cff;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    opacity: 0.3;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:379 */
+.x-calendar-days-large .x-calendar-days-day-event-container {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:327 */
+    margin-right: 15px;
+    margin-left: 5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:384 */
+.x-calendar-days-large .x-calendar-days-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:332 */
+    width: 4em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:388 */
+.x-calendar-days-large .x-calendar-days-time-ct {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:345 */
+    width: 4em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:392 */
+.x-calendar-days-large .x-calendar-days-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:354 */
+    padding: 2px 2px 0 0;
+    font-size: 12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:397 */
+.x-calendar-days-large .x-calendar-days-marker-alt {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:383 */
+    height: null/2;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:401 */
+.x-calendar-days-large .x-calendar-days-allday-empty-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:398 */
+    line-height: 10px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:405 */
+.x-calendar-days-compact .x-calendar-days-day-event-container {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:327 */
+    margin-right: 0;
+    margin-left: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:410 */
+.x-calendar-days-compact .x-calendar-days-header-gutter {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:332 */
+    width: 2em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:414 */
+.x-calendar-days-compact .x-calendar-days-time-ct {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:345 */
+    width: 2em;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:418 */
+.x-calendar-days-compact .x-calendar-days-time {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:354 */
+    padding: 2px 2px 0 0;
+    font-size: 10.2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:423 */
+.x-calendar-days-compact .x-calendar-days-marker-alt {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:383 */
+    height: null/2;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:427 */
+.x-calendar-days-compact .x-calendar-days-allday-empty-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Days.scss:398 */
+    line-height: 10px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:431 */
+.x-calendar-weeks {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:5 */
+    /**
+ * @class Ext.calendar.view.Weeks
+ */
+    /**
+ * @class Ext.calendar.view.Weeks
+ */
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:438 */
+.x-calendar-weeks-week-rows {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:9 */
+    width: 100%;
+    height: 100%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:443 */
+.x-calendar-weeks-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:14 */
+    user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    cursor: default;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:454 */
+.x-calendar-weeks-cell-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:18 */
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:460 */
+.x-calendar-weeks-hidden-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:24 */
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:464 */
+.x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:28 */
+    position: absolute;
+    display: none;
+    text-align: center;
+    cursor: pointer;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:471 */
+.x-calendar-weeks-with-overflow-bottom .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:34 */
+    text-align: center;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:478 */
+.x-calendar-weeks-with-overflow-top .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:41 */
+    top: 5px;
+    right: 5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:483 */
+.x-calendar-weeks-overflow-cell .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Weeks.scss:46 */
+    display: block;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:487 */
+.x-calendar-weeks {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:237 */
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:491 */
+.x-calendar-weeks .x-calendar-weeks-cell {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:241 */
+    border-style: solid;
+    border-color: #ddd;
+    border-width: 1px;
+    vertical-align: top;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:498 */
+.x-calendar-weeks .x-calendar-weeks-cell-inner {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:249 */
+    padding: 2px 0 4px 4px;
+    text-align: left;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:503 */
+.x-calendar-weeks .x-calendar-weeks-day-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:254 */
+    font-family: tahoma, arial, verdana, sans-serif;
+    color: #000;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:508 */
+.x-calendar-weeks .x-calendar-weeks-outside-cell .x-calendar-weeks-day-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:263 */
+    color: #aaa;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:512 */
+.x-calendar-weeks .x-calendar-weeks-selection {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:276 */
+    background-color: #cff;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    opacity: 0.3;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:518 */
+.x-calendar-weeks .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:283 */
+    color: #15c;
+    font-family: tahoma, arial, verdana, sans-serif;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:523 */
+.x-calendar-weeks-large .x-calendar-weeks-day-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:254 */
+    font-size: 12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:527 */
+.x-calendar-weeks-large .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:283 */
+    font-size: 10.2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:531 */
+.x-calendar-weeks-compact .x-calendar-weeks-day-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:254 */
+    font-size: 12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:535 */
+.x-calendar-weeks-compact .x-calendar-weeks-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/core/sass/var/calendar/view/Weeks.scss:283 */
+    font-size: 10.2px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:539 */
+.x-calendar-month-4weeks .x-calendar-weeks-row {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Month.scss:6 */
+    /**
+ * @class Ext.calendar.view.Month
+ */
+    /**
+ * @class Ext.calendar.view.Month
+ */
+    height: 25%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:546 */
+.x-calendar-month-4weeks .x-calendar-weeks-row[data-week="4"],
+.x-calendar-month-4weeks .x-calendar-weeks-row[data-week="5"] {
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:551 */
+.x-calendar-month-5weeks .x-calendar-weeks-row {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Month.scss:16 */
+    height: 20%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:555 */
+.x-calendar-month-5weeks .x-calendar-weeks-row[data-week="5"] {
+    display: none;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:559 */
+.x-calendar-month-6weeks .x-calendar-weeks-row {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/sass/src/calendar/view/Month.scss:26 */
+    height: 16.66%;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:563 */
+.x-calendar-list .x-calendar-list-item {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/List.scss:24 */
+    margin: 0 0 5px 0;
+    height: normal;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:568 */
+.x-calendar-list .x-calendar-list-item-hidden {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/List.scss:29 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    opacity: 0.5;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:573 */
+.x-calendar-list .x-calendar-list-icon {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/List.scss:35 */
+    width: normal;
+    height: normal;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:578 */
+.x-calendar-list .x-calendar-list-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/List.scss:40 */
+    padding-left: normal5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:582 */
+.x-calendar-picker-list-icon,
+.x-calendar-picker-field-icon {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/src/calendar/form/CalendarPicker.scss:5 */
+    /**
+ * @class Ext.calendar.form.CalendarPicker
+ */
+    /**
+ * @class Ext.calendar.form.CalendarPicker
+ */
+    position: absolute;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:590 */
+.x-calendar-picker-field .x-form-text-wrap {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/src/calendar/form/CalendarPicker.scss:9 */
+    position: relative;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:594 */
+.x-calendar-picker-list .x-calendar-picker-list-icon {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/form/CalendarPicker.scss:19 */
+    width: 12px;
+    height: 12px;
+    top: 4px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:600 */
+.x-calendar-picker-list .x-calendar-picker-list-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/form/CalendarPicker.scss:25 */
+    padding-left: 17px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:604 */
+.x-calendar-picker-field .x-calendar-picker-field-icon {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/form/CalendarPicker.scss:31 */
+    left: 3px;
+    top: 1px;
+    height: 17px;
+    width: 17px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:611 */
+.x-calendar-picker-field .x-form-text {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/packages/calendar/classic/sass/var/calendar/form/CalendarPicker.scss:38 */
+    padding-left: 25px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:615 */
+.x-tip-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:187 */
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    padding: 2px 2px 2px 2px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:627 */
+.x-tip-calendar-overflow-mc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:237 */
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:631 */
+.x-nbr .x-tip-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:264 */
+    padding: 0 !important;
+    border-width: 0 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:643 */
+.x-tip-calendar-overflow-frameInfo {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:281 */
+    font-family: th-3-3-3-3-1-1-1-1-2-2-2-2;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:647 */
+.x-tip-calendar-overflow-tl {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:347 */
+    background-position: 0 -6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:651 */
+.x-tip-calendar-overflow-tr {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:351 */
+    background-position: right -9px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:655 */
+.x-tip-calendar-overflow-bl {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:355 */
+    background-position: 0 -12px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:659 */
+.x-tip-calendar-overflow-br {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:359 */
+    background-position: right -15px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:663 */
+.x-tip-calendar-overflow-ml {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:363 */
+    background-position: 0 top;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:667 */
+.x-tip-calendar-overflow-mr {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:371 */
+    background-position: right top;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:671 */
+.x-tip-calendar-overflow-tc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:379 */
+    background-position: 0 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:675 */
+.x-tip-calendar-overflow-bc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:383 */
+    background-position: 0 -3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:679 */
+.x-tip-calendar-overflow-tr,
+.x-tip-calendar-overflow-br,
+.x-tip-calendar-overflow-mr {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:388 */
+    padding-right: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:685 */
+.x-tip-calendar-overflow-tl,
+.x-tip-calendar-overflow-bl,
+.x-tip-calendar-overflow-ml {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:394 */
+    padding-left: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:691 */
+.x-tip-calendar-overflow-tc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:400 */
+    height: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:695 */
+.x-tip-calendar-overflow-bc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:403 */
+    height: 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:699 */
+.x-tip-calendar-overflow-tl,
+.x-tip-calendar-overflow-bl,
+.x-tip-calendar-overflow-tr,
+.x-tip-calendar-overflow-br,
+.x-tip-calendar-overflow-tc,
+.x-tip-calendar-overflow-bc,
+.x-tip-calendar-overflow-ml,
+.x-tip-calendar-overflow-mr {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:407 */
+    background-image: url(images/tip/tip-calendar-overflow-corners.gif);
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:710 */
+.x-tip-calendar-overflow-ml,
+.x-tip-calendar-overflow-mr {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:453 */
+    background-image: url(images/tip/tip-calendar-overflow-sides.gif);
+    background-repeat: repeat-y;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:716 */
+.x-tip-calendar-overflow-mc {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/frame.scss:464 */
+    padding: 0px 0px 0px 0px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:720 */
+.x-cmd-slicer.x-tip-calendar-overflow:before {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-base/sass/etc/mixins/slicer.scss:83 */
+    /*<if slicer>*/
+    /*<if slicer>*/
+    display: none;
+    /*<if slicer>*/
+    content: "x-slicer:, frame:3px 3px 3px 3px, corners:url(images/tip/tip-calendar-overflow-corners.gif), sides:url(images/tip/tip-calendar-overflow-sides.gif)" !important;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:726 */
+.x-tip-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:313 */
+    background-color: #fff;
+    border-color: #99bce8;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:731 */
+.x-tip-calendar-overflow .x-tool-img {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:323 */
+    background-color: #fff;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:735 */
+.x-tip-header-calendar-overflow .x-tool-after-title {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:338 */
+    margin: 0 0 0 6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:739 */
+.x-tip-header-calendar-overflow .x-tool-before-title {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:348 */
+    margin: 0 6px 0 0;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:743 */
+.x-tip-header-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:359 */
+    padding: 3px 3px 0 3px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:747 */
+.x-tip-header-title-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:363 */
+    color: #444;
+    font-size: 11px;
+    font-weight: bold;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:753 */
+.x-tip-body-calendar-overflow {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:369 */
+    padding: 3px;
+    color: #444;
+    font-size: 11px;
+    font-weight: normal;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:760 */
+.x-tip-body-calendar-overflow a {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:374 */
+    color: #2a2a2a;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:764 */
+.x-tip-calendar-overflow .x-tip-anchor {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:385 */
+    border: 6px solid transparent;
+    _border-color: pink;
+    _filter: chroma(color=pink);
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:770 */
+.x-tip-calendar-overflow .x-tip-anchor:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:400 */
+    position: absolute;
+    border: 5px solid transparent;
+    content: "";
+    _border-color: pink;
+    _filter: chroma(color=pink);
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:778 */
+.x-tip-calendar-overflow .x-tip-anchor-top {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:411 */
+    border-top-width: 0;
+    border-bottom: 6px solid #84aee3;
+    top: -6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:784 */
+.x-tip-calendar-overflow .x-tip-anchor-bottom {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:417 */
+    border-bottom-width: 0;
+    border-top: 6px solid #84aee3;
+    bottom: -6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:790 */
+.x-tip-calendar-overflow .x-tip-anchor-left {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:423 */
+    border-left-width: 0;
+    border-right: 6px solid #84aee3;
+    left: -6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:796 */
+.x-tip-calendar-overflow .x-tip-anchor-right {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:429 */
+    border-right-width: 0;
+    border-left: 6px solid #84aee3;
+    right: -6px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:802 */
+.x-tip-calendar-overflow .x-tip-anchor-top:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:435 */
+    border-top-width: 0;
+    border-bottom-color: #fff;
+    top: 1px;
+    margin-left: -5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:809 */
+.x-tip-calendar-overflow .x-tip-anchor-bottom:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:442 */
+    border-bottom-width: 0;
+    border-top-color: #fff;
+    bottom: 1px;
+    margin-left: -5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:816 */
+.x-tip-calendar-overflow .x-tip-anchor-left:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:449 */
+    border-left-width: 0;
+    border-right-color: #fff;
+    left: 1px;
+    margin-top: -5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:823 */
+.x-tip-calendar-overflow .x-tip-anchor-right:after {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/tip/Tip.scss:456 */
+    border-right-width: 0;
+    border-left-color: #fff;
+    right: 1px;
+    margin-top: -5px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:830 */
+.x-calendar-panel .x-calendar-panel-create-button {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/calendar/panel/Panel.scss:23 */
+    padding-left: 35px;
+    padding-right: 35px;
+}
+/* C:/DRMSDev/workspace/eui/packages/local/calendar/sass/etc/all.scss:835 */
+.x-calendar-panel .x-calendar-sidebar .x-panel-body {
+    /* /Users/space/buildAgent/work/8cc7421dd8da164c/staging/classic/theme-neutral/sass/var/calendar/panel/Panel.scss:28 */
+    padding: 10px;
+}
