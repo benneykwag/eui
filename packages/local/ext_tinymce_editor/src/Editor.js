@@ -1,38 +1,37 @@
-
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, browser:true */
 /*global Ext, tinymce, tinyMCE */
 
 /*-------------------------------------------------------------------
- Ext.ux.form.TinyMCETextArea
+Ext.ux.form.TinyMCETextArea
 
- ExtJS form field - a text area with integrated TinyMCE WYSIWYG Editor
+ExtJS form field - a text area with integrated TinyMCE WYSIWYG Editor
 
- Version: 5.1
- Release date: 27.09.2014
- ExtJS Version: 5.0.0
- TinyMCE Version: 4.1.5
- License: LGPL v3 or later, Sencha License
+Version: 5.1
+Release date: 27.09.2014
+ExtJS Version: 5.0.0
+TinyMCE Version: 4.1.5
+License: LGPL v3 or later, Sencha License
 
- Author: Oleg Schildt
- E-Mail: Oleg.Schildt@gmail.com
+Author: Oleg Schildt
+E-Mail: Oleg.Schildt@gmail.com
 
- Copyright (c) 2014 Oleg Schildt
+Copyright (c) 2014 Oleg Schildt
 
- Following issues are covered:
+Following issues are covered:
 
- - Initialization in an initially visible and in an initially invisible tab.
- - Correct place occupation by the initialization in any ExtJS layout.
- - Correct resizing by the resizing of the underlying text area.
- - Activation and deactivation of the WYSIWYG editor.
- - Enabling and disabling of the WYSIWYG editor control.
- - ReadOnly state support.
- - Changing of WYSIWYG settings and CSS file for the editable contents on the fly.
- - Pre-formatting of the HTML text in visible and invisible modus.
- - Focusing of the WYSIWYG editor control.
- - Marking invalid.
- - Tracking dirty state.
- - Storing and restoring cursor position by inserting of a place holder over a popup window.
- -------------------------------------------------------------------*/
+- Initialization in an initially visible and in an initially invisible tab.
+- Correct place occupation by the initialization in any ExtJS layout.
+- Correct resizing by the resizing of the underlying text area.
+- Activation and deactivation of the WYSIWYG editor.
+- Enabling and disabling of the WYSIWYG editor control.
+- ReadOnly state support.
+- Changing of WYSIWYG settings and CSS file for the editable contents on the fly.
+- Pre-formatting of the HTML text in visible and invisible modus.
+- Focusing of the WYSIWYG editor control.
+- Marking invalid.
+- Tracking dirty state.
+- Storing and restoring cursor position by inserting of a place holder over a popup window.
+-------------------------------------------------------------------*/
 
 Ext.define('TinymceEditor', {
 
@@ -45,8 +44,8 @@ Ext.define('TinymceEditor', {
     //-----------------------------------------------------------------
 
     /*
-     Flag for tracking the initialization state
-     */
+    Flag for tracking the initialization state
+    */
     wysiwygIntialized: false,
     intializationInProgress: false,
 
@@ -54,54 +53,54 @@ Ext.define('TinymceEditor', {
     lastFrameHeight: null,
 
     /*
-     This properties enables starting without WYSIWYG editor.
-     The user can activate it later if he wants.
-     */
+    This properties enables starting without WYSIWYG editor.
+    The user can activate it later if he wants.
+    */
     noWysiwyg: false,
 
     /*
-     Config object for the TinyMCE configuration options
-     */
+    Config object for the TinyMCE configuration options
+    */
     tinyMCEConfig: {
         plugins: [
-			'advlist autolink lists link image charmap print preview',
-			'searchreplace visualblocks code fullscreen',
-			'insertdatetime table contextmenu bdesk_photo'
+            'advlist autolink lists link image charmap print preview',
+            'searchreplace visualblocks code fullscreen',
+            'insertdatetime table contextmenu bdesk_photo'
         ],
-    	language: 'ko_KR',
-    	skin : "lightgray",
+        language: 'ko_KR',
+        skin: "lightgray",
 
-    	content_css: './codepen.min.css',
+        toolbar1: "bold italic underline strikethrough subscript superscript | removeformat | alignleft aligncenter alignright alignjustify | formatselect fontsizeselect",
+        toolbar2: "table bdesk_photo | searchreplace | bullist numlist | outdent indent | undo redo | link unlink | preview fullscreen print",
 
-    	toolbar1: "bold italic underline strikethrough subscript superscript | removeformat | alignleft aligncenter alignright alignjustify | formatselect fontsizeselect",
-    	toolbar2: "table bdesk_photo | searchreplace | bullist numlist | outdent indent | undo redo | link unlink | preview fullscreen print",
-
-//        toolbar1: "newdocument fullpage | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
-//        toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | inserttime preview | forecolor backcolor",
-//        toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | spellchecker | visualchars visualblocks nonbreaking template pagebreak restoredraft",
-//        content_css : "contents.css",
+        //        toolbar1: "newdocument fullpage | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
+        //        toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | inserttime preview | forecolor backcolor",
+        //        toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | spellchecker | visualchars visualblocks nonbreaking template pagebreak restoredraft",
+        //        content_css : "contents.css",
 
         menubar: true,
         toolbar_items_size: 'small'
     },
 
     /*
-     In the ExtJS 5.x, the liquid layout is used if possible.
-     The liquid layout means that the component is rendered
-     with the help of pure CSS without any JavaScript. In this
-     case, no sizing events are fired.
+    In the ExtJS 5.x, the liquid layout is used if possible.
+    The liquid layout means that the component is rendered
+    with the help of pure CSS without any JavaScript. In this
+    case, no sizing events are fired.
 
-     However, the event 'resize' is essential for the
-     Ext.ux.form.TinyMCETextArea. For that reason, we set
-     liquidLayout to false.
-     */
+    However, the event 'resize' is essential for the
+    Ext.ux.form.TinyMCETextArea. For that reason, we set
+    liquidLayout to false.
+    */
     liquidLayout: false,
 
-    afterRender: function () {
+    //-----------------------------------------------------------------
+    afterRender: function() {
         var me = this;
 
         me.callParent(arguments);
-        me.on('blur', function (elm, ev, eOpts) {
+
+        me.on('blur', function(elm, ev, eOpts) {
 
             var ctrl = document.getElementById(me.getInputId());
 
@@ -112,32 +111,36 @@ Ext.define('TinymceEditor', {
                 // synchronized upon the blur event.
                 if (ed && ed.isHidden()) {
                     if (ctrl) {
-                        me.positionBeforeBlur = { start: ctrl.selectionStart, end: ctrl.selectionEnd };
+                        me.positionBeforeBlur = {
+                            start: ctrl.selectionStart,
+                            end: ctrl.selectionEnd
+                        };
                     }
 
                     ed.load();
                 }
-            }
-            else {
+            } else {
                 if (ctrl) {
-                    me.positionBeforeBlur = { start: ctrl.selectionStart, end: ctrl.selectionEnd };
+                    me.positionBeforeBlur = {
+                        start: ctrl.selectionStart,
+                        end: ctrl.selectionEnd
+                    };
                 }
             }
         }, me);
 
-        me.on('resize', function (elm, width, height, oldWidth, oldHeight, eOpts) {
+        me.on('resize', function(elm, width, height, oldWidth, oldHeight, eOpts) {
 
             /*
-             alert('width:' + width + '\n' +
-             'height:' + height + '\n' +
-             'oldWidth:' + oldWidth + '\n' +
-             'oldHeight:' + oldHeight
-             );*/
+            alert('width:' + width + '\n' +
+            'height:' + height + '\n' +
+            'oldWidth:' + oldWidth + '\n' +
+            'oldHeight:' + oldHeight
+            );*/
 
             if (!me.noWysiwyg && !me.wysiwygIntialized) {
                 me.initEditor(height);
-            }
-            else {
+            } else {
                 me.syncEditorHeight(height);
             }
         }, me);
@@ -276,12 +279,7 @@ Ext.define('TinymceEditor', {
                 // there is no need to call triggerSave
 
                 var setContent = ed.setContent;
-<<<<<<< HEAD
                 ed.setContent = function() {
-=======
-                ed.setContent = function () {
->>>>>>> master
-                    // debugger;
                     setContent.apply(ed, arguments);
                     ed.fire('change', {});
                 };
@@ -295,29 +293,25 @@ Ext.define('TinymceEditor', {
                 }
             });
 
-            // Catch and propagate the change event
-<<<<<<< HEAD
-            ed.on('change', function(e) {
-=======
-            ed.on('change', function (e) {
->>>>>>> master
-                var oldval = me.getValue();
-                var newval = ed.getContent();
-
-                ed.save();
-
-                me.fireEvent('change', me, newval, oldval, {});
-<<<<<<< HEAD
-
-=======
-                me.publishState('value', newval);
->>>>>>> master
-                me.checkDirty();
-
-                if (me.validateOnChange) {
-                    me.validate();
-                }
+            ed.on('blur', function(e) {
+                me.publishValue();
             });
+
+            // Catch and propagate the change event
+            //            ed.on('change', function(e) {
+            //                var oldval = me.getValue();
+            //                var newval = ed.getContent();
+            //
+            //                //ed.save();
+            //
+            //                me.fireEvent('change', me, newval, oldval, {});
+            //
+            //                me.checkDirty();
+            //
+            //                if (me.validateOnChange) {
+            //                    me.validate();
+            //                }
+            //            });
 
             // This ensures that the focusing the editor
             // bring the parent window to front
@@ -537,34 +531,17 @@ Ext.define('TinymceEditor', {
     },
     //-----------------------------------------------------------------
     setValue: function(v) {
-        var me = this;
-        var res = me.callParent(arguments);
-        if (me.wysiwygIntialized) {
-            // The editor does some preformatting of the HTML text
-            // entered by the user.
-            // The method setValue sets the value of the textarea.
-            // We have to load the text into editor for the
-            // preformatting and then to save it back to the textarea.
-<<<<<<< HEAD
+        var me = this,
+            ed = this.getEditor();
 
-            var ed = this.getEditor();
-            if (ed && ed.getDoc()) {
-                ed.load();
-=======
-            if(!me.cnt){
-                Ext.defer(function () {
-                    var ed = tinymce.get(me.getInputId());
-                    ed.load();
-                    me.cnt = 1;
-                }, 500);
-            }else{
-                var ed = tinymce.get(me.getInputId());
->>>>>>> master
-                ed.save();
-            }
+        if (me.wysiwygIntialized && ed && ed.getDoc()) {
+            ed.setContent(v || '');
+            me.publishValue();
+        } else {
+            me.callParent(arguments);
         }
 
-        return res;
+        return me;
     },
     //-----------------------------------------------------------------
     focus: function(selectText, delay) {
@@ -785,6 +762,16 @@ Ext.define('TinymceEditor', {
         }
 
         return true;
+    },
+    getValue: function() {
+        var me = this,
+            editor = me.getEditor();
+        if (editor && editor.getDoc()) {
+            return editor.getContent();
+        } else {
+            return this.callParent();
+        }
+
     }
     //-----------------------------------------------------------------
 });
