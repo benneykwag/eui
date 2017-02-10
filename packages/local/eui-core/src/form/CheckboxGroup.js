@@ -112,7 +112,7 @@ Ext.define('eui.form.CheckboxGroup', {
     mixins: [
         'eui.mixin.FormField'
     ],
-    cellCls: 'fo-table-row-td',
+    cellCls: 'fo-table-row-td eui-radio',
     width: '100%',
 
     /***

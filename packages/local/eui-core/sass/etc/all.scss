@@ -1,4 +1,5 @@
-$font-icon-font-family: dynamic(FontAwesome);
+@font-face{ font-family:'NG'; src:url('font/NanumBarunGothic.woff') format('woff'); }
+@font-face{ font-family:'NGB'; src:url('font/NanumGothicExtraBold.woff') format('woff'); }
 
 .fo-table-row{margin: 0;padding: 0;background: #fff;border-left: 1px solid #cacaca;border-top: 1px solid #cacaca}
 .fo-table-row-th{
@@ -28,12 +29,12 @@ $font-icon-font-family: dynamic(FontAwesome);
 
 .fo-table-row-td{
   padding: 2px;
-  border-right: 1px solid #cacaca;
-  border-bottom: 1px solid #cacaca;
-  background-color: #f1f6ff;
+  border-right: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
+  background-color: #f1f1f4;
 }
 
-// checkbox background
+/* checkbox background */
 .fo-table-row-td .x-form-cb-wrap {
   background-color: white;
   vertical-align: top;
@@ -116,19 +117,21 @@ $font-icon-font-family: dynamic(FontAwesome);
   background-color: #eee;
   margin: 7px;
 }
-// table cells
-// to do >> 일단 주석. 처리 컴파일 오류 발생.
-//.table-cell-merge-table < td {
-//  border: 1px solid navy;
-//  height: 40px;
-//  width: 70px;
-//  text-align: center;
-//  padding: 2px;
-//}
+/*
+table cells
+to do >> 일단 주석. 처리 컴파일 오류 발생.
+.table-cell-merge-table < td {
+  border: 1px solid navy;
+  height: 40px;
+  width: 70px;
+  text-align: center;
+  padding: 2px;
+}
 
-// panel 종류의 헤더를 정리한다.
-// grid, panel에 cls: 'eui-form-table'로 설정
-// 헤더 배경 투명 , 폰트 크기
+panel 종류의 헤더를 정리한다.
+grid, panel에 cls: 'eui-form-table'로 설정
+헤더 배경 투명 , 폰트 크기
+*/
 .eui-form-table .x-panel-header-default {
   border: 0px solid #d0d0d0;
   background-image: none;
@@ -138,16 +141,23 @@ $font-icon-font-family: dynamic(FontAwesome);
   color: #333;
   font-size: 13px;
   font-weight: bold;
-  font-family: tahoma, arial, verdana, sans-serif;
+  font-family: NGB;
   line-height: 15px;
 }
+/* euiheader title */
+.eui-form-table .euiheader-title {
+  color: #333;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: NGB;
+  line-height: 15px;
+}
+
 .eui-form-table .x-panel-header-default-top {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
 }
-// panel header setting end..
-
 
 /* tab - euitabpanel */
 .x-panel-euitabpanel{padding: 0;border: none;background: transparent;}
@@ -160,16 +170,17 @@ $font-icon-font-family: dynamic(FontAwesome);
 
 .x-panel-header-euitabpanel {-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
 .x-panel-header-euitabpanel-horizontal {padding: 5px 0;}
-//.x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {
-//  padding: 0 0 0 22px;
-//  color: #666;
-//  font-size: 14px;
-//  font-weight: bold;
-//  font-family: NG;
-//  background: url("../images/customui/htns/bullet_h2.png") no-repeat 0 50%;
-//}
-//.x-panel-euitabpanel.nonetitle .x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {background: none;}
-
+/*
+.x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {
+  padding: 0 0 0 22px;
+  color: #666;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: NG;
+  background: url("../images/customui/htns/bullet_h2.png") no-repeat 0 50%;
+}
+.x-panel-euitabpanel.nonetitle .x-panel-header-title-euitabpanel>.x-title-text-euitabpanel {background: none;}
+*/
 .x-panel-euitabpanel {padding: 0;border-color: #cacaca;}
 .x-tab-bar-euitabpanel {border: none;background: transparent;}
 .x-tab-bar-euitabpanel-top {border: none;background-image: none;background-color: none;}
@@ -244,8 +255,12 @@ $font-icon-font-family: dynamic(FontAwesome);
   padding-right: 2px;
 }
 
-// 툴바 내부에서 테두리 보이도록 개선.
+/* 툴바 내부에서 테두리 보이도록 개선.*/
 .x-btn-default-toolbar-small {
+  border-color: #9d9d9d !important;
+  background-color: #f3f3f3 !important;
+}
+.x-btn-default-toolbar-medium {
   border-color: #9d9d9d !important;
   background-color: #f3f3f3 !important;
 }
@@ -260,4 +275,23 @@ $font-icon-font-family: dynamic(FontAwesome);
 
 .eui-radio .x-form-cb-label-default.x-form-cb-label-after {
   padding-left: 20px;
+}
+
+/* 버튼 medium */
+.x-btn-inner-default-toolbar-medium {
+  font-family: NGB;
+  color: #333;
+  font-size: 12px;
+  padding: 0 4px;
+  max-width: 100%;
+}
+
+.bgtype1.x-btn-default-toolbar-medium {
+  border-color: #9d9d9d !important;
+  background-color: #d4cccc !important;
+}
+
+.bgtype1.x-btn-default-toolbar-small {
+  border-color: #9d9d9d !important;
+  background-color: #d4cccc !important;
 }

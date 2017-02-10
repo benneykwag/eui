@@ -28,6 +28,7 @@
 Ext.define('eui.button.Button', {
     extend: 'Ext.button.Button',
     xtype: 'euibutton',
+
 //    text: 'SpButton',
 //    ui: 'basicbtn',
 
