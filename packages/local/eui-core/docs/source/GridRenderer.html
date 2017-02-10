@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-mvvm-GridRenderer'>/***
+</span> *
+ * ## Summary
+ *
+ * 그리드 렌더러
+ */
+Ext.define(&#39;eui.mvvm.GridRenderer&#39;, {
+    extend: &#39;Ext.Mixin&#39;,
+<span id='eui-mvvm-GridRenderer-property-mixinId'>    mixinId: &#39;gridrenderer&#39;,
+</span>
+<span id='eui-mvvm-GridRenderer-method-dateRenderer'>    /***
+</span>     * 데이트 포맷에 맞지 않는 형식을 조정한다
+     * @param v
+     * @returns {*}
+     */
+    dateRenderer: function (v, meta) {
+        if(!v){
+            return v;
+        }
+        if(Ext.Object.getSize(meta) == 0){
+            return Ext.Date.format(v, eui.Config.defaultDateFormat);
+        }
+        var date,
+            columnFormat = meta.column.format;
+//        var f1 = new Date(&#39;2012-02-19&#39;);      getHours() : 9
+//        var f2 = new Date(&#39;10/12/2012&#39;);      getHours() : 0
+        if (Ext.isDate(v)) {
+            if((v.getHours() == 9 || v.getHours() == 0) &amp;&amp; v.getMinutes() == 0 &amp;&amp;
+                v.getSeconds() == 0 &amp;&amp; v.getMilliseconds() == 0){
+                if(columnFormat){
+                    return Ext.Date.format(v, columnFormat);
+                }
+                return Ext.Date.format(v, eui.Config.defaultDateFormat);
+            }
+            if(columnFormat){
+                return Ext.Date.format(v, columnFormat);
+            }
+            return Ext.Date.format(v, eui.Config.defaultDateTimeFormat);
+        } else if (Ext.Date.parse(v, &#39;Ymd&#39;)) {
+            date = Ext.Date.parse(v, &#39;Ymd&#39;);
+            return Ext.Date.format(date, eui.Config.defaultDateFormat);
+        } else if (Ext.Date.parse(v, &#39;YmdHis&#39;)) {
+            date = Ext.Date.parse(v, &#39;YmdHis&#39;);
+            return Ext.Date.format(date, eui.Config.defaultDateTimeFormat);
+        } else {
+            return v;
+        }
+    },
+
+<span id='eui-mvvm-GridRenderer-method-currencyRenderer'>    currencyRenderer: function (v) {
+</span>        if (Ext.isNumber(v)) {
+            return Ext.util.Format.number(v, &#39;#,###.###&#39;);
+        } else {
+            return v;
+        }
+    },
+
+<span id='eui-mvvm-GridRenderer-method-descRowRenderer'>    descRowRenderer: function (value, meta, record, row, col, store) {
+</span>        // set up the meta styles appropriately, etc.
+
+        // then:
+        return store.getCount() - row;
+    }
+});</pre>
+</body>
+</html>

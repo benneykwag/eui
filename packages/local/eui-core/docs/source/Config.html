@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-Config'>/***
+</span> *
+ * ## Summary
+ *
+ * App전역 변수 설정.
+ *
+ **/
+Ext.define(&#39;eui.Config&#39;, {
+    singleton: true,
+    alternateClassName: [&#39;Config&#39;],
+<span id='eui-Config-property-localeCode'>    localeCode : &#39;kr&#39;,
+</span><span id='eui-Config-property-localeValueField'>    localeValueField: &#39;MSG_ID&#39;,
+</span><span id='eui-Config-property-localeDisplayField'>    localeDisplayField : &#39;MSG_LABEL&#39;,
+</span><span id='eui-Config-property-defaultDateFormat'>    defaultDateFormat : &#39;Y-m-d&#39;,
+</span><span id='eui-Config-property-defaultDateTimeFormat'>    defaultDateTimeFormat : &#39;Y-m-d H:i:s&#39;,
+</span>
+<span id='eui-Config-property-baseUrlPrifix'>    // Override.data.proxy.Server 에서 사용
+</span>    baseUrlPrifix: null,
+<span id='eui-Config-property-subUrlPrifix'>    subUrlPrifix : null,
+</span>
+<span id='eui-Config-property-commandButtonControllerUrl'>    // 명령 툴바용 데이터
+</span>    commandButtonControllerUrl : null,
+
+<span id='eui-Config-property-fileuploadListUrl'>    // 파일 리스트
+</span>    fileuploadListUrl : &#39;&#39;,
+<span id='eui-Config-property-filedeleteUrl'>    filedeleteUrl : &#39;&#39;,
+</span><span id='eui-Config-property-fileuploadUrl'>    fileuploadUrl: &#39;&#39;,
+</span><span id='eui-Config-property-fileuploadMaxSize'>    fileuploadMaxSize: 1048576,
+</span><span id='eui-Config-property-fileDownloadUrl'>    fileDownloadUrl : &#39;&#39;,
+</span>
+<span id='eui-Config-property-modelGetDataDateFormat'>    // model.getData() 시 euidate, euimonthfield
+</span>    modelGetDataDateFormat: &#39;Ymd&#39;,
+
+<span id='eui-Config-property-localeUrl'>    /***
+</span>     * 메시지 제공용 서버사이드 주소.
+     *
+     * &quot;data&quot;: [
+     *      {&quot;MSG_ID&quot;: &quot;F000000119&quot;, &quot;MSG_LABEL&quot;: &quot;삭제할 데이터를 선택해 주세요.&quot;},
+     *      {&quot;MSG_ID&quot;: &quot;F000000122&quot;, &quot;MSG_LABEL&quot;: &quot;신청일자를 입력해 주세요.&quot;},
+     *      {&quot;MSG_ID&quot;: &quot;F000000129&quot;, &quot;MSG_LABEL&quot;: &quot;시간은 0~23 사이만 입력 가능합니다.&quot;},
+     *      {&quot;MSG_ID&quot;: &quot;F000000130&quot;, &quot;MSG_LABEL&quot;: &quot;성명을 입력해 주시기 바랍니다.&quot;},
+     * ]
+     */
+    localeUrl : null,
+
+<span id='eui-Config-method-initLocaleMessage'>    /***
+</span>     * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
+     */
+     initLocaleMessage: function(callback) {
+         var me = this,
+             store = Ext.create(&#39;Ext.data.Store&#39;, {
+                 fields: [],
+                 storeId: &#39;i18n&#39;
+             });
+         var cfg = {
+                 pMethod: &#39;GET&#39;,
+                 url: Config.localeUrl,
+                 params: {
+                     locale: Config.localeCode
+                 },
+                 pSync: false,
+                 pCallback: function(pScope, params, retData) {
+                     store.loadData(retData.data);
+                     store.add(Config.data.message);
+                     me.mergeMessageData();
+                     if (Ext.isFunction(callback)) {
+                         callback();
+                     }
+                 }
+             };
+         if (Config.localeUrl) {
+             Util.CommonAjax(cfg);
+         } else {
+             store.add(Config.data.message);
+             me.mergeMessageData();
+             if (Ext.isFunction(callback)) {
+                 callback();
+             }
+         }
+     },
+
+<span id='eui-Config-method-mergeMessageData'>    /***
+</span>     * 사용자가 data.message의 일부를 교체할 경우사용된다.
+     * eui-core를 사용하는 app에서 override할 경우.
+     * Ext.define(&#39;Override.eui.Config&#39;, {
+     *      override: &#39;eui.Config&#39;,
+     *      message: [
+     *          {&quot;MSG_ID&quot;: &quot;행추가&quot;, &quot;MSG_LABEL&quot;: &quot;로우추가&quot;}
+     *      ]
+     * });
+     */
+    mergeMessageData: function () {
+        var store = Ext.getStore(&#39;i18n&#39;);
+        if(!Ext.isArray(Config.message)){
+            return;
+        }
+
+        Ext.each(Config.message, function(msg){
+            var record = store.findRecord(Config.localeValueField, msg[Config.localeValueField], 0, false, false, true);
+            if(record){ // 존재하면 override한 데이터로 label을 교체한다.
+                record.set(Config.localeDisplayField, msg[Config.localeDisplayField]);
+            }else{  // 존재하지 않는다면 추가한다.
+                store.add(msg);
+            }
+        });
+    },
+
+<span id='eui-Config-property-data'>    data: {
+</span>        message : [
+            {&quot;MSG_ID&quot;: &quot;엑셀다운로드&quot;, &quot;MSG_LABEL&quot;: &quot;엑셀다운로드&quot;},
+            {&quot;MSG_ID&quot;: &quot;엑셀다운로드아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-download&quot;},
+            {&quot;MSG_ID&quot;: &quot;행추가&quot;, &quot;MSG_LABEL&quot;: &quot;신규&quot;},
+            {&quot;MSG_ID&quot;: &quot;행추가아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-plus&quot;},
+            {&quot;MSG_ID&quot;: &quot;행삭제&quot;, &quot;MSG_LABEL&quot;: &quot;삭제&quot;},
+            {&quot;MSG_ID&quot;: &quot;행삭제아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-trash-o&quot;},
+            {&quot;MSG_ID&quot;: &quot;등록&quot;, &quot;MSG_LABEL&quot;: &quot;등록&quot;},
+            {&quot;MSG_ID&quot;: &quot;등록아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-table&quot;},
+            {&quot;MSG_ID&quot;: &quot;수정&quot;, &quot;MSG_LABEL&quot;: &quot;수정&quot;},
+            {&quot;MSG_ID&quot;: &quot;수정아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-pencil-square-o&quot;},
+            {&quot;MSG_ID&quot;: &quot;저장&quot;, &quot;MSG_LABEL&quot;: &quot;저장&quot;},
+            {&quot;MSG_ID&quot;: &quot;저장아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-save&quot;},
+            {&quot;MSG_ID&quot;: &quot;새로고침&quot;, &quot;MSG_LABEL&quot;: &quot;새로고침&quot;},
+            {&quot;MSG_ID&quot;: &quot;새로고침아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-refresh&quot;},
+            {&quot;MSG_ID&quot;: &quot;인쇄&quot;, &quot;MSG_LABEL&quot;: &quot;인쇄&quot;},
+            {&quot;MSG_ID&quot;: &quot;인쇄아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-print&quot;},
+            {&quot;MSG_ID&quot;: &quot;닫기&quot;, &quot;MSG_LABEL&quot;: &quot;닫기&quot;},
+            {&quot;MSG_ID&quot;: &quot;닫기아이콘&quot;, &quot;MSG_LABEL&quot;: &quot;x-fa fa-sign-out&quot;},
+            {&quot;MSG_ID&quot;: &quot;CONFIRM&quot;, &quot;MSG_LABEL&quot;: &quot;확인&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DIRTY&quot;, &quot;MSG_LABEL&quot;: &quot;레코드가 수정중 입니다&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DELETE&quot;, &quot;MSG_LABEL&quot;: &quot;레코드를 삭제하시겠습니까.?&quot;},
+            {&quot;MSG_ID&quot;: &quot;RECORD_DELETED&quot;, &quot;MSG_LABEL&quot;: &quot;레코드가 삭제되었습니다&quot;}
+        ]
+    }
+});
+</pre>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-Panel'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.Panel 확장. 스타일 적용
+ *
+ *
+ *
+ **/
+Ext.define(&#39;eui.form.Panel&#39;, {
+    extend: &#39;Ext.form.Panel&#39;,
+    alias: &#39;widget.euiform&#39;,
+<span id='eui-form-Panel-property-localeProperties'>    localeProperties: [&#39;title&#39;],
+</span>    requires: [
+        &#39;eui.button.Button&#39;,
+        &#39;Ext.layout.container.Column&#39;,
+        &#39;eui.button.Button&#39;,
+//        &#39;com.ux.form.field.HTriggerCombo&#39;,
+//        &#39;com.ux.form.HFieldContainer&#39;,
+//        &#39;com.ux.form.field.HCheckbox&#39;,
+//        &#39;com.ux.form.field.HComboBox&#39;,
+//        &#39;com.ux.form.field.HText&#39;,
+//        &#39;com.ux.form.field.HTextArea&#39;,
+//        &#39;com.ux.form.field.HTrigger&#39;,
+//        &#39;com.ux.form.field.HNumber&#39;,
+//        &#39;com.ux.button.HButton&#39;,
+//        &#39;com.ux.form.field.HPopupTriggerSet&#39;,
+        &#39;Ext.layout.container.Table&#39;
+    ],
+    mixins: [
+        &#39;eui.mixin.Panel&#39;
+    ],
+
+<span id='eui-form-Panel-property-cls'>    cls: &#39;eui-form-table&#39;,
+</span><span id='eui-form-Panel-property-collapsed'>    collapsed: false,
+</span><span id='eui-form-Panel-property-collapsible'>    collapsible: false,
+</span><span id='eui-form-Panel-property-modelValidation'>    modelValidation: true,
+</span>
+    config: {
+<span id='eui-form-Panel-cfg-hiddenBtmTbar'>//        defaultToolbarUi: &#39;footer&#39;,
+</span>        // 하단 명령 툴바 제어.
+        hiddenBtmTbar: false,
+<span id='eui-form-Panel-cfg-hiddenCloseBtn'>        hiddenCloseBtn: true,
+</span><span id='eui-form-Panel-cfg-hiddenHeader'>        hiddenHeader: false,
+</span><span id='eui-form-Panel-cfg-hiddenSearchBtn'>        hiddenSearchBtn: true,
+</span><span id='eui-form-Panel-cfg-hiddenPrintBtn'>        hiddenPrintBtn: true,
+</span><span id='eui-form-Panel-cfg-hiddenDeleteBtn'>        hiddenDeleteBtn: true,
+</span><span id='eui-form-Panel-cfg-hiddenSaveBtn'>        hiddenSaveBtn: true,
+</span><span id='eui-form-Panel-cfg-hiddenClearBtn'>        hiddenClearBtn: true,
+</span><span id='eui-form-Panel-cfg-useTableLayout'>        // table layout을 사용치 않는다면 false로 설정할 것.
+</span>        useTableLayout: true,
+
+<span id='eui-form-Panel-cfg-tableColumns'>        /**
+</span>         * @cfg {Number} [tableColumns=4]
+         * 기본 아이콘을 보이지 않게 한다. 보이게 하려면 `true`로 설정한다.
+         */
+        tableColumns: 4,
+<span id='eui-form-Panel-cfg-hbuttons'>        hbuttons: null,
+</span>
+<span id='eui-form-Panel-cfg-useRespColumn'>        /**
+</span>         * @cfg {Boolean} [useRespColumn=&#39;true&#39;]
+         * 브라우저 사이즈를 992이하로 줄일 경우 tableColumns의 값이 1로 변경되도록 조정한다.
+         * 다시 사이즈를 늘리면 최초 지정한 tableColumns로 복원한다.
+         */
+        useRespColumn: true,
+
+<span id='eui-form-Panel-cfg-usePagingToolbar'>        /**
+</span>         * @cfg {Boolean} [usePagingToolbar=&#39;false&#39;]
+         * 페이징 툴바 사용여부
+         */
+        usePagingToolbar: false
+    },
+
+<span id='eui-form-Panel-method-initComponent'>    initComponent: function () {
+</span>        var me = this;
+//        me.setHeader();
+//        me.setBottomToolbar();
+        me.setTableLayout();
+
+        if(me.iconCls){
+            me.setHideHeaderICon(false);
+        }
+
+        if (me.title &amp;&amp; !me.hideHeaderICon) {
+            Ext.apply(me, {
+                iconCls: &#39;x-fa fa-pencil-square&#39;
+            })
+        }
+
+        me.callParent(arguments);
+        me.on(&#39;afterrender&#39;, function () {
+            me.isValid();
+        }, me, {
+            delay: 500
+        });
+        if(me.useRespColumn){
+            me.on(&#39;resize&#39;, me.responsiveColumn);
+        }
+    },
+
+<span id='eui-form-Panel-method-responsiveColumn'>    /***
+</span>     * 브라우저 사이즈에 따라 table layout의 column값을 조정한다.
+     * 사이즈를 줄일 경우 1로 변경하고 사이즈를 다시 늘릴 경우 최초 값으로
+     * 복원한다.
+     * @param ct
+     * @param width
+     * @param height
+     */
+    responsiveColumn : function (ct, width, height) {
+        if(ct.tableColumns == 1){
+            return;
+        }
+        if(window.innerWidth &lt; 992) {
+            if(ct.getLayout().columns !== 1){
+                ct.beforeColumn =  ct.getLayout().columns;
+                ct.getLayout().columns = 1;
+                ct.updateLayout();
+            }
+        }else{
+            if(ct.getLayout().columns == 1){
+                ct.getLayout().columns = ct.beforeColumn;
+                ct.updateLayout();
+            }
+        }
+    },
+
+<span id='eui-form-Panel-method-setBottomToolbar'>    setBottomToolbar: function () {
+</span>        var me = this;
+        var buttons = [
+            {
+                xtype: &#39;euibutton&#39;,
+                formBind: true,
+                disabled: true,
+                code: &#39;search&#39;,
+                iconCls: &#39;x-fa fa-search-plus&#39;,
+                text: &#39;검색&#39;,
+                hidden: me.getHiddenSearchBtn(),
+                listeners: {
+                    click: {
+                        fn: function (button, e, eOpts) {
+                            me.fireEvent(&#39;baseformsearch&#39;, me);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                formBind: true,
+                code: &#39;save&#39;,
+                iconCls: &#39;x-fa fa-save&#39;,
+                text: &#39;저장&#39;,
+                hidden: me.getHiddenSaveBtn(),
+                listeners: {
+                    click: {
+                        fn: function (button, e, eOpts) {
+                            me.fireEvent(&#39;baseformsave&#39;, me);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                formBind: true,
+                disabled: true,
+                code: &#39;delete&#39;,
+                iconCls: &#39;x-fa fa-eraser&#39;,
+                text: &#39;삭제&#39;,
+                hidden: me.getHiddenDeleteBtn(),
+                listeners: {
+                    click: {
+                        fn: function (button, e, eOpts) {
+                            me.fireEvent(&#39;baseformdelete&#39;, me);
+                        }
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                code: &#39;delete&#39;,
+                text: &#39;닫기&#39;,
+                iconCls: &#39;x-fa fa-sign-out&#39;,
+                hidden: me.getHiddenCloseBtn(),
+                handler: function () {
+                    var window = Util.getOwnerCt(this);
+                    if (Util.getOwnerCt(this).xtype === &#39;window&#39;) {
+                        window.close();
+                    } else {
+                        Ext.Error.raise({
+                            msg: &#39;닫기 버튼은 팝업에서만 사용가능합니다.&#39;
+                        });
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                code: &#39;delete&#39;,
+                text: &#39;출력&#39;,
+                iconCls: &#39;x-fa fa-print&#39;,
+                hidden: me.getHiddenPrintBtn(),
+                handler: function () {
+                    var window = Util.getOwnerCt(this);
+                    if (Util.getOwnerCt(this).xtype === &#39;window&#39;) {
+                        window.close();
+                    } else {
+                        Ext.Error.raise({
+                            msg: &#39;닫기 버튼은 팝업에서만 사용가능합니다.&#39;
+                        });
+                    }
+                }
+            },
+            {
+                xtype: &#39;euibutton&#39;,
+                code: &#39;clear&#39;,
+                text: &#39;취소&#39;,
+                iconCls: &#39;x-fa fa-retweet&#39;,
+                hidden: me.getHiddenClearBtn(),
+                handler: function () {
+                    var window = Util.getOwnerCt(this);
+                    if (Util.getOwnerCt(this).xtype === &#39;window&#39;) {
+                        window.close();
+                    } else {
+                        Ext.Error.raise({
+                            msg: &#39;닫기 버튼은 팝업에서만 사용가능합니다.&#39;
+                        });
+                    }
+                }
+            }
+        ];
+        this.applyButtonToolBar(buttons, me.otherButtons);
+    },
+
+<span id='eui-form-Panel-method-setTableLayout'>    setTableLayout: function () {
+</span>        var me = this;
+        if (me.getUseTableLayout()) {
+            Ext.apply(me, {
+                layout: {
+                    type: &#39;table&#39;,
+                    columns: me.getTableColumns(),
+                    tableAttrs: {
+                        style: {
+                            width: &#39;100%&#39;
+                        }
+                    }
+                }
+            })
+        }
+    },
+
+<span id='eui-form-Panel-method-setHeader'>    setHeader: function () {
+</span>        var me = this;
+        var header = {
+            titlePosition: 0,
+            hidden: me.getHiddenHeader(),
+            items: [
+                {
+                    xtype: &#39;euibutton&#39;,
+                    iconCls: &#39;x-fa fa-print&#39;
+//                    text: &#39;프린트&#39;,
+//                    hidden: me.getHiddenHeaderPrintBtn()
+                },
+
+                {
+                    xtype: &#39;euibutton&#39;,
+                    iconCls: &#39;x-fa fa-sign-out&#39;,
+//                    hidden: me.getHiddenHeaderClearBtn(),
+                    listeners: {
+                        click: {
+                            fn: function (button, e, eOpts) {
+                                var values = me.getForm().getValues();
+                                Ext.iterate(values, function (key, value) {
+                                    values[key] = null;
+                                });
+                                //valueObject의 의 데이터를 null로 입력
+                                me.getForm().setValues(values);
+
+                                me.fireEvent(&#39;baseformreset&#39;, me);
+                            }
+                        }
+                    }
+                }
+            ]
+        };
+
+        Ext.apply(me, {
+            header: header
+        });
+
+    }
+});</pre>
+</body>
+</html>

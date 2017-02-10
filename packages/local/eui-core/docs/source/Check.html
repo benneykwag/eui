@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-grid-column-Check'>/***
+</span> * ## Summary
+ *
+ * 체크박스용 컬럼 : true/false를 사용하지 않고 Y/N을 사용한다.
+ */
+Ext.define(&#39;eui.grid.column.Check&#39;, {
+    extend: &#39;Ext.grid.column.Check&#39;,
+    alias: &#39;widget.euicheckcolumn&#39;,
+
+<span id='eui-grid-column-Check-method-isRecordChecked'>    isRecordChecked: function (record) {
+</span>        var prop = this.property;
+        if (prop) {
+            return record[prop] == &#39;Y&#39;;
+        }
+        return record.get(this.dataIndex) == &#39;Y&#39;;
+    },
+<span id='eui-grid-column-Check-method-setRecordCheck'>    setRecordCheck: function (record, recordIndex, checked, cell) {
+</span>        var me = this,
+            prop = me.property,
+            result,
+            val = checked ? &#39;Y&#39; : &#39;N&#39;;
+
+        // Only proceed if we NEED to change
+        if (prop ? record[prop] : record.get(me.dataIndex) != val) {
+            if (prop) {
+                record[prop] = val;
+
+            } else {
+                record.set(me.dataIndex, val);
+            }
+            me.updater(cell, checked);
+        }
+    },
+
+<span id='eui-grid-column-Check-method-defaultRenderer'>    defaultRenderer: function(value, cellValues) {
+</span>
+        var me = this,
+            cls = me.checkboxCls,
+            tip = me.tooltip,
+            value = (value == &#39;Y&#39;?true:false);
+
+        if (me.invert) {
+            value = !value;
+        }
+        if (me.disabled) {
+            cellValues.tdCls += &#39; &#39; + me.disabledCls;
+        }
+
+        if (value) {
+            cls += &#39; &#39; + me.checkboxCheckedCls;
+            tip = me.checkedTooltip || tip;
+        }
+
+        if (me.useAriaElements) {
+            cellValues.tdAttr += &#39; aria-describedby=&quot;&#39; + me.id + &#39;-cell-description&#39; +
+                (!value ? &#39;-not&#39; : &#39;&#39;) + &#39;-selected&quot;&#39;;
+        }
+
+        // This will update the header state on the next animation frame
+        // after all rows have been rendered.
+        me.updateHeaderState();
+
+        return &#39;&lt;span &#39; + (tip || &#39;&#39;) + &#39; class=&quot;&#39; + cls + &#39;&quot; role=&quot;&#39; + me.checkboxAriaRole + &#39;&quot;&#39; +
+            (!me.ariaStaticRoles[me.checkboxAriaRole] ? &#39; tabIndex=&quot;0&quot;&#39; : &#39;&#39;) +
+            &#39;&gt;&lt;/span&gt;&#39;;
+    }
+});</pre>
+</body>
+</html>

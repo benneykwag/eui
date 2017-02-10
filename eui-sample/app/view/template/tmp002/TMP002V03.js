@@ -3,10 +3,12 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
     xtype: 'TMP002V03',
     margin: 5,
     tableColumns: 1,
+
+    // 내부 메소드 호출 가능.
     defaultListenerScope: true,
 
     viewModel: {
-        formulas: {
+        formulas : {
             formStatus: {
                 bind: {
                     bindTo: '{customerRecord}',
@@ -29,7 +31,6 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
                         disabled: false
                     };
                     status.validAndDirty = status.dirty && status.valid;
-                    console.log('status:', status);
                     return status;
                 }
             }
@@ -76,7 +77,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
         {
             fieldLabel: '기준일자',
             xtype: 'euitext',
-            bind: '{customerRecord.STD_DT}'
+            bind:'{customerRecord.STD_DT}'
         },
         {
             fieldLabel: '결과',
@@ -140,4 +141,4 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
             }
         }
     ]
-})
+});

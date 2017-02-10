@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-grid-Merge'>/***
+</span> *
+ * ## Summary
+ *
+ * rowspan, colspan과 합계 , 총계를 지원한다. addSumRows, addTotalRow 변수에 의해 총계, 소계,합계를 보여줄 수 있다.
+ * 기본은 모두 보여주지 않고 머지만 처리한다.
+ * 이 클래스는 뷰모델의 store만 처리하므로 create에 의해 스토어를 생성 변수로 대입하지 않도록 한다. 아래 샘플처럼 뷰모델을
+ * 정의하고 해당 뷰모델 내부 스토어를 바인딩 하여 사용한다.
+ *
+ *     @example
+ *     Ext.create(&#39;eui.grid.Merge&#39;, {
+ *         title: &#39;셀머지&#39;,
+ *         addSumRows: true,
+ *         addTotalRow: true,
+ *         viewModel: {
+ *              stores: {
+ *                  mystore: {
+ *                      autoLoad: true,
+ *                      sorters: [
+ *                          &#39;col3&#39;
+ *                      ],
+ *                      fields:[
+ *                          {
+ *                              name: &quot;col1&quot;,
+ *                              type: &quot;string&quot;
+ *                          },
+ *                          {
+ *                              name: &quot;col2&quot;,
+ *                              type: &quot;string&quot;,
+ *                              convert: function (v, record) {
+ *                                  return record.get(&#39;col1&#39;)+&#39;@&#39;+record.get(&#39;col2&#39;);
+ *                              }
+ *                          },
+ *                          {
+ *                              name: &quot;col3&quot;,
+ *                              type: &quot;string&quot;,
+ *                              convert: function (v, record) {
+ *                                  return record.get(&#39;col2&#39;)+&#39;@&#39;+record.get(&#39;col3&#39;);
+ *                              }
+ *                          }
+ *                      ],
+ *                      proxy: {
+ *                          type: &#39;ajax&#39;,
+ *                          url: &#39;eui-core/resources/data/statdata1.json&#39;,
+ *                          reader: {
+ *                              type: &#39;json&#39;,
+ *                              rootProperty: &#39;data&#39;
+ *                          },
+ *                          writer: {
+ *                              type: &#39;json&#39;,
+ *                              allowSingle: false,  // #2
+ *                              writeAllFields: true    // #3
+ *                          }
+ *                      }
+ *                  }
+ *              }
+ *         },
+ *         bind: {
+                store: &#39;{mystore}&#39;
+            },
+ *         groupFields: [
+ *              {
+ *                  field: &#39;col1&#39;,
+ *                  mergeConfig: [
+ *                      {
+ *                          field: &#39;col2&#39;,
+ *                          cond: &#39;colspan&#39;,
+ *                          value: 2
+ *                      },
+ *                      {
+ *                          field: &#39;col3&#39;,
+ *                          cond: &#39;hidden&#39;,
+ *                          value: true
+ *                      }
+ *                  ]
+ *              },
+ *              {
+ *                  field: &#39;col2&#39;,
+ *                  mergeConfig: []
+ *              }
+ *          ],
+ *          lastMergeColumn: [&#39;col3&#39;],
+ *          sumFields: [&#39;col4&#39;, &#39;col5&#39;],
+ *         columns: [
+ *              {
+ *                  text: &#39;구분&#39;,
+ *                  columns: [
+ *                      {
+ *                          text: &quot;수입/지출&quot;,
+ *                          dataIndex: &#39;col1&#39;,
+ *                          renderer: function (v) {
+ *                              if(v == &#39;합&#39;){
+ *                                  return &#39;총계&#39;
+ *                              }
+ *                              return v;
+ *                          }
+ *                      },
+ *                      {
+ *                          text: &quot;대항목&quot;,
+ *                          dataIndex: &#39;col2&#39;,
+ *                          renderer: function (v) {
+ *                              var value = v.split(&#39;@&#39;)[1];
+ *                              if(value == &#39;합&#39;){
+ *                                  return &#39;합계&#39;
+ *                              }
+ *                              return value;
+ *                          }
+ *                      },
+ *                      {
+ *                          text: &quot;소항목&quot;,
+ *                          dataIndex: &#39;col3&#39;,
+ *                          renderer: function (v) {
+ *                              var value = v.split(&#39;@&#39;)[2];
+ *                              if(value == &#39;합&#39;){
+ *                                  return &#39;소계&#39;
+ *                              }
+ *                              return value;
+ *                          }
+ *                      }
+ *                  ]
+ *              },
+ *              {
+ *                   width: 100,
+ *                   xtype: &#39;euinumbercolumn&#39;,
+ *                   text: &quot;1월&quot;,
+ *                   dataIndex: &#39;col4&#39;
+ *               },
+ *               {
+ *                   width: 100,
+ *                   xtype: &#39;euinumbercolumn&#39;,
+ *                   text: &quot;2월&quot;,
+ *                   dataIndex: &#39;col5&#39;
+ *               }
+ *         ],
+ *         height: 500,
+ *         width: 800,
+ *         renderTo: Ext.getBody()
+ *     });
+ *
+ *
+ * ## 모델의 field정의
+ * 모델의 필드를 정의 할때 데이터의 정렬를 위해 각 필드들을 convert메소드를 이용해 연결해준다.
+ * 이렇게 연결시켜야 원하는 소트와 머지가 이루어진다.
+ *
+ *      Ext.define(&#39;Eui.sample.model.Base&#39;, {
+ *          extend: &#39;Ext.data.Model&#39;,
+ *          fields: [
+ *              {
+ *                  name: &quot;col1&quot;,
+ *                  type: &quot;string&quot;
+ *              },
+ *              {
+ *                  name: &quot;col2&quot;,
+ *                  type: &quot;string&quot;,
+ *                  convert: function (v, record) {
+ *                      return record.get(&#39;col1&#39;)+&#39;@&#39;+record.get(&#39;col2&#39;);
+ *                  }
+ *              },
+ *              {
+ *                  name: &quot;col3&quot;,
+ *                  type: &quot;string&quot;,
+ *                  convert: function (v, record) {
+ *                      return record.get(&#39;col2&#39;)+&#39;@&#39;+record.get(&#39;col3&#39;);
+ *                  }
+ *              }
+ *          ]
+ *      });
+ *
+ * ## Store 정의
+ * 스토어 정의시 뷰모델 내부에서 정의해야하며 서버사이드의 데이터가 정렬되지 않았을 경우 sorters를 이용 필히 소트를 시켜줘야한다.
+ *
+ *      viewModel: {
+            stores: {
+                store: {
+                    autoLoad: true,
+                    proxy: {
+                        type: &#39;ajax&#39;,
+                        url: &#39;resources/data/statdata1.json&#39;,
+                        reader: {
+                            type: &#39;json&#39;,
+                            rootProperty: &#39;data&#39;
+                        }
+                    },
+                    model: &#39;Eui.sample.model.Base&#39;,
+                    sorters: [  //col3 필드로 소트한다.
+                        &#39;col3&#39;
+                    ]
+                }
+            }
+        },
+
+ *
+ * ## groupFields 설정.
+ * eui.grid.Merge클래스를 확장하고 관련 설정이 필요하다. groupFields는 머지할 컬럼정보로 아래 형식으로 채워준다.
+ *
+ *      groupFields: [
+             {
+                 field: &#39;col1&#39;,
+                 mergeConfig: [ // 합계,소계처리에 필요하므로 머지만 적용시 비워둔다.
+                    {
+                        field: &#39;col2&#39;,
+                        cond: &#39;colspan&#39;,
+                        value: 2
+                    },
+                    {
+                        field: &#39;col3&#39;,
+                        cond: &#39;hidden&#39;,
+                        value: true
+                    }
+                 ]
+             },
+             {
+                 field: &#39;col2&#39;,
+                 mergeConfig: []
+             }
+        ],
+ *
+ * ## lastMergeColumn 설정
+ * 이 설정은 합계, 소계를 나타낼 경우 소계가 표시되는 마지막 컬럼을 기술한다.
+ *
+ *      lastMergeColumn: [&#39;col3&#39;],
+ *
+ * ## sumFields 설정
+ * 이 설정은 합계를 구할 컬럼을 기술할 변수다.
+ *
+ *      sumFields: [&#39;col4&#39;, &#39;col5&#39;],
+ *
+ * ## 합계,총계,소계를 표시
+ * addSumRows, addTotalRow
+ *
+ *
+ * ## column renderer설정
+ * 머지될 컬럼에 설정될 필드는 모델 정의 시 covert메소드를 이용 필드값을 @로 합져진 상태이므로 이를 원하는 값으로 보여지게하기 위해 사용한다.
+ *
+ *      columns: [
+ *          {
+ *               text: &quot;수입/지출&quot;,
+ *               dataIndex: &#39;col1&#39;,
+ *               renderer: function (v) {
+ *                   if(v == &#39;합&#39;){  // 머지만 적용할 경우 필요없음.
+ *                       return &#39;총계&#39;
+ *                   }
+ *                   return v;
+ *               }
+ *           },
+ *           {
+ *               text: &quot;대항목&quot;,
+ *               dataIndex: &#39;col2&#39;,
+ *               renderer: function (v) {
+ *                   var value = v.split(&#39;@&#39;)[1];
+ *                   if(value == &#39;합&#39;){  // 머지만 적용할 경우 필요없음.
+ *                      return &#39;합계&#39;
+ *                   }
+ *                   return value;
+ *               }
+ *           },
+ *           {
+ *               text: &quot;소항목&quot;,
+ *               dataIndex: &#39;col3&#39;,
+ *               renderer: function (v) {
+ *                   var value = v.split(&#39;@&#39;)[2];
+ *                   if(value == &#39;합&#39;){  // 머지만 적용할 경우 필요없음.
+ *                      return &#39;소계&#39;
+ *                   }
+ *                   return value;
+ *               }
+ *           }
+ *     ]
+ */
+Ext.define(&#39;eui.grid.Merge&#39;, {
+    extend: &#39;Ext.panel.Table&#39;,
+    requires: [
+        &#39;eui.view.Merge&#39;
+    ],
+    alias: [&#39;widget.euimergegrid&#39;],
+<span id='eui-grid-Merge-property-viewType'>    viewType: &#39;mergetableview&#39;,
+</span>
+<span id='eui-grid-Merge-property-lockable'>    lockable: false,
+</span><span id='eui-grid-Merge-property-columnLines'>    columnLines: true,
+</span>
+<span id='eui-grid-Merge-property-sortableColumns'>    sortableColumns: false,
+</span>
+<span id='eui-grid-Merge-cfg-groupFields'>    /***
+</span>     * @cfg {Array} groupFields Merge할 컬럼을 지정한다.
+     *
+     */
+    groupFields :[],
+
+<span id='eui-grid-Merge-cfg-rowLines'>    /**
+</span>     * @cfg {Boolean} rowLines 로우에 라인스타일 적용.
+     */
+    rowLines: true,
+
+<span id='eui-grid-Merge-cfg-addSumRows'>    /**
+</span>     * @cfg {Boolean} 합계, 소계를 표시한다.
+     */
+    addSumRows: false,
+
+<span id='eui-grid-Merge-cfg-addTotalRow'>    /**
+</span>     * @cfg {Boolean} 로우 맨하단에 총계를 표시한다.
+     */
+    addTotalRow: false,
+
+<span id='eui-grid-Merge-property-lastMergeColumn'>    lastMergeColumn: [],
+</span>
+
+<span id='eui-grid-Merge-method-getTempStore'>    /**
+</span>     * 스토어를 복제해 계산에 사용하기 위한 스토어를 반환한다.
+     * @returns {Ext.data.Store|*|eui.grid.Merge.tempStore}
+     */
+    getTempStore: function () {
+        var me = this,
+            rStore = this.store;
+        if (!me.tempStore) {
+            me.tempStore = Ext.create(&#39;Ext.data.Store&#39;, {
+                fields: []
+            });
+            rStore.each(function (model) {
+                me.tempStore.add(model.copy());
+            });
+        }
+        return me.tempStore;
+    },
+
+<span id='eui-grid-Merge-cfg-cls'>    /**
+</span>     * @private
+     * @cfg {String} cls
+     * 셀 상단과 우측 보더를 설정하기 위한 css로 all.scss에 표기하였다.
+     */
+    cls: &#39;stat-tdstyle&#39;,
+
+<span id='eui-grid-Merge-method-addTotoalRow'>    /**
+</span>     * 그리드 최하단에 &quot;총계&quot;를 추가한다.
+     */
+    addTotoalRow: function () {
+        if(!this.addTotalRow){
+            return;
+        }
+        var rStore = this.store;
+        var store = this.getTempStore();
+        var me = this;
+        var col = me.groupFields[0].field;
+        var retObj = {};
+        retObj[col] = &#39;합&#39;;
+
+        var colArray = Ext.Array.merge(Ext.pluck(me.groupFields, &#39;field&#39;), me.lastMergeColumn);
+        retObj[col + &#39;colspan&#39;] = colArray.length;
+        Ext.each(colArray, function (v, z) {
+            if(z &gt; 0){
+                retObj[v+&#39;hidden&#39;] = true;
+            }
+        });
+
+        Ext.each(me.sumFields, function (sumcol) {
+            retObj[sumcol] = store.sum(sumcol);
+        });
+
+        rStore.add(retObj);
+    },
+
+<span id='eui-grid-Merge-method-generaRow'>    /***
+</span>     *
+     * @param rStore
+     * @param groupField
+     * @param scol
+     * @param values
+     */
+    generaRow: function (rStore, groupField, scol, values) {
+        var me = this;
+        for (var test in values) {  // 그룹핑한 갯수.
+            // convert 와 sum을 함께 사용할 경우.
+            var div = test.split(&#39;@&#39;);
+            if(div[0] === div[1]){
+               div =  div.slice(1,div.length)
+            }
+
+            var lastMergeColumnKey = me.lastMergeColumn;
+            var findRecord = rStore.findRecord(lastMergeColumnKey, div.join(&#39;@&#39;)+&#39;@합&#39;);
+            if (findRecord) {
+                findRecord.data[scol] = values[test];
+            }
+        }
+    },
+
+<span id='eui-grid-Merge-method-setStore'>    setStore: function () {
+</span>        this.callParent(arguments);
+        var rStore = this.store;
+        var me = this;
+        rStore.on(&#39;load&#39;, function () {
+            rStore.suspendEvents();
+            var store = me.getTempStore();
+            // 총계 처리.
+            me.addTotoalRow();
+            // 합계, 소계를 처리.
+            if(me.addSumRows) {
+                Ext.each(me.groupFields, function (groupColumn, idx) {
+                    store.group(groupColumn.field);
+
+                    var values = store.sum(me.sumFields[0], true);
+
+                    for (var test in values) {  // 그룹핑한 갯수.
+                        var retObj = {};
+                        var colArray = Ext.Array.merge(Ext.pluck(me.groupFields, &#39;field&#39;), me.lastMergeColumn);
+                        var i = 0;
+                        Ext.each(colArray, function (v, z) {
+                            var recValue = test.split(&#39;@&#39;)[z + i];
+                            if (!recValue) {
+                                recValue = &#39;합&#39;;
+                            }
+                            retObj[v] = recValue;
+
+                            var colConfig = groupColumn.mergeConfig[z];
+                            if (groupColumn.mergeConfig[z]) {
+                                retObj[colConfig.field + colConfig.cond] = colConfig.value;
+                            }
+                            i++;
+                        });
+                        rStore.add(retObj)
+                    }
+
+                    // 합계를 계산할 필드로
+                    Ext.each(me.sumFields, function (scol, sIdx) {
+                        var testObj = {};
+                        var values2 = store.sum(scol, true);
+                        me.generaRow(rStore, groupColumn, scol, values2);
+                    });
+                });
+            }
+
+            rStore.resumeEvents();
+
+            // 최종 머지 처리.
+            me.callMerge(rStore);
+        });
+    },
+
+<span id='eui-grid-Merge-method-callMerge'>    /***
+</span>     * 중복된 셀값을 좌우로 합친다.
+     * @param rStore
+     */
+    callMerge: function (rStore) {
+        var me = this;
+
+        Ext.each(me.groupFields, function (mergecol, idx) {
+            var mergeKeyCol = mergecol.field;
+
+
+            rStore.group(mergeKeyCol);
+            var cols = rStore.count(mergeKeyCol);
+
+            for (var test in cols) {
+
+                var sumVar = test.split(&#39;@&#39;)[1];
+
+                var rowIdx = rStore.findExact(mergeKeyCol, test);
+                var value = cols[test];
+
+                var recs = rStore.getRange(rowIdx, rowIdx + value - 1);
+                recs[0].data[mergecol.field + &#39;rowspan&#39;] = value;
+
+                Ext.each(recs, function (item, idx) {
+                    if (idx &gt; 0) {
+                        item.data[mergecol.field + &#39;hidden&#39;] = true;
+                    }
+                });
+            }
+        })
+        rStore.group(null);
+        if(me.lastMergeColumn.length&gt;0){
+            rStore.sort([
+                { property: me.lastMergeColumn, direction: &#39;ASC&#39;} // #5
+            ]);
+        }
+
+
+        me.getView().refresh();
+    }
+
+});</pre>
+</body>
+</html>

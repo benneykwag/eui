@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Month'>/***
+</span> *
+ * ## Summary
+ *
+ * 년.월 을 표현하기 위한 클래스
+ *
+ * ## 사용예
+ *
+ *      fieldLabel: &#39;월달력&#39;,
+ *      xtype: &#39;monthfield&#39;,
+ *      format: &#39;m.Y&#39;,  // 기본 설정은 Y.m
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;Panel&#39;, {
+ *          extend: &#39;eui.form.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          items: [
+ *             {
+ *               fieldLabel: &#39;월달력&#39;,
+ *               itemId: &#39;formfield&#39;,
+ *               xtype: &#39;monthfield&#39;,
+ *               bind: &#39;{RECORD.MONTHFIELD}&#39;
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: &#39;서버로전송&#39;,
+ *                  xtype: &#39;euibutton&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: &#39;setRecord&#39;
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
+ *                  MONTHFIELD : &#39;2016.11&#39;
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get(&#39;RECORD&#39;).getData();
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;Panel&#39;,{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+
+Ext.define(&#39;eui.form.field.Month&#39;, {
+    extend: &#39;Ext.form.field.Date&#39;,
+    alias: &#39;widget.monthfield&#39;,
+    requires: [&#39;Ext.picker.Month&#39;],
+<span id='eui-form-field-Month-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-field-Month-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-field-Month-property-format'>    format: &#39;Y.m&#39;,
+</span>    alternateClassName: [&#39;Ext.form.MonthField&#39;, &#39;Ext.form.Month&#39;],
+<span id='eui-form-field-Month-property-selectMonth'>    selectMonth: null,
+</span><span id='eui-form-field-Month-method-createPicker'>    createPicker: function() {
+</span>        var me = this,
+            format = Ext.String.format;
+        return Ext.create(&#39;Ext.picker.Month&#39;, {
+            pickerField: me,
+            ownerCt: me.ownerCt,
+            renderTo: document.body,
+            floating: true,
+            hidden: true,
+//            altFormats: &#39;Y-m&#39;,
+            focusOnShow: true,
+            minDate: me.minValue,
+            maxDate: me.maxValue,
+            disabledDatesRE: me.disabledDatesRE,
+            disabledDatesText: me.disabledDatesText,
+            disabledDays: me.disabledDays,
+            disabledDaysText: me.disabledDaysText,
+            format: &#39;Y.m&#39;,
+            showToday: me.showToday,
+            startDay: me.startDay,
+            minText: format(me.minText, me.formatDate(me.minValue)),
+            maxText: format(me.maxText, me.formatDate(me.maxValue)),
+            listeners: {
+                select: {
+                    scope: me,
+                    fn: me.onSelect
+                },
+                monthdblclick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                yeardblclick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                OkClick: {
+                    scope: me,
+                    fn: me.onOKClick
+                },
+                CancelClick: {
+                    scope: me,
+                    fn: me.onCancelClick
+                }
+            },
+            keyNavConfig: {
+                esc: function() {
+                    me.collapse();
+                }
+            }
+        });
+    },
+<span id='eui-form-field-Month-method-onCancelClick'>    onCancelClick: function() {
+</span>        var me = this;
+        me.selectMonth = null;
+        me.collapse();
+    },
+<span id='eui-form-field-Month-method-onOKClick'>    onOKClick: function() {
+</span>        var me = this;
+        if (me.selectMonth) {
+//            me.selectMonth = Ext.Date.format(new Date((d[0] + 1) + &#39;/1/&#39; + d[1]), &#39;Y.m&#39;);
+            console.log(&#39;value:&#39;, me.selectMonth)
+            me.setValue(me.selectMonth);
+            me.fireEvent(&#39;select&#39;, me, me.selectMonth);
+        }
+        me.collapse();
+    },
+<span id='eui-form-field-Month-method-onSelect'>    onSelect: function(m, d) {
+</span>        var me = this;
+//        me.selectMonth = Ext.Date.format(new Date((d[0] + 1) + &#39;/1/&#39; + d[1]), &#39;Y.m&#39;);
+        me.selectMonth = new Date((d[0] + 1) + &#39;/1/&#39; + d[1]);
+        console.log(&#39;selectMonth:&#39;, me.selectMonth)
+    }
+});</pre>
+</body>
+</html>

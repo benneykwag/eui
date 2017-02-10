@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-field-Text'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.field.Text 확장. 스타일 적용
+ *
+ * ## 사용예
+ *
+ *      fieldLabel: &#39;텍스트&#39;,
+ *      xtype: &#39;euitext&#39;,
+ *      bind: &#39;{RECORD.TEXTFIELD}&#39;
+ *
+ * # Sample
+ *
+ * Ext.form.field.Checkbox를 확장했다. 기존 클래스가 true, false, 1, on을 사용한다면
+ * 이 클래스는 Y와 N 두가지를 사용한다.
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;Panel&#39;, {
+ *          extend: &#39;eui.form.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          tableColumns: 1,
+ *          items: [
+ *             {
+ *               fieldLabel: &#39;텍스트&#39;,
+ *               itemId: &#39;formfield&#39;,
+ *               xtype: &#39;euitext&#39;,
+ *               bind: &#39;{RECORD.TEXTFIELD}&#39;
+ *             },
+ *             {
+ *              fieldLabel: &#39;비밀번호&#39;,
+ *              xtype: &#39;euitext&#39;,
+ *              inputType: &#39;password&#39;,
+ *              bind: &#39;{RECORD.TEXTFIELD}&#39;
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: &#39;서버로전송&#39;,
+ *                  xtype: &#39;euibutton&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: &#39;setRecord&#39;
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
+ *                  TEXTFIELD : &#39;대한민국&#39;
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get(&#39;RECORD&#39;).getData();
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;Panel&#39;,{
+ *          width: 300,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+Ext.define(&#39;eui.form.field.Text&#39;, {
+    extend: &#39;Ext.form.field.Text&#39;,
+    alias: &#39;widget.euitext&#39;,
+<span id='eui-form-field-Text-property-cellCls'>    cellCls: &#39;fo-table-row-td&#39;,
+</span><span id='eui-form-field-Text-property-width'>    width: &#39;100%&#39;,
+</span><span id='eui-form-field-Text-property-fieldStyle'>    fieldStyle: {
+</span>        display: &#39;inherit&#39;
+    }
+});</pre>
+</body>
+</html>

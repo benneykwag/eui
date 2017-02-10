@@ -135,6 +135,11 @@ Ext.define('Eui.sample.view.form.Panel', {
                 {
                     fieldLabel: '텍스트',
                     xtype: 'euitext',
+                    plugins: [
+                        {
+                            ptype: 'clearable'
+                        }
+                    ],
                     bind: '{RECORD.TEXTFIELD}'
                 },
                 {

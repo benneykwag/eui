@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-panel-Header'>/***
+</span> *
+ */
+Ext.define(&#39;eui.panel.Header&#39;, {
+    extend: &#39;Ext.Component&#39;,
+    xtype: &#39;euiheader&#39;,
+<span id='eui-panel-Header-property-height'>    height: 30,
+</span><span id='eui-panel-Header-property-margin'>    margin: &#39;10 10 0 5&#39;,
+</span>    config: {
+<span id='eui-panel-Header-cfg-title'>        title: null,
+</span><span id='eui-panel-Header-cfg-iconCls'>        iconCls: &#39;x-fa fa-pencil-square&#39;
+</span>    },
+
+<span id='eui-panel-Header-property-tpl'>    tpl: [
+</span>        &#39;&lt;div class=&quot;eui-form-table&quot;&gt;&#39;,
+        &#39;&lt;div  class=&quot;eui-form-table x-panel-header x-header x-docked x-unselectable x-panel-header-default x-horizontal x-panel-header-horizontal x-panel-header-default-horizontal x-top x-panel-header-top x-panel-header-default-top x-docked-top x-panel-header-docked-top x-panel-header-default-docked-top&quot; role=&quot;presentation&quot; style=&quot;width:100%&quot;&gt;&#39;,
+        &#39;&lt;span data-ref=&quot;tabGuardBeforeEl&quot; aria-hidden=&quot;true&quot; class=&quot;x-tab-guard x-tab-guard-&quot; style=&quot;width:0px;height:0px;&quot;&gt;&#39;,
+        &#39;&lt;/span&gt;&#39;,
+            &#39;&lt;div data-ref=&quot;innerCt&quot; role=&quot;presentation&quot; class=&quot;x-box-inner&quot; style=&quot;height: 16px;&quot;&gt;&#39; +
+            &#39;&lt;div data-ref=&quot;targetEl&quot; class=&quot;x-box-target&quot; role=&quot;presentation&quot;&gt;&#39; +
+            &#39;&lt;div class=&quot;x-title x-panel-header-title euiheader-title x-panel-header-title-default x-box-item x-title-default x-title-rotate-none x-title-align-left&quot; role=&quot;presentation&quot; unselectable=&quot;on&quot;&gt;&#39; +
+//                &#39;&lt;div data-ref=&quot;iconWrapEl&quot; role=&quot;presentation&quot; class=&quot;x-title-icon-wrap x-title-icon-wrap-default x-title-icon-left x-title-item&quot;&gt;&#39; +
+//                    &#39;&lt;div data-ref=&quot;iconEl&quot; role=&quot;presentation&quot; unselectable=&quot;on&quot; class=&quot;x-title-icon x-title-icon-default {iconCls} &quot; style=&quot;&quot;&gt;&lt;/div&gt;&#39; +
+//                &#39;&lt;/div&gt;&#39; +
+                &#39;&lt;div data-ref=&quot;textEl&quot; class=&quot;x-title-text x-title-text-default x-title-item&quot; unselectable=&quot;on&quot; role=&quot;presentation&quot;&gt;{title}&lt;/div&gt;&#39; +
+            &#39;&lt;/div&gt;&#39; +
+            &#39;&lt;/div&gt;&#39; +
+            &#39;&lt;/div&gt;&#39; +
+            &#39;&lt;span data-ref=&quot;tabGuardAfterEl&quot; aria-hidden=&quot;true&quot; class=&quot;x-tab-guard x-tab-guard-&quot; style=&quot;width:0px;height:0px;&quot;&gt;&lt;/span&gt;&#39; +
+            &#39;&lt;/div&gt;&#39;,
+        &#39;&lt;/div&gt;&#39;
+    ],
+<span id='eui-panel-Header-method-initComponent'>    initComponent: function () {
+</span>        Ext.apply(this, {
+            data: {
+                iconCls: this.iconCls,
+                title: this.title
+            }
+        });
+        this.callParent(arguments);
+    }
+
+});</pre>
+</body>
+</html>
