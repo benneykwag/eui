@@ -19,17 +19,12 @@
     extend: &#39;Ext.app.ViewController&#39;,
     alias: &#39;controller.spcombo&#39;,
 
-    onSelect: function (combo, record) {
+    onSelect: function(combo, record) {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column &amp;&amp; combo.valueColumnDataIndex) {
-            var grid = combo.column.up(&#39;tablepanel&#39;);
-
-            var selModel = grid.getSelectionModel();
-            var rec = selModel.getLastSelected();
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
+            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.valueField));
         }
-
         me.nextBindFields(record);
     },
 
@@ -37,7 +32,7 @@
 </span>     * lastQuery를 지우면 콤보를 매번재로드한다.
      * 이전 조건이 변경될 경우면 재로드하도록 해야한다.
      */
-    beforeCheckParamValue: function (qe) {
+    beforeCheckParamValue: function(qe) {
         var me = this,
             combo = this.getView(),
             extraParams = combo.store.getProxy().extraParams,
@@ -50,14 +45,14 @@
          */
 
 
-//    일단 주석..
-//        if (combo.useLocalFilter &amp;&amp; qe.combo.lastQuery == undefined &amp;&amp; !combo.checkAutoLoad()) {
-//            combo.store.load({
-//                callback: function () {
-//                    combo.expand()
-//                }
-//            });
-//        }
+        //    일단 주석..
+        //        if (combo.useLocalFilter &amp;&amp; qe.combo.lastQuery == undefined &amp;&amp; !combo.checkAutoLoad()) {
+        //            combo.store.load({
+        //                callback: function () {
+        //                    combo.expand()
+        //                }
+        //            });
+        //        }
 
 <span id='global-property-checkAutoLoad'>        /***
 </span>         *
@@ -74,13 +69,13 @@
             checkAutoLoad = true;
         }
         if (combo.queryMode == &#39;remote&#39; &amp;&amp; (qe.combo.lastQuery == undefined) &amp;&amp; checkAutoLoad) {
-//            console.log(combo.queryMode, qe.combo.lastQuery, combo.checkAutoLoad())
+            //            console.log(combo.queryMode, qe.combo.lastQuery, combo.checkAutoLoad())
             qe.combo.lastQuery = &#39;&#39;;
         }
         var ownerCombo = Ext.getCmp(combo.ownerNextBindFieldId);
         // 이 콤보를 참조하고 있는 콤보가 있을 경우.
         if (combo.ownerNextBindVar &amp;&amp; combo.column) {
-            if(ownerCombo.column) {
+            if (ownerCombo.column) {
                 var grid = ownerCombo.column.up(&#39;tablepanel&#39;),
                     selModel = grid.getSelectionModel(),
                     rec = selModel.getLastSelected(),
@@ -94,8 +89,8 @@
 
         // 참조하고 있는 모든 필드 등의 값이 변경되었다면 콤보는 재로드 해야한다.
         // 조건에 부합 할 경우 lastQuery를 지우도록 해 재로드가 가능하게 한다.
-        if (Ext.Object.toQueryString(extraParams)
-            != Ext.Object.toQueryString(currentParams)) {
+        if (Ext.Object.toQueryString(extraParams) !=
+            Ext.Object.toQueryString(currentParams)) {
             console.log(&#39;조건이 변경되었음.: &#39;, Ext.Object.toQueryString(extraParams), &#39;||&#39;, Ext.Object.toQueryString(currentParams));
 
             Ext.apply(combo.store.getProxy().extraParams, currentParams);
@@ -107,7 +102,7 @@
         }
     },
 
-    enableEditor: function (column) {
+    enableEditor: function(column) {
         var combo = this.getView();
         var grid = column.up(&#39;tablepanel&#39;);
         var plugin = grid.findPlugin(&#39;cellediting&#39;);
@@ -116,11 +111,14 @@
         var row = grid.store.indexOf(rec);
         var node = grid.view.getNode(rec);
         if (rec) {
-            if(plugin) {
-                if (plugin.clicksToEdit == 1){
-                    Ext.get(node).select(&#39;.x-grid-cell-&#39;+column.getId()).elements[0].click();
-                }else{
-                    grid.editingPlugin.startEditByPosition({row: row, column: column.fullColumnIndex});
+            if (plugin) {
+                if (plugin.clicksToEdit == 1) {
+                    Ext.get(node).select(&#39;.x-grid-cell-&#39; + column.getId()).elements[0].click();
+                } else {
+                    grid.editingPlugin.startEditByPosition({
+                        row: row,
+                        column: column.fullColumnIndex
+                    });
                 }
             }
             return true;
@@ -128,25 +126,25 @@
         return false;
     },
 
-    nextBindFields: function (record) {
+    nextBindFields: function(record) {
         var me = this,
             combo = this.getView();
         if (!combo.nextBindFields) {
             return;
         }
 
-        var targetFields = Ext.Array.filter(Ext.ComponentQuery.query(&#39;[bind][isFormField]&#39;), function (field) {
+        var targetFields = Ext.Array.filter(Ext.ComponentQuery.query(&#39;[bind][isFormField]&#39;), function(field) {
             var retValue = true;
             if (combo.getId() == field.getId()) {
                 retValue = false;
             }
-//            if (field.column) {
-//                retValue = false;
-//            }
+            //            if (field.column) {
+            //                retValue = false;
+            //            }
             return retValue;
         });
 
-        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query(&#39;gridcolumn&#39;), function (column) {
+        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query(&#39;gridcolumn&#39;), function(column) {
             var retValue = false;
             if (combo.column &amp;&amp; combo.column.up(&#39;tablepanel&#39;).getId() == column.ownerCt.grid.getId() &amp;&amp; column.config.editor) {
                 retValue = true;
@@ -154,17 +152,17 @@
             return retValue;
         });
 
-        Ext.each(editorColumns, function (column) {
+        Ext.each(editorColumns, function(column) {
 
             targetFields.push(column)
         });
 
 
-        Ext.each(combo.nextBindFields, function (bindFieldInfo) {
+        Ext.each(combo.nextBindFields, function(bindFieldInfo) {
             var fieldArr = bindFieldInfo.split(&#39;|&#39;),
                 fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
 
-            Ext.each(targetFields, function (field) {
+            Ext.each(targetFields, function(field) {
                 var className = Ext.ClassManager.getNameByAlias(&#39;widget.&#39; + field.xtype);
                 var viewClass = Ext.ClassManager.get(className);
 
@@ -173,30 +171,30 @@
                         // 연계 콤보
                         if (viewClass.prototype.xtypesMap[&#39;euicombo&#39;]) {
                             field.setValue(null);
-                            if (record) {   // select이벤트에 의해 연계처리.
+                            if (record) { // select이벤트에 의해 연계처리.
                                 field.ownerNextBindVar = fieldArr[0];
                                 field.ownerNextBindParam = fieldParam;
                                 field.ownerNextBindFieldId = combo.getId();
 
-                                field.proxyParams[fieldParam] = record.get((field.column ? combo.originalValueField : combo.valueField));
-//                                console.log(&#39;field.proxyParams&#39;, field.proxyParams);
+                                field.proxyParams[fieldParam] = record.get((combo.valueField));
+                                //                                console.log(&#39;field.proxyParams&#39;, field.proxyParams);
                                 // 그리드 에디터일 경우
                                 var enableEditor = true;
                                 if (field.column) {
                                     enableEditor = me.enableEditor(field.column);
                                 }
                                 if (combo.nextBindComboExpand &amp;&amp; enableEditor) {
-                                    Ext.defer(function () {
-                                        Ext.get(field.getId()+&#39;-triggerWrap&#39;).select(&#39;#&#39;+field.getId()+&#39;-trigger-picker&#39;).elements[0].click()
-//                                        Ext.get(field.getId()).select(&#39;.x-form-arrow-trigger&#39;).elements[0].click();
-//                                        Ext.get(field.getId()).select(&#39;div#&#39;+field.getId()+&#39;-trigger-picker&#39;).elements[0].click();
+                                    Ext.defer(function() {
+                                        Ext.get(field.getId() + &#39;-triggerWrap&#39;).select(&#39;#&#39; + field.getId() + &#39;-trigger-picker&#39;).elements[0].click()
+                                        //                                        Ext.get(field.getId()).select(&#39;.x-form-arrow-trigger&#39;).elements[0].click();
+                                        //                                        Ext.get(field.getId()).select(&#39;div#&#39;+field.getId()+&#39;-trigger-picker&#39;).elements[0].click();
                                     }, 500)
                                 }
 
-                            } else {    // clear
+                            } else { // clear
                                 if (field.column) {
                                     me.enableEditor(field.column);
-                                    Ext.defer(function () {
+                                    Ext.defer(function() {
                                         field.column.up(&#39;tablepanel&#39;).editingPlugin.completeEdit();
                                     }, 100)
 
@@ -204,7 +202,7 @@
                                 field.clearValue();
                             }
 
-                        } else {    // 일반적인 폼필드.
+                        } else { // 일반적인 폼필드.
                             field.setValue(null);
                         }
                     }
@@ -215,12 +213,8 @@
                         var editor = field.config.editor;
                         if (!field.hasEditor()) {
                             console.log(&#39;editor 존재하지 않아 obj에 설정함. :&#39;, fieldParam, combo.getId())
-                            var proxyParams = editor.setProxyParams();
-                            proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
-
-                            editor.setProxyParams = function () {
-                                return proxyParams;
-                            };
+                            var proxyParams = editor.getProxyParams();
+                            proxyParams[fieldParam] = (record ? record.get(combo.valueField) : null);
                             editor.ownerNextBindVar = fieldArr[0];
                             editor.ownerNextBindParam = fieldParam;
                             editor.ownerNextBindFieldId = combo.getId();
@@ -230,11 +224,11 @@
 
                             if (combo.nextBindComboExpand) {
 
-                                Ext.defer(function () {
+                                Ext.defer(function() {
                                     var fieldId = field.getEditor().getId();
-                                    Ext.get(fieldId+&#39;-triggerWrap&#39;).select(&#39;#&#39;+fieldId+&#39;-trigger-picker&#39;).elements[0].click()
-//                                    Ext.get(field.getEditor().getId()).select(&#39;.x-form-arrow-trigger&#39;).elements[0].click();
-//                                    Ext.get(field.getEditor().getId()).select(&#39;div#&#39;+field.getEditor().getId()+&#39;-trigger-picker&#39;).elements[0].click();
+                                    Ext.get(fieldId + &#39;-triggerWrap&#39;).select(&#39;#&#39; + fieldId + &#39;-trigger-picker&#39;).elements[0].click()
+                                    //                                    Ext.get(field.getEditor().getId()).select(&#39;.x-form-arrow-trigger&#39;).elements[0].click();
+                                    //                                    Ext.get(field.getEditor().getId()).select(&#39;div#&#39;+field.getEditor().getId()+&#39;-trigger-picker&#39;).elements[0].click();
                                 }, 500)
                             }
                         }
@@ -245,7 +239,7 @@
 
     },
 
-    clearValue: function () {
+    clearValue: function() {
         var me = this,
             combo = this.getView();
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
@@ -264,33 +258,39 @@
     // 1. groupCode :
     // 2. 연계정보를 다시 읽는다.
     //    다른 폼필드의 값을 연계할 경우는 뷰모델의 변수를 이용한다.
-    getComboData: function () {
+    getComboData: function() {
         var me = this,
             param = {},
-            combo = this.getView();
+            combo = this.getView(),
+            vm = combo.lookupViewModel();
 
         param[combo.defaultParam] = combo[combo.defaultParam];
-
+        //        // 외부 파라메터 전달시
+        //        // params: {  aa : &#39;11&#39; }
+        //        if(combo.params){
+        //            Ext.apply(param, combo.params);
+        //        }
 <span id='global-property-'>        /***
 </span>         * 외부 폼필드 연계 처리
          * 뷰모델의 바인드를 이용.
          * 바인드변수명:파라메터명@설정값
          */
-        Ext.each(combo.relBindVars, function (bindVar) {
+        Ext.each(combo.relBindVars, function(bindVar) {
             var bindVarArr = bindVar.split(&#39;|&#39;),
                 bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
                 bindFieldName = bindFieldName.split(&#39;@&#39;)[0],
                 bindValue = bindVar.split(&#39;@&#39;);
-
-            param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
+            if (vm) {
+                param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : vm.get(bindVarArr[0]));
+            }
         });
 
-
+        // console.log(&#39;combo.getProxyParams()&#39;, combo.getProxyParams())
         Ext.apply(param, combo.getProxyParams())
         return param;
     },
 
-    createStore: function (component, options) {
+    createStore: function(component, options) {
         var me = this,
             view = this.getView(),
             store = Ext.create(&#39;Ext.data.Store&#39;, {
@@ -305,7 +305,9 @@
                     pageParam: false, // to remove param &quot;page&quot;
                     startParam: false, // to remove param &quot;start&quot;
                     limitParam: false, // to remove param &quot;limit&quot;
-                    headers: { &#39;Content-Type&#39;: &#39;application/json;charset=utf-8&#39; },
+                    headers: {
+                        &#39;Content-Type&#39;: &#39;application/json;charset=utf-8&#39;
+                    },
                     paramsAsJson: true,
                     actionMethods: {
                         create: &#39;POST&#39;,
@@ -328,7 +330,7 @@
     },
 
 
-    init: function () {
+    init: function() {
 
         var me = this,
             view = this.getView();
@@ -337,39 +339,25 @@
         if (view.store.storeId != &#39;ext-empty-store&#39;) {
             return;
         }
-//        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query(&#39;gridcolumn&#39;), function (field, idx) {
-//            var retValue = true;
-//            console.log(&#39;editor:&#39;, idx, field.getEditor())
-////            if (field.getEditor()) {
-////                retValue = true;
-////            }
-//            return retValue;
-//        });
-//        Ext.defer(function () {
-//        if(view.getId() === &#39;NEXT12&#39;) {
 
-//        }
-//        },1000)
-
-//        console.log(&#39;editorColumns1&#39;, view.getId(), editorColumns)
-        view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = &#39;local&#39;;
         }
         // 공통 코드를 사용하지 않을 경우.
-//        if (!Ext.isEmpty(view.groupCode)) {
+        //        if (!Ext.isEmpty(view.groupCode)) {
         // 공통 코드를 사용할 경우.
         me.createStore(view, {
             url: view.proxyUrl,
             fields: [],
             params: me.getComboData()
         });
-//        }
+        //        }
 
-        me.getView().store.on(&#39;load&#39;, function (store) {
+        me.getView().store.on(&#39;load&#39;, function(store) {
             console.log(&#39;store load ::&#39;, store.getProxy().extraParams);
         });
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

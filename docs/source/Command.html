@@ -15,19 +15,13 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='eui-toolbar-Command'>/***
-</span> *
- * ## Summary
- *
- * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
- **/
-Ext.define(&#39;eui.toolbar.Command&#39;, {
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.toolbar.Command&#39;, {
     extend: &#39;Ext.toolbar.Toolbar&#39;,
     xtype: &#39;commandtoolbar&#39;,
-<span id='eui-toolbar-Command-property-ui'>    ui: &#39;plain&#39;,
-</span>
+    ui: &#39;plain&#39;,
+
     config: {
-<span id='eui-toolbar-Command-cfg-ownerGrid'>        /**
+<span id='global-cfg-ownerGrid'>        /**
 </span>         * @cfg {Object} [ownerGrid:&#39;sample-basic-grid@mygrid&#39;]
          * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
          * 대상 그리드를 명시하는 config
@@ -35,21 +29,21 @@ Ext.define(&#39;eui.toolbar.Command&#39;, {
          * 상위컴포넌트@그리드itemId 또는 그리드의 itemId만 명시한다.
          */
         ownerGrid: null,
-<span id='eui-toolbar-Command-cfg-showText'>        showText: true,
-</span><span id='eui-toolbar-Command-cfg-showRowAddBtn'>        showRowAddBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showRowDelBtn'>        showRowDelBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showRegBtn'>        showRegBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showReloadBtn'>        showReloadBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showModBtn'>        showModBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showSaveBtn'>        showSaveBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showCloseBtn'>        showCloseBtn: false,
-</span><span id='eui-toolbar-Command-cfg-showGridCount'>        showGridCount: false,
-</span><span id='eui-toolbar-Command-cfg-showExcelDownBtn'>        showExcelDownBtn: false
-</span>
+        showText: true,
+        showRowAddBtn: false,
+        showRowDelBtn: false,
+        showRegBtn: false,
+        showReloadBtn: false,
+        showModBtn: false,
+        showSaveBtn: false,
+        showCloseBtn: false,
+        showGridCount: false,
+        showExcelDownBtn: false
+
     },
 
-<span id='eui-toolbar-Command-method-initComponent'>    initComponent: function () {
-</span>        var me = this,
+    initComponent: function () {
+        var me = this,
             owner = this.up(&#39;grid,form&#39;);
 //        var query = (this.ownerGrid||&#39;&#39;).split(&#39;@&#39;);
 //        if (query.length == 1 &amp;&amp; !Ext.isEmpty(query[0])) {
@@ -159,7 +153,12 @@ Ext.define(&#39;eui.toolbar.Command&#39;, {
                     text: &#39;#{엑셀다운로드}&#39;,
                     iconCls: &#39;#{엑셀다운로드아이콘}&#39;,
                     hidden: !me.getShowExcelDownBtn(),
-                    xtype: &#39;exporterbutton&#39;
+                    xtype: &#39;exporterbutton&#39;,
+                    listeners: {
+                        click: function () {
+                            this.onClick2();
+                        }
+                    }
 //                    targetGrid: owner
                     //Or you can use
                     //component: someGrid

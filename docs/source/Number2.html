@@ -283,29 +283,26 @@ Ext.define(&#39;eui.form.field.Number&#39;, {
 
         return (neg ? &#39;-&#39; : &#39;&#39;) + formatString.replace(/[\d,?\.?]+/, fnum);
     },
-<span id='eui-form-field-Number-method-valueToRaw'>    valueToRaw: function (value) {
-</span>        if (!this.useThousandSeparator)
+<span id='eui-form-field-Number-method-valueToRaw'>    valueToRaw: function(value) {
+</span>        if (!this.useThousandSeparator)  {
             return this.callParent(arguments);
+        }
         var me = this;
-
         var format = &quot;000,000&quot;;
-
         for (var i = 0; i &lt; me.decimalPrecision; i++) {
             if (i == 0) {
                 format += &quot;.&quot;;
             }
-            format += &quot;0&quot;;
+            format += &quot;#&quot;;
         }
-//        if (value !== undefined &amp;&amp; Ext.Number.toFixed(value, 0) == value) {
-//            console.log(Ext.Number.toFixed(value, 0),  value)
-//            format = &quot;000,000&quot;;
-//        }
-        value = me.parseValue(me.exNumber(value, format));
+        value = me.parseValue(Ext.util.Format.number(value &amp;&amp; value.toString(), format));
         value = me.fixPrecision(value);
         value = Ext.isNumber(value) ? value : parseFloat(me.toRawNumber(value));
-        value = isNaN(value) ? &#39;&#39; : String(me.exNumber(value, format)).replace(&#39;.&#39;, me.decimalSeparator);
+        value = isNaN(value) ? &#39;&#39; : Ext.util.Format.number(value &amp;&amp; value.toString(), format).replace(&#39;.&#39;, me.decimalSeparator);
+
         return value;
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

@@ -30,21 +30,21 @@ Ext.define(&#39;eui.Util&#39;, {
      */
     localeStoreValueField: &#39;MSG_ID&#39;,
 <span id='eui-Util-property-localeStoreDisplayField'>    localeStoreDisplayField: &#39;MSG_CONTENTS&#39;,
-</span>
-<span id='eui-Util-property-UrlPrefix'>    UrlPrefix: null,
+</span><span id='eui-Util-property-fileDownloadUrl'>    fileDownloadUrl: &#39;api/file/download&#39;,
+</span><span id='eui-Util-property-UrlPrefix'>    UrlPrefix: null,
 </span><span id='eui-Util-property-localeLang'>    localeLang: &quot;ko&quot;,
 </span><span id='eui-Util-property-webosShowWindowId'>    webosShowWindowId: null,
-</span><span id='eui-Util-property-currentAjaxButtonId'>    currentAjaxButtonId: null,  // 통신을 일으키는 버튼 아이디.
+</span><span id='eui-Util-property-currentAjaxButtonId'>    currentAjaxButtonId: null, // 통신을 일으키는 버튼 아이디.
 </span>
 <span id='eui-Util-method-captureEvents'>    /***
 </span>     *
      * @param observable
      */
-    captureEvents: function (observable) {
+    captureEvents: function(observable) {
         Ext.util.Observable.capture(
             observable,
-            function (eventName) {
-                console.info(Ext.Date.format(new Date(), &#39;Y년m월d일 A g시i분 s초 u&#39;), observable.id, observable.xtype||observable.storeId,  &#39;event :&#39;,eventName);
+            function(eventName) {
+                console.info(Ext.Date.format(new Date(), &#39;Y년m월d일 A g시i분 s초 u&#39;), observable.id, observable.xtype || observable.storeId, &#39;event :&#39;, eventName);
             },
             this
         );
@@ -54,7 +54,7 @@ Ext.define(&#39;eui.Util&#39;, {
 </span>     * 통신중인 버튼을 disabled한다.
      * @param flag
      */
-    ajaxButtonDisabled: function (flag) {
+    ajaxButtonDisabled: function(flag) {
         if (flag) { // disabled해야할 대상을 판단.
 
         }
@@ -70,16 +70,16 @@ Ext.define(&#39;eui.Util&#39;, {
 <span id='eui-Util-method-global_setOverride'>    /****
 </span>     * override를 통해 전역설정
      */
-    global_setOverride: function () {
+    global_setOverride: function() {
         Ext.override(Ext.data.Store, {
-//            pageSize: Util.sessionRecord.get(&quot;ROW_PER_PAGE&quot;)
+            //            pageSize: Util.sessionRecord.get(&quot;ROW_PER_PAGE&quot;)
         });
-        Ext.require(&#39;Util&#39;, function () {
-            Ext.Ajax.on(&#39;beforerequest&#39;, function (conn, response, eOpts) {	// #1
+        Ext.require(&#39;Util&#39;, function() {
+            Ext.Ajax.on(&#39;beforerequest&#39;, function(conn, response, eOpts) { // #1
                 Util.ajaxButtonDisabled(true);
             });
-            Ext.Ajax.on(&#39;requestexception&#39;, function (conn, response, eOpts) {	// #1
-                var result = Ext.JSON.decode(response.responseText, true);  // #1
+            Ext.Ajax.on(&#39;requestexception&#39;, function(conn, response, eOpts) { // #1
+                var result = Ext.JSON.decode(response.responseText, true); // #1
                 if (Util.webosShowWindowId) {
                     var window = Ext.getCmp(Util.webosShowWindowId);
                     if (window) {
@@ -119,8 +119,8 @@ Ext.define(&#39;eui.Util&#39;, {
                 Util.ajaxButtonDisabled(false);
             });
 
-            Ext.Ajax.on(&#39;requestcomplete&#39;, function (conn, response, eOpts) {	// #1
-                var result = Ext.JSON.decode(response.responseText, true);  // #1
+            Ext.Ajax.on(&#39;requestcomplete&#39;, function(conn, response, eOpts) { // #1
+                var result = Ext.JSON.decode(response.responseText, true); // #1
                 if (Util.webosShowWindowId) {
                     var window = Ext.getCmp(Util.webosShowWindowId);
                     if (window) {
@@ -133,18 +133,18 @@ Ext.define(&#39;eui.Util&#39;, {
 
                     }
                 }
-//                Ext.require(&#39;eui.window.Notification&#39;, function () {
-//                    Ext.create(&#39;widget.uxNotification&#39;, {
-//                        title: &#39;처리결과&#39;,
-//                        position: &#39;br&#39;,
-//                        cls: &#39;ux-notification-light&#39;,
-//                        closable: false,
-//                        iconCls: &#39;ux-notification-icon-information&#39;,
-//                        autoCloseDelay: 3000,
-//                        spacing: 20,
-//                        html: result.DESC || result.MSG
-//                    }).show();
-//                });
+                //                Ext.require(&#39;eui.window.Notification&#39;, function () {
+                //                    Ext.create(&#39;widget.uxNotification&#39;, {
+                //                        title: &#39;처리결과&#39;,
+                //                        position: &#39;br&#39;,
+                //                        cls: &#39;ux-notification-light&#39;,
+                //                        closable: false,
+                //                        iconCls: &#39;ux-notification-icon-information&#39;,
+                //                        autoCloseDelay: 3000,
+                //                        spacing: 20,
+                //                        html: result.DESC || result.MSG
+                //                    }).show();
+                //                });
 
                 if (result &amp;&amp; parseInt(result.TYPE) === 0) {
                     Util.showGlobalMsg(result, &#39;INFO&#39;);
@@ -160,27 +160,27 @@ Ext.define(&#39;eui.Util&#39;, {
 </span>     * 세션이 존재하면 이후 app에서 사용할 변수 등을 처리한다.
      * @param rec
      */
-    global_InitialProcess: function (retData) {
+    global_InitialProcess: function(retData) {
 
         var session = retData.data.session, // session정보
             message = retData.data.message, // 로케일정보
-            dept = retData.data.dept,// 부서정보
-            cmpsetting = retData.data.cmpsetting;   // 법인정보
-//        globalVar.SYSSETTING = retData.data.syssetting;
-//        globalVar.VARSETTING = retData.data.varsetting;
+            dept = retData.data.dept, // 부서정보
+            cmpsetting = retData.data.cmpsetting; // 법인정보
+        //        globalVar.SYSSETTING = retData.data.syssetting;
+        //        globalVar.VARSETTING = retData.data.varsetting;
 
         var sessionRecord = Ext.create(&#39;Ext.data.Model&#39;, session);
         var deptRecord = Ext.create(&#39;Ext.data.Model&#39;, dept);
 
         // Util.getGlobalModel에서 사용.
-//        app.sessionRecord = sessionRecord;
-//        app.deptRecord = deptRecord;
+        //        app.sessionRecord = sessionRecord;
+        //        app.deptRecord = deptRecord;
 
         // 추후 삭제 예정..
         // Session
-//        globalVar.sessionRecord = sessionRecord;
+        //        globalVar.sessionRecord = sessionRecord;
         // dept
-//        globalVar.deptRecord = deptRecord;
+        //        globalVar.deptRecord = deptRecord;
 
 
         // cmpSetting
@@ -193,15 +193,15 @@ Ext.define(&#39;eui.Util&#39;, {
         Util.global_setOverride();
 
         Util.global_setLocale(message);
-//        Util.globalLoadLocaleScript(&#39;en&#39;);
+        //        Util.globalLoadLocaleScript(&#39;en&#39;);
 
         // 공통 콤보등 대량 코드 preload
-//        Util.globalCodeData();
+        //        Util.globalCodeData();
 
-//        Util.global_setOzRept();
+        //        Util.global_setOzRept();
     },
 
-<span id='eui-Util-method-global_setLocale'>    global_setLocale: function (message) {
+<span id='eui-Util-method-global_setLocale'>    global_setLocale: function(message) {
 </span>        var store = Ext.create(&#39;Ext.data.Store&#39;, {
             fields: [],
             storeId: &#39;i18n&#39;
@@ -212,15 +212,14 @@ Ext.define(&#39;eui.Util&#39;, {
 <span id='eui-Util-method-globalCheckLogin'>    /***
 </span>     * 로그인 체크여부
      */
-    globalCheckLogin: function () {
-        Ext.require(&#39;Util&#39;, function () {
+    globalCheckLogin: function() {
+        Ext.require(&#39;Util&#39;, function() {
             // sessiong check
             var cfg = {
                 url: &quot;api/service/getInit&quot;,
-                params: {
-                },
+                params: {},
                 pSync: false,
-                pCallback: function (pScope, params, retData) {
+                pCallback: function(pScope, params, retData) {
                     if (retData.TYPE === 1) {
                         Util.global_InitialProcess(retData);
                     } else {
@@ -234,12 +233,12 @@ Ext.define(&#39;eui.Util&#39;, {
         });
     },
 
-<span id='eui-Util-method-globalLoginForm'>    globalLoginForm: function () {
+<span id='eui-Util-method-globalLoginForm'>    globalLoginForm: function() {
 </span>        Ext.create(&#39;com.view.layout.login.HLogin&#39;);
     },
 
 
-<span id='eui-Util-method-globalLoadLocaleScript'>    globalLoadLocaleScript: function (languageCode) {
+<span id='eui-Util-method-globalLoadLocaleScript'>    globalLoadLocaleScript: function(languageCode) {
 </span>        var scriptSrc;
         if (location.pathname.indexOf(&#39;webos&#39;) != -1) {
 
@@ -247,11 +246,9 @@ Ext.define(&#39;eui.Util&#39;, {
         } else {
             scriptSrc = Ext.util.Format.format(&#39;../webos/resources/js/ext-locale/ext-locale-{0}.js&#39;, languageCode);
         }
-        Ext.Loader.loadScript(
-            {
-                url: scriptSrc
-            }
-        );
+        Ext.Loader.loadScript({
+            url: scriptSrc
+        });
     },
 
 
@@ -260,7 +257,7 @@ Ext.define(&#39;eui.Util&#39;, {
      * @param component
      * @returns {*}
      */
-    getOwnerCt: function (component) {
+    getOwnerCt: function(component) {
 
         if (!component.rendered) {
             Ext.Error.raise({
@@ -280,7 +277,7 @@ Ext.define(&#39;eui.Util&#39;, {
         return baseComponent;
     },
 
-<span id='eui-Util-method-createStore'>    createStore: function (component, options) {
+<span id='eui-Util-method-createStore'>    createStore: function(component, options) {
 </span>        var store = Ext.create(&#39;Ext.data.Store&#39;, {
             autoDestroy: true,
             autoLoad: this.autoMaticLoad,
@@ -289,13 +286,15 @@ Ext.define(&#39;eui.Util&#39;, {
 
             proxy: {
                 type: &#39;rest&#39;,
-//                type: &#39;ajax&#39;,
+                //                type: &#39;ajax&#39;,
 
                 noCache: false, // to remove param &quot;_dc&quot;
                 pageParam: false, // to remove param &quot;page&quot;
                 startParam: false, // to remove param &quot;start&quot;
                 limitParam: false, // to remove param &quot;limit&quot;
-                headers: { &#39;Content-Type&#39;: &#39;application/json;charset=utf-8&#39; },
+                headers: {
+                    &#39;Content-Type&#39;: &#39;application/json;charset=utf-8&#39;
+                },
                 paramsAsJson: true,
                 actionMethods: {
                     create: &#39;POST&#39;,
@@ -320,8 +319,8 @@ Ext.define(&#39;eui.Util&#39;, {
         return store;
     },
 
-<span id='eui-Util-method-commonPopup'>    commonPopup: function (ownerCt, title, className, width, height, params, windowOption, addParentMvvm) {
-</span>        var detailForm = function (ownerCt, title, className, params) {
+<span id='eui-Util-method-commonPopup'>    commonPopup: function(ownerCt, title, className, width, height, params, windowOption, addParentMvvm) {
+</span>        var detailForm = function(ownerCt, title, className, params) {
             var component = null;
             if (className) {
                 try {
@@ -347,7 +346,7 @@ Ext.define(&#39;eui.Util&#39;, {
             layout: &#39;fit&#39;,
             height: height,
             width: width,
-//            modal: true,
+            //            modal: true,
             options: params
         };
         config.items = null;
@@ -356,13 +355,13 @@ Ext.define(&#39;eui.Util&#39;, {
                 var value = windowOption[test];
                 config[test] = value;
             }
-//            config = Ext.apply(config, windowOption);
-//            config = Ext.apply(config, ownerCt.getViewModel());
+            //            config = Ext.apply(config, windowOption);
+            //            config = Ext.apply(config, ownerCt.getViewModel());
 
         }
         config.items = [openForm];
-//        var baseComponent = ownerCt.up(&#39;FMS010106V&#39;) || ownerCt.up(&#39;FMS010106V&#39;);
-//        console.log(&#39;baseC&#39;, baseComponent)
+        //        var baseComponent = ownerCt.up(&#39;FMS010106V&#39;) || ownerCt.up(&#39;FMS010106V&#39;);
+        //        console.log(&#39;baseC&#39;, baseComponent)
         if (ownerCt &amp;&amp; addParentMvvm) {
             var commandtoolbar = ownerCt.down(&#39;commandtoolbar&#39;),
                 pagingtoolbar = ownerCt.down(&#39;pagingtoolbar&#39;),
@@ -386,9 +385,9 @@ Ext.define(&#39;eui.Util&#39;, {
         return Ext.create(&#39;Ext.window.Window&#39;, config);
     },
 
-<span id='eui-Util-method-generateUUID'>    generateUUID: function () {
+<span id='eui-Util-method-generateUUID'>    generateUUID: function() {
 </span>        var d = new Date().getTime();
-        var uuid = &#39;xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx&#39;.replace(/[xy]/g, function (c) {
+        var uuid = &#39;xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx&#39;.replace(/[xy]/g, function(c) {
             var r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c == &#39;x&#39; ? r : (r &amp; 0x7 | 0x8)).toString(16);
@@ -396,12 +395,12 @@ Ext.define(&#39;eui.Util&#39;, {
         return uuid;
     },
 
-<span id='eui-Util-method-commonTreeItem'>    commonTreeItem: function () {
-</span>        var retvalue = [];  // #7
+<span id='eui-Util-method-commonTreeItem'>    commonTreeItem: function() {
+</span>        var retvalue = []; // #7
         Ext.Ajax.request({
-            async: false,   // #8
+            async: false, // #8
             url: &#39;resources/data/treesmpl.json&#39;,
-            failure: function (conn, response, options, eOpts) {
+            failure: function(conn, response, options, eOpts) {
                 Ext.Msg.show({
                     title: &#39;Error!&#39;,
                     msg: conn.responseText,
@@ -409,9 +408,9 @@ Ext.define(&#39;eui.Util&#39;, {
                     buttons: Ext.Msg.OK
                 });
             },
-            success: function (conn, response, options, eOpts) {
+            success: function(conn, response, options, eOpts) {
                 var me = this;
-                var result = Ext.JSON.decode(conn.responseText, true);  // #10
+                var result = Ext.JSON.decode(conn.responseText, true); // #10
                 retvalue = result;
             }
 
@@ -430,7 +429,7 @@ Ext.define(&#39;eui.Util&#39;, {
      * @param [pScope]            함수실행범위
      * @param [timeoutSeq]      타임아웃 시간설정
      **/
-    CommonAjax: function (cfg) {
+    CommonAjax: function(cfg) {
 
         var pSvcID = cfg.svcId || &#39;CMAJAX&#39;,
             pURL = cfg.url,
@@ -450,7 +449,7 @@ Ext.define(&#39;eui.Util&#39;, {
             delete pArg[&#39;__scopeGrid&#39;];
         }
 
-        var buildParam = function (option, pArg, pOutDs) {
+        var buildParam = function(option, pArg, pOutDs) {
             if (!Ext.isEmpty(pArg)) {
                 if (Ext.isString(pArg)) {
                     try {
@@ -468,7 +467,7 @@ Ext.define(&#39;eui.Util&#39;, {
             }
             return option;
         };
-        var setOptions = function (option, pArg, pInDs, pOutDs, pScope) {
+        var setOptions = function(option, pArg, pInDs, pOutDs, pScope) {
             option.params = {};
             option.jsonData = {};
 
@@ -494,21 +493,24 @@ Ext.define(&#39;eui.Util&#39;, {
             timeoutSeq = 30000;
         }
 
+        if (!Ext.isEmpty(Config.subUrlPrifix)) {
+            pURL = Config.subUrlPrifix + pURL;
+        }
         // 주소 조정.
-        if(!Ext.isEmpty(Config.baseUrlPrifix)){
-            if(pURL.substring(0,1) == &quot;/&quot;){  // 상대경로는 처리하지 않는다
+        if (!Ext.isEmpty(Config.baseUrlPrifix)) {
+            if (pURL.substring(0, 1) == &quot;/&quot;) { // 상대경로는 처리하지 않는다
                 pURL = Config.baseUrlPrifix + pURL;
             }
         }
 
         var rtnData = &quot;&quot;;
         var options = {
-            async: (pSync == null ? true: pSync),
+            async: (pSync == null ? true : pSync),
             method: (pMethod ? pMethod : &#39;POST&#39;),
             timeout: timeoutSeq,
             disableCaching: false,
             url: pURL,
-            success: function (response, opts) {
+            success: function(response, opts) {
                 var returnData = Ext.decode(response.responseText);
                 if (!pSync) {
                     rtnData = returnData;
@@ -521,24 +523,24 @@ Ext.define(&#39;eui.Util&#39;, {
                     }
                 }
                 if (Ext.isFunction(pCallBack)) {
-                    if (__scopeGrid) {    // 그리드 공통 기능
+                    if (__scopeGrid) { // 그리드 공통 기능
                         Ext.callback(pCallBack, pScope || this, [__scopeGrid, pArg, returnData]);
                     } else {
                         Ext.callback(pCallBack, pScope || this, [pScope || this, pArg, returnData, pSvcID]);
                     }
                 }
             },
-            failure: function (response, opts) {
-//                var message = &quot;관리자에게 문의하세요.&quot;;
-//                if(response.status  == 404){
-//                    message = &quot;페이지가 존재하지 않습니다.&quot;
-//                }
-//                Ext.Msg.show({
-//                    title: &#39;WARNING&#39;,
-//                    icon: Ext.Msg.ERROR,
-//                    buttons: Ext.Msg.OK,
-//                    message: message
-//                });
+            failure: function(response, opts) {
+                //                var message = &quot;관리자에게 문의하세요.&quot;;
+                //                if(response.status  == 404){
+                //                    message = &quot;페이지가 존재하지 않습니다.&quot;
+                //                }
+                //                Ext.Msg.show({
+                //                    title: &#39;WARNING&#39;,
+                //                    icon: Ext.Msg.ERROR,
+                //                    buttons: Ext.Msg.OK,
+                //                    message: message
+                //                });
             }
         };
         options = setOptions(options, pArg, pInDs, pOutDs, pScope);
@@ -548,8 +550,8 @@ Ext.define(&#39;eui.Util&#39;, {
         }
     },
 
-<span id='eui-Util-method-showGlobalMsg'>    showGlobalMsg: function (result, iconType) {
-</span>        Ext.require(&#39;Ext.window.MessageBox&#39;, function () {
+<span id='eui-Util-method-showGlobalMsg'>    showGlobalMsg: function(result, iconType) {
+</span>        Ext.require(&#39;Ext.window.MessageBox&#39;, function() {
 
             if (result.DESC) {
                 Ext.Msg.show({
@@ -576,19 +578,19 @@ Ext.define(&#39;eui.Util&#39;, {
         });
     },
 
-<span id='eui-Util-method-getDatasetParam'>    getDatasetParam: function (store) {
+<span id='eui-Util-method-getDatasetParam'>    getDatasetParam: function(store) {
 </span>        var me = store;
         var returnDataset = {
-//            deletedData: [],
+            //            deletedData: [],
             data: []
         };
 
         function writeValue(data, field, record) {
             var value = record.get(field.name);
-//            if(field.type === Ext.data.Types.DATE &amp;&amp; field.dateFormat &amp;&amp; Ext.isDate(value)) {
+            //            if(field.type === Ext.data.Types.DATE &amp;&amp; field.dateFormat &amp;&amp; Ext.isDate(value)) {
             if (field.type === &#39;date&#39; &amp;&amp; field.dateFormat &amp;&amp; Ext.isDate(value)) {
                 data[field.name] = Ext.Date.format(value, field.dateFormat);
-            } else if (field.type === &#39;boolean&#39;) {// Ext.data.Types.BOOL){
+            } else if (field.type === &#39;boolean&#39;) { // Ext.data.Types.BOOL){
                 data[field.name] = value ? &#39;1&#39; : &#39;0&#39;;
             } else {
                 data[field.name] = value;
@@ -613,21 +615,27 @@ Ext.define(&#39;eui.Util&#39;, {
 
         for (var i = 0; i &lt; len; i++) {
             var rtv = getRecordData(records[i]);
-            rtv = Ext.apply(rtv, {&#39;__rowStatus&#39;: &#39;I&#39;});
+            rtv = Ext.apply(rtv, {
+                &#39;__rowStatus&#39;: &#39;I&#39;
+            });
             returnDataset.data.push(rtv);
         }
 
         records = me.getUpdatedRecords(), len = records.length;
         for (var i = 0; i &lt; len; i++) {
             var rtv = getRecordData(records[i]);
-            rtv = Ext.apply(rtv, {&#39;__rowStatus&#39;: &#39;U&#39;});
+            rtv = Ext.apply(rtv, {
+                &#39;__rowStatus&#39;: &#39;U&#39;
+            });
             returnDataset.data.push(rtv);
         }
 
         records = me.getRemovedRecords(), len = records.length;
         for (var i = 0; i &lt; len; i++) {
             var rtv = getRecordData(records[i]);
-            rtv = Ext.apply(rtv, {&#39;__rowStatus&#39;: &#39;D&#39;});
+            rtv = Ext.apply(rtv, {
+                &#39;__rowStatus&#39;: &#39;D&#39;
+            });
             returnDataset.data.push(rtv);
         }
 
@@ -651,7 +659,7 @@ Ext.define(&#39;eui.Util&#39;, {
      * @return {Array} return.deleteData 삭제된 Record 정보.
      * @return {Array} return.data 추가/변경된 Record 정보.
      */
-    getAllDatasetParam: function () {
+    getAllDatasetParam: function() {
         var me = this;
         var returnDataset = {
             deletedData: [],
@@ -688,7 +696,9 @@ Ext.define(&#39;eui.Util&#39;, {
 
         for (var i = 0; i &lt; len; i++) {
             var rtv = getRecordData(records[i]);
-            rtv = Ext.apply(rtv, {&#39;__rowStatus&#39;: &#39;&#39;});
+            rtv = Ext.apply(rtv, {
+                &#39;__rowStatus&#39;: &#39;&#39;
+            });
             returnDataset.data.push(rtv);
         }
 
@@ -700,11 +710,11 @@ Ext.define(&#39;eui.Util&#39;, {
      * @returns {Boolean} return.true 레코드셋 변경됨.
      * @returns {Boolean} return.false 레코드셋 변경없음.
      */
-    getIsDirty: function () {
+    getIsDirty: function() {
         return (this.getNewRecords().length &gt; 0 || this.getUpdatedRecords().length &gt; 0 || this.getRemovedRecords().length &gt; 0);
     },
 
-<span id='eui-Util-method-getLocaleValue'>    getLocaleValue: function (MSG_ID) {
+<span id='eui-Util-method-getLocaleValue'>    getLocaleValue: function(MSG_ID) {
 </span>        var store = Ext.getStore(&#39;i18n&#39;);
         var record = id &amp;&amp; store.findRecord(&#39;MSG_ID&#39;, MSG_ID, 0, false, false, true);
         if (record) {
@@ -717,45 +727,45 @@ Ext.define(&#39;eui.Util&#39;, {
 <span id='eui-Util-cfg-contextPath'>        contextPath: &#39;eui&#39;,
 </span><span id='eui-Util-cfg-baseUrl'>        baseUrl: &#39;controller/router&#39;
 </span>    },
-<span id='eui-Util-method-constructor'>    constructor: function (cfg) {
+<span id='eui-Util-method-constructor'>    constructor: function(cfg) {
 </span>        this.initConfig(cfg);
         this.init();
     },
 
-<span id='eui-Util-method-init'>    init: function () {
-</span>//    	Ext.EventManager.on(Ext.isIE ? document : window, &#39;keydown&#39;, function(e, t) {
-//    		if (e.getKey() == e.BACKSPACE &amp;&amp; ((!/^input$/i.test(t.tagName) &amp;&amp; !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
-//    			e.stopEvent();
-//    		}
-//    	});
+<span id='eui-Util-method-init'>    init: function() {
+</span>        //    	Ext.EventManager.on(Ext.isIE ? document : window, &#39;keydown&#39;, function(e, t) {
+        //    		if (e.getKey() == e.BACKSPACE &amp;&amp; ((!/^input$/i.test(t.tagName) &amp;&amp; !/^textarea$/i.test(t.tagName)) || t.disabled || t.readOnly)) {
+        //    			e.stopEvent();
+        //    		}
+        //    	});
 
-        Ext.getDoc().on(&quot;contextmenu&quot;, function (ev) {
+        Ext.getDoc().on(&quot;contextmenu&quot;, function(ev) {
             ev.preventDefault();
         });
 
-//    	Ext.direct.Manager.addProvider({
-//    		id: &#39;euiprovider&#39;,
-//    	    url: Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
-//    	    type: &#39;remoting&#39;,
-//    	    enableBuffer:true,
-//    	    maxRetries: 0,
-//    	    actions: {}
-//    	});
+        //    	Ext.direct.Manager.addProvider({
+        //    		id: &#39;euiprovider&#39;,
+        //    	    url: Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
+        //    	    type: &#39;remoting&#39;,
+        //    	    enableBuffer:true,
+        //    	    maxRetries: 0,
+        //    	    actions: {}
+        //    	});
     },
-<span id='eui-Util-method-sessionValidation'>    sessionValidation: function () {
+<span id='eui-Util-method-sessionValidation'>    sessionValidation: function() {
 </span>        //TODO
         var option = {
             url: Ext.util.Format.format(&#39;/{0}/{1}/&#39;, this.getContextPath(), this.getBaseUrl()),
             async: true,
             method: &#39;POST&#39;,
-            success: function (response, options) {
+            success: function(response, options) {
                 if (!Ext.isEmpty(response.responseText)) {
                     var returnData = Ext.decode(response.responseText),
                         result = returnData[0].result;
                     this.sessionValidationCallback(result);
                 }
             },
-            failure: function (response, options) {
+            failure: function(response, options) {
                 if (!Ext.isEmpty(response.responseText)) {
                     var returnData = Ext.decode(response.responseText),
                         result = returnData[0].result;
@@ -775,7 +785,7 @@ Ext.define(&#39;eui.Util&#39;, {
         };
         Ext.Ajax.request(option);
     },
-<span id='eui-Util-method-sessionValidationCallback'>    sessionValidationCallback: function (response) {
+<span id='eui-Util-method-sessionValidationCallback'>    sessionValidationCallback: function(response) {
 </span>        //TODO
 
     },
@@ -783,8 +793,8 @@ Ext.define(&#39;eui.Util&#39;, {
 </span>     * fgn(fully qualified name of the function. for example: my.app.service.MenuService.getMenu )
      * dn(dataset name. for example: ds_menulist)
      */
-    createDirectStore: function (fqn, dn, fields) {
-        return{
+    createDirectStore: function(fqn, dn, fields) {
+        return {
             xclass: &#39;eui.data.DirectStore&#39;,
             storeId: Ext.util.Format.format(&#39;{0}-{1}&#39;, dn, Ext.id()),
             fields: fields,
@@ -800,7 +810,7 @@ Ext.define(&#39;eui.Util&#39;, {
         };
     },
 <span id='eui-Util-method-pluck'>    //=================== add end ========================================//
-</span>    pluck: function (array, propertyName) {
+</span>    pluck: function(array, propertyName) {
         var ret = [],
             i, ln, item;
 
@@ -823,22 +833,22 @@ Ext.define(&#39;eui.Util&#39;, {
         return ret;
     },
 
-<span id='eui-Util-method-loadNodeData'>    loadNodeData: function (records) {
+<span id='eui-Util-method-loadNodeData'>    loadNodeData: function(records) {
 </span>        var me = this;
         me.keyNameOfChildNode = &#39;CODE&#39;;
         me.keyNameOfNodeLevel = &#39;LEVEL&#39;;
         me.keyNameOfParentNode = &#39;PCODE&#39;;
-        var crWindow = function (src) {
+        var crWindow = function(src) {
 
             var desktop = me.app.getDesktop();
             desktop.createCustomWindow(src.config.data);
         };
 
-        var nodelist = Ext.Array.map(records.getRange(), function (record) {
+        var nodelist = Ext.Array.map(records.getRange(), function(record) {
             var obj = {
                 data: {}
             };
-            Ext.each(records.config.fields, function (field) {
+            Ext.each(records.config.fields, function(field) {
                 if (Ext.isObject(field)) {
                     obj[field.name] = record.get(field.name);
                 } else {
@@ -855,7 +865,8 @@ Ext.define(&#39;eui.Util&#39;, {
             return obj;
         }, me);
 
-        var temp = {}, results = [];
+        var temp = {},
+            results = [];
         for (var i = 0; i &lt; nodelist.length; i++) {
             var e = nodelist[i];
 
@@ -882,11 +893,11 @@ Ext.define(&#39;eui.Util&#39;, {
                 }
             } else {
 
-//                var hideTask = new Ext.util.DelayedTask(btn.hideMenu, btn);
+                //                var hideTask = new Ext.util.DelayedTask(btn.hideMenu, btn);
                 node[&#39;cls&#39;] = &#39;arrow-none&#39;;
                 node[&#39;leaf&#39;] = true;
                 node[&#39;handler&#39;] = crWindow;
-//                node.menu = me.buildShortcutCtxMenu(node.data, true);
+                //                node.menu = me.buildShortcutCtxMenu(node.data, true);
 
 
                 delete node.children;
@@ -898,6 +909,169 @@ Ext.define(&#39;eui.Util&#39;, {
         }
 
         return results;
+    },
+
+<span id='eui-Util-method-callExcelUploader'>    /***
+</span>     * excel csv 파일 업로드.
+     * delimiter는 필수로 &quot;|&quot; 지정할 것
+     * @param params
+     * @returns {*}
+     */
+    callExcelUploader: function(params) {
+        var xtp = &#39;eui.ux.grid.CsvUploader&#39;;
+        return Util.commonPopup(null, &#39;Excel Uploader&#39;, xtp, 500, 400, params, {}, false).show();
+    },
+
+<span id='eui-Util-method-callFileManager'>    callFileManager: function(cfg, msgSend) {
+</span>
+        var me = this;
+        var uploadPanel = Ext.create(&#39;Ext.ux.upload.Panel&#39;, {
+            uploader: &#39;Ext.ux.upload.uploader.FormDataUploader&#39;,
+            uploaderOptions: {
+                params: cfg,
+                url: Config.baseUrlPrifix||&#39;&#39; + Config.fileuploadUrl
+            },
+            synchronous: true //appPanel.syncCheckbox.getValue()
+        });
+
+        var uploadComplete = function(items, t) {
+            t.up(&#39;window&#39;).close();
+
+            var i = 0;
+            var task = {
+                run: function() {
+                    if (items.length &lt;= (i + 1)) {
+                        Ext.TaskManager.stop(task);
+                    }
+                    var file = items[i];
+
+                    i++;
+                },
+                interval: 1000
+            }
+            if (Ext.isBoolean(msgSend) &amp;&amp; msgSend == true) {
+                Ext.TaskManager.start(task);
+            }
+        }
+
+        var rept = Ext.create(&#39;Ext.window.Window&#39;, {
+            height: 330,
+            width: 560,
+            layout: &#39;fit&#39;,
+            title: &#39;File Manager&#39;,
+            scrollable: false,
+            maximizable: true,
+            buttons: [{
+                xtype: &#39;button&#39;,
+                text: &#39;Close&#39;,
+                handler: function() {
+                    this.up(&#39;window&#39;).close();
+                }
+            }],
+            items: [{
+                    xtype: &#39;tabpanel&#39;,
+                    items: [{
+                            xtype: &#39;filemanager&#39;,
+                            title: &#39;File List&#39;,
+                            fileParams: cfg
+                        },
+                        {
+                            title: &#39;File Add&#39;,
+                            xtype: &#39;uploaddialog&#39;,
+                            panel: uploadPanel,
+                            listeners: {
+                                uploadcomplete: function(uploadPanel, manager, items, errorCount) {
+                                    uploadComplete(items, this);
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        }).show();
+
+
+        return rept;
+    },
+
+
+<span id='eui-Util-method-fileClick'>    fileClick: function(ID_FILE_DTIL, ID_ATCH_FILE, FILE_NAME) {
+</span>        var formData = new FormData();
+        formData.append(&quot;ID_FILE_DTIL&quot;, ID_FILE_DTIL);
+        formData.append(&quot;ID_ATCH_FILE&quot;, ID_ATCH_FILE);
+
+        this.fileClickApi(formData, FILE_NAME, eui.Config.fileDownloadUrl);
+    },
+
+<span id='eui-Util-method-fileClickApi'>    fileClickApi: function(formData, FILE_NAME, API_PATH) {
+</span>        var xhr = new XMLHttpRequest();
+        xhr.open(&#39;POST&#39;, encodeURI(API_PATH));
+        xhr.responseType = &#39;arraybuffer&#39;;
+
+        xhr.onload = function() {
+            if (this.status === 200) {
+                var type = xhr.getResponseHeader(&#39;Content-Type&#39;);
+
+                var blob = new Blob([this.response], {
+                    type: type
+                });
+                if (typeof window.navigator.msSaveBlob !== &#39;undefined&#39;) {
+                    window.navigator.msSaveBlob(blob, FILE_NAME);
+                } else {
+                    var URL = window.URL || window.webkitURL;
+                    var downloadUrl = URL.createObjectURL(blob);
+
+                    if (FILE_NAME) {
+                        // use HTML5 a[download] attribute to specify filename
+                        var a = document.createElement(&quot;a&quot;);
+                        // safari doesn&#39;t support this yet
+                        if (typeof a.download === &#39;undefined&#39;) {
+                            window.location = downloadUrl;
+                        } else {
+                            a.href = downloadUrl;
+                            a.download = FILE_NAME;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    } else {
+                        window.location = downloadUrl;
+                    }
+
+                    setTimeout(function() {
+                        URL.revokeObjectURL(downloadUrl);
+                    }, 100); // cleanup
+                }
+            } else {
+                Ext.Msg.show({
+                    title: &#39;WARNING&#39;,
+                    message: &#39;파일 다운로드를 실패하였습니다&#39;,
+                    icon: Ext.Msg.WARNING,
+                    buttons: Ext.Msg.OK
+                });
+            }
+        };
+        xhr.send(formData);
+    },
+
+<span id='eui-Util-method-lookupViewModel'>    /***
+</span>     * 특정 view의 viewModel에서 특정 키의 값을 반환
+     * @param selector: Ext.ComponentQuery selector(itemId, xtype)
+     * @param key: viewModel에서 찾을려고 하는 value의 key
+     * @returns {*}
+     */
+    lookupViewModel: function (selector, key) {
+        var str = [
+            &#39;#{0}&#39;,
+            &#39;{0}&#39;
+        ].join(),
+        cmp, vm;
+
+        selector = Ext.String.format(str, selector);
+        cmp = Ext.ComponentQuery.query(selector).length &amp;&amp; Ext.ComponentQuery.query(selector)[0];
+        if (cmp &amp;&amp; (vm = cmp.getViewModel())) {
+            return vm.get(key);
+        }
     }
 });
 </pre>

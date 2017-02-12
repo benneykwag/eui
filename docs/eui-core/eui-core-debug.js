@@ -265,7 +265,11 @@ Ext.define('Override.data.Model', {
         // pass ret so new data is added to our object
         // 기본 신규 레코드로 처리.
         if (Ext.isEmpty(ret['__rowStatus'])) {
-            ret['__rowStatus'] = 'I';
+            var flag = me.crudState;
+            if (flag == 'C') {
+                flag = 'I';
+            }
+            ret['__rowStatus'] = flag;
         }
         return ret;
     }
@@ -323,6 +327,9 @@ Ext.define('Override.data.proxy.Server', {
         }
         if (me.getNoCache()) {
             url = Ext.urlAppend(url, Ext.String.format("{0}={1}", me.getCacheString(), Ext.Date.now()));
+        }
+        if (!Ext.isEmpty(Config.subUrlPrifix)) {
+            url = Config.subUrlPrifix + url;
         }
         // 주소 조정.
         if (!Ext.isEmpty(Config.baseUrlPrifix)) {
@@ -411,10 +418,9 @@ Ext.define("eui.mixin.FormField", {
      */
     setAllowBlank: function() {
         if (this.allowBlank !== undefined && !this.allowBlank) {
-            if (!this.fieldLabel) {
-                this.fieldLabel = "";
+            if (this.fieldLabel) {
+                this.fieldLabel = '<span style="color:red">*</span>' + this.fieldLabel;
             }
-            this.fieldLabel = '<span style="color:red">*</span>' + this.fieldLabel;
         }
     },
     /**
@@ -489,13 +495,857 @@ Ext.define('Override.form.field.Base', {
     }
 });
 
+Ext.define('Override.view.Table', {
+    override: 'Ext.view.Table',
+    privates: {
+        /*
+         * Overridden implementation.
+         * Called by refresh to collect the view item nodes.
+         * Note that these may be wrapping rows which *contain* rows which map to records
+         * @private
+         */
+        collectNodes: function(targetEl) {
+            this.all.fill(this.getNodeContainer().childNodes, this.all.startIndex);
+        },
+        /**
+         *
+         * @param {Boolean} enabled
+         * @param {Ext.grid.CellContext} position
+         * @return {Boolean} Returns `false` if the mode did not change.
+         * @private
+         */
+        setActionableMode: function(enabled, position) {
+            var me = this,
+                navModel = me.getNavigationModel(),
+                activeEl,
+                actionables = me.grid.actionables,
+                len = actionables.length,
+                i, record, column,
+                isActionable = false,
+                lockingPartner, cell;
+            // No mode change.
+            // ownerGrid's call will NOT fire mode change event upon false return.
+            if (me.actionableMode === enabled) {
+                // If we're not actinoable already, or (we are actionable already at that position) return false.
+                // Test using mandatory passed position because we may not have an actionPosition if we are
+                // the lockingPartner of an actionable view that contained the action position.
+                //
+                // If we being told to go into actionable mode but at another position, we must continue.
+                // This is just actionable navigation.
+                if (!enabled || position.isEqual(me.actionPosition)) {
+                    return false;
+                }
+            }
+            // If this View or its lockingPartner contains the current focus position, then make the tab bumpers tabbable
+            // and move them to surround the focused row.
+            if (enabled) {
+                if (position && (position.view === me || (position.view === (lockingPartner = me.lockingPartner) && lockingPartner.actionableMode))) {
+                    isActionable = me.activateCell(position);
+                }
+                // Did not enter actionable mode.
+                // ownerGrid's call will NOT fire mode change event upon false return.
+                return isActionable;
+            } else {
+                // Capture before exiting from actionable mode moves focus
+                activeEl = Ext.fly(Ext.Element.getActiveElement());
+                // Blur the focused descendant, but do not trigger focusLeave.
+                // This is so that when the focus is restored to the cell which contained
+                // the active content, it will not be a FocusEnter from the universe.
+                if (me.el.contains(activeEl) && !Ext.fly(activeEl).is(me.getCellSelector())) {
+                    // Row to return focus to.
+                    record = (me.actionPosition && me.actionPosition.record) || me.getRecord(activeEl);
+                    column = me.getHeaderByCell(activeEl.findParent(me.getCellSelector()));
+                    cell = position && position.getCell();
+                    // Do not allow focus to fly out of the view when the actionables are deactivated
+                    // (and blurred/hidden). Restore focus to the cell in which actionable mode is active.
+                    // Note that the original position may no longer be valid, e.g. when the record
+                    // was removed.
+                    if (!position || !cell) {
+                        position = new Ext.grid.CellContext(me).setPosition(record || 0, column || 0);
+                        cell = position.getCell();
+                    }
+                    // Ext.grid.NavigationModel#onFocusMove will NOT react and navigate because the actionableMode
+                    // flag is still set at this point.
+                    cell && cell.focus();
+                    // Let's update the activeEl after focus here
+                    activeEl = Ext.fly(Ext.Element.getActiveElement());
+                    // If that focus triggered handlers (eg CellEditor after edit handlers) which
+                    // programatically moved focus somewhere, and the target cell has been unfocused, defer to that,
+                    // null out position, so that we do not navigate to that cell below.
+                    // See EXTJS-20395
+                    if (!(me.el.contains(activeEl) && activeEl.is(me.getCellSelector()))) {
+                        position = null;
+                    }
+                }
+                // We are exiting actionable mode.
+                // Tell all registered Actionables about this fact if they need to know.
+                for (i = 0; i < len; i++) {
+                    if (actionables[i].deactivate) {
+                        actionables[i].deactivate();
+                    }
+                }
+                // If we had begun action (we may be a dormant lockingPartner), make any tabbables untabbable
+                if (me.actionRow) {
+                    me.actionRow.saveTabbableState({
+                        skipSelf: true,
+                        includeSaved: false
+                    });
+                }
+                if (me.destroyed) {
+                    return false;
+                }
+                // These flags MUST be set before focus restoration to the owning cell.
+                // so that when Ext.grid.NavigationModel#setPosition attempts to exit actionable mode, we don't recurse.
+                me.actionableMode = me.ownerGrid.actionableMode = false;
+                me.actionPosition = navModel.actionPosition = me.actionRow = null;
+                // Push focus out to where it was requested to go.
+                if (position) {
+                    navModel.setPosition(position);
+                }
+            }
+        },
+        /**
+         * Called to silently enter actionable mode at the passed position.
+         * May be called from the {@link #setActionableMode} method, or from the {@link #resumeActionableMode} method.
+         * @private
+         */
+        activateCell: function(position) {
+            var me = this,
+                lockingPartner = position.view !== me ? me.lockingPartner : null,
+                actionables = me.grid.actionables,
+                len = actionables.length,
+                navModel = me.getNavigationModel(),
+                record, prevRow, focusRow, focusCell, i, isActionable, tabbableChildren;
+            position = position.clone();
+            record = position.record;
+            position.view.grid.ensureVisible(record, {
+                column: position.column
+            });
+            focusRow = me.all.item(position.rowIdx);
+            // Deactivate remaining tabbables in the row we were last actionable upon.
+            if (me.actionPosition) {
+                prevRow = Ext.get(me.all.item(me.actionPosition.rowIdx, true));
+                if (prevRow && focusRow !== prevRow) {
+                    prevRow.saveTabbableState({
+                        skipSelf: true,
+                        includeSaved: false
+                    });
+                }
+            }
+            // We need to set the activating flag here because we will focus the editor at during
+            // the rest of this method and if this happens before actionableMode is true, navigationModel's
+            // onFocusMove method needs to know if activating events should be fired.
+            me.activating = true;
+            // We're the focused side - attempt to see if ths focused cell is actionable
+            if (!lockingPartner) {
+                focusCell = position.getCell();
+                me.actionPosition = position;
+                // Inform all Actionables that we intend to activate this cell.
+                // If any return true, isActionable will be set
+                for (i = 0; i < len; i++) {
+                    isActionable = isActionable || actionables[i].activateCell(position, null, true);
+                }
+            }
+            // If we have a lockingPartner that is actionable
+            //  or if we find some elements we can restore to tabbability
+            //  or there are existing tabbable elements
+            //  or a plugin declared it was actionable at this position:
+            //      dive in and activate the row
+            // Note that a bitwise OR operator is used in this expression so that
+            // no shortcutting is used. tabbableChildren must be extracted even if restoreTabbableState
+            // found some previously disabled (tabIndex === -1) nodes to restore.
+            if (lockingPartner || (focusCell && (focusCell.restoreTabbableState(/* skipSelf */
+            true).length | (tabbableChildren = focusCell.findTabbableElements()).length)) || isActionable) {
+                // We are entering actionable mode.
+                // Tell all registered Actionables about this fact if they need to know.
+                for (i = 0; i < len; i++) {
+                    if (actionables[i].activateRow) {
+                        actionables[i].activateRow(focusRow);
+                    }
+                }
+                // Only enter actionable mode if there is an already actionable locking partner,
+                // or there are tabbable children in current cell.
+                if (lockingPartner || tabbableChildren.length) {
+                    // Restore tabbabilty to all elements in this row
+                    focusRow.restoreTabbableState(/* skipSelf */
+                    true);
+                    // If we are the locking partner of an actionable side, we are successful already.
+                    // But we must not have an actionPosition. We are not actually in possession of an active cell
+                    // and we must not reject an action request at that cell in the isEqual test above.
+                    if (lockingPartner) {
+                        me.actionableMode = true;
+                        me.actionPosition = null;
+                        me.activating = false;
+                        return true;
+                    }
+                    // If there are focusables in the actioned cell, we can enter actionable mode.
+                    if (tabbableChildren) {
+                        /**
+                         * @property {Ext.dom.Element} actionRow
+                         * Only valid when a view is in actionableMode. The currently actioned row
+                         */
+                        me.actionRow = focusRow;
+                        me.actionableMode = me.ownerGrid.actionableMode = true;
+                        // Clear current position on entry into actionable mode
+                        navModel.setPosition();
+                        navModel.actionPosition = me.actionPosition = position;
+                        Ext.fly(tabbableChildren[0]).focus();
+                        me.activating = false;
+                        // Avoid falling through to returning false
+                        return true;
+                    }
+                }
+            }
+            me.activating = false;
+        },
+        /**
+         * Called by TableView#saveFocus
+         * @private
+         */
+        suspendActionableMode: function() {
+            var me = this,
+                actionables = me.grid.actionables,
+                len = actionables.length,
+                i;
+            for (i = 0; i < len; i++) {
+                actionables[i].suspend();
+            }
+        },
+        resumeActionableMode: function(position) {
+            var me = this,
+                actionables = me.grid.actionables,
+                len = actionables.length,
+                i, activated;
+            // Disable tabbability of elements within this view.
+            me.toggleChildrenTabbability(false);
+            for (i = 0; i < len; i++) {
+                activated = activated || actionables[i].resume(position);
+            }
+            // If non of the Actionable responded, attempt to find a naturally focusable child element.
+            if (!activated) {
+                me.activateCell(position);
+            }
+        },
+        onRowExit: function(keyEvent, prevRow, newRow, forward, wrapDone) {
+            var me = this,
+                direction = forward ? 'nextSibling' : 'previousSibling',
+                lockingPartner = me.lockingPartner,
+                rowIdx, cellIdx;
+            if (lockingPartner && lockingPartner.grid.isVisible()) {
+                rowIdx = me.all.indexOf(prevRow);
+                // TAB out of right side of view
+                if (forward) {
+                    cellIdx = 0;
+                    // If normal side go to next row in locked side
+                    if (me.isNormalView) {
+                        rowIdx++;
+                    }
+                } else // TAB out of left side of view
+                {
+                    cellIdx = lockingPartner.getVisibleColumnManager().getColumns().length - 1;
+                    // If locked side go to previous row in normal side
+                    if (me.isLockedView) {
+                        rowIdx--;
+                    }
+                }
+                // We've switched sides.
+                me.actionPosition = null;
+                me = lockingPartner;
+                newRow = me.all.item(rowIdx, true);
+            }
+            if (!me.hasListeners.beforerowexit || me.fireEvent('beforerowexit', me, keyEvent, prevRow, newRow, forward) !== false) {
+                // Activate the next row.
+                // This moves actionables' tabbable items to next row, restores that row's tabbability
+                // and focuses the first/last tabbable element it finds depending on direction.
+                me.findFirstActionableElement(keyEvent, newRow, direction, forward, wrapDone);
+            } else {
+                return false;
+            }
+        },
+        /**
+         * Finds the first actionable element in the passed direction starting by looking in the passed row.
+         * @private
+         */
+        findFirstActionableElement: function(keyEvent, focusRow, direction, forward, wrapDone) {
+            var me = this,
+                columns = me.getVisibleColumnManager().getColumns(),
+                columnCount = columns.length,
+                actionables = me.grid.actionables,
+                actionableCount = actionables.length,
+                position = new Ext.grid.CellContext(me),
+                focusCell, focusTarget, i, j, column, isActionable, tabbableChildren, prevRow;
+            if (focusRow) {
+                position.setRow(focusRow);
+                for (i = 0; i < actionableCount; i++) {
+                    // Tell all actionables who need to know that we are moving actionable mode to a new row.
+                    // They should insert any tabbable elements into appropriate cells in the row.
+                    if (actionables[i].activateRow) {
+                        actionables[i].activateRow(focusRow);
+                    }
+                }
+                // Look through the columns until we find one where the Actionables return that the cell is actionable
+                // or there are tabbable elements found.
+                for (i = (forward ? 0 : columnCount - 1); (forward ? i < columnCount : i > -1) && !focusTarget; i = i + (forward ? 1 : -1)) {
+                    column = columns[i];
+                    position.setColumn(column);
+                    focusCell = Ext.fly(focusRow).down(position.column.getCellSelector());
+                    for (j = 0; j < actionableCount; j++) {
+                        isActionable = isActionable || actionables[j].activateCell(position);
+                    }
+                    // In case any code in the cell activation churned
+                    // the grid DOM and the position got refreshed.
+                    // eg: 'edit' handler on previously active editor.
+                    focusCell = position.getCell();
+                    if (focusCell) {
+                        focusRow = position.getNode(true);
+                        // TODO Nige?
+                        // If the focusCell is available (when using features with colspan the cell won't be there) and
+                        // If there are restored tabbable elements rendered in the cell, or an Actionable is activated on this cell...
+                        //if (focusCell && (focusCell.restoreTabbableState(/* skipSelf */ true).length || isActionable)) {
+                        //    tabbableChildren = focusCell.findTabbableElements();
+                        // If there are restored tabbable elements rendered in the cell, or an Actionable is activated on this cell...
+                        focusCell.restoreTabbableState(/* skipSelf */
+                        true);
+                        // Read tabbable children out to determine actionability.
+                        // In case new DOM has been inserted by an 'edit' handler on previously active editor.
+                        if ((tabbableChildren = focusCell.findTabbableElements()).length || isActionable) {
+                            prevRow = me.actionRow;
+                            me.actionRow = Ext.get(focusRow);
+                            // Restore tabbabilty to all elements in this row.
+                            me.actionRow.restoreTabbableState(/* skipSelf */
+                            true);
+                            focusTarget = tabbableChildren[forward ? 0 : tabbableChildren.length - 1];
+                        }
+                    }
+                }
+                // Found a focusable element, focus it.
+                if (focusTarget) {
+                    // Keep actionPosition synched
+                    me.actionPosition = me.getNavigationModel().actionPosition = position;
+                    // If an async focus platformm we must wait for the blur
+                    // from the deactivate to clear before we can focus the next.
+                    Ext.fly(focusTarget).focus(Ext.asyncFocus ? 1 : 0);
+                    // Deactivate remaining tabbables in the row we were last actionable upon.
+                    if (prevRow && focusRow !== prevRow.dom) {
+                        prevRow.saveTabbableState({
+                            skipSelf: true,
+                            includeSaved: false
+                        });
+                    }
+                } else {
+                    // We walked off the end of the columns  without finding a focusTarget
+                    // Process onRowExit in the current direction
+                    me.onRowExit(keyEvent, focusRow, me.all.item(position.rowIdx + (forward ? 1 : -1)), forward, wrapDone);
+                }
+            }
+            // No focusRow and not already wrapped round the whole view;
+            // wrap round in the correct direction.
+            else if (!wrapDone) {
+                me.grid.ensureVisible(forward ? 0 : me.dataSource.getCount() - 1, {
+                    callback: function(success, record, row) {
+                        if (success) {
+                            // Pass the flag saying we've already wrapped round once.
+                            me.findFirstActionableElement(keyEvent, row, direction, forward, true);
+                        } else {
+                            me.ownerGrid.setActionableMode(false);
+                        }
+                    }
+                });
+            } else // If we've already wrapped, but not found a focus target, we must exit actionable mode.
+            {
+                me.ownerGrid.setActionableMode(false);
+            }
+        },
+        stretchHeight: function(height) {
+            /*
+         * This is used when a table view is used in a lockable assembly.
+         * Y scrolling is handled by an element which contains both grid views.
+         * So each view has to be stretched to the full dataset height.
+         * Setting the element height does not attain the maximim possible height.
+         * Maximum content height is attained by adding "stretcher" elements
+         * which have large margin-top values.
+         */
+            var me = this,
+                scroller = me.getScrollable(),
+                stretchers = me.stretchers,
+                shortfall;
+            if (height && me.tabGuardEl) {
+                if (stretchers) {
+                    stretchers[0].style.marginTop = stretchers[1].style.marginTop = me.el.dom.style.height = 0;
+                }
+                me.el.dom.style.height = scroller.constrainScrollRange(height) + 'px';
+                shortfall = height - me.el.dom.offsetHeight;
+                // Only resort to the stretcher els if they are needed
+                if (shortfall > 0) {
+                    me.el.dom.style.height = '';
+                    stretchers = me.getStretchers();
+                    shortfall = height - me.el.dom.offsetHeight;
+                    if (shortfall > 0) {
+                        stretchers[0].style.marginTop = scroller.constrainScrollRange(shortfall) + 'px';
+                        shortfall = height - me.el.dom.offsetHeight;
+                        if (shortfall > 0) {
+                            stretchers[1].style.marginTop = Math.min(shortfall, scroller.maxSpacerMargin || 0) + 'px';
+                        }
+                    }
+                }
+            }
+        },
+        getStretchers: function() {
+            var me = this,
+                stretchers = me.stretchers,
+                stretchCfg;
+            if (stretchers) {
+                // Ensure they're at the end
+                me.el.appendChild(stretchers);
+            } else {
+                stretchCfg = {
+                    cls: 'x-scroller-spacer',
+                    style: 'position:relative'
+                };
+                stretchers = me.stretchers = me.el.appendChild([
+                    stretchCfg,
+                    stretchCfg
+                ], true);
+            }
+            return stretchers;
+        }
+    }
+});
+
 Ext.define('Override.grid.column.Column', {
     override: 'Ext.grid.column.Column',
     localeProperties: [
         'text'
     ],
+    style: 'text-align:center',
     initComponent: function() {
         this.callParent(arguments);
+    }
+});
+
+Ext.define('Override.grid.plugin.Editing', {
+    override: 'Ext.grid.plugin.Editing',
+    onCellClick: function(view, cell, colIdx, record, row, rowIdx, e) {
+        // Used if we are triggered by a cellclick event
+        // *IMPORTANT* Due to V4.0.0 history, the colIdx here is the index within ALL columns, including hidden.
+        //
+        // Make sure that the column has an editor.  In the case of CheckboxModel,
+        // calling startEdit doesn't make sense when the checkbox is clicked.
+        // Also, cancel editing if the element that was clicked was a tree expander.
+        var ownerGrid = view.ownerGrid,
+            expanderSelector = view.expanderSelector,
+            // Use getColumnManager() in this context because colIdx includes hidden columns.
+            columnHeader = view.ownerCt.getColumnManager().getHeaderAtIndex(colIdx),
+            editor = columnHeader.getEditor(record),
+            targetCmp = Ext.Component.fromElement(e.target, cell);
+        if (this.shouldStartEdit(editor) && (!expanderSelector || !e.getTarget(expanderSelector))) {
+            ownerGrid.setActionableMode(true, e.position);
+        }
+        // Clicking on a component in a widget column
+        else if (ownerGrid.actionableMode && view.owns(e.target) && (targetCmp && targetCmp.focusable)) {
+            return;
+        }
+        // The cell is not actionable, we we must exit actionable mode
+        else if (ownerGrid.actionableMode) {
+            ownerGrid.setActionableMode(false);
+        }
+    }
+});
+
+/**
+ * Basic status bar component that can be used as the bottom toolbar of any {@link Ext.Panel}.  In addition to
+ * supporting the standard {@link Ext.toolbar.Toolbar} interface for adding buttons, menus and other items, the StatusBar
+ * provides a greedy status element that can be aligned to either side and has convenient methods for setting the
+ * status text and icon.  You can also indicate that something is processing using the {@link #showBusy} method.
+ *
+ *     Ext.create('Ext.Panel', {
+ *         title: 'StatusBar',
+ *         // etc.
+ *         bbar: Ext.create('Ext.ux.StatusBar', {
+ *             id: 'my-status',
+ *      
+ *             // defaults to use when the status is cleared:
+ *             defaultText: 'Default status text',
+ *             defaultIconCls: 'default-icon',
+ *      
+ *             // values to set initially:
+ *             text: 'Ready',
+ *             iconCls: 'ready-icon',
+ *      
+ *             // any standard Toolbar items:
+ *             items: [{
+ *                 text: 'A Button'
+ *             }, '-', 'Plain Text']
+ *         })
+ *     });
+ *
+ *     // Update the status bar later in code:
+ *     var sb = Ext.getCmp('my-status');
+ *     sb.setStatus({
+ *         text: 'OK',
+ *         iconCls: 'ok-icon',
+ *         clear: true // auto-clear after a set interval
+ *     });
+ *
+ *     // Set the status bar to show that something is processing:
+ *     sb.showBusy();
+ *
+ *     // processing....
+ *
+ *     sb.clearStatus(); // once completeed
+ *
+ */
+Ext.define('Ext.ux.statusbar.StatusBar', {
+    extend: 'Ext.toolbar.Toolbar',
+    alternateClassName: 'Ext.ux.StatusBar',
+    alias: 'widget.statusbar',
+    requires: [
+        'Ext.toolbar.TextItem'
+    ],
+    /**
+     * @cfg {String} statusAlign
+     * The alignment of the status element within the overall StatusBar layout.  When the StatusBar is rendered,
+     * it creates an internal div containing the status text and icon.  Any additional Toolbar items added in the
+     * StatusBar's {@link #cfg-items} config, or added via {@link #method-add} or any of the supported add* methods, will be
+     * rendered, in added order, to the opposite side.  The status element is greedy, so it will automatically
+     * expand to take up all sapce left over by any other items.  Example usage:
+     *
+     *     // Create a left-aligned status bar containing a button,
+     *     // separator and text item that will be right-aligned (default):
+     *     Ext.create('Ext.Panel', {
+     *         title: 'StatusBar',
+     *         // etc.
+     *         bbar: Ext.create('Ext.ux.statusbar.StatusBar', {
+     *             defaultText: 'Default status text',
+     *             id: 'status-id',
+     *             items: [{
+     *                 text: 'A Button'
+     *             }, '-', 'Plain Text']
+     *         })
+     *     });
+     *
+     *     // By adding the statusAlign config, this will create the
+     *     // exact same toolbar, except the status and toolbar item
+     *     // layout will be reversed from the previous example:
+     *     Ext.create('Ext.Panel', {
+     *         title: 'StatusBar',
+     *         // etc.
+     *         bbar: Ext.create('Ext.ux.statusbar.StatusBar', {
+     *             defaultText: 'Default status text',
+     *             id: 'status-id',
+     *             statusAlign: 'right',
+     *             items: [{
+     *                 text: 'A Button'
+     *             }, '-', 'Plain Text']
+     *         })
+     *     });
+     */
+    /**
+     * @cfg {String} [defaultText='']
+     * The default {@link #text} value.  This will be used anytime the status bar is cleared with the
+     * `useDefaults:true` option.
+     */
+    /**
+     * @cfg {String} [defaultIconCls='']
+     * The default {@link #iconCls} value (see the iconCls docs for additional details about customizing the icon).
+     * This will be used anytime the status bar is cleared with the `useDefaults:true` option.
+     */
+    /**
+     * @cfg {String} text
+     * A string that will be <b>initially</b> set as the status message.  This string
+     * will be set as innerHTML (html tags are accepted) for the toolbar item.
+     * If not specified, the value set for {@link #defaultText} will be used.
+     */
+    /**
+     * @cfg {String} [iconCls='']
+     * @inheritdoc Ext.panel.Header#cfg-iconCls
+     * @localdoc **Note:** This CSS class will be **initially** set as the status bar 
+     * icon.  See also {@link #defaultIconCls} and {@link #busyIconCls}.
+     *
+     * Example usage:
+     *
+     *     // Example CSS rule:
+     *     .x-statusbar .x-status-custom {
+     *         padding-left: 25px;
+     *         background: transparent url(images/custom-icon.gif) no-repeat 3px 2px;
+     *     }
+     *
+     *     // Setting a default icon:
+     *     var sb = Ext.create('Ext.ux.statusbar.StatusBar', {
+     *         defaultIconCls: 'x-status-custom'
+     *     });
+     *
+     *     // Changing the icon:
+     *     sb.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom'
+     *     });
+     */
+    /**
+     * @cfg {String} cls
+     * The base class applied to the containing element for this component on render.
+     */
+    cls: 'x-statusbar',
+    /**
+     * @cfg {String} busyIconCls
+     * The default {@link #iconCls} applied when calling {@link #showBusy}.
+     * It can be overridden at any time by passing the `iconCls` argument into {@link #showBusy}.
+     */
+    busyIconCls: 'x-status-busy',
+    /**
+     * @cfg {String} busyText
+     * The default {@link #text} applied when calling {@link #showBusy}.
+     * It can be overridden at any time by passing the `text` argument into {@link #showBusy}.
+     */
+    busyText: 'Loading...',
+    /**
+     * @cfg {Number} autoClear
+     * The number of milliseconds to wait after setting the status via
+     * {@link #setStatus} before automatically clearing the status text and icon.
+     * Note that this only applies when passing the `clear` argument to {@link #setStatus}
+     * since that is the only way to defer clearing the status.  This can
+     * be overridden by specifying a different `wait` value in {@link #setStatus}.
+     * Calls to {@link #clearStatus} always clear the status bar immediately and ignore this value.
+     */
+    autoClear: 5000,
+    /**
+     * @cfg {String} emptyText
+     * The text string to use if no text has been set. If there are no other items in
+     * the toolbar using an empty string (`''`) for this value would end up in the toolbar
+     * height collapsing since the empty string will not maintain the toolbar height.
+     * Use `''` if the toolbar should collapse in height vertically when no text is
+     * specified and there are no other items in the toolbar.
+     */
+    emptyText: '&#160;',
+    /**
+     * @private
+     */
+    activeThreadId: 0,
+    initComponent: function() {
+        var right = this.statusAlign === 'right';
+        this.callParent(arguments);
+        this.currIconCls = this.iconCls || this.defaultIconCls;
+        this.statusEl = Ext.create('Ext.toolbar.TextItem', {
+            cls: 'x-status-text ' + (this.currIconCls || ''),
+            text: this.text || this.defaultText || ''
+        });
+        if (right) {
+            this.cls += ' x-status-right';
+            this.add('->');
+            this.add(this.statusEl);
+        } else {
+            this.insert(0, this.statusEl);
+            this.insert(1, '->');
+        }
+    },
+    /**
+     * Sets the status {@link #text} and/or {@link #iconCls}. Also supports automatically clearing the
+     * status that was set after a specified interval.
+     *
+     * Example usage:
+     *
+     *     // Simple call to update the text
+     *     statusBar.setStatus('New status');
+     *
+     *     // Set the status and icon, auto-clearing with default options:
+     *     statusBar.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom',
+     *         clear: true
+     *     });
+     *
+     *     // Auto-clear with custom options:
+     *     statusBar.setStatus({
+     *         text: 'New status',
+     *         iconCls: 'x-status-custom',
+     *         clear: {
+     *             wait: 8000,
+     *             anim: false,
+     *             useDefaults: false
+     *         }
+     *     });
+     *
+     * @param {Object/String} config A config object specifying what status to set, or a string assumed
+     * to be the status text (and all other options are defaulted as explained below). A config
+     * object containing any or all of the following properties can be passed:
+     *
+     * @param {String} config.text The status text to display.  If not specified, any current
+     * status text will remain unchanged.
+     *
+     * @param {String} config.iconCls The CSS class used to customize the status icon (see
+     * {@link #iconCls} for details). If not specified, any current iconCls will remain unchanged.
+     *
+     * @param {Boolean/Number/Object} config.clear Allows you to set an internal callback that will
+     * automatically clear the status text and iconCls after a specified amount of time has passed. If clear is not
+     * specified, the new status will not be auto-cleared and will stay until updated again or cleared using
+     * {@link #clearStatus}. If `true` is passed, the status will be cleared using {@link #autoClear},
+     * {@link #defaultText} and {@link #defaultIconCls} via a fade out animation. If a numeric value is passed,
+     * it will be used as the callback interval (in milliseconds), overriding the {@link #autoClear} value.
+     * All other options will be defaulted as with the boolean option.  To customize any other options,
+     * you can pass an object in the format:
+     * 
+     * @param {Number} config.clear.wait The number of milliseconds to wait before clearing
+     * (defaults to {@link #autoClear}).
+     * @param {Boolean} config.clear.anim False to clear the status immediately once the callback
+     * executes (defaults to true which fades the status out).
+     * @param {Boolean} config.clear.useDefaults False to completely clear the status text and iconCls
+     * (defaults to true which uses {@link #defaultText} and {@link #defaultIconCls}).
+     *
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setStatus: function(o) {
+        var me = this;
+        o = o || {};
+        Ext.suspendLayouts();
+        if (Ext.isString(o)) {
+            o = {
+                text: o
+            };
+        }
+        if (o.text !== undefined) {
+            me.setText(o.text);
+        }
+        if (o.iconCls !== undefined) {
+            me.setIcon(o.iconCls);
+        }
+        if (o.clear) {
+            var c = o.clear,
+                wait = me.autoClear,
+                defaults = {
+                    useDefaults: true,
+                    anim: true
+                };
+            if (Ext.isObject(c)) {
+                c = Ext.applyIf(c, defaults);
+                if (c.wait) {
+                    wait = c.wait;
+                }
+            } else if (Ext.isNumber(c)) {
+                wait = c;
+                c = defaults;
+            } else if (Ext.isBoolean(c)) {
+                c = defaults;
+            }
+            c.threadId = this.activeThreadId;
+            Ext.defer(me.clearStatus, wait, me, [
+                c
+            ]);
+        }
+        Ext.resumeLayouts(true);
+        return me;
+    },
+    /**
+     * Clears the status {@link #text} and {@link #iconCls}. Also supports clearing via an optional fade out animation.
+     *
+     * @param {Object} [config] A config object containing any or all of the following properties.  If this
+     * object is not specified the status will be cleared using the defaults below:
+     * @param {Boolean} config.anim True to clear the status by fading out the status element (defaults
+     * to false which clears immediately).
+     * @param {Boolean} config.useDefaults True to reset the text and icon using {@link #defaultText} and
+     * {@link #defaultIconCls} (defaults to false which sets the text to '' and removes any existing icon class).
+     *
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    clearStatus: function(o) {
+        o = o || {};
+        var me = this,
+            statusEl = me.statusEl;
+        if (me.destroyed || o.threadId && o.threadId !== me.activeThreadId) {
+            // this means the current call was made internally, but a newer
+            // thread has set a message since this call was deferred.  Since
+            // we don't want to overwrite a newer message just ignore.
+            return me;
+        }
+        var text = o.useDefaults ? me.defaultText : me.emptyText,
+            iconCls = o.useDefaults ? (me.defaultIconCls ? me.defaultIconCls : '') : '';
+        if (o.anim) {
+            // animate the statusEl Ext.Element
+            statusEl.el.puff({
+                remove: false,
+                useDisplay: true,
+                callback: function() {
+                    statusEl.el.show();
+                    me.setStatus({
+                        text: text,
+                        iconCls: iconCls
+                    });
+                }
+            });
+        } else {
+            me.setStatus({
+                text: text,
+                iconCls: iconCls
+            });
+        }
+        return me;
+    },
+    /**
+     * Convenience method for setting the status text directly.  For more flexible options see {@link #setStatus}.
+     * @param {String} text (optional) The text to set (defaults to '')
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setText: function(text) {
+        var me = this;
+        me.activeThreadId++;
+        me.text = text || '';
+        if (me.rendered) {
+            me.statusEl.setText(me.text);
+        }
+        return me;
+    },
+    /**
+     * Returns the current status text.
+     * @return {String} The status text
+     */
+    getText: function() {
+        return this.text;
+    },
+    /**
+     * Convenience method for setting the status icon directly.  For more flexible options see {@link #setStatus}.
+     * See {@link #iconCls} for complete details about customizing the icon.
+     * @param {String} iconCls (optional) The icon class to set (defaults to '', and any current icon class is removed)
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    setIcon: function(cls) {
+        var me = this;
+        me.activeThreadId++;
+        cls = cls || '';
+        if (me.rendered) {
+            if (me.currIconCls) {
+                me.statusEl.removeCls(me.currIconCls);
+                me.currIconCls = null;
+            }
+            if (cls.length > 0) {
+                me.statusEl.addCls(cls);
+                me.currIconCls = cls;
+            }
+        } else {
+            me.currIconCls = cls;
+        }
+        return me;
+    },
+    /**
+     * Convenience method for setting the status text and icon to special values that are pre-configured to indicate
+     * a "busy" state, usually for loading or processing activities.
+     *
+     * @param {Object/String} config (optional) A config object in the same format supported by {@link #setStatus}, or a
+     * string to use as the status text (in which case all other options for setStatus will be defaulted).  Use the
+     * `text` and/or `iconCls` properties on the config to override the default {@link #busyText}
+     * and {@link #busyIconCls} settings. If the config argument is not specified, {@link #busyText} and
+     * {@link #busyIconCls} will be used in conjunction with all of the default options for {@link #setStatus}.
+     * @return {Ext.ux.statusbar.StatusBar} this
+     */
+    showBusy: function(o) {
+        if (Ext.isString(o)) {
+            o = {
+                text: o
+            };
+        }
+        o = Ext.applyIf(o || {}, {
+            text: this.busyText,
+            iconCls: this.busyIconCls
+        });
+        return this.setStatus(o);
     }
 });
 
@@ -518,6 +1368,15 @@ Ext.define('eui.Config', {
     defaultDateTimeFormat: 'Y-m-d H:i:s',
     // Override.data.proxy.Server 에서 사용
     baseUrlPrifix: null,
+    subUrlPrifix: null,
+    // 명령 툴바용 데이터
+    commandButtonControllerUrl: null,
+    // 파일 리스트
+    fileuploadListUrl: '',
+    filedeleteUrl: '',
+    fileuploadUrl: '',
+    fileuploadMaxSize: 1048576,
+    fileDownloadUrl: '',
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
     /***
@@ -533,8 +1392,9 @@ Ext.define('eui.Config', {
     localeUrl: null,
     /***
      * eui-core에 필요한 텍스트 레이블 정보.
+     * @param callback: callback 함수
      */
-    initLocaleMessage: function() {
+    initLocaleMessage: function(callback) {
         var me = this,
             store = Ext.create('Ext.data.Store', {
                 fields: [],
@@ -551,6 +1411,9 @@ Ext.define('eui.Config', {
                     store.loadData(retData.data);
                     store.add(Config.data.message);
                     me.mergeMessageData();
+                    if (Ext.isFunction(callback)) {
+                        callback();
+                    }
                 }
             };
         if (Config.localeUrl) {
@@ -558,6 +1421,9 @@ Ext.define('eui.Config', {
         } else {
             store.add(Config.data.message);
             me.mergeMessageData();
+            if (Ext.isFunction(callback)) {
+                callback();
+            }
         }
     },
     /***
@@ -598,11 +1464,11 @@ Ext.define('eui.Config', {
             },
             {
                 "MSG_ID": "행추가",
-                "MSG_LABEL": "추가"
+                "MSG_LABEL": "신규"
             },
             {
                 "MSG_ID": "행추가아이콘",
-                "MSG_LABEL": "x-fa fa-plus-square"
+                "MSG_LABEL": "x-fa fa-plus"
             },
             {
                 "MSG_ID": "행삭제",
@@ -610,7 +1476,7 @@ Ext.define('eui.Config', {
             },
             {
                 "MSG_ID": "행삭제아이콘",
-                "MSG_LABEL": "x-fa fa-minus-square"
+                "MSG_LABEL": "x-fa fa-trash-o"
             },
             {
                 "MSG_ID": "등록",
@@ -626,7 +1492,7 @@ Ext.define('eui.Config', {
             },
             {
                 "MSG_ID": "수정아이콘",
-                "MSG_LABEL": "x-fa fa-th"
+                "MSG_LABEL": "x-fa fa-pencil-square-o"
             },
             {
                 "MSG_ID": "저장",
@@ -637,12 +1503,28 @@ Ext.define('eui.Config', {
                 "MSG_LABEL": "x-fa fa-save"
             },
             {
-                "MSG_ID": "조회",
-                "MSG_LABEL": "조회"
+                "MSG_ID": "새로고침",
+                "MSG_LABEL": "새로고침"
             },
             {
-                "MSG_ID": "조회아이콘",
-                "MSG_LABEL": "x-fa fa-search"
+                "MSG_ID": "새로고침아이콘",
+                "MSG_LABEL": "x-fa fa-refresh"
+            },
+            {
+                "MSG_ID": "인쇄",
+                "MSG_LABEL": "인쇄"
+            },
+            {
+                "MSG_ID": "인쇄아이콘",
+                "MSG_LABEL": "x-fa fa-print"
+            },
+            {
+                "MSG_ID": "닫기",
+                "MSG_LABEL": "닫기"
+            },
+            {
+                "MSG_ID": "닫기아이콘",
+                "MSG_LABEL": "x-fa fa-sign-out"
             },
             {
                 "MSG_ID": "CONFIRM",
@@ -682,6 +1564,7 @@ Ext.define('eui.Util', {
      */
     localeStoreValueField: 'MSG_ID',
     localeStoreDisplayField: 'MSG_CONTENTS',
+    fileDownloadUrl: 'api/file/download',
     UrlPrefix: null,
     localeLang: "ko",
     webosShowWindowId: null,
@@ -1110,6 +1993,9 @@ Ext.define('eui.Util', {
         } else {
             timeoutSeq = 30000;
         }
+        if (!Ext.isEmpty(Config.subUrlPrifix)) {
+            pURL = Config.subUrlPrifix + pURL;
+        }
         // 주소 조정.
         if (!Ext.isEmpty(Config.baseUrlPrifix)) {
             if (pURL.substring(0, 1) == "/") {
@@ -1497,6 +2383,157 @@ Ext.define('eui.Util', {
             setLeafExtend(results[i]);
         }
         return results;
+    },
+    /***
+     * excel csv 파일 업로드.
+     * delimiter는 필수로 "|" 지정할 것
+     * @param params
+     * @returns {*}
+     */
+    callExcelUploader: function(params) {
+        var xtp = 'eui.ux.grid.CsvUploader';
+        return Util.commonPopup(null, 'Excel Uploader', xtp, 500, 400, params, {}, false).show();
+    },
+    callFileManager: function(cfg, msgSend) {
+        var me = this;
+        var uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+                uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+                uploaderOptions: {
+                    params: cfg,
+                    url: Config.baseUrlPrifix || '' + Config.fileuploadUrl
+                },
+                synchronous: true
+            });
+        //appPanel.syncCheckbox.getValue()
+        var uploadComplete = function(items, t) {
+                t.up('window').close();
+                var i = 0;
+                var task = {
+                        run: function() {
+                            if (items.length <= (i + 1)) {
+                                Ext.TaskManager.stop(task);
+                            }
+                            var file = items[i];
+                            i++;
+                        },
+                        interval: 1000
+                    };
+                if (Ext.isBoolean(msgSend) && msgSend == true) {
+                    Ext.TaskManager.start(task);
+                }
+            };
+        var rept = Ext.create('Ext.window.Window', {
+                height: 330,
+                width: 560,
+                layout: 'fit',
+                title: 'File Manager',
+                scrollable: false,
+                maximizable: true,
+                buttons: [
+                    {
+                        xtype: 'button',
+                        text: 'Close',
+                        handler: function() {
+                            this.up('window').close();
+                        }
+                    }
+                ],
+                items: [
+                    {
+                        xtype: 'tabpanel',
+                        items: [
+                            {
+                                xtype: 'filemanager',
+                                title: 'File List',
+                                fileParams: cfg
+                            },
+                            {
+                                title: 'File Add',
+                                xtype: 'uploaddialog',
+                                panel: uploadPanel,
+                                listeners: {
+                                    uploadcomplete: function(uploadPanel, manager, items, errorCount) {
+                                        uploadComplete(items, this);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }).show();
+        return rept;
+    },
+    fileClick: function(ID_FILE_DTIL, ID_ATCH_FILE, FILE_NAME) {
+        var formData = new FormData();
+        formData.append("ID_FILE_DTIL", ID_FILE_DTIL);
+        formData.append("ID_ATCH_FILE", ID_ATCH_FILE);
+        this.fileClickApi(formData, FILE_NAME, eui.Config.fileDownloadUrl);
+    },
+    fileClickApi: function(formData, FILE_NAME, API_PATH) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', encodeURI(API_PATH));
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function() {
+            if (this.status === 200) {
+                var type = xhr.getResponseHeader('Content-Type');
+                var blob = new Blob([
+                        this.response
+                    ], {
+                        type: type
+                    });
+                if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                    window.navigator.msSaveBlob(blob, FILE_NAME);
+                } else {
+                    var URL = window.URL || window.webkitURL;
+                    var downloadUrl = URL.createObjectURL(blob);
+                    if (FILE_NAME) {
+                        // use HTML5 a[download] attribute to specify filename
+                        var a = document.createElement("a");
+                        // safari doesn't support this yet
+                        if (typeof a.download === 'undefined') {
+                            window.location = downloadUrl;
+                        } else {
+                            a.href = downloadUrl;
+                            a.download = FILE_NAME;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    } else {
+                        window.location = downloadUrl;
+                    }
+                    setTimeout(function() {
+                        URL.revokeObjectURL(downloadUrl);
+                    }, 100);
+                }
+            } else // cleanup
+            {
+                Ext.Msg.show({
+                    title: 'WARNING',
+                    message: '파일 다운로드를 실패하였습니다',
+                    icon: Ext.Msg.WARNING,
+                    buttons: Ext.Msg.OK
+                });
+            }
+        };
+        xhr.send(formData);
+    },
+    /***
+     * 특정 view의 viewModel에서 특정 키의 값을 반환
+     * @param selector: Ext.ComponentQuery selector(itemId, xtype)
+     * @param key: viewModel에서 찾을려고 하는 value의 key
+     * @returns {*}
+     */
+    lookupViewModel: function(selector, key) {
+        var str = [
+                '#{0}',
+                '{0}'
+            ].join(),
+            cmp, vm;
+        selector = Ext.String.format(str, selector);
+        cmp = Ext.ComponentQuery.query(selector).length && Ext.ComponentQuery.query(selector)[0];
+        if (cmp && (vm = cmp.getViewModel())) {
+            return vm.get(key);
+        }
     }
 });
 
@@ -1550,6 +2587,66 @@ Ext.define('eui.button.Button', {
     }
 });
 
+Ext.define('eui.button.UploadButton', {
+    extend: 'Ext.form.field.FileButton',
+    xtype: 'uploadbutton',
+    defaultListenerScope: true,
+    listeners: {
+        change: function(fld) {
+            var inputEl = fld.fileInputEl && fld.fileInputEl.dom,
+                file = inputEl && inputEl.files,
+                formData = new FormData(),
+                xhr = new XMLHttpRequest(),
+                msg,
+                url = fld.url || '/APPS/npComponent/xssWorkImport.do';
+            if (!file || !file.length)  {
+                return;
+            }
+            
+            file = file[0];
+            if (Ext.isObject(fld.params)) {
+                Ext.Object.each(fld.params, function(k, v) {
+                    formData.append(k, v);
+                });
+            }
+            formData.append('file', file);
+            xhr.open('POST', url);
+            xhr.addEventListener('load', function() {
+                inputEl.value = null;
+                msg.close();
+                Ext.Msg.show({
+                    title: 'INFO',
+                    icon: Ext.Msg.INFO,
+                    buttons: Ext.Msg.OK,
+                    msg: '업로드가 완료되었습니다'
+                });
+            });
+            xhr.addEventListener('progress', function(progress) {
+                if (progress.loaded) {
+                    msg.updateProgress(progress.loaded);
+                } else {
+                    msg.close();
+                    Ext.Msg.show({
+                        title: 'ERROR',
+                        icon: Ext.Msg.ERROR,
+                        buttons: Ext.Msg.OK,
+                        msg: '파일 업로드 중 에러가 발생하였습니다.'
+                    });
+                }
+            });
+            Ext.apply(xhr, {
+                onloadstart: function() {
+                    msg = Ext.Msg.show({
+                        msg: '업로드 중입니다',
+                        wait: true
+                    });
+                }
+            });
+            xhr.send(formData);
+        }
+    }
+});
+
 Ext.define('eui.container.BaseContainer', {
     extend: 'Ext.container.Container',
     alias: 'widget.euibasecontainer',
@@ -1593,13 +2690,14 @@ Ext.define('eui.container.PopupContainer', {
                 displayField
             ]);
         }
-        var owner = Util.getOwnerCt(this);
-        if (owner.xtype.indexOf('window') != -1) {
-            owner.close();
-        } else {}
     }
 });
-//            owner.hide();
+//        var owner = Util.getOwnerCt(this);
+//        if (owner.xtype.indexOf('window') != -1) {
+//            owner.close();
+//        } else {
+////            owner.hide();
+//        }
 
 Ext.define('eui.container.Popup', {
     extend: 'eui.container.PopupContainer',
@@ -2219,9 +3317,10 @@ Ext.define('eui.data.validator.Format', {
             chkTypeString = me.getChkString()[me.getChkType()],
             chkTypeMessage = me.getChkString()[me.getChkType() + '_MSG'];
         if (this.getChkType()) {
-            value = value.replace(/(\s*)/g, "");
+            if (!Ext.isNumber(value)) {
+                value = value.replace(/(\s*)/g, "");
+            }
             for (var i = 0; i < value.length; i++) {
-                console.log(value, value.substring(i, i + 1));
                 result = me.getChkString()[me.getChkType()].test(value.substring(i, i + 1));
                 if (!result) {
                     break;
@@ -2345,7 +3444,7 @@ Ext.define('eui.form.CheckboxGroup', {
     mixins: [
         'eui.mixin.FormField'
     ],
-    cellCls: 'fo-table-row-td',
+    cellCls: 'fo-table-row-td eui-radio',
     width: '100%',
     /***
      * object 아래 배열을 단순 배열로 처리하기 위한 로직을 기존 로직에 추가함.
@@ -3383,7 +4482,7 @@ Ext.define('eui.form.RadioGroup', {
     mixins: [
         'eui.mixin.FormField'
     ],
-    cellCls: 'fo-table-row-td',
+    cellCls: 'fo-table-row-td eui-radio',
     width: '100%',
     simpleValue: true,
     initComponent: function() {
@@ -3528,7 +4627,11 @@ Ext.define('eui.form.field.Checkbox', {
     width: '100%',
     initComponent: function() {
         var me = this;
+        me.suspendEvent('change');
         me.callParent(arguments);
+        me.on('beforerender', function() {
+            me.resumeEvent('change');
+        });
     },
     /***
      * Y & N 을 반환한다.
@@ -3548,10 +4651,7 @@ Ext.define('eui.form.field.ComboBoxController', {
         var me = this;
         // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
         if (combo.column && combo.valueColumnDataIndex) {
-            var grid = combo.column.up('tablepanel');
-            var selModel = grid.getSelectionModel();
-            var rec = selModel.getLastSelected();
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
+            me.getView().selectedRecord.set(combo.valueColumnDataIndex, record.get(combo.valueField));
         }
         me.nextBindFields(record);
     },
@@ -3683,7 +4783,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                                 field.ownerNextBindVar = fieldArr[0];
                                 field.ownerNextBindParam = fieldParam;
                                 field.ownerNextBindFieldId = combo.getId();
-                                field.proxyParams[fieldParam] = record.get((field.column ? combo.originalValueField : combo.valueField));
+                                field.proxyParams[fieldParam] = record.get((combo.valueField));
                                 //                                console.log('field.proxyParams', field.proxyParams);
                                 // 그리드 에디터일 경우
                                 var enableEditor = true;
@@ -3718,11 +4818,8 @@ Ext.define('eui.form.field.ComboBoxController', {
                         var editor = field.config.editor;
                         if (!field.hasEditor()) {
                             console.log('editor 존재하지 않아 obj에 설정함. :', fieldParam, combo.getId());
-                            var proxyParams = editor.setProxyParams();
-                            proxyParams[fieldParam] = (record ? record.get(combo.originalValueField) : null);
-                            editor.setProxyParams = function() {
-                                return proxyParams;
-                            };
+                            var proxyParams = editor.getProxyParams();
+                            proxyParams[fieldParam] = (record ? record.get(combo.valueField) : null);
                             editor.ownerNextBindVar = fieldArr[0];
                             editor.ownerNextBindParam = fieldParam;
                             editor.ownerNextBindFieldId = combo.getId();
@@ -3760,8 +4857,14 @@ Ext.define('eui.form.field.ComboBoxController', {
     getComboData: function() {
         var me = this,
             param = {},
-            combo = this.getView();
+            combo = this.getView(),
+            vm = combo.lookupViewModel();
         param[combo.defaultParam] = combo[combo.defaultParam];
+        //        // 외부 파라메터 전달시
+        //        // params: {  aa : '11' }
+        //        if(combo.params){
+        //            Ext.apply(param, combo.params);
+        //        }
         /***
          * 외부 폼필드 연계 처리
          * 뷰모델의 바인드를 이용.
@@ -3772,8 +4875,11 @@ Ext.define('eui.form.field.ComboBoxController', {
                 bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
                 bindFieldName = bindFieldName.split('@')[0],
                 bindValue = bindVar.split('@');
-            param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
+            if (vm) {
+                param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : vm.get(bindVarArr[0]));
+            }
         });
+        // console.log('combo.getProxyParams()', combo.getProxyParams())
         Ext.apply(param, combo.getProxyParams());
         return param;
     },
@@ -3825,20 +4931,6 @@ Ext.define('eui.form.field.ComboBoxController', {
         if (view.store.storeId != 'ext-empty-store') {
             return;
         }
-        //        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //            var retValue = true;
-        //            console.log('editor:', idx, field.getEditor())
-        ////            if (field.getEditor()) {
-        ////                retValue = true;
-        ////            }
-        //            return retValue;
-        //        });
-        //        Ext.defer(function () {
-        //        if(view.getId() === 'NEXT12') {
-        //        }
-        //        },1000)
-        //        console.log('editorColumns1', view.getId(), editorColumns)
-        view.proxyParams = view.setProxyParams();
         if (view.useLocalFilter) {
             view.queryMode = 'local';
         }
@@ -4062,7 +5154,7 @@ Ext.define('eui.form.field.ComboBox', {
          *  이 설정을 이용하면 뷰모델과 상관없이 특정 이름으로 정해진 값을 전달할 수도 있다.
          *  @example
          *
-         *  xtype: 'spcombo',
+         *  xtype: 'euicombo',
          *  editable: true,
          *  relBindVars: ['CUSTOMER_CODE|CSCODE@2000'],
          *
@@ -4100,25 +5192,17 @@ Ext.define('eui.form.field.ComboBox', {
     },
     initComponent: function() {
         var me = this;
-        //        console.log('initComponent..', me.getId())
         if (me.column && me.valueColumnDataIndex) {
+            // tab 키로 그리드 내부에서 이동하면 select되지 않는다.
+            me.column.getView().ownerGrid.getCellEditor().on('beforeedit', function(editor, context) {
+                me.selectedRecord = context.record;
+            });
             Ext.apply(me, {
                 originalValueField: me.valueField,
                 valueField: me.displayField
             });
         }
         me.callParent(arguments);
-    },
-    /***
-     * 재정의 용도로 사용한다.
-     * @exmaple
-     * this.proxyParams = {
-     *      myParam1 : '1',
-     *      myParam2 : 'AA'
-     * }
-     */
-    setProxyParams: function() {
-        return {};
     },
     clearValue: function() {
         this.callParent(arguments);
@@ -4146,999 +5230,8 @@ Ext.define('eui.form.field.ComboBox', {
         if (this.getBind() && this.getBind()['value'] && this.getBind().value.stub.hadValue) {
             return true;
         }
-        return false;
-    }
-});
-
-Ext.define('eui.form.field.ComboBoxController_', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.spcombo_',
-    getLastSelectedRecord: function(combo) {
-        if (!combo) {
-            combo = this.getView();
-        }
-        var grid = combo.column.up('tablepanel'),
-            selModel = grid.getSelectionModel(),
-            rec = selModel.getLastSelected();
-        return rec;
-    },
-    onSelect: function(combo, record) {
-        var me = this;
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        if (combo.column && combo.valueColumnDataIndex) {
-            var rec = me.getLastSelectedRecord();
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
-        }
-        me.nextBindFields(record);
-    },
-    /***
-     * lastQuery를 지우면 콤보를 매번재로드한다.
-     * 이전 조건이 변경될 경우면 재로드하도록 해야한다.
-     */
-    beforeCheckParamValue: function(qe) {
-        var me = this,
-            combo = this.getView(),
-            extraParams = combo.store.getProxy().extraParams,
-            currentParams = this.getComboData();
-        /***
-         * useLocalFilter : true일 경우는 queryMode가 local이다.
-         * 최초 로드를 위해 인위적으로 store를 로드한다.
-         * 최초 값이 설정되었을 경우 이미 로드했으므로 로드하지 않는다.(checkAutoLoad => false)
-         */
-        if (combo.useLocalFilter && qe.combo.lastQuery == undefined && !combo.checkAutoLoad()) {
-            combo.store.load({
-                callback: function() {
-                    combo.expand();
-                }
-            });
-        }
-        /***
-         *
-         * 초기 값이 설정될 경우(value, bind) autoLoad:true로 데이터를 로딩하도록 checkAutoLoad() 메소드가 결정한다.
-         * 이 후 트리거를 클릭하면 lastQuery가 undefined이므로 다시 로딩하게 된다.
-         * 즉 값이 설정되어 최초 로드한 이후에도 불필요하게 재로드 되는 것을 방지.
-         * 조건 1: queryMode는 remote일 경우다.
-         * 조건 2: 사용자에 의해 한번도 쿼리하지 않았다.
-         * 조건 3: checkAutoLoad()메소드는 값이 존재할 경우 true를 반환 할 것이다.
-         */
-        if (combo.queryMode == 'remote' && (qe.combo.lastQuery == undefined) && combo.checkAutoLoad()) {
-            qe.combo.lastQuery = '';
-        }
-        // 이 콤보를 참조하고 있는 콤보가 있을 경우.
-        if (combo.ownerNextBindVar && combo.column) {
-            var ownerCombo = Ext.getCmp(combo.ownerNextBindFieldId),
-                rec = me.getLastSelectedRecord(ownerCombo),
-                searfield = (ownerCombo.valueColumnDataIndex ? ownerCombo.valueColumnDataIndex : ownerCombo.column.dataIndex);
-            ownerCombo.setValue(rec.get(searfield));
-            currentParams[combo.ownerNextBindParam] = ownerCombo.getValue();
-        }
-        // 참조하고 있는 모든 필드 등의 값이 변경되었다면 콤보는 재로드 해야한다.
-        // 조건에 부합 할 경우 lastQuery를 지우도록 해 재로드가 가능하게 한다.
-        if (Ext.Object.toQueryString(extraParams) != Ext.Object.toQueryString(currentParams)) {
-            Ext.apply(combo.store.getProxy().extraParams, currentParams);
-            delete qe.combo.lastQuery;
-            if (qe.combo.useLocalFilter) {
-                qe.combo.store.load();
-            }
-        }
-    },
-    getGrid: function(combo) {
-        if (!combo) {
-            combo = this.getView();
-        }
-        return combo.column.up('tablepanel');
-    },
-    /*enableEditor: function (editor) {
-        var grid = editor.column.up('tablepanel'),
-            rec = this.getLastSelectedRecord(editor),
-            row = grid.store.indexOf(rec);
-        if (rec) {
-            grid.editingPlugin.startEditByPosition({row: row, column: editor.column.fullColumnIndex});
-            return true;
-        }
-        return false;
-    },*/
-    enableEditor: function(column) {
-        var grid = column.up('tablepanel'),
-            selModel = grid.getSelectionModel(),
-            rec = selModel.getLastSelected(),
-            row = grid.store.indexOf(rec);
-        if (rec) {
-            grid.editingPlugin.startEditByPosition({
-                row: row,
-                column: column.fullColumnIndex
-            });
-            return true;
-        }
-        return false;
-    },
-    getAllBindFormFields: function(combo) {
-        return Ext.Array.filter(Ext.ComponentQuery.query('[bind][isFormField]'), function(field) {
-            var retValue = true;
-            if (combo.getId() == field.getId()) {
-                retValue = false;
-            }
-            if (field.column) {
-                retValue = false;
-            }
-            return retValue;
-        });
-    },
-    getAllEditorColumns: function(combo) {
-        var me = this;
-        var ret = Ext.Array.filter(Ext.Array.clone(Ext.ComponentQuery.query('gridcolumn')), function(column) {
-                var retValue = false;
-                //            column = Ext.clone(column);
-                if (me.getGrid().getId() == column.ownerCt.grid.getId()) {
-                    retValue = true;
-                }
-                //            if (column.getEditor(me.getLastSelectedRecord(combo))) {
-                //                retValue = true;
-                //            }
-                return retValue;
-            });
-        return ret;
-    },
-    setNextBindSpCombo: function(combo, record, fieldArr, fieldParam, field) {
-        field.setValue(null);
-        if (record) {
-            // select이벤트에 의해 연계처리.
-            /***
-             * 역방향으로 자신을 참조하고 있는 대상을 알기위한 정보설정.
-             */
-            field.ownerNextBindVar = fieldArr[0];
-            field.ownerNextBindParam = fieldParam;
-            field.ownerNextBindFieldId = combo.getId();
-            field.proxyParams[fieldParam] = record.get((field.column ? combo.originalValueField : combo.valueField));
-            // 그리드 에디터일 경우
-            var enableEditor = true;
-            if (field.column) {
-                enableEditor = this.enableEditor(field.column);
-            }
-            if (combo.nextBindComboExpand && enableEditor) {
-                Ext.defer(function() {
-                    Ext.get(field.getId()).select('.x-form-arrow-trigger').elements[0].click();
-                }, 500);
-            }
-        } else {
-            // clear
-            if (field.column) {
-                me.enableEditor(field);
-                Ext.defer(function() {
-                    field.column.up('tablepanel').editingPlugin.completeEdit();
-                }, 100);
-            }
-            field.clearValue();
-        }
-    },
-    nextBindFields: function(record) {
-        var me = this,
-            combo = this.getView();
-        if (!combo.nextBindFields) {
-            return;
-        }
-        var targetFields = me.getAllBindFormFields(combo);
-        if (combo.column) {
-            Ext.each(me.getAllEditorColumns(combo), function(column) {
-                if (column.config.editor) {
-                    targetFields.push(column.getEditor());
-                }
-            });
-        }
-        console.log('targetFields', targetFields);
-        Ext.each(combo.nextBindFields, function(bindFieldInfo) {
-            var fieldArr = bindFieldInfo.split('|'),
-                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-            Ext.each(targetFields, function(field) {
-                var className = Ext.ClassManager.getNameByAlias('widget.' + field.xtype);
-                var viewClass = Ext.ClassManager.get(className);
-                if (field.isFormField && field.getBind()) {
-                    if (field.getBind().hasOwnProperty('value') && fieldArr[0] == field.getBind().value.stub.path) {
-                        //                        // 연계 콤보
-                        if (viewClass.prototype.xtypesMap['spcombo']) {
-                            console.log('xtype:', field, fieldArr[0]);
-                            me.setNextBindSpCombo(combo, record, fieldArr, fieldParam, field);
-                        } else {
-                            // 일반적인 폼필드.
-                            field.setValue(null);
-                        }
-                    }
-                } else {}
-            });
-        });
-    },
-    //                    var className2 = Ext.ClassManager.getNameByAlias('widget.' + field.config.editor.xtype);
-    //                    var viewClass2 = Ext.ClassManager.get(className2);
-    //                    console.log(className2, viewClass2.prototype.xtypesMap, '컬럼에서 작동할 경우: ', fieldArr[0], field.config.editor.bind);
-    //                    if (viewClass2.prototype.xtypesMap['spcombo']) {
-    //                        me.setNextBindSpCombo(combo, record, fieldArr, fieldParam, field, field);
-    //                    }
-    ////                    if (fieldArr[0] == field.getBind().value.stub.path) {
-    ////                        // 연계 콤보
-    ////                        if (viewClass.prototype.xtypesMap['spcombo']) {
-    ////                            me.setNextBindSpCombo(combo, record, fieldArr, fieldParam, field);
-    ////                        } else {    // 일반적인 폼필드.
-    ////                            field.setValue(null);
-    ////                        }
-    ////                    }
-    clearValue: function() {
-        var me = this,
-            combo = this.getView();
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        if (combo.column && combo.valueColumnDataIndex) {
-            var rec = me.getLastSelectedRecord();
-            rec.set(combo.valueColumnDataIndex, null);
-        }
-        me.nextBindFields(null);
-    },
-    // 서버에 전달되는 내부정의 파라메터를 반환한다.
-    // 1. groupCode :
-    // 2. 연계정보를 다시 읽는다.
-    //    다른 폼필드의 값을 연계할 경우는 뷰모델의 변수를 이용한다.
-    getComboData: function() {
-        var me = this,
-            param = {},
-            combo = this.getView();
-        param[combo.defaultParam] = combo[combo.defaultParam];
-        // 나의 바인드 변수를 참조하고 있는 컬럼의 에디터를 찾는다.
-        // 현재 선택된 레코드의 값으로 에디터의
-        if (combo.column) {}
-        //            var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field) {
-        //                var retValue = true;
-        ////                if (field.getEditor()) {
-        ////                    retValue = true;
-        ////                }
-        //                return retValue;
-        //            });
-        //            Ext.each(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //                Ext.each(combo.column.up('tablepanel').columns, function (field, idx) {
-        //                    var field2 = Ext.clone(field);
-        ////                    if(field['editor']){
-        //                        console.log('editor:', combo.getId(), field2.editor, idx);
-        ////                        Ext.each(field.editor.nextBindFields, function (bindFieldInfo) {
-        ////                            var fieldArr = bindFieldInfo.split('|'),
-        ////                                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-        ////
-        ////                            if(fieldParam == combo.name){
-        ////                                debugger;
-        ////                            }
-        ////                        });
-        ////                    }
-        //                });
-        //            console.log('editorColumns2', combo.getId(), editorColumns)
-        //            Ext.each(editorColumns, function (nextfield) {
-        //                Ext.each(nextfield.getEditor().nextBindFields, function (bindFieldInfo) {
-        //                    var fieldArr = bindFieldInfo.split('|'),
-        //                        fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-        //
-        //                    if(fieldParam == combo.name){
-        //                        debugger;
-        //                    }
-        //                });
-        //
-        //            })
-        /***
-         * 외부 폼필드 연계 처리
-         * 뷰모델의 바인드를 이용.
-         * 바인드변수명:파라메터명@설정값
-         */
-        Ext.each(combo.relBindVars, function(bindVar) {
-            var bindVarArr = bindVar.split('|'),
-                bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
-                bindFieldName = bindFieldName.split('@')[0],
-                bindValue = bindVar.split('@');
-            param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
-        });
-        Ext.apply(param, combo.getProxyParams());
-        return param;
-    },
-    createStore: function(component, options) {
-        var me = this,
-            view = this.getView(),
-            store = Ext.create('Ext.data.Store', {
-                autoDestroy: true,
-                autoLoad: false,
-                //view.checkAutoLoad(),
-                storeId: view.generateUUID(),
-                fields: options.fields,
-                proxy: {
-                    type: view.proxyType,
-                    noCache: false,
-                    // to remove param "_dc"
-                    pageParam: false,
-                    // to remove param "page"
-                    startParam: false,
-                    // to remove param "start"
-                    limitParam: false,
-                    // to remove param "limit"
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    },
-                    paramsAsJson: true,
-                    actionMethods: {
-                        create: 'POST',
-                        read: 'POST',
-                        update: 'POST',
-                        destroy: 'POST'
-                    },
-                    url: options.url,
-                    reader: {
-                        type: 'json',
-                        rootProperty: 'data',
-                        transform: options.transform || false
-                    },
-                    extraParams: options.params
-                }
-            });
-        component.bindStore(store);
-        return store;
-    },
-    init: function() {
-        var me = this,
-            view = this.getView();
-        // 외부에서 store 정의 된 경우 이후 처리안함.
-        if (view.store.storeId != 'ext-empty-store') {
-            return;
-        }
-        //        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //            var retValue = true;
-        //            console.log('editor:', idx, field.getEditor())
-        ////            if (field.getEditor()) {
-        ////                retValue = true;
-        ////            }
-        //            return retValue;
-        //        });
-        //        Ext.defer(function () {
-        //        if(view.getId() === 'NEXT12') {
-        //        }
-        //        },1000)
-        //        console.log('editorColumns1', view.getId(), editorColumns)
-        view.setProxyParams();
-        if (view.useLocalFilter) {
-            view.queryMode = 'local';
-        }
-        // 공통 코드를 사용하지 않을 경우.
-        //        if (!Ext.isEmpty(view.groupCode)) {
-        // 공통 코드를 사용할 경우.
-        me.createStore(view, {
-            url: view.proxyUrl,
-            fields: [],
-            params: me.getComboData()
-        });
-    }
-});
-//        }
-
-Ext.define('eui.form.field.ComboBoxController_today', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.spcombotoday',
-    onSelect: function(combo, record) {
-        var me = this;
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        if (combo.column && combo.valueColumnDataIndex) {
-            var grid = combo.column.up('tablepanel');
-            var selModel = grid.getSelectionModel();
-            var rec = selModel.getLastSelected();
-            rec.set(combo.valueColumnDataIndex, record.get(combo.originalValueField));
-        }
-        me.nextBindFields(record);
-    },
-    /***
-     * lastQuery를 지우면 콤보를 매번재로드한다.
-     * 이전 조건이 변경될 경우면 재로드하도록 해야한다.
-     */
-    beforeCheckParamValue: function(qe) {
-        var me = this,
-            combo = this.getView(),
-            extraParams = combo.store.getProxy().extraParams,
-            currentParams = this.getComboData();
-        /***
-         * useLocalFilter : true일 경우는 queryMode가 local이다.
-         * 최초 로드를 위해 인위적으로 store를 로드한다.
-         * 최초 값이 설정되었을 경우 이미 로드했으므로 로드하지 않는다.(checkAutoLoad => false)
-         */
-        if (combo.useLocalFilter && qe.combo.lastQuery == undefined && !combo.checkAutoLoad()) {
-            combo.store.load({
-                callback: function() {
-                    combo.expand();
-                }
-            });
-        }
-        /***
-         *
-         * 초기 값이 설정될 경우(value, bind) autoLoad:true로 데이터를 로딩하도록 checkAutoLoad() 메소드가 결정한다.
-         * 이 후 트리거를 클릭하면 lastQuery가 undefined이므로 다시 로딩하게 된다.
-         * 즉 값이 설정되어 최초 로드한 이후에도 불필요하게 재로드 되는 것을 방지.
-         * 조건 1: queryMode는 remote일 경우다.
-         * 조건 2: 사용자에 의해 한번도 쿼리하지 않았다.
-         * 조건 3: checkAutoLoad()메소드는 값이 존재할 경우 true를 반환 할 것이다.
-         */
-        if (combo.queryMode == 'remote' && (qe.combo.lastQuery == undefined) && combo.checkAutoLoad()) {
-            qe.combo.lastQuery = '';
-        }
-        // 이 콤보를 참조하고 있는 콤보가 있을 경우.
-        if (combo.ownerNextBindVar && combo.column) {
-            var ownerCombo = Ext.getCmp(combo.ownerNextBindFieldId),
-                grid = ownerCombo.column.up('tablepanel'),
-                selModel = grid.getSelectionModel(),
-                rec = selModel.getLastSelected(),
-                searfield = (ownerCombo.valueColumnDataIndex ? ownerCombo.valueColumnDataIndex : ownerCombo.column.dataIndex);
-            ownerCombo.setValue(rec.get(searfield));
-            currentParams[combo.ownerNextBindParam] = ownerCombo.getValue();
-        }
-        // 참조하고 있는 모든 필드 등의 값이 변경되었다면 콤보는 재로드 해야한다.
-        // 조건에 부합 할 경우 lastQuery를 지우도록 해 재로드가 가능하게 한다.
-        console.log('조건 확인1: ', Ext.Object.toQueryString(extraParams));
-        console.log('조건 확인2: ', Ext.Object.toQueryString(currentParams));
-        if (Ext.Object.toQueryString(extraParams) != Ext.Object.toQueryString(currentParams)) {
-            Ext.apply(combo.store.getProxy().extraParams, currentParams);
-            delete qe.combo.lastQuery;
-            if (qe.combo.useLocalFilter) {
-                qe.combo.store.load();
-            }
-        }
-    },
-    enableEditor: function(editor) {
-        var grid = editor.column.up('tablepanel');
-        var selModel = grid.getSelectionModel();
-        var rec = selModel.getLastSelected();
-        var row = grid.store.indexOf(rec);
-        if (rec) {
-            grid.editingPlugin.startEditByPosition({
-                row: row,
-                column: editor.column.fullColumnIndex
-            });
-            return true;
-        }
-        return false;
-    },
-    nextBindFields: function(record) {
-        var me = this,
-            combo = this.getView();
-        if (!combo.nextBindFields) {
-            return;
-        }
-        var targetFields = Ext.Array.filter(Ext.ComponentQuery.query('[bind]'), function(field) {
-                var retValue = true;
-                if (combo.getId() == field.getId()) {
-                    retValue = false;
-                }
-                if (field.column) {
-                    retValue = false;
-                }
-                return retValue;
-            });
-        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function(column) {
-                var retValue = false;
-                if (combo.column && combo.column.up('tablepanel').getId() == column.ownerCt.grid.getId() && column.getEditor()) {
-                    retValue = true;
-                }
-                return retValue;
-            });
-        console.log('editorColumn', editorColumns);
-        var targetFields2 = Ext.Array.filter(Ext.ComponentQuery.query('hcombobox[isFormField]'), function(field) {
-                var retValue = true;
-                return retValue;
-            });
-        console.log('targetFields2', targetFields2);
-        Ext.each(targetFields2, function(item) {
-            console.log('combo:', item.rendered, item.getId());
-        });
-        Ext.each(editorColumns, function(column) {
-            targetFields.push(column.getEditor());
-        });
-        Ext.each(combo.nextBindFields, function(bindFieldInfo) {
-            var fieldArr = bindFieldInfo.split('|'),
-                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-            Ext.each(targetFields, function(field) {
-                var className = Ext.ClassManager.getNameByAlias('widget.' + field.xtype);
-                var viewClass = Ext.ClassManager.get(className);
-                if (field.isFormField && field.getBind()) {
-                    if (field.getBind().hasOwnProperty('value') && fieldArr[0] == field.getBind().value.stub.path) {
-                        // 연계 콤보
-                        if (viewClass.prototype.xtypesMap['spcombo']) {
-                            field.setValue(null);
-                            if (record) {
-                                // select이벤트에 의해 연계처리.
-                                field.ownerNextBindVar = fieldArr[0];
-                                field.ownerNextBindParam = fieldParam;
-                                field.ownerNextBindFieldId = combo.getId();
-                                console.log(field.proxyParams, record, field.column, combo.originalValueField, combo.valueField);
-                                field.proxyParams[fieldParam] = record.get((field.column ? combo.originalValueField : combo.valueField));
-                                // 그리드 에디터일 경우
-                                var enableEditor = true;
-                                if (field.column) {
-                                    enableEditor = me.enableEditor(field);
-                                }
-                                if (combo.nextBindComboExpand && enableEditor) {
-                                    Ext.defer(function() {}, //                                        Ext.get(field.getId()).select('.x-form-arrow-trigger').elements[0].click();
-                                    500);
-                                }
-                            } else {
-                                // clear
-                                if (field.column) {
-                                    me.enableEditor(field);
-                                    Ext.defer(function() {
-                                        field.column.up('tablepanel').editingPlugin.completeEdit();
-                                    }, 100);
-                                    field.clearValue();
-                                }
-                            }
-                        } else {
-                            // 일반적인 폼필드.
-                            field.setValue(null);
-                        }
-                    }
-                } else {}
-            });
-        });
-    },
-    //                    console.log(field.getId(), className)
-    clearValue: function() {
-        var me = this,
-            combo = this.getView();
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        if (combo.column && combo.valueColumnDataIndex) {
-            var grid = combo.column.up('tablepanel');
-            var selModel = grid.getSelectionModel();
-            var rec = selModel.getLastSelected();
-            rec.set(combo.valueColumnDataIndex, null);
-        }
-        me.nextBindFields(null);
-    },
-    // 서버에 전달되는 내부정의 파라메터를 반환한다.
-    // 1. groupCode :
-    // 2. 연계정보를 다시 읽는다.
-    //    다른 폼필드의 값을 연계할 경우는 뷰모델의 변수를 이용한다.
-    getComboData: function() {
-        var me = this,
-            param = {},
-            combo = this.getView();
-        param[combo.defaultParam] = combo[combo.defaultParam];
-        // 나의 바인드 변수를 참조하고 있는 컬럼의 에디터를 찾는다.
-        // 현재 선택된 레코드의 값으로 에디터의
-        if (combo.column) {}
-        //            var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field) {
-        //                var retValue = true;
-        ////                if (field.getEditor()) {
-        ////                    retValue = true;
-        ////                }
-        //                return retValue;
-        //            });
-        //            Ext.each(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //                Ext.each(combo.column.up('tablepanel').columns, function (field, idx) {
-        //                    var field2 = Ext.clone(field);
-        ////                    if(field['editor']){
-        //                        console.log('editor:', combo.getId(), field2.editor, idx);
-        ////                        Ext.each(field.editor.nextBindFields, function (bindFieldInfo) {
-        ////                            var fieldArr = bindFieldInfo.split('|'),
-        ////                                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-        ////
-        ////                            if(fieldParam == combo.name){
-        ////                                debugger;
-        ////                            }
-        ////                        });
-        ////                    }
-        //                });
-        //            console.log('editorColumns2', combo.getId(), editorColumns)
-        //            Ext.each(editorColumns, function (nextfield) {
-        //                Ext.each(nextfield.getEditor().nextBindFields, function (bindFieldInfo) {
-        //                    var fieldArr = bindFieldInfo.split('|'),
-        //                        fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-        //
-        //                    if(fieldParam == combo.name){
-        //                        debugger;
-        //                    }
-        //                });
-        //
-        //            })
-        /***
-         * 외부 폼필드 연계 처리
-         * 뷰모델의 바인드를 이용.
-         * 바인드변수명:파라메터명@설정값
-         */
-        Ext.each(combo.relBindVars, function(bindVar) {
-            var bindVarArr = bindVar.split('|'),
-                bindFieldName = (bindVarArr.length == 1 ? bindVarArr[0] : bindVarArr[1]),
-                bindFieldName = bindFieldName.split('@')[0],
-                bindValue = bindVar.split('@');
-            param[bindFieldName] = (bindValue.length == 2 ? bindValue[1] : me.getViewModel().get(bindVarArr[0]));
-        });
-        Ext.apply(param, combo.getProxyParams());
-        return param;
-    },
-    createStore: function(component, options) {
-        var me = this,
-            view = this.getView(),
-            store = Ext.create('Ext.data.Store', {
-                autoDestroy: true,
-                autoLoad: view.checkAutoLoad(),
-                storeId: view.generateUUID(),
-                fields: options.fields,
-                proxy: {
-                    type: view.proxyType,
-                    noCache: false,
-                    // to remove param "_dc"
-                    pageParam: false,
-                    // to remove param "page"
-                    startParam: false,
-                    // to remove param "start"
-                    limitParam: false,
-                    // to remove param "limit"
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    },
-                    paramsAsJson: true,
-                    actionMethods: {
-                        create: 'POST',
-                        read: 'POST',
-                        update: 'POST',
-                        destroy: 'POST'
-                    },
-                    url: options.url,
-                    reader: {
-                        type: 'json',
-                        rootProperty: 'data',
-                        transform: options.transform || false
-                    },
-                    extraParams: options.params
-                }
-            });
-        component.bindStore(store);
-        return store;
-    },
-    init: function() {
-        var me = this,
-            view = this.getView();
-        // 외부에서 store 정의 된 경우 이후 처리안함.
-        if (view.store.storeId != 'ext-empty-store') {
-            return;
-        }
-        //        var editorColumns = Ext.Array.filter(Ext.ComponentQuery.query('gridcolumn'), function (field, idx) {
-        //            var retValue = true;
-        //            console.log('editor:', idx, field.getEditor())
-        ////            if (field.getEditor()) {
-        ////                retValue = true;
-        ////            }
-        //            return retValue;
-        //        });
-        //        Ext.defer(function () {
-        //        if(view.getId() === 'NEXT12') {
-        //        }
-        //        },1000)
-        //        console.log('editorColumns1', view.getId(), editorColumns)
-        view.setProxyParams();
-        if (view.useLocalFilter) {
-            view.queryMode = 'local';
-        }
-        // 공통 코드를 사용하지 않을 경우.
-        //        if (!Ext.isEmpty(view.groupCode)) {
-        // 공통 코드를 사용할 경우.
-        me.createStore(view, {
-            url: view.proxyUrl,
-            fields: [],
-            params: me.getComboData()
-        });
-    }
-});
-//        }
-
-Ext.define('eui.form.field.ComboBox_', {
-    extend: 'Ext.form.field.ComboBox',
-    alias: 'widget.spcombo_',
-    requires: [
-        'Util',
-        "eui.form.field.ComboBoxController"
-    ],
-    controller: 'spcombo',
-    /***
-     * 요구 정의.
-     * 1. groupCode를 설정해 해당 코드를 가져온다.
-     * 2. 폼필드와 연계되어 해당 폼필드의 변경사항이 있을 경우
-     *      재로드한다.
-     * 3. queryMode : 'local'을 지정할 경우 내부 필터링된다.
-     *      이경우에도 연계된 폼필드가 있고 변경사항이 있다면
-     *      재로드해야한다.
-     */
-    /// 기본 설정.
-    hideLabel: true,
-    minChars: 1,
-    editable: false,
-    emptyText: '선택하세요',
-    cellCls: 'fo-table-row-td',
-    displayField: 'NM',
-    valueField: 'CD',
-    autoLoadOnValue: true,
-    width: '100%',
-    config: {
-        nextBindComboExpand: true,
-        /***
-         * @cfg {string} proxyUrl
-         * 데이터를 얻기 위한 서버사이드 주소
-         */
-        proxyUrl: {},
-        /***
-         * @cfg {string} defaultParam
-         * 콤보가 데이터를 얻기 위한 기본 파라메터이다.
-         * 코드성 데이터를 얻기 위해서는 코드집합의 구분자가 필요하다.
-         * 기본값은 groupCode이다.
-         */
-        defaultParam: 'groupCode',
-        /***
-         * @cfg {boolean} useLocalFilter
-         * editable:true해 입력된 값을 서버로 전달하지 않고
-         * 로드한 데이터를 활용한 필터를 작동시킨다.
-         * true일 경우 queryMode를 'local'로 변경한다.
-         */
-        useLocalFilter: true,
-        proxyParams: null,
-        proxyType: 'ajax',
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        /***
-         * @cfg {String} valueColumnDataIndex
-         * 그리드 내부 에디터로 사용 할 경우로 항상 코드명을 표현하기 위한 용도로
-         * 사용되며 이 설정은 에디터를 select한 이후 에디터 내부 코드에 해당하는
-         * 값을 그리드 모델에 write해주기 위한 용도다.         *
-         */
-        valueColumnDataIndex: null,
-        /***
-         *  @cfg {String Array} relBindVars
-         *  콤보가 데이터를 얻기 위해 참조하는 다른 뷰모델 데이터를 정의한다.
-         *  일반적으로 콤보는 폼패널 내부의 폼필드 값을 참조하거나 동적으로 변경되는
-         *  값을 콤보를 클릭할 때마다 불러와 서버사이드에 전달하도록 하기 위함이다.
-         *  이 설정을 이용하면 뷰모델과 상관없이 특정 이름으로 정해진 값을 전달할 수도 있다.
-         *  @example
-         *
-         *  xtype: 'spcombo',
-         *  editable: true,
-         *  relBindVars: ['CUSTOMER_CODE|CSCODE@2000'],
-         *
-         *  CUSTOMER_CODE   : 뷰모델 변수명(존재하지 않는 경우는 값이 null로 전달되므로 이 경우는 뷰모델과 상관없이 서버사이드에 원하는 값을 지정해 전달할 목적으로 사용한다.)
-         *  |               : 서버사이드에 전송될 이름을 변경할 경우 구분자를 사용해 이후 정의한다.
-         *  CSCODE          : 뷰모델 변수명 대신 CSCODE라는 이름으로 보낼수 있다.
-         *  @               : 뷰모델 변수의 값을 보내지 않고 원하는 값을 지정할 경우 구분자.
-         *  2000            : 뷰모델 변수의 값 대신 전달할 값.
-         *
-         */
-        relBindVars: null
-    },
-    // clear button add
-    triggers: {
-        arrow: {
-            cls: 'x-form-clear-trigger',
-            handler: 'clearValue',
-            scope: 'this'
-        }
-    },
-    valueNotFoundText: '검색결과가 존재하지 않습니다.',
-    listeners: {
-        select: 'onSelect',
-        beforequery: 'beforeCheckParamValue'
-    },
-    initComponent: function() {
-        var me = this;
-        console.log('initComponent..', me.getId());
-        if (me.column && me.valueColumnDataIndex) {
-            Ext.apply(me, {
-                originalValueField: me.valueField,
-                valueField: me.displayField
-            });
-        }
-        me.callParent(arguments);
-        me.on('afterrender', function() {
-            Ext.each(Ext.Array.clone(Ext.ComponentQuery.query('gridcolumn')), function(field, idx) {
-                if (field.hasOwnProperty('editor')) {
-                    console.log(field.getEditor());
-                }
-            });
-        });
-    },
-    //                        Ext.each(field.editor.nextBindFields, function (bindFieldInfo) {
-    //                            var fieldArr = bindFieldInfo.split('|'),
-    //                                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-    //
-    //                            if(fieldParam == combo.name){
-    //                                debugger;
-    //                            }
-    //                        });
-    //                    }
-    /***
-     * 재정의 용도로 사용한다.
-     * @exmaple
-     * this.proxyParams = {
-     *      myParam1 : '1',
-     *      myParam2 : 'AA'
-     * }
-     */
-    setProxyParams: function() {
-        this.proxyParams = {};
-    },
-    clearValue: function() {
-        this.callParent(arguments);
-        this.getController().clearValue();
-    },
-    generateUUID: function() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = (d + Math.random() * 16) % 16 | 0;
-                d = Math.floor(d / 16);
-                return (c == 'x' ? r : (r & 7 | 8)).toString(16);
-            });
-        return uuid;
-    },
-    /***
-     * value 또는 bind에 의해 값이 설정될 경우만
-     * autoLoad: true 하고 나머진 false한다.
-     * 값이 설정되지 않은 경우에는 데이터를 미리 가져오지
-     * 않도록 한다.
-     */
-    checkAutoLoad: function() {
-        if (this.value) {
-            return true;
-        }
-        if (this.getBind() && this.getBind()['value'] && this.getBind().value.stub.hadValue) {
-            return true;
-        }
-        return false;
-    }
-});
-
-Ext.define('eui.form.field.ComboBox_today', {
-    extend: 'Ext.form.field.ComboBox',
-    alias: 'widget.spcombotoday',
-    requires: [
-        'Util',
-        "eui.form.field.ComboBoxController"
-    ],
-    controller: 'spcombo',
-    /***
-     * 요구 정의.
-     * 1. groupCode를 설정해 해당 코드를 가져온다.
-     * 2. 폼필드와 연계되어 해당 폼필드의 변경사항이 있을 경우
-     *      재로드한다.
-     * 3. queryMode : 'local'을 지정할 경우 내부 필터링된다.
-     *      이경우에도 연계된 폼필드가 있고 변경사항이 있다면
-     *      재로드해야한다.
-     */
-    /// 기본 설정.
-    hideLabel: true,
-    minChars: 1,
-    editable: false,
-    emptyText: '선택하세요',
-    cellCls: 'fo-table-row-td',
-    displayField: 'NM',
-    valueField: 'CD',
-    autoLoadOnValue: true,
-    width: '100%',
-    lastQuery: '',
-    //    proxyParams : {},
-    config: {
-        nextBindComboExpand: true,
-        /***
-         * @cfg {string} proxyUrl
-         * 데이터를 얻기 위한 서버사이드 주소
-         */
-        proxyUrl: {},
-        /***
-         * @cfg {string} defaultParam
-         * 콤보가 데이터를 얻기 위한 기본 파라메터이다.
-         * 코드성 데이터를 얻기 위해서는 코드집합의 구분자가 필요하다.
-         * 기본값은 groupCode이다.
-         */
-        defaultParam: 'groupCode',
-        /***
-         * @cfg {boolean} useLocalFilter
-         * editable:true해 입력된 값을 서버로 전달하지 않고
-         * 로드한 데이터를 활용한 필터를 작동시킨다.
-         * true일 경우 queryMode를 'local'로 변경한다.
-         */
-        useLocalFilter: false,
-        proxyParams: null,
-        proxyType: 'ajax',
-        // 그리드 내부에서 사용시 코드(CD)에 해당하는 컬럼.
-        /***
-         * @cfg {String} valueColumnDataIndex
-         * 그리드 내부 에디터로 사용 할 경우로 항상 코드명을 표현하기 위한 용도로
-         * 사용되며 이 설정은 에디터를 select한 이후 에디터 내부 코드에 해당하는
-         * 값을 그리드 모델에 write해주기 위한 용도다.         *
-         */
-        valueColumnDataIndex: null,
-        /***
-         *  @cfg {String Array} relBindVars
-         *  콤보가 데이터를 얻기 위해 참조하는 다른 뷰모델 데이터를 정의한다.
-         *  일반적으로 콤보는 폼패널 내부의 폼필드 값을 참조하거나 동적으로 변경되는
-         *  값을 콤보를 클릭할 때마다 불러와 서버사이드에 전달하도록 하기 위함이다.
-         *  이 설정을 이용하면 뷰모델과 상관없이 특정 이름으로 정해진 값을 전달할 수도 있다.
-         *  @example
-         *
-         *  xtype: 'spcombo',
-         *  editable: true,
-         *  relBindVars: ['CUSTOMER_CODE|CSCODE@2000'],
-         *
-         *  CUSTOMER_CODE   : 뷰모델 변수명(존재하지 않는 경우는 값이 null로 전달되므로 이 경우는 뷰모델과 상관없이 서버사이드에 원하는 값을 지정해 전달할 목적으로 사용한다.)
-         *  |               : 서버사이드에 전송될 이름을 변경할 경우 구분자를 사용해 이후 정의한다.
-         *  CSCODE          : 뷰모델 변수명 대신 CSCODE라는 이름으로 보낼수 있다.
-         *  @               : 뷰모델 변수의 값을 보내지 않고 원하는 값을 지정할 경우 구분자.
-         *  2000            : 뷰모델 변수의 값 대신 전달할 값.
-         *
-         */
-        relBindVars: null
-    },
-    // clear button add
-    triggers: {
-        arrow: {
-            cls: 'x-form-clear-trigger',
-            handler: 'clearValue',
-            scope: 'this'
-        }
-    },
-    valueNotFoundText: '검색결과가 존재하지 않습니다.',
-    listeners: {
-        //render: 'initCombo',
-        select: 'onSelect',
-        beforequery: 'beforeCheckParamValue'
-    },
-    initComponent: function() {
-        var me = this;
-        console.log('initComponent..', me.getId());
-        if (me.column && me.valueColumnDataIndex) {
-            Ext.apply(me, {
-                originalValueField: me.valueField,
-                valueField: me.displayField
-            });
-        }
-        me.callParent(arguments);
-        me.on('afterrender', function() {
-            Ext.each(Ext.Array.clone(Ext.ComponentQuery.query('gridcolumn')), function(field, idx) {});
-        });
-    },
-    //                if(field.hasOwnProperty('editor')){
-    //                    console.log(field.getEditor())
-    //                }
-    //                        Ext.each(field.editor.nextBindFields, function (bindFieldInfo) {
-    //                            var fieldArr = bindFieldInfo.split('|'),
-    //                                fieldParam = (fieldArr.length == 1 ? fieldArr[0] : fieldArr[1]);
-    //
-    //                            if(fieldParam == combo.name){
-    //                                debugger;
-    //                            }
-    //                        });
-    //                    }
-    /***
-     * 재정의 용도로 사용한다.
-     * @exmaple
-     * this.proxyParams = {
-     *      myParam1 : '1',
-     *      myParam2 : 'AA'
-     * }
-     */
-    setProxyParams: function() {
-        this.proxyParams = {};
-    },
-    clearValue: function() {
-        this.callParent(arguments);
-        this.getController().clearValue();
-    },
-    generateUUID: function() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = (d + Math.random() * 16) % 16 | 0;
-                d = Math.floor(d / 16);
-                return (c == 'x' ? r : (r & 7 | 8)).toString(16);
-            });
-        return uuid;
-    },
-    /***
-     * value 또는 bind에 의해 값이 설정될 경우만
-     * autoLoad: true 하고 나머진 false한다.
-     * 값이 설정되지 않은 경우에는 데이터를 미리 가져오지
-     * 않도록 한다.
-     */
-    checkAutoLoad: function() {
-        if (this.value) {
-            return true;
-        }
-        if (this.getBind() && this.getBind()['value'] && this.getBind().value.stub.hadValue) {
+        // 값이 설정되지 않을 경우. 콤보가 로드 되지 않는 현상 해결..
+        if (this.column && !this.value) {
             return true;
         }
         return false;
@@ -5158,7 +5251,7 @@ Ext.define('eui.form.field.Date', {
     submitFormat: 'Ymd',
     format: 'Y-m-d',
     altFormats: 'Ymd',
-    value: new Date(),
+    //    value: new Date(),
     dateNum: null,
     width: '100%',
     cellCls: 'fo-table-row-td',
@@ -5619,26 +5712,21 @@ Ext.define('eui.form.field.Number', {
         return (neg ? '-' : '') + formatString.replace(/[\d,?\.?]+/, fnum);
     },
     valueToRaw: function(value) {
-        if (!this.useThousandSeparator)  {
+        if (!this.useThousandSeparator) {
             return this.callParent(arguments);
         }
-        
         var me = this;
         var format = "000,000";
         for (var i = 0; i < me.decimalPrecision; i++) {
             if (i == 0) {
                 format += ".";
             }
-            format += "0";
+            format += "#";
         }
-        //        if (value !== undefined && Ext.Number.toFixed(value, 0) == value) {
-        //            console.log(Ext.Number.toFixed(value, 0),  value)
-        //            format = "000,000";
-        //        }
-        value = me.parseValue(me.exNumber(value, format));
+        value = me.parseValue(Ext.util.Format.number(value && value.toString(), format));
         value = me.fixPrecision(value);
         value = Ext.isNumber(value) ? value : parseFloat(me.toRawNumber(value));
-        value = isNaN(value) ? '' : String(me.exNumber(value, format)).replace('.', me.decimalSeparator);
+        value = isNaN(value) ? '' : Ext.util.Format.number(value && value.toString(), format).replace('.', me.decimalSeparator);
         return value;
     }
 });
@@ -7531,6 +7619,7 @@ Ext.define('eui.grid.Panel', {
         'title'
     ],
     requires: [
+        'Ext.ux.statusbar.StatusBar',
         'Ext.ux.grid.PageSize'
     ],
     mixins: [
@@ -7594,6 +7683,49 @@ Ext.define('eui.grid.Panel', {
         }
         me.callParent(arguments);
     },
+    getCellEditor: function() {
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        } else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        return editor;
+    },
+    /***
+     * CellEditor사용시 로우와 컬럼을 명시해 에디터를 열수 있다.
+     * @param {int} rowPosition
+     * @param {int} columnPosition
+     */
+    startEditByPosition: function(rowPosition, columnPosition) {
+        var editor = null;
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        } else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        if (editor) {
+            editor.startEditByPosition({
+                row: rowPosition,
+                column: columnPosition
+            });
+        }
+    },
     checkComplete: function(editor, context) {
         var view = context.grid.getView(),
             rowIdx = context.rowIdx,
@@ -7630,7 +7762,9 @@ Ext.define('eui.grid.Panel', {
         };
         if (this.bind && this.bind['store']) {
             var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
-            store.on('focusgridrecord', focusgridrecord, this);
+            if (store) {
+                store.on('focusgridrecord', focusgridrecord, this);
+            }
         } else if (this.store) {
             this.store.on('focusgridrecord', focusgridrecord, this);
         }
@@ -8611,6 +8745,7 @@ Ext.define('eui.mvvm.ViewController', {
 Ext.define('eui.panel.Panel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.euipanel',
+    //    ui:'euipanel',
     cls: 'eui-form-table',
     config: {},
     initComponent: function() {
@@ -8634,6 +8769,64 @@ Ext.define('eui.panel.BasePanel', {
     layout: {
         type: 'vbox',
         align: 'stretch'
+    }
+});
+
+/***
+ *
+ */
+Ext.define('eui.panel.Header', {
+    extend: 'Ext.Component',
+    xtype: 'euiheader',
+    height: 30,
+    margin: '10 10 0 5',
+    config: {
+        title: null,
+        iconCls: 'x-fa fa-pencil-square'
+    },
+    tpl: [
+        '<div class="eui-form-table">',
+        '<div  class="eui-form-table x-panel-header x-header x-docked x-unselectable x-panel-header-default x-horizontal x-panel-header-horizontal x-panel-header-default-horizontal x-top x-panel-header-top x-panel-header-default-top x-docked-top x-panel-header-docked-top x-panel-header-default-docked-top" role="presentation" style="width:100%">',
+        '<span data-ref="tabGuardBeforeEl" aria-hidden="true" class="x-tab-guard x-tab-guard-" style="width:0px;height:0px;">',
+        '</span>',
+        '<div data-ref="innerCt" role="presentation" class="x-box-inner" style="height: 16px;">' + '<div data-ref="targetEl" class="x-box-target" role="presentation">' + '<div class="x-title x-panel-header-title euiheader-title x-panel-header-title-default x-box-item x-title-default x-title-rotate-none x-title-align-left" role="presentation" unselectable="on">' + //                '<div data-ref="iconWrapEl" role="presentation" class="x-title-icon-wrap x-title-icon-wrap-default x-title-icon-left x-title-item">' +
+        //                    '<div data-ref="iconEl" role="presentation" unselectable="on" class="x-title-icon x-title-icon-default {iconCls} " style=""></div>' +
+        //                '</div>' +
+        '<div data-ref="textEl" class="x-title-text x-title-text-default x-title-item" unselectable="on" role="presentation">{title}</div>' + '</div>' + '</div>' + '</div>' + '<span data-ref="tabGuardAfterEl" aria-hidden="true" class="x-tab-guard x-tab-guard-" style="width:0px;height:0px;"></span>' + '</div>',
+        '</div>'
+    ],
+    initComponent: function() {
+        Ext.apply(this, {
+            data: {
+                iconCls: this.iconCls,
+                title: this.title
+            }
+        });
+        this.callParent(arguments);
+    }
+});
+
+/***
+ *  화면 상단 네비게이션
+ */
+Ext.define('eui.panel.Nav', {
+    extend: 'Ext.Component',
+    xtype: 'euiheadernav',
+    config: {
+        text: null
+    },
+    tpl: [
+        '<div class="eui-form-table">',
+        '<div>{text}</div>',
+        '</div>'
+    ],
+    initComponent: function() {
+        Ext.apply(this, {
+            data: {
+                text: this.text
+            }
+        });
+        this.callParent(arguments);
     }
 });
 
@@ -8687,12 +8880,6 @@ Ext.define('eui.tab.Panel', {
     }
 });
 
-/***
- *
- * ## Summary
- *
- * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
- **/
 Ext.define('eui.toolbar.Command', {
     extend: 'Ext.toolbar.Toolbar',
     xtype: 'commandtoolbar',
@@ -8827,7 +9014,12 @@ Ext.define('eui.toolbar.Command', {
                     text: '#{엑셀다운로드}',
                     iconCls: '#{엑셀다운로드아이콘}',
                     hidden: !me.getShowExcelDownBtn(),
-                    xtype: 'exporterbutton'
+                    xtype: 'exporterbutton',
+                    listeners: {
+                        click: function() {
+                            this.onClick2();
+                        }
+                    }
                 },
                 //                    targetGrid: owner
                 //Or you can use
@@ -8871,6 +9063,730 @@ Ext.define('eui.toolbar.Command', {
  *
  * ## Summary
  *
+ * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
+ *
+ *   # Sample
+ *
+ *     @example
+ *
+ *      Ext.define('SAMPLE', {
+ *          extend: 'eui.panel.Panel',
+ *          title: 'EuiCommand',
+ *          items: [
+ *              {
+ *                  xtype: 'toolbar',
+ *                  ui: 'plain',
+ *                  items: [
+ *                      {
+ *                          xtype: 'euiheader',
+ *                          title: '제목'
+ *                      },
+ *                      '->',
+ *                      {
+ *                          scale: 'medium',
+ *                          showPrintBtn: true,
+ *                          showRowAddBtn: true,
+ *                          showRowDelBtn: true,
+ *                          showRegBtn: true,
+ *                          showReloadBtn: true,
+ *                          showModBtn: true,
+ *                          showSaveBtn: true,
+ *                          showCloseBtn: true,
+ *                          showExcelDownBtn: true,
+ *                          xtype: 'euicommand'
+ *                      }
+ *                  ]
+ *              },
+ *              {
+ *                  xtype : 'euiform',
+ *                  margin: 10,
+ *                  title: 'PAGE TITLE 페이지 타이틀',
+ *                  header: {
+ *                      xtype: 'header',
+ *                      titlePosition: 0,
+ *                      items: [
+ *                          {
+ *                              hideTextPrintBtn: true,
+ *                              hideTextReloadBtn: true,
+ *                              hideAddBtnICon: true,
+ *                              hideDelBtnICon: true,
+ *                              hideRegBtnICon: true,
+ *                              hideModBtnICon: true,
+ *                              hideSaveBtnICon: true,
+ *                              showReloadBtn: true,
+ *                              showPrintBtn: true,
+ *                              showRowAddBtn: true,
+ *                              showRowDelBtn: true,
+ *                              showSaveBtn: true,
+ *                              xtype: 'euicommand'
+ *                          }
+ *                      ]
+ *                  },
+ *                  items: [
+ *                      {
+ *                          xtype: 'euitext',
+ *                          fieldLabel: 'FORM FIELD'
+ *                      },
+ *                      {
+ *                          xtype: 'euitext',
+ *                          fieldLabel: 'FORM FIELD'
+ *                      }
+ *                  ]
+ *              }
+ *          ]
+ *      });
+ *      eui.Config.initLocaleMessage();
+ *
+ *
+ *      Ext.create('SAMPLE',{
+ *          width: '100%',
+ *          renderTo: Ext.getBody()
+ *      });
+ **/
+Ext.define('eui.toolbar.EuiCommand', {
+    extend: 'Ext.toolbar.Toolbar',
+    xtype: 'euicommand',
+    ui: 'plain',
+    defaultBindProperty: 'store',
+    /**
+     * @event reloadbtnclick
+     * 조회 버튼을 클릭할 경우 발생한다. Store가 바인딩 된 경우 그리드에 리스너를 구현할 수 있고
+     * 리스너가 구현되지 않을 경우 eui Grid의 onReload를 호출 그리드를 리로드한다..
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event printbtnclick
+     * 출력 버튼 클릭 시 호출.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event rowaddbtnclick
+     * 신규 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event rowdeletebtnclick
+     * 삭제 버튼 클릭 시 발생. Store가 바인딩 시 리스너 구현이 없을 경우 eui Grid.onRowDelete메소드 호출.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event regbtnclick
+     * 등록 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event modbtnclick
+     * 수정 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    /**
+     * @event savebtnclick
+     * 저장 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+    config: {
+        /**
+         * @cfg {String} [scale]
+         * 버튼의 scale을 지정한다. 기본값은 small, 그외 medium, large
+         */
+        scale: 'small',
+        /**
+         * @cfg {String} [printBtnText]
+         * 프린터 버튼의 text
+         */
+        printBtnText: null,
+        /**
+         * @cfg {String} [printBtnText]
+         * 프린터 버튼의 text
+         */
+        rowAddBtnText: null,
+        /**
+         * @cfg {String} [rowDelBtnText]
+         * 삭제 버튼의 text
+         */
+        rowDelBtnText: null,
+        /**
+         * @cfg {String} [regBtnText]
+         * 등록 버튼의 text
+         */
+        regBtnText: null,
+        /**
+         * @cfg {String} [reloadBtnText]
+         * 조회 버튼의 text
+         */
+        reloadBtnText: null,
+        /**
+         * @cfg {String} [modBtnText]
+         * 수정 버튼의 text
+         */
+        modBtnText: null,
+        /**
+         * @cfg {String} [saveBtnText]
+         * 저장 버튼의 text
+         */
+        saveBtnText: null,
+        /**
+         * @cfg {String} [closeBtnText]
+         * 닫기 버튼의 text
+         */
+        closeBtnText: null,
+        gridCountText: null,
+        /**
+         * @cfg {String} [excelDownBtnText]
+         * 엑셀다운로드 버튼의 text
+         */
+        excelDownBtnText: null,
+        /**
+         * @cfg {Boolean} [hideTextPrintBtn]
+         * 프린터버튼의 텍스트를 감춘다.
+         */
+        hideTextPrintBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextAddBtn]
+         * 신규버튼의 텍스트를 감춘다.
+         */
+        hideTextAddBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextDelBtn]
+         * 삭제버튼의 텍스트를 감춘다.
+         */
+        hideTextDelBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextRegBtn]
+         * 등록버튼의 텍스트를 감춘다.
+         */
+        hideTextRegBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextReloadBtn]
+         * 조회버튼의 텍스트를 감춘다.
+         */
+        hideTextReloadBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextModBtn]
+         * 수정버튼의 텍스트를 감춘다.
+         */
+        hideTextModBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextSaveBtn]
+         * 저장버튼의 텍스트를 감춘다.
+         */
+        hideTextSaveBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextCloseBtn]
+         * 닫기버튼의 텍스트를 감춘다.
+         */
+        hideTextCloseBtn: false,
+        /**
+         * @cfg {Boolean} [hideTextExcelDownBtn]
+         * 엑셀다운로드버튼의 텍스트를 감춘다.
+         */
+        hideTextExcelDownBtn: false,
+        /**
+         * @cfg {Boolean} [disablePrintBtn]
+         * 프린트버튼의 disabled 상태를 설정한다.
+         */
+        disablePrintBtn: false,
+        /**
+         * @cfg {Boolean} [disableRowAddBtn]
+         * 신규버튼의 disabled 상태를 설정한다.
+         */
+        disableRowAddBtn: false,
+        /**
+         * @cfg {Boolean} [disableRowDelBtn]
+         * 삭제버튼의 disabled 상태를 설정한다.
+         */
+        disableRowDelBtn: false,
+        /**
+         * @cfg {Boolean} [disableRegBtn]
+         * 등록버튼의 disabled 상태를 설정한다.
+         */
+        disableRegBtn: false,
+        /**
+         * @cfg {Boolean} [disableReloadBtn]
+         * 조회버튼의 disabled 상태를 설정한다.
+         */
+        disableReloadBtn: false,
+        /**
+         * @cfg {Boolean} [disableModBtn]
+         * 수정버튼의 disabled 상태를 설정한다.
+         */
+        disableModBtn: false,
+        /**
+         * @cfg {Boolean} [disableSaveBtn]
+         * 저장버튼의 disabled 상태를 설정한다.
+         */
+        disableSaveBtn: false,
+        /**
+         * @cfg {Boolean} [disableCloseBtn]
+         * 닫기버튼의 disabled 상태를 설정한다.
+         */
+        disableCloseBtn: false,
+        /**
+         * @cfg {Boolean} [disableExcelDownBtn]
+         * 엑셀다운로드버튼의 disabled 상태를 설정한다.
+         */
+        disableExcelDownBtn: false,
+        /**
+         * @cfg {Boolean} [showPrintBtn]
+         * 프린트버튼을 보여줄지 설정한다.
+         */
+        showPrintBtn: false,
+        /**
+         * @cfg {Boolean} [showRowAddBtn]
+         * 신규버튼을 보여줄지 설정한다.
+         */
+        showRowAddBtn: false,
+        /**
+         * @cfg {Boolean} [showRowDelBtn]
+         * 삭제버튼을 보여줄지 설정한다.
+         */
+        showRowDelBtn: false,
+        /**
+         * @cfg {Boolean} [showRegBtn]
+         * 등록버튼을 보여줄지 설정한다.
+         */
+        showRegBtn: false,
+        /**
+         * @cfg {Boolean} [showReloadBtn]
+         * 조회버튼을 보여줄지 설정한다.
+         */
+        showReloadBtn: false,
+        /**
+         * @cfg {Boolean} [showModBtn]
+         * 수정버튼을 보여줄지 설정한다.
+         */
+        showModBtn: false,
+        /**
+         * @cfg {Boolean} [showSaveBtn]
+         * 저장버튼을 보여줄지 설정한다.
+         */
+        showSaveBtn: false,
+        /**
+         * @cfg {Boolean} [showCloseBtn]
+         * 닫기버튼을 보여줄지 설정한다.
+         */
+        showCloseBtn: false,
+        showGridCount: false,
+        /**
+         * @cfg {Boolean} [showExcelDownBtn]
+         * 엑셀다운로드버튼을 보여줄지 설정한다.
+         */
+        showExcelDownBtn: false,
+        /**
+         * @cfg {Object} [btnInfo]
+         * 내부 변수로 itemId와 함께 버튼의 보여주기 상태를 설정할때 사용된다.
+         */
+        btnInfo: {
+            PRINT: 'showPrintBtn',
+            ADD: 'showRowAddBtn',
+            DEL: 'showRowDelBtn',
+            REG: 'showRegBtn',
+            LOAD: 'showReloadBtn',
+            MOD: 'showModBtn',
+            SAVE: 'showSaveBtn',
+            CLOSE: 'showCloseBtn',
+            EXLDWN: 'showExcelDownBtn'
+        },
+        hidePrintBtnICon: false,
+        hideAddBtnICon: false,
+        hideDelBtnICon: false,
+        hideRegBtnICon: false,
+        hideReloadBtnICon: false,
+        hideModBtnICon: false,
+        hideSaveBtnICon: false,
+        hideCloseBtnICon: false,
+        hideExcelDownBtnICon: false
+    },
+    /**
+     * 그리드의 store가 바인딩된다. 이 경우 그리드의 신규, 삭제, 조회 등을 제어할 수 있다.
+     *
+     * @param {Ext.data.Store} store 그리드에 바인된 Store
+     *
+     */
+    setStore: function(store) {
+        this.store = store;
+    },
+    /***
+     * 모든 버튼의 텍스트 정보를 삭제한다. hideTextXXX 값이 true인 경우 처리한다.
+     */
+    setTextHide: function() {
+        if (this.getHideTextPrintBtn()) {
+            this.down('#PRINT').setText(null);
+        }
+        if (this.getHideTextAddBtn()) {
+            this.down('#ADD').setText(null);
+        }
+        if (this.getHideTextDelBtn()) {
+            this.down('#DEL').setText(null);
+        }
+        if (this.getHideTextRegBtn()) {
+            this.down('#REG').setText(null);
+        }
+        if (this.getHideTextReloadBtn()) {
+            this.down('#LOAD').setText(null);
+        }
+        if (this.getHideTextModBtn()) {
+            this.down('#MOD').setText(null);
+        }
+        if (this.getHideTextSaveBtn()) {
+            this.down('#SAVE').setText(null);
+        }
+        if (this.getHideTextCloseBtn()) {
+            this.down('#CLOSE').setText(null);
+        }
+        if (this.getHideTextExcelDownBtn()) {
+            this.down('#EXLDWN').setText(null);
+        }
+    },
+    /***
+     * store 가 bind된 경우 바인딩 스토어의
+     * 그리드 및 트리그리드를 찾는다
+     */
+    getStoreOwner: function() {
+        var me = this;
+        if (me.store) {
+            Ext.each(Ext.ComponentQuery.query('grid,treepanel'), function(cmp) {
+                if (cmp.getStore().getId() === me.store.getId()) {
+                    me = cmp;
+                }
+            });
+        } else {
+            // euicommand에 바로 바인드 할수 없는 경우.
+            me = this.up('grid,treepanel');
+        }
+        return me;
+    },
+    buttonsAdd: function() {
+        var me = this;
+        me.add([
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                cls: 'bgtype1',
+                text: me.reloadBtnText || '#{새로고침}',
+                itemId: 'LOAD',
+                iconCls: (me.hideReloadBtnICon == null ? '#{새로고침아이콘}' : me.hideReloadBtnICon),
+                disabled: me.getDisableReloadBtn(),
+                hidden: !me.getShowReloadBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                            me.fireEvent('reloadbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['reloadbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('reloadbtnclick', owner);
+                            } else  {
+                                owner.onReload(owner, null, owner);
+                            }
+                            
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                cls: 'bgtype1',
+                text: me.printBtnText || '#{인쇄}',
+                itemId: 'PRINT',
+                iconCls: (me.hidePrintBtnICon == null ? '#{인쇄아이콘}' : me.hidePrintBtnICon),
+                disabled: me.getDisablePrintBtn(),
+                hidden: !me.getShowPrintBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['printbtnclick'.toLowerCase()]) {
+                            me.fireEvent('printbtnclick', owner || me);
+                        } else if (owner) {
+                            if (owner.hasListeners['printbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('printbtnclick', owner);
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                text: me.excelDownBtnText || '#{엑셀다운로드}',
+                scale: me.scale,
+                itemId: 'EXLDWN',
+                iconCls: (me.hideExcelDownBtnICon == null ? '#{엑셀다운로드아이콘}' : me.hideExcelDownBtnICon),
+                disabled: me.getDisableExcelDownBtn(),
+                hidden: !me.getShowExcelDownBtn(),
+                xtype: 'exporterbutton',
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        this.setComponent(owner);
+                        this.onClick2();
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                margin: '0 5 0 5',
+                scale: me.scale,
+                text: me.rowAddBtnText || '#{행추가}',
+                iconCls: (me.hideAddBtnICon == null ? '#{행추가아이콘}' : me.hideAddBtnICon),
+                scope: me,
+                itemId: 'ADD',
+                disabled: me.getDisableRowAddBtn(),
+                hidden: !me.getShowRowAddBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                            me.fireEvent('rowaddbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowaddbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowaddbtnclick', owner);
+                            } else {
+                                owner.onRowAdd(owner, {
+                                    randomInt: Ext.Number.randomInt(1, 1.0E12)
+                                }, 0, null);
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                iconCls: (me.hideDelBtnICon == null ? '#{행삭제아이콘}' : me.hideDelBtnICon),
+                text: me.rowDelBtnText || '#{행삭제}',
+                itemId: 'DEL',
+                scope: me,
+                disabled: me.getDisableRowDelBtn(),
+                hidden: !me.getShowRowDelBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                            me.fireEvent('rowdeletebtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
+                            } else  {
+                                owner.onRowDelete(owner, null, owner);
+                            }
+                            
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                text: me.regBtnText || '#{등록}',
+                itemId: 'REG',
+                iconCls: (me.hideRegBtnICon == null ? '#{등록아이콘}' : me.hideRegBtnICon),
+                disabled: me.getDisableRegBtn(),
+                hidden: !me.getShowRegBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['regbtnclick'.toLowerCase()]) {
+                            me.fireEvent('regbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['regbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('regbtnclick', owner);
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                text: me.modBtnText || '#{수정}',
+                itemId: 'MOD',
+                iconCls: (me.hideModBtnICon == null ? '#{수정아이콘}' : me.hideModBtnICon),
+                disabled: me.getDisableExcelDownBtn(),
+                hidden: !me.getShowModBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['modbtnclick'.toLowerCase()]) {
+                            me.fireEvent('modbtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['modbtnclick'.toLowerCase()]) {
+                                owner.fireEvent('modbtnclick', owner);
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                text: me.saveBtnText || '#{저장}',
+                formBind: true,
+                itemId: 'SAVE',
+                iconCls: (me.hideSaveBtnICon == null ? '#{저장아이콘}' : me.hideSaveBtnICon),
+                disabled: me.getDisableSaveBtn(),
+                hidden: !me.getShowSaveBtn(),
+                listeners: {
+                    click: function() {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['savebtnclick'.toLowerCase()]) {
+                            me.fireEvent('savebtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['savebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('savebtnclick', owner);
+                            } else  {
+                                owner.onSave(owner);
+                            }
+                            
+                        }
+                    }
+                }
+            },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                text: me.closeBtnText || '#{닫기}',
+                itemId: 'CLOSE',
+                iconCls: (me.hideCloseBtnICon == null ? '#{닫기아이콘}' : me.hideCloseBtnICon),
+                disabled: me.getDisableCloseBtn(),
+                hidden: !me.getShowCloseBtn(),
+                listeners: {
+                    click: function() {
+                        var window = Util.getOwnerCt(this);
+                        if (Util.getOwnerCt(this).xtype === 'window') {
+                            window.close();
+                        } else {
+                            Ext.Error.raise({
+                                msg: '닫기 버튼은 팝업에서만 사용가능합니다.'
+                            });
+                        }
+                    }
+                }
+            }
+        ]);
+        me.setTextHide();
+    },
+    /***
+     * 통신을 통해 버튼을 제어하기 전에 미리 초기화 한다
+     */
+    setAllButtonShow: function(visible) {},
+    //        this.setShowPrintBtn(visible);
+    //        this.setShowRowAddBtn(visible);
+    //        this.setShowRowDelBtn(visible);
+    //        this.setShowRegBtn(visible);
+    //        this.setShowReloadBtn(visible);
+    //        this.setShowModBtn(visible);
+    //        this.setShowSaveBtn(visible);
+    //        this.setShowGridCount(visible);
+    //        this.setShowExcelDownBtn(visible);
+    setDisablePrintBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#PRINT');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRowAddBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#ADD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRowDelBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#DEL');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableRegBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#REG');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableReloadBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#LOAD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableModBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#MOD');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableSaveBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#SAVE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableCloseBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#CLOSE');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setDisableExcelDownBtn: function(disable) {
+        var me = this,
+            btn = me.rendered && me.down('#EXLDWN');
+        if (btn) {
+            btn.setDisabled(disable);
+        }
+        this.callParent(arguments);
+    },
+    setButtonStatus: function(data) {
+        var me = this;
+        Ext.each(data, function(status) {
+            var config = me.initialConfig[me.getBtnInfo()[status.button]];
+            if (config === undefined) {
+                me.down('#' + status.button).setHidden(false);
+            } else if (Ext.isBoolean(config)) {
+                me.down('#' + status.button).setHidden(!config);
+            }
+        });
+    },
+    beforeRender: function() {
+        var me = this;
+        this.callParent(arguments);
+        if (Config.commandButtonControllerUrl) {
+            Util.CommonAjax({
+                method: 'POST',
+                url: Config.commandButtonControllerUrl,
+                params: me.params,
+                pCallback: function(v, params, result) {
+                    if (result.success) {
+                        me.setAllButtonShow(false);
+                        me.buttonsAdd();
+                        me.setButtonStatus(result.data);
+                    }
+                }
+            });
+        } else {
+            me.buttonsAdd();
+        }
+    }
+});
+
+/***
+ *
+ * ## Summary
+ *
  * Ext.tree.Panel클래스를 확장했다.
  *
  **/
@@ -8892,6 +9808,2671 @@ Ext.define('eui.tree.Panel', {
             });
         }
         me.callParent(arguments);
+    },
+    getCellEditor: function() {
+        var plugins = this.plugins;
+        if (plugins instanceof Array) {
+            for (var i = 0; i < plugins.length; i++) {
+                if (Ext.getClassName(plugins[i]) == 'Ext.grid.plugin.CellEditing') {
+                    editor = plugins[i];
+                    break;
+                }
+            }
+        } else {
+            if (Ext.getClassName(plugins) == 'Ext.grid.plugin.CellEditing') {
+                editor = plugins;
+            }
+        }
+        return editor;
+    }
+});
+
+Ext.define('eui.ux.field.plugin.Clearable', {
+    extend: 'Ext.plugin.Abstract',
+    alias: 'plugin.clearable',
+    config: {
+        toggleEvent: 'change',
+        weight: -100
+    },
+    init: function(field) {
+        var plugin = this;
+        var toggleEvent = field.clearableEvent || plugin.getToggleEvent();
+        var weight = plugin.getWeight();
+        if (!field.isXType('textfield')) {
+            Ext.Error.raise({
+                msg: 'Ext.form.field.plugin.Clearable: This plugin is intended for usage with textfield-derived components',
+                field: field,
+                fieldXtypes: field.getXTypes()
+            });
+        }
+        field.setTriggers(Ext.applyIf(field.getTriggers(), {
+            clear: {
+                cls: Ext.baseCSSPrefix + 'form-clear-trigger',
+                weight: weight,
+                handler: function() {
+                    if (Ext.isFunction(field.clearValue)) {
+                        field.clearValue();
+                    } else {
+                        field.setValue(null);
+                    }
+                    field.getTrigger('clear').hide();
+                },
+                hidden: !field.getValue()
+            }
+        }));
+        field.on('render', function() {
+            var listeners = {
+                    destroyable: true
+                };
+            listeners[toggleEvent] = function(field) {
+                var fieldValue = field.getValue();
+                var hasValue = false;
+                switch (field.getXType()) {
+                    case 'numberfield':
+                        hasValue = fieldValue !== null;
+                        break;
+                    default:
+                        hasValue = fieldValue;
+                }
+                field.getTrigger('clear')[hasValue ? 'show' : 'hide']();
+            };
+            field.clearableListeners = field.on(listeners);
+        }, field, {
+            single: true
+        });
+        Ext.Function.interceptAfter(field, 'setReadOnly', plugin.syncClearTriggerVisibility, plugin);
+    },
+    destroy: function() {
+        var field = this.getCmp();
+        if (field.clearableListeners) {
+            field.clearableListeners.destroy();
+        }
+    },
+    /**
+     * Considers all conditions to set trigger visibility.
+     * Can be overridden to influence when trigger is made
+     * visible.
+     */
+    syncClearTriggerVisibility: function() {
+        var field = this.getCmp();
+        var value = field.getValue();
+        var clearTrigger = field.getTrigger('clear');
+        var isReadOnly = field.readOnly;
+        clearTrigger[value && !isReadOnly ? 'show' : 'hide']();
+    }
+});
+
+Ext.define('eui.ux.file.FileDownload', {
+    extend: 'Ext.Component',
+    alias: 'widget.FileDownloader',
+    autoEl: {
+        tag: 'iframe',
+        cls: 'x-hidden',
+        src: Ext.SSL_SECURE_URL
+    },
+    stateful: false,
+    load: function(config) {
+        var e = this.getEl();
+        e.dom.src = config.url + (config.params ? '?' + config.params : '');
+        e.dom.onload = function() {
+            if (e.dom.contentDocument.body.childNodes[0].wholeText == '404') {
+                Ext.Msg.show({
+                    title: 'Attachment missing',
+                    msg: 'The document you are after can not be found on the server.',
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.MessageBox.ERROR
+                });
+            }
+        };
+    }
+});
+
+Ext.define('eui.ux.file.FileFieldContainer', {
+    extend: 'eui.form.FieldContainer',
+    xtype: 'filefieldcontainer',
+    layout: 'fit',
+    defaultBindProperty: 'params',
+    config: {
+        params: null
+    },
+    items: [
+        {
+            xtype: 'tabpanel',
+            height: 200,
+            items: [
+                {
+                    xtype: 'filemanager',
+                    title: 'File List',
+                    fileAutoLoad: false,
+                    width: 700,
+                    fileParams: null
+                },
+                {
+                    title: 'File Add',
+                    layout: 'fit',
+                    width: 700,
+                    items: {
+                        xtype: 'uploadpanel',
+                        uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+                        initComponent: function() {
+                            var me = this;
+                            Ext.apply(me, {
+                                uploaderOptions: {
+                                    params: null,
+                                    url: Config.fileuploadUrl
+                                }
+                            });
+                            Ext.ux.upload.Panel.prototype.initComponent.call(me);
+                        },
+                        synchronous: true,
+                        listeners: {
+                            beforeupload: function() {
+                                var maxSize = Config.fileuploadMaxSize || 1048576,
+                                    totalSize = 0,
+                                    size,
+                                    errorMsg = '',
+                                    msgFormat = '파일 최대 업로드 용량({0})을 초과하였습니다';
+                                this.queue.each(function(itm) {
+                                    size = itm && itm.config && itm.config.fileApiObject && itm.config.fileApiObject.size;
+                                    totalSize += Ext.isNumber(size) ? size : 0;
+                                });
+                                if (totalSize > maxSize) {
+                                    var fn = Ext.util.Format.fileSize;
+                                    errorMsg = Ext.String.format(msgFormat, fn(maxSize));
+                                    Ext.Msg.show({
+                                        icon: Ext.Msg.WARNING,
+                                        buttons: Ext.Msg.OK,
+                                        message: errorMsg
+                                    });
+                                    return false;
+                                }
+                            },
+                            uploadcomplete: function(uploadPanel, manager, items, errorCount) {
+                                var tab = this.up('tabpanel');
+                                if (errorCount) {
+                                    Ext.Msg.show({
+                                        title: 'WARNING',
+                                        icon: Ext.Msg.WARNING,
+                                        message: '업로드를 실패하였습니다.',
+                                        buttons: Ext.Msg.OK
+                                    });
+                                } else {
+                                    Ext.Msg.show({
+                                        title: 'INFO',
+                                        icon: Ext.Msg.INFO,
+                                        message: '업로드를 완료하였습니다.',
+                                        buttons: Ext.Msg.OK
+                                    });
+                                    tab = tab.setActiveItem(0);
+                                    this.onRemoveAll();
+                                    tab.down('grid').getStore().reload();
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    setParams: function(params) {
+        var me = this,
+            filegrid, uploadpanel,
+            fn = function() {
+                filegrid = me.down('filemanager filegrid');
+                uploadpanel = me.down('uploadpanel');
+                // ID_ATTACH_FILE 값이 Integer, String인 경우
+                if (!Ext.isObject(params)) {
+                    params = {
+                        ID_ATTACH_FILE: params
+                    };
+                }
+                filegrid.fileParams = params;
+                filegrid.store.proxy.setExtraParams(params);
+                uploadpanel.uploadManager.uploader.params = params;
+                if (!Ext.isEmpty(params)) {
+                    filegrid.store.load();
+                }
+            };
+        this.callParent(arguments);
+        if (me.rendered) {
+            fn();
+        } else {
+            me.on('afterrender', function() {
+                fn();
+                me.un(fn);
+            });
+        }
+    }
+});
+
+Ext.define('eui.ux.file.FileFieldContainer1', {
+    extend: 'eui.form.FieldContainer',
+    xtype: 'filefieldcontainer1',
+    layout: 'fit',
+    defaultBindProperty: 'params',
+    config: {
+        params: null
+    },
+    items: [
+        {
+            xtype: 'tabpanel',
+            height: 200,
+            items: [
+                {
+                    title: 'File List',
+                    layout: 'fit',
+                    width: 700,
+                    items: [
+                        {
+                            xtype: 'filegrid',
+                            fileAutoLoad: false,
+                            fileParams: null,
+                            columns: [
+                                {
+                                    text: 'Filename',
+                                    flex: 1,
+                                    dataIndex: 'NM_FILE'
+                                },
+                                {
+                                    text: 'Size',
+                                    align: 'right',
+                                    width: 70,
+                                    dataIndex: 'SIZE_FILE',
+                                    renderer: function(value) {
+                                        return Ext.util.Format.fileSize(value);
+                                    }
+                                },
+                                {
+                                    text: 'Add User',
+                                    align: 'center',
+                                    width: 70,
+                                    dataIndex: 'ID_REV_PRSN'
+                                },
+                                {
+                                    xtype: 'datecolumn',
+                                    format: 'Y.m.d G:i a',
+                                    width: 150,
+                                    text: 'Add Date',
+                                    align: 'center',
+                                    dataIndex: 'DT_REV'
+                                },
+                                {
+                                    xtype: 'actioncolumn',
+                                    text: 'Down',
+                                    width: 40,
+                                    items: [
+                                        {
+                                            icon: 'resources/images/customui/icon/COM.png',
+                                            handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                                                Util.fileClick(record.get('ID_FILE_DTIL'), record.get('ID_ATCH_FILE'), record.get('NM_FILE'));
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: 'actioncolumn',
+                                    text: 'Del',
+                                    width: 40,
+                                    items: [
+                                        {
+                                            icon: 'resources/images/customui/icon/COM.png',
+                                            handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                                                var store = this.up('grid').store;
+                                                store.remove(record);
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: 'File Add',
+                    layout: 'fit',
+                    width: 700,
+                    items: {
+                        xtype: 'uploadpanel',
+                        uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+                        initComponent: function() {
+                            var me = this;
+                            Ext.apply(me, {
+                                uploaderOptions: {
+                                    params: null,
+                                    url: Config.fileuploadUrl
+                                }
+                            });
+                            Ext.ux.upload.Panel.prototype.initComponent.call(me);
+                        },
+                        synchronous: true,
+                        listeners: {
+                            beforeupload: function() {
+                                var maxSize = Config.fileuploadMaxSize || 1048576,
+                                    totalSize = 0,
+                                    size,
+                                    errorMsg = '',
+                                    msgFormat = '파일 최대 업로드 용량({0})을 초과하였습니다';
+                                this.queue.each(function(itm) {
+                                    size = itm && itm.config && itm.config.fileApiObject && itm.config.fileApiObject.size;
+                                    totalSize += Ext.isNumber(size) ? size : 0;
+                                });
+                                if (totalSize > maxSize) {
+                                    var fn = Ext.util.Format.fileSize;
+                                    errorMsg = Ext.String.format(msgFormat, fn(maxSize));
+                                    Ext.Msg.show({
+                                        icon: Ext.Msg.WARNING,
+                                        buttons: Ext.Msg.OK,
+                                        message: errorMsg
+                                    });
+                                    return false;
+                                }
+                            },
+                            uploadcomplete: function(uploadPanel, manager, items, errorCount) {
+                                var tab = this.up('tabpanel');
+                                if (errorCount) {
+                                    Ext.Msg.show({
+                                        title: 'WARNING',
+                                        icon: Ext.Msg.WARNING,
+                                        message: '업로드를 실패하였습니다.',
+                                        buttons: Ext.Msg.OK
+                                    });
+                                } else {
+                                    Ext.Msg.show({
+                                        title: 'INFO',
+                                        icon: Ext.Msg.INFO,
+                                        message: '업로드를 완료하였습니다.',
+                                        buttons: Ext.Msg.OK
+                                    });
+                                    tab = tab.setActiveItem(0);
+                                    this.onRemoveAll();
+                                    tab.down('grid').getStore().reload();
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    setParams: function(params) {
+        var me = this,
+            filegrid, uploadpanel,
+            fn = function() {
+                filegrid = me.down('filegrid');
+                uploadpanel = me.down('uploadpanel');
+                // ID_ATTACH_FILE 값이 Integer, String인 경우
+                if (!Ext.isObject(params)) {
+                    params = {
+                        ID_ATTACH_FILE: params
+                    };
+                }
+                filegrid.fileParams = params;
+                filegrid.store.proxy.setExtraParams(params);
+                uploadpanel.uploadManager.uploader.params = params;
+                if (!Ext.isEmpty(params)) {
+                    filegrid.store.load();
+                }
+            };
+        this.callParent(arguments);
+        if (me.rendered) {
+            fn();
+        } else {
+            me.on('afterrender', function() {
+                fn();
+                me.un(fn);
+            });
+        }
+    }
+});
+
+Ext.define('eui.ux.file.FileForm', {
+    extend: 'eui.form.Panel',
+    xtype: 'fileform',
+    frame: true,
+    tableColumns: 2,
+    height: 50,
+    hiddenHeader: true,
+    autoScroll: true,
+    removeFieldField: function(btn) {
+        if (this.addCnt < 2) {
+            return;
+        }
+        this.addCnt = this.addCnt - 1;
+        this.remove(btn.up('fieldcontainer').previousSibling());
+        this.remove(btn.up('fieldcontainer'));
+    },
+    addFileField: function() {
+        var me = this;
+        if (!me.addCnt) {
+            me.addCnt = 0;
+        }
+        me.addCnt = me.addCnt + 1;
+        me.add({
+            xtype: 'filefield',
+            name: 'file',
+            hideLabel: true,
+            fieldLabel: 'Attachments'
+        }, {
+            xtype: 'fieldcontainer',
+            width: 43,
+            items: [
+                {
+                    xtype: 'button',
+                    text: '+',
+                    listeners: {
+                        scope: me,
+                        click: 'addFileField'
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: '-',
+                    listeners: {
+                        scope: me,
+                        click: 'removeFieldField'
+                    }
+                }
+            ]
+        });
+    },
+    listeners: {
+        scope: 'this',
+        render: 'addFileField'
+    },
+    defaults: {
+        xtype: 'textfield',
+        //#17
+        anchor: '100%',
+        labelWidth: 60
+    }
+});
+
+Ext.define('eui.ux.file.FileGrid', {
+    extend: 'Ext.grid.Panel',
+    xtype: 'filegrid',
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            store: {
+                autoLoad: false,
+                proxy: {
+                    type: 'rest',
+                    url: Config.fileuploadListUrl,
+                    extraParams: me.fileParams,
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                },
+                sorters: [
+                    {
+                        property: 'ADD_DATE',
+                        direction: 'ASC'
+                    }
+                ],
+                fields: []
+            }
+        });
+        me.callParent(arguments);
+    },
+    columns: [
+        {
+            text: 'Filename',
+            flex: 1,
+            dataIndex: 'NM_FILE'
+        },
+        {
+            text: 'Size',
+            align: 'right',
+            width: 70,
+            dataIndex: 'SIZE_FILE',
+            renderer: function(value) {
+                return Ext.util.Format.fileSize(value);
+            }
+        },
+        {
+            text: 'Add User',
+            align: 'center',
+            width: 70,
+            dataIndex: 'ID_REV_PRSN'
+        },
+        {
+            xtype: 'datecolumn',
+            format: 'Y.m.d G:i a',
+            width: 150,
+            text: 'Add Date',
+            align: 'center',
+            dataIndex: 'DT_REV'
+        },
+        {
+            xtype: 'actioncolumn',
+            text: 'Down',
+            width: 40,
+            items: [
+                {
+                    icon: 'resources/images/customui/icon/COM.png',
+                    handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                        Util.fileClick(record.get('ID_FILE_DTIL'), record.get('ID_ATCH_FILE'), record.get('NM_FILE'));
+                    }
+                }
+            ]
+        },
+        {
+            xtype: 'actioncolumn',
+            text: 'Del',
+            width: 40,
+            items: [
+                {
+                    icon: 'resources/images/customui/icon/COM.png',
+                    handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                        var store = this.up('grid').store;
+                        Ext.Msg.confirm('File Delete', 'Are you sure you want to delete this file?', function(id, value) {
+                            if (id === 'yes') {
+                                Util.CommonAjax({
+                                    url: Config.filedeleteUrl,
+                                    pSync: false,
+                                    params: record.getData(),
+                                    pCallback: function(pScope, params, retData) {
+                                        if (retData.TYPE === 1) {
+                                            store.load();
+                                        }
+                                    }
+                                });
+                            }
+                        }, this);
+                    }
+                }
+            ]
+        }
+    ]
+});
+
+/**
+ * Abstract uploader object.
+ * 
+ * The uploader object implements the the upload itself - transports data to the server. This is an "abstract" object
+ * used as a base object for all uploader objects.
+ * 
+ */
+Ext.define('Ext.ux.upload.uploader.AbstractUploader', {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    /**
+     * @cfg {Number} [maxFileSize=50000000]
+     * 
+     * (NOT IMPLEMENTED) The maximum file size allowed to be uploaded.
+     */
+    maxFileSize: 50000000,
+    /**
+     * @cfg {String} url (required)
+     * 
+     * The server URL to upload to.
+     */
+    url: '',
+    /**
+     * @cfg {Number} [timeout=60000]
+     * 
+     * The connection timeout in miliseconds.
+     */
+    timeout: 60 * 1000,
+    /**
+     * @cfg {String} [contentType='application/binary']
+     * 
+     * The content type announced in the HTTP headers. It is autodetected if possible, but if autodetection
+     * cannot be done, this value is set as content type header.
+     */
+    contentType: 'application/binary',
+    /**
+     * @cfg {String} [filenameHeader='X-File-Name']
+     * 
+     * The name of the HTTP header containing the filename.
+     */
+    filenameHeader: 'X-File-Name',
+    /**
+     * @cfg {String} [sizeHeader='X-File-Size']
+     * 
+     * The name of the HTTP header containing the size of the file.
+     */
+    sizeHeader: 'X-File-Size',
+    /**
+     * @cfg {String} [typeHeader='X-File-Type']
+     * 
+     * The name of the HTTP header containing the MIME type of the file.
+     */
+    typeHeader: 'X-File-Type',
+    /**
+     * @cfg {Object}
+     * 
+     * Additional parameters to be sent with the upload request.
+     */
+    params: {},
+    /**
+     * @cfg {Object}
+     * 
+     * Extra headers to be sent with the upload request.
+     */
+    extraHeaders: {},
+    /**
+     * @cfg {Object/String}
+     * 
+     * Encoder object/class used to encode the filename header. Usually used, when the filename
+     * contains non-ASCII characters.
+     */
+    filenameEncoder: null,
+    filenameEncoderHeader: 'X-Filename-Encoder',
+    /**
+     * Constructor.
+     * @param {Object} [config]
+     */
+    constructor: function(config) {
+        this.mixins.observable.constructor.call(this);
+        this.initConfig(config);
+    },
+    /**
+     * @protected
+     */
+    initHeaders: function(item) {
+        var headers = this.extraHeaders || {},
+            filename = item.getFilename();
+        /*
+		 * If there is a filename encoder defined - use it to encode the filename
+		 * in the header and set the type of the encoder as an additional header.
+		 */
+        var filenameEncoder = this.initFilenameEncoder();
+        if (filenameEncoder) {
+            filename = filenameEncoder.encode(filename);
+            headers[this.filenameEncoderHeader] = filenameEncoder.getType();
+        }
+        headers[this.filenameHeader] = filename;
+        headers[this.sizeHeader] = item.getSize();
+        headers[this.typeHeader] = item.getType();
+        return headers;
+    },
+    /**
+     * @abstract
+     * 
+     * Upload a single item (file). 
+     * **Implement in subclass**
+     * 
+     * @param {Ext.ux.upload.Item} item
+     */
+    uploadItem: function(item) {},
+    /**
+     * @abstract
+     * 
+     * Aborts the current upload. 
+     * **Implement in subclass**
+     */
+    abortUpload: function() {},
+    /**
+     * @protected
+     */
+    initFilenameEncoder: function() {
+        if (Ext.isString(this.filenameEncoder)) {
+            this.filenameEncoder = Ext.create(this.filenameEncoder);
+        }
+        if (Ext.isObject(this.filenameEncoder)) {
+            return this.filenameEncoder;
+        }
+        return null;
+    }
+});
+
+/**
+ * Abstract uploader with features common for all XHR based uploaders.
+ */
+Ext.define('Ext.ux.upload.uploader.AbstractXhrUploader', {
+    extend: 'Ext.ux.upload.uploader.AbstractUploader',
+    onUploadSuccess: function(response, options, item) {
+        var info = {
+                success: true,
+                message: '',
+                response: response
+            };
+        //        var blob=new Blob([response.response]);
+        //        var link=document.createElement('a');
+        //        link.href=window.URL.createObjectURL(blob);
+        //        link.download="Dossier_"+new Date()+".pdf";
+        //        link.click();
+        //
+        if (response.responseText) {
+            var responseJson = Ext.decode(response.responseText);
+            if (responseJson) {
+                Ext.apply(info, {
+                    success: true,
+                    //responseJson.success,
+                    message: 'OK---',
+                    //responseJson.message
+                    data: responseJson.data
+                });
+                var eventName = info.success ? 'uploadsuccess' : 'uploadfailure';
+                item.fileData = responseJson.data;
+                this.fireEvent(eventName, item, info);
+                return;
+            }
+        }
+        this.fireEvent('uploadsuccess', item, info);
+    },
+    onUploadFailure: function(response, options, item) {
+        var info = {
+                success: false,
+                message: 'http error',
+                response: response
+            };
+        this.fireEvent('uploadfailure', item, info);
+    },
+    onUploadProgress: function(event, item) {
+        this.fireEvent('uploadprogress', item, event);
+    }
+});
+
+/**
+ * Modified Ext.data.Connection object, adapted to be able to report progress.
+ */
+Ext.define('Ext.ux.upload.data.Connection', {
+    extend: 'Ext.data.Connection',
+    /**
+     * @cfg {Function}
+     * 
+     * Callback fired when a progress event occurs (xhr.upload.onprogress).
+     */
+    progressCallback: null,
+    request: function(options) {
+        var progressCallback = options.progress;
+        if (progressCallback) {
+            this.progressCallback = progressCallback;
+        }
+        this.callParent(arguments);
+    },
+    getXhrInstance: function() {
+        var xhr = this.callParent(arguments);
+        if (this.progressCallback) {
+            xhr.upload.onprogress = this.progressCallback;
+        }
+        return xhr;
+    }
+});
+
+/**
+ * Uploader implementation which uses a FormData object to send files through XHR requests.
+ *
+ */
+Ext.define('Ext.ux.upload.uploader.FormDataUploader', {
+    extend: 'Ext.ux.upload.uploader.AbstractXhrUploader',
+    requires: [
+        'Ext.ux.upload.data.Connection'
+    ],
+    method: 'POST',
+    xhr: null,
+    initConnection: function() {
+        if (this.params) {}
+        //            this.url = Ext.urlAppend(this.url, Ext.urlEncode(this.params));
+        var xhr = new XMLHttpRequest(),
+            method = this.method,
+            url = this.url;
+        xhr.open(method, url, true);
+        this.abortXhr = function() {
+            this.suspendEvents();
+            xhr.abort();
+            this.resumeEvents();
+        };
+        return xhr;
+    },
+    uploadItem: function(item) {
+        var file = item.getFileApiObject();
+        item.setUploading();
+        var formData = new FormData();
+        formData.append('file', file);
+        //        formData.append('S_FUNC_CODE', 'CH');
+        //        formData.append('FILE_MGT_CODE', '4c57c84ed70d4f7191c67c1c17544993');
+        //        formData.append('FILE_MGT_CODE', 'a77b2ee600064798b9903d0a9be18dfd');
+        var params = this.params;
+        if (this.params) {
+            for (var test in params) {
+                var value = params[test];
+                formData.append(test, value);
+            }
+        }
+        var xhr = this.initConnection();
+        //        xhr.setRequestHeader(this.filenameHeader, file.name);
+        //        xhr.setRequestHeader(this.sizeHeader, file.size);
+        //        xhr.setRequestHeader(this.typeHeader, file.type);
+        xhr.onreadystatechange = function() {
+            console.log('readyStatechange:  ' + xhr.readyState);
+        };
+        //        if (!window.devMode) {
+        //            xhr.setRequestHeader('X-CSRF-TOKEN', globalVar.csrfToken);
+        //        }
+        var loadendhandler = Ext.Function.bind(this.onLoadEnd, this, [
+                item
+            ], true);
+        var progresshandler = Ext.Function.bind(this.onUploadProgress, this, [
+                item
+            ], true);
+        xhr.addEventListener('loadend', loadendhandler, true);
+        xhr.upload.addEventListener("progress", progresshandler, true);
+        xhr.send(formData);
+    },
+    /**
+     * Implements {@link Ext.ux.upload.uploader.AbstractUploader#abortUpload}
+     */
+    abortUpload: function() {
+        this.abortXhr();
+    },
+    /**
+     * @protected
+     *
+     * A placeholder for the abort procedure.
+     */
+    abortXhr: function() {},
+    onLoadEnd: function(event, item) {
+        var response = event.target;
+        if (response.status != 200) {
+            return this.onUploadFailure(response, null, item);
+        }
+        return this.onUploadSuccess(response, null, item);
+    }
+});
+
+Ext.define('Ext.ux.upload.Store', {
+    extend: 'Ext.data.Store',
+    fields: [
+        {
+            name: 'filename',
+            type: 'string'
+        },
+        {
+            name: 'size',
+            type: 'integer'
+        },
+        {
+            name: 'type',
+            type: 'string'
+        },
+        {
+            name: 'status',
+            type: 'string'
+        },
+        {
+            name: 'message',
+            type: 'string'
+        }
+    ],
+    proxy: {
+        type: 'memory',
+        reader: {
+            type: 'array',
+            idProperty: 'filename'
+        }
+    }
+});
+
+/**
+ * The grid displaying the list of uploaded files (queue).
+ *
+ * @class Ext.ux.upload.ItemGridPanel
+ * @extends Ext.grid.Panel
+ */
+Ext.define('Ext.ux.upload.ItemGridPanel', {
+    extend: 'Ext.grid.Panel',
+    requires: [
+        'Ext.selection.CheckboxModel',
+        'Ext.ux.upload.Store'
+    ],
+    layout: 'fit',
+    border: 0,
+    viewConfig: {
+        scrollOffset: 40
+    },
+    config: {
+        queue: null,
+        textFilename: 'Filename',
+        textSize: 'Size',
+        textType: 'Type',
+        textStatus: 'Status',
+        textProgress: '%'
+    },
+    initComponent: function() {
+        if (this.queue) {
+            this.queue.on('queuechange', this.onQueueChange, this);
+            this.queue.on('itemchangestatus', this.onQueueItemChangeStatus, this);
+            this.queue.on('itemprogressupdate', this.onQueueItemProgressUpdate, this);
+        }
+        Ext.apply(this, {
+            store: Ext.create('Ext.ux.upload.Store'),
+            selModel: Ext.create('Ext.selection.CheckboxModel', {
+                checkOnly: true
+            }),
+            columns: [
+                //                {
+                //                    xtype : 'rownumberer',
+                //                    width : 50
+                //                },
+                {
+                    dataIndex: 'filename',
+                    header: this.textFilename,
+                    flex: 1
+                },
+                {
+                    dataIndex: 'size',
+                    header: this.textSize,
+                    width: 100,
+                    renderer: function(value) {
+                        return Ext.util.Format.fileSize(value);
+                    }
+                },
+                {
+                    dataIndex: 'type',
+                    header: this.textType,
+                    width: 150
+                },
+                //                {
+                //                    dataIndex: 'status',
+                //                    header: this.textStatus,
+                //                    width: 50,
+                //                    align: 'right',
+                //                    renderer: this.statusRenderer
+                //                },
+                {
+                    dataIndex: 'progress',
+                    header: this.textProgress,
+                    width: 50,
+                    align: 'right',
+                    renderer: function(value) {
+                        if (!value) {
+                            value = 0;
+                        }
+                        return value + '%';
+                    }
+                },
+                {
+                    dataIndex: 'message',
+                    width: 1,
+                    hidden: true
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+    onQueueChange: function(queue) {
+        this.loadQueueItems(queue.getItems());
+    },
+    onQueueItemChangeStatus: function(queue, item, status) {
+        this.updateStatus(item);
+    },
+    onQueueItemProgressUpdate: function(queue, item) {
+        this.updateStatus(item);
+    },
+    /**
+     * Loads the internal store with the supplied queue items.
+     *
+     * @param {Array} items
+     */
+    loadQueueItems: function(items) {
+        var data = [];
+        var i;
+        for (i = 0; i < items.length; i++) {
+            data.push([
+                items[i].getFilename(),
+                items[i].getSize(),
+                items[i].getType(),
+                items[i].getStatus(),
+                items[i].getProgressPercent()
+            ]);
+        }
+        this.loadStoreData(data);
+    },
+    loadStoreData: function(data, append) {
+        this.store.loadData(data, append);
+    },
+    getSelectedRecords: function() {
+        return this.getSelectionModel().getSelection();
+    },
+    updateStatus: function(item) {
+        var record = this.getRecordByFilename(item.getFilename());
+        if (!record) {
+            return;
+        }
+        var itemStatus = item.getStatus();
+        // debug.log('[' + item.getStatus() + '] [' + record.get('status') + ']');
+        if (itemStatus != record.get('status')) {
+            this.scrollIntoView(record);
+            record.set('status', item.getStatus());
+            if (item.isUploadError()) {
+                record.set('tooltip', item.getUploadErrorMessage());
+            }
+        }
+        record.set('progress', item.getProgressPercent());
+        record.commit();
+    },
+    getRecordByFilename: function(filename) {
+        var index = this.store.findExact('filename', filename);
+        if (-1 == index) {
+            return null;
+        }
+        return this.store.getAt(index);
+    },
+    getIndexByRecord: function(record) {
+        return this.store.findExact('filename', record.get('filename'));
+    },
+    statusRenderer: function(value, metaData, record, rowIndex, colIndex, store) {
+        var iconCls = 'ux-mu-icon-upload-' + value;
+        var tooltip = record.get('tooltip');
+        if (tooltip) {
+            value = tooltip;
+        } else {
+            'upload_status_' + value;
+        }
+        value = '<span class="ux-mu-status-value ' + iconCls + '" data-qtip="' + value + '" />';
+        return value;
+    },
+    scrollIntoView: function(record) {
+        var index = this.getIndexByRecord(record);
+        if (-1 == index) {
+            return;
+        }
+        this.getView().focusRow(index);
+        return;
+        var rowEl = Ext.get(this.getView().getRow(index));
+        // var rowEl = this.getView().getRow(index);
+        if (!rowEl) {
+            return;
+        }
+        var gridEl = this.getEl();
+        // debug.log(rowEl.dom);
+        // debug.log(gridEl.getBottom());
+        if (rowEl.getBottom() > gridEl.getBottom()) {
+            rowEl.dom.scrollIntoView(gridEl);
+        }
+    }
+});
+
+/**
+ * The object is responsible for uploading the queue.
+ * 
+ */
+Ext.define('Ext.ux.upload.Manager', {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    requires: [
+        'Ext.ux.upload.uploader.AbstractUploader'
+    ],
+    uploader: null,
+    uploaderOptions: null,
+    synchronous: true,
+    filenameEncoder: null,
+    DEFAULT_UPLOADER_CLASS: 'Ext.ux.upload.uploader.ExtJsUploader',
+    constructor: function(config) {
+        this.mixins.observable.constructor.call(this);
+        this.initConfig(config);
+        if (!(this.uploader instanceof Ext.ux.upload.uploader.AbstractUploader)) {
+            var uploaderClass = this.DEFAULT_UPLOADER_CLASS;
+            if (Ext.isString(this.uploader)) {
+                uploaderClass = this.uploader;
+            }
+            var uploaderOptions = this.uploaderOptions || {};
+            Ext.applyIf(uploaderOptions, {
+                success: this.onUploadSuccess,
+                failure: this.onUploadFailure,
+                progress: this.onUploadProgress,
+                filenameEncoder: this.filenameEncoder
+            });
+            this.uploader = Ext.create(uploaderClass, uploaderOptions);
+        }
+        this.mon(this.uploader, 'uploadsuccess', this.onUploadSuccess, this);
+        this.mon(this.uploader, 'uploadfailure', this.onUploadFailure, this);
+        this.mon(this.uploader, 'uploadprogress', this.onUploadProgress, this);
+        Ext.apply(this, {
+            syncQueue: null,
+            currentQueue: null,
+            uploadActive: false,
+            errorCount: 0
+        });
+    },
+    uploadQueue: function(queue) {
+        if (this.uploadActive) {
+            return;
+        }
+        this.startUpload(queue);
+        if (this.synchronous) {
+            this.uploadQueueSync(queue);
+            return;
+        }
+        this.uploadQueueAsync(queue);
+    },
+    uploadQueueSync: function(queue) {
+        this.uploadNextItemSync();
+    },
+    uploadNextItemSync: function() {
+        if (!this.uploadActive) {
+            return;
+        }
+        var item = this.currentQueue.getFirstReadyItem();
+        if (!item) {
+            return;
+        }
+        this.uploader.uploadItem(item);
+    },
+    uploadQueueAsync: function(queue) {
+        var i;
+        var num = queue.getCount();
+        for (i = 0; i < num; i++) {
+            this.uploader.uploadItem(queue.getAt(i));
+        }
+    },
+    startUpload: function(queue) {
+        queue.reset();
+        this.uploadActive = true;
+        this.currentQueue = queue;
+        this.fireEvent('beforeupload', this, queue);
+    },
+    finishUpload: function() {
+        this.fireEvent('uploadcomplete', this, this.currentQueue, this.errorCount);
+    },
+    resetUpload: function() {
+        this.currentQueue = null;
+        this.uploadActive = false;
+        this.errorCount = 0;
+    },
+    abortUpload: function() {
+        this.uploader.abortUpload();
+        this.currentQueue.recoverAfterAbort();
+        this.resetUpload();
+        this.fireEvent('abortupload', this, this.currentQueue);
+    },
+    afterItemUpload: function(item, info) {
+        if (this.synchronous) {
+            this.uploadNextItemSync();
+        }
+        if (!this.currentQueue.existUploadingItems()) {
+            this.finishUpload();
+        }
+    },
+    onUploadSuccess: function(item, info) {
+        console.log('onUploadSuccess:::', arguments);
+        item.setUploaded();
+        this.fireEvent('itemuploadsuccess', this, item, info);
+        this.afterItemUpload(item, info);
+    },
+    onUploadFailure: function(item, info) {
+        console.log('onUploadFailure:::', arguments);
+        item.setUploadError(info.message);
+        this.fireEvent('itemuploadfailure', this, item, info);
+        this.errorCount++;
+        this.afterItemUpload(item, info);
+    },
+    onUploadProgress: function(item, event) {
+        item.setProgress(event.loaded);
+    }
+});
+
+/**
+ * Upload status bar.
+ * 
+ * @class Ext.ux.upload.StatusBar
+ * @extends Ext.toolbar.Toolbar
+ */
+Ext.define('Ext.ux.upload.StatusBar', {
+    extend: 'Ext.toolbar.Toolbar',
+    config: {
+        selectionMessageText: 'Selected {0} file(s), {1}',
+        uploadMessageText: 'Upload progress {0}% ({1} of {2} file(s))',
+        textComponentId: 'mu-status-text'
+    },
+    initComponent: function() {
+        Ext.apply(this, {
+            items: [
+                {
+                    xtype: 'tbtext',
+                    itemId: this.textComponentId,
+                    text: '&nbsp;'
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+    setText: function(text) {
+        this.getComponent(this.textComponentId).setText(text);
+    },
+    setSelectionMessage: function(fileCount, byteCount) {
+        this.setText(Ext.String.format(this.selectionMessageText, fileCount, Ext.util.Format.fileSize(byteCount)));
+    },
+    setUploadMessage: function(progressPercent, uploadedFiles, totalFiles) {
+        this.setText(Ext.String.format(this.uploadMessageText, progressPercent, uploadedFiles, totalFiles));
+    }
+});
+
+/**
+ * A "browse" button for selecting multiple files for upload.
+ * 
+ */
+Ext.define('Ext.ux.upload.BrowseButton', {
+    extend: 'Ext.form.field.File',
+    buttonOnly: true,
+    //    iconCls : 'ux-mu-icon-action-browse',
+    buttonText: 'Browse11',
+    initComponent: function() {
+        Ext.apply(this, {
+            buttonConfig: {
+                iconCls: this.iconCls,
+                text: this.buttonText
+            }
+        });
+        this.on('afterrender', function() {
+            /*
+             * Fixing the issue when adding an icon to the button - the text does not render properly. OBSOLETE - from
+             * ExtJS v4.1 the internal implementation has changed, there is no button object anymore.
+             */
+            /*
+            if (this.iconCls) {
+                // this.button.removeCls('x-btn-icon');
+                // var width = this.button.getWidth();
+                // this.setWidth(width);
+            }
+            */
+            // Allow picking multiple files at once.
+            this.setMultipleInputAttribute();
+        }, this);
+        this.on('change', function(field, value, options) {
+            var files = this.fileInputEl.dom.files;
+            if (files.length) {
+                this.fireEvent('fileselected', this, files);
+            }
+        }, this);
+        this.callParent(arguments);
+    },
+    reset: function() {
+        this.callParent(arguments);
+        this.setMultipleInputAttribute();
+    },
+    setMultipleInputAttribute: function(inputEl) {
+        inputEl = inputEl || this.fileInputEl;
+        inputEl.dom.setAttribute('multiple', '1');
+    }
+});
+// OBSOLETE - the method is not used by the superclass anymore
+/*
+    createFileInput : function() {
+        this.callParent(arguments);
+        this.fileInputEl.dom.setAttribute('multiple', '1');
+    }
+    */
+
+/**
+ * A single item designated for upload.
+ * 
+ * It is a simple object wrapping the native file API object.
+ */
+Ext.define('Ext.ux.upload.Item', {
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    STATUS_READY: 'ready',
+    STATUS_UPLOADING: 'uploading',
+    STATUS_UPLOADED: 'uploaded',
+    STATUS_UPLOAD_ERROR: 'uploaderror',
+    progress: null,
+    status: null,
+    /**
+     * @cfg {Object} fileApiObject (required)
+     * 
+     * A native file API object
+     */
+    fileApiObject: null,
+    /**
+     * @cfg {String}
+     * 
+     * The upload error message associated with this file object
+     */
+    uploadErrorMessage: '',
+    constructor: function(config) {
+        this.mixins.observable.constructor.call(this);
+        this.initConfig(config);
+        Ext.apply(this, {
+            status: this.STATUS_READY,
+            progress: 0
+        });
+    },
+    reset: function() {
+        this.uploadErrorMessage = '';
+        this.setStatus(this.STATUS_READY);
+        this.setProgress(0);
+    },
+    getFileApiObject: function() {
+        return this.fileApiObject;
+    },
+    getId: function() {
+        return this.getFilename();
+    },
+    getName: function() {
+        return this.getProperty('name');
+    },
+    getFilename: function() {
+        return this.getName();
+    },
+    getSize: function() {
+        return this.getProperty('size');
+    },
+    getType: function() {
+        return this.getProperty('type');
+    },
+    getProperty: function(propertyName) {
+        if (this.fileApiObject) {
+            return this.fileApiObject[propertyName];
+        }
+        return null;
+    },
+    getProgress: function() {
+        return this.progress;
+    },
+    getProgressPercent: function() {
+        var progress = this.getProgress();
+        if (!progress) {
+            return 0;
+        }
+        var percent = Ext.util.Format.number((progress / this.getSize()) * 100, '0');
+        if (percent > 100) {
+            percent = 100;
+        }
+        return percent;
+    },
+    setProgress: function(progress) {
+        this.progress = progress;
+        this.fireEvent('progressupdate', this);
+    },
+    getStatus: function() {
+        return this.status;
+    },
+    setStatus: function(status) {
+        this.status = status;
+        this.fireEvent('changestatus', this, status);
+    },
+    hasStatus: function(status) {
+        var itemStatus = this.getStatus();
+        if (Ext.isArray(status) && Ext.Array.contains(status, itemStatus)) {
+            return true;
+        }
+        if (itemStatus === status) {
+            return true;
+        }
+        return false;
+    },
+    isReady: function() {
+        return (this.status == this.STATUS_READY);
+    },
+    isUploaded: function() {
+        return (this.status == this.STATUS_UPLOADED);
+    },
+    setUploaded: function() {
+        this.setProgress(this.getSize());
+        this.setStatus(this.STATUS_UPLOADED);
+    },
+    isUploadError: function() {
+        return (this.status == this.STATUS_UPLOAD_ERROR);
+    },
+    getUploadErrorMessage: function() {
+        return this.uploadErrorMessage;
+    },
+    setUploadError: function(message) {
+        this.uploadErrorMessage = message;
+        this.setStatus(this.STATUS_UPLOAD_ERROR);
+    },
+    setUploading: function() {
+        this.setStatus(this.STATUS_UPLOADING);
+    }
+});
+
+/**
+ * Data structure managing the upload file queue.
+ * 
+ */
+Ext.define('Ext.ux.upload.Queue', {
+    extend: 'Ext.util.MixedCollection',
+    requires: [
+        'Ext.ux.upload.Item'
+    ],
+    /**
+     * Constructor.
+     * 
+     * @param {Object} config
+     */
+    constructor: function(config) {
+        this.callParent(arguments);
+        this.on('clear', function() {
+            this.fireEvent('queuechange', this);
+        }, this);
+    },
+    /**
+     * Adds files to the queue.
+     * 
+     * @param {FileList} fileList
+     */
+    addFiles: function(fileList) {
+        var i;
+        var items = [];
+        var num = fileList.length;
+        if (!num) {
+            return;
+        }
+        for (i = 0; i < num; i++) {
+            items.push(this.createItem(fileList[i]));
+        }
+        this.addAll(items);
+        this.fireEvent('multiadd', this, items);
+        this.fireEvent('queuechange', this);
+    },
+    /**
+     * Uploaded files are removed, the rest are set as ready.
+     */
+    reset: function() {
+        this.clearUploadedItems();
+        this.each(function(item) {
+            item.reset();
+        }, this);
+    },
+    /**
+     * Returns all queued items.
+     * 
+     * @return {Ext.ux.upload.Item[]}
+     */
+    getItems: function() {
+        return this.getRange();
+    },
+    /**
+     * Returns an array of items by the specified status.
+     * 
+     * @param {String/Array}
+     * @return {Ext.ux.upload.Item[]}
+     */
+    getItemsByStatus: function(status) {
+        var itemsByStatus = [];
+        this.each(function(item, index, items) {
+            if (item.hasStatus(status)) {
+                itemsByStatus.push(item);
+            }
+        });
+        return itemsByStatus;
+    },
+    /**
+     * Returns an array of items, that have already been uploaded.
+     * 
+     * @return {Ext.ux.upload.Item[]}
+     */
+    getUploadedItems: function() {
+        return this.getItemsByStatus('uploaded');
+    },
+    /**
+     * Returns an array of items, that have not been uploaded yet.
+     * 
+     * @return {Ext.ux.upload.Item[]}
+     */
+    getUploadingItems: function() {
+        return this.getItemsByStatus([
+            'ready',
+            'uploading'
+        ]);
+    },
+    /**
+     * Returns true, if there are items, that are currently being uploaded.
+     * 
+     * @return {Boolean}
+     */
+    existUploadingItems: function() {
+        return (this.getUploadingItems().length > 0);
+    },
+    /**
+     * Returns the first "ready" item in the queue (with status STATUS_READY).
+     * 
+     * @return {Ext.ux.upload.Item/null}
+     */
+    getFirstReadyItem: function() {
+        var items = this.getRange();
+        var num = this.getCount();
+        var i;
+        for (i = 0; i < num; i++) {
+            if (items[i].isReady()) {
+                return items[i];
+            }
+        }
+        return null;
+    },
+    /**
+     * Clears all items from the queue.
+     */
+    clearItems: function() {
+        this.clear();
+    },
+    /**
+     * Removes the items, which have been already uploaded, from the queue.
+     */
+    clearUploadedItems: function() {
+        this.removeItems(this.getUploadedItems());
+    },
+    /**
+     * Removes items from the queue.
+     * 
+     * @param {Ext.ux.upload.Item[]} items
+     */
+    removeItems: function(items) {
+        var num = items.length;
+        var i;
+        if (!num) {
+            return;
+        }
+        for (i = 0; i < num; i++) {
+            this.remove(items[i]);
+        }
+        this.fireEvent('queuechange', this);
+    },
+    /**
+     * Removes the items identified by the supplied array of keys.
+     * 
+     * @param {Array} itemKeys
+     */
+    removeItemsByKey: function(itemKeys) {
+        var i;
+        var num = itemKeys.length;
+        if (!num) {
+            return;
+        }
+        for (i = 0; i < num; i++) {
+            this.removeItemByKey(itemKeys[i]);
+        }
+        this.fireEvent('multiremove', this, itemKeys);
+        this.fireEvent('queuechange', this);
+    },
+    /**
+     * Removes a single item by its key.
+     * 
+     * @param {String} key
+     */
+    removeItemByKey: function(key) {
+        this.removeAtKey(key);
+    },
+    /**
+     * Perform cleanup, after the upload has been aborted.
+     */
+    recoverAfterAbort: function() {
+        this.each(function(item) {
+            if (!item.isUploaded() && !item.isReady()) {
+                item.reset();
+            }
+        });
+    },
+    /**
+     * @private
+     * 
+     * Initialize and return a new queue item for the corresponding File object.
+     * 
+     * @param {File} file
+     * @return {Ext.ux.upload.Item}
+     */
+    createItem: function(file) {
+        var item = Ext.create('Ext.ux.upload.Item', {
+                fileApiObject: file
+            });
+        item.on('changestatus', this.onItemChangeStatus, this);
+        item.on('progressupdate', this.onItemProgressUpdate, this);
+        return item;
+    },
+    /**
+     * A getKey() implementation to determine the key of an item in the collection.
+     * 
+     * @param {Ext.ux.upload.Item} item
+     * @return {String}
+     */
+    getKey: function(item) {
+        return item.getId();
+    },
+    onItemChangeStatus: function(item, status) {
+        this.fireEvent('itemchangestatus', this, item, status);
+    },
+    onItemProgressUpdate: function(item) {
+        this.fireEvent('itemprogressupdate', this, item);
+    },
+    /**
+     * Returns true, if the item is the last item in the queue.
+     * 
+     * @param {Ext.ux.upload.Item} item
+     * @return {boolean}
+     */
+    isLast: function(item) {
+        var lastItem = this.last();
+        if (lastItem && item.getId() == lastItem.getId()) {
+            return true;
+        }
+        return false;
+    },
+    /**
+     * Returns total bytes of all files in the queue.
+     * 
+     * @return {number}
+     */
+    getTotalBytes: function() {
+        var bytes = 0;
+        this.each(function(item, index, length) {
+            bytes += item.getSize();
+        }, this);
+        return bytes;
+    }
+});
+
+/**
+ * The main upload panel, which ties all the functionality together.
+ *
+ * In the most basic case you need just to set the upload URL:
+ *
+ *     @example
+ *     var uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+ *         uploaderOptions: {
+ *             url: '/api/upload'
+ *         }
+ *     });
+ *
+ * It uses the default ExtJsUploader to perform the actual upload. If you want to use another uploade, for
+ * example the FormDataUploader, you can pass the name of the class:
+ *
+ *     @example
+ *     var uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+ *         uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+ *         uploaderOptions: {
+ *             url: '/api/upload',
+ *             timeout: 120*1000
+ *         }
+ *     });
+ *
+ * Or event an instance of the uploader:
+ *
+ *     @example
+ *     var formDataUploader = Ext.create('Ext.ux.upload.uploader.FormDataUploader', {
+ *         url: '/api/upload'
+ *     });
+ *
+ *     var uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+ *         uploader: formDataUploader
+ *     });
+ *
+ */
+Ext.define('Ext.ux.upload.Panel', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'uploadpanel',
+    requires: [
+        'Ext.ux.upload.ItemGridPanel',
+        'Ext.ux.upload.Manager',
+        'Ext.ux.upload.StatusBar',
+        'Ext.ux.upload.BrowseButton',
+        'Ext.ux.upload.Queue'
+    ],
+    config: {
+        /**
+         * @cfg {Object/String}
+         *
+         * The name of the uploader class or the uploader object itself. If not set, the default uploader will
+         * be used.
+         */
+        uploader: null,
+        /**
+         * @cfg {Object}
+         *
+         * Configuration object for the uploader. Configuration options included in this object override the
+         * options 'uploadUrl', 'uploadParams', 'uploadExtraHeaders', 'uploadTimeout'.
+         */
+        uploaderOptions: null,
+        /**
+         * @cfg {boolean} [synchronous=false]
+         *
+         * If true, all files are uploaded in a sequence, otherwise files are uploaded simultaneously (asynchronously).
+         */
+        synchronous: true,
+        /**
+         * @cfg {String} uploadUrl
+         *
+         * The URL to upload files to. Not required if configured uploader instance is passed to this panel.
+         */
+        uploadUrl: '',
+        /**
+         * @cfg {Object}
+         *
+         * Params passed to the uploader object and sent along with the request. It depends on the implementation of the
+         * uploader object, for example if the {@link Ext.ux.upload.uploader.ExtJsUploader} is used, the params are sent
+         * as GET params.
+         */
+        uploadParams: {},
+        /**
+         * @cfg {Object}
+         *
+         * Extra HTTP headers to be added to the HTTP request uploading the file.
+         */
+        uploadExtraHeaders: {},
+        /**
+         * @cfg {Number} [uploadTimeout=6000]
+         *
+         * The time after the upload request times out - in miliseconds.
+         */
+        uploadTimeout: 60000,
+        /**
+         * @cfg {Object/String}
+         *
+         * Encoder object/class used to encode the filename header. Usually used, when the filename
+         * contains non-ASCII characters. If an encoder is used, the server backend has to be
+         * modified accordingly to decode the value.
+         */
+        filenameEncoder: null,
+        // strings
+        textOk: 'OK',
+        textUpload: 'Upload',
+        textBrowse: 'Browse',
+        textAbort: 'Abort',
+        textRemoveSelected: 'Remove selected',
+        textRemoveAll: 'Remove all',
+        // grid strings
+        textFilename: 'Filename',
+        textSize: 'Size',
+        textType: 'Type',
+        textStatus: 'Status',
+        textProgress: '%',
+        // status toolbar strings
+        selectionMessageText: 'Selected {0} file(s), {1}',
+        uploadMessageText: 'Upload progress {0}% ({1} of {2} souborů)',
+        // browse button
+        buttonText: 'Browse'
+    },
+    /**
+     * @property {Ext.ux.upload.Queue}
+     * @private
+     */
+    queue: null,
+    /**
+     * @property {Ext.ux.upload.ItemGridPanel}
+     * @private
+     */
+    grid: null,
+    /**
+     * @property {Ext.ux.upload.Manager}
+     * @private
+     */
+    uploadManager: null,
+    /**
+     * @property {Ext.ux.upload.StatusBar}
+     * @private
+     */
+    statusBar: null,
+    /**
+     * @property {Ext.ux.upload.BrowseButton}
+     * @private
+     */
+    browseButton: null,
+    /**
+     * @private
+     */
+    initComponent: function() {
+        console.log('init.com..');
+        this.queue = this.initQueue();
+        this.grid = Ext.create('Ext.ux.upload.ItemGridPanel', {
+            queue: this.queue,
+            textFilename: this.textFilename,
+            textSize: this.textSize,
+            textType: this.textType,
+            textStatus: this.textStatus,
+            textProgress: this.textProgress
+        });
+        this.uploadManager = this.createUploadManager();
+        this.uploadManager.on('uploadcomplete', this.onUploadComplete, this);
+        this.uploadManager.on('itemuploadsuccess', this.onItemUploadSuccess, this);
+        this.uploadManager.on('itemuploadfailure', this.onItemUploadFailure, this);
+        this.statusBar = Ext.create('Ext.ux.upload.StatusBar', {
+            dock: 'bottom',
+            selectionMessageText: this.selectionMessageText,
+            uploadMessageText: this.uploadMessageText
+        });
+        Ext.apply(this, {
+            title: this.dialogTitle,
+            autoScroll: true,
+            layout: 'fit',
+            uploading: false,
+            items: [
+                this.grid
+            ],
+            dockedItems: [
+                this.getTopToolbarConfig(),
+                this.statusBar
+            ]
+        });
+        this.on('afterrender', function() {
+            this.stateInit();
+        }, this);
+        this.callParent(arguments);
+    },
+    createUploadManager: function() {
+        var uploaderOptions = this.getUploaderOptions() || {};
+        Ext.applyIf(uploaderOptions, {
+            url: this.uploadUrl,
+            params: this.uploadParams,
+            extraHeaders: this.uploadExtraHeaders,
+            timeout: this.uploadTimeout
+        });
+        var uploadManager = Ext.create('Ext.ux.upload.Manager', {
+                uploader: this.uploader,
+                uploaderOptions: uploaderOptions,
+                synchronous: this.getSynchronous(),
+                filenameEncoder: this.getFilenameEncoder()
+            });
+        return uploadManager;
+    },
+    /**
+     * @private
+     *
+     * Returns the config object for the top toolbar.
+     *
+     * @return {Array}
+     */
+    getTopToolbarConfig: function() {
+        this.browseButton = Ext.create('Ext.ux.upload.BrowseButton', {
+            itemId: 'button_browse',
+            //            width: 300,
+            buttonText: this.buttonText
+        });
+        this.browseButton.on('fileselected', this.onFileSelection, this);
+        return {
+            xtype: 'toolbar',
+            itemId: 'topToolbar',
+            dock: 'top',
+            items: [
+                this.browseButton,
+                '-',
+                {
+                    itemId: 'button_upload',
+                    text: this.textUpload,
+                    //                    iconCls : 'ux-mu-icon-action-upload',
+                    scope: this,
+                    handler: this.onInitUpload
+                },
+                '-',
+                {
+                    itemId: 'button_abort',
+                    text: this.textAbort,
+                    //                    iconCls : 'ux-mu-icon-action-abort',
+                    scope: this,
+                    handler: this.onAbortUpload,
+                    disabled: true
+                },
+                '->',
+                {
+                    itemId: 'button_remove_selected',
+                    text: this.textRemoveSelected,
+                    //                    iconCls : 'ux-mu-icon-action-remove',
+                    scope: this,
+                    handler: this.onMultipleRemove
+                },
+                '-',
+                {
+                    itemId: 'button_remove_all',
+                    text: this.textRemoveAll,
+                    //                    iconCls : 'ux-mu-icon-action-remove',
+                    scope: this,
+                    handler: this.onRemoveAll
+                }
+            ]
+        };
+    },
+    /**
+     * @private
+     *
+     * Initializes and returns the queue object.
+     *
+     * @return {Ext.ux.upload.Queue}
+     */
+    initQueue: function() {
+        var queue = Ext.create('Ext.ux.upload.Queue');
+        queue.on('queuechange', this.onQueueChange, this);
+        return queue;
+    },
+    onInitUpload: function() {
+        if (!this.queue.getCount()) {
+            return;
+        }
+        if (this.fireEvent('beforeupload') === false) {
+            return;
+        }
+        this.stateUpload();
+        this.startUpload();
+    },
+    onAbortUpload: function() {
+        this.uploadManager.abortUpload();
+        this.finishUpload();
+        this.switchState();
+    },
+    onUploadComplete: function(manager, queue, errorCount) {
+        this.finishUpload();
+        if (errorCount) {
+            this.stateQueue();
+        } else {
+            this.stateInit();
+        }
+        this.fireEvent('uploadcomplete', this, manager, queue.getUploadedItems(), errorCount);
+        manager.resetUpload();
+    },
+    /**
+     * @private
+     *
+     * Executes after files has been selected for upload through the "Browse" button. Updates the upload queue with the
+     * new files.
+     *
+     * @param {Ext.ux.upload.BrowseButton} input
+     * @param {FileList} files
+     */
+    onFileSelection: function(input, files) {
+        this.queue.clearUploadedItems();
+        this.queue.addFiles(files);
+        this.browseButton.reset();
+    },
+    /**
+     * @private
+     *
+     * Executes if there is a change in the queue. Updates the related components (grid, toolbar).
+     *
+     * @param {Ext.ux.upload.Queue} queue
+     */
+    onQueueChange: function(queue) {
+        this.updateStatusBar();
+        this.switchState();
+    },
+    /**
+     * @private
+     *
+     * Executes upon hitting the "multiple remove" button. Removes all selected items from the queue.
+     */
+    onMultipleRemove: function() {
+        var records = this.grid.getSelectedRecords();
+        if (!records.length) {
+            return;
+        }
+        var keys = [];
+        var i;
+        var num = records.length;
+        for (i = 0; i < num; i++) {
+            keys.push(records[i].get('filename'));
+        }
+        this.queue.removeItemsByKey(keys);
+    },
+    onRemoveAll: function() {
+        this.queue.clearItems();
+    },
+    onItemUploadSuccess: function(manager, item, info) {},
+    onItemUploadFailure: function(manager, item, info) {},
+    startUpload: function() {
+        this.uploading = true;
+        this.uploadManager.uploadQueue(this.queue);
+    },
+    finishUpload: function() {
+        this.uploading = false;
+    },
+    isUploadActive: function() {
+        return this.uploading;
+    },
+    updateStatusBar: function() {
+        if (!this.statusBar) {
+            return;
+        }
+        var numFiles = this.queue.getCount();
+        this.statusBar.setSelectionMessage(this.queue.getCount(), this.queue.getTotalBytes());
+    },
+    getButton: function(itemId) {
+        var topToolbar = this.getDockedComponent('topToolbar');
+        if (topToolbar) {
+            return topToolbar.getComponent(itemId);
+        }
+        return null;
+    },
+    switchButtons: function(info) {
+        var itemId;
+        for (itemId in info) {
+            this.switchButton(itemId, info[itemId]);
+        }
+    },
+    switchButton: function(itemId, on) {
+        var button = this.getButton(itemId);
+        if (button) {
+            if (on) {
+                button.enable();
+            } else {
+                button.disable();
+            }
+        }
+    },
+    switchState: function() {
+        if (this.uploading) {
+            this.stateUpload();
+        } else if (this.queue.getCount()) {
+            this.stateQueue();
+        } else {
+            this.stateInit();
+        }
+    },
+    stateInit: function() {
+        this.switchButtons({
+            'button_browse': 1,
+            'button_upload': 0,
+            'button_abort': 0,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    },
+    stateQueue: function() {
+        this.switchButtons({
+            'button_browse': 1,
+            'button_upload': 1,
+            'button_abort': 0,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    },
+    stateUpload: function() {
+        this.switchButtons({
+            'button_browse': 0,
+            'button_upload': 0,
+            'button_abort': 1,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    }
+});
+
+Ext.define('eui.ux.file.FileManagerController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.filemanager'
+});
+
+Ext.define('eui.ux.file.FileManager', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'filemanager',
+    modal: true,
+    requires: [
+        'Ext.ux.upload.uploader.FormDataUploader',
+        //        'Ext.ux.upload.uploader.ExtJsUploader',
+        'Ext.ux.upload.Panel',
+        'eui.ux.file.FileGrid',
+        'eui.ux.file.FileForm',
+        'eui.ux.file.FileManagerController'
+    ],
+    defaultListenerScope: true,
+    controller: 'filemanager',
+    layout: 'fit',
+    title: '파일매니저',
+    fileAutoLoad: true,
+    draggable: false,
+    resizable: false,
+    config: {
+        fileParams: {}
+    },
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: 'filegrid',
+                    listeners: {
+                        render: function() {
+                            if (me.fileAutoLoad) {
+                                this.store.load();
+                            }
+                        }
+                    },
+                    fileParams: me.getFileParams()
+                }
+            ]
+        });
+        me.callParent(arguments);
+    },
+    listeners: {
+        fileuploadcomplete: function() {
+            console.log('fileuploadcomplete', arguments);
+        }
+    },
+    onRender: function(cmp) {
+        var me = this,
+            statusbar = this.down('filegrid'),
+            form = this.down('form');
+        statusbar.bbar = [];
+        //        this.addHiddenFieldParams(me.fileParams);
+        this.callParent(arguments);
+    },
+    addHiddenFieldParams: function(fileParams) {
+        this.setFileParams(fileParams);
+        var form = this.down('fileform');
+        for (var test in fileParams) {
+            var value = fileParams[test];
+            form.add({
+                xtype: 'iddenfield',
+                name: test,
+                value: value
+            });
+        }
+    }
+});
+
+Ext.define('eui.ux.file.FilePanel', {
+    extend: 'Ext.tab.Panel',
+    alias: 'widget.euifilepanel',
+    defaultListenerScope: true,
+    config: {
+        extraParams: null
+    },
+    defaultBindProperty: 'extraParams',
+    setExtraParams: function(params) {
+        this.extraParams = params;
+        this.down('filemanager grid').store.getProxy().extraParams = params;
+        this.down('filemanager grid').store.load();
+        this.down('uploaddialog').items.items[0].uploadManager.uploader.params = params;
+    },
+    initComponent: function() {
+        var me = this,
+            uploadPanel = Ext.create('Ext.ux.upload.Panel', {
+                uploader: 'Ext.ux.upload.uploader.FormDataUploader',
+                uploaderOptions: {
+                    params: me.extraParams,
+                    url: Config.baseUrlPrifix || '' + Config.fileuploadUrl
+                },
+                synchronous: true
+            });
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: 'filemanager',
+                    fileAutoLoad: false,
+                    title: 'File List',
+                    fileParams: me.extraParams
+                },
+                {
+                    title: 'File Add',
+                    xtype: 'uploaddialog',
+                    panel: uploadPanel,
+                    listeners: {
+                        uploadcomplete: 'onComplete'
+                    }
+                }
+            ]
+        });
+        this.callParent(arguments);
+    },
+    onComplete: function(uploadPanel, manager, items, errorCount) {
+        this.down('filemanager grid').store.load();
+    }
+});
+
+/***
+ * CSV 파일 그리드 업로드
+ */
+Ext.define('eui.ux.grid.CsvUploader', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.csvuploader',
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+    margin: 5,
+    onSearch: function(result, headers) {
+        var me = this,
+            grid = me.down('grid');
+        var store = Ext.create('Ext.data.Store', {
+                fields: [],
+                data: result
+            });
+        grid.bindStore(store);
+        //            this.getViewModel().get('excelStore').setData(exceljson);
+        grid.store.load({
+            params: {},
+            callback: function(records, operation, success) {
+                if (Ext.isEmpty(records) || records.length === 0) {
+                    return;
+                }
+                var keys = Object.keys(records[0].getData());
+                var columns = [];
+                var formFields = [];
+                var firstRecord = grid.store.getAt(0);
+                var addColumn = function(key, idx) {
+                        /*++ 2016. 11. 24 Add By. syyoon ++*/
+                        //if (key.indexOf('field') !== -1) {
+                        //                    var langKey = Util.getLocaleValue(key),
+                        //                        langSize = 100;
+                        //
+                        //                    if (langKey.length < firstRecord.get(key).length) {
+                        //                        langKey = firstRecord.get(key);
+                        //                    }
+                        //                    if (langKey === 0) {
+                        //                        langSize = 200;
+                        //                    } else {
+                        //                        langSize = langKey.length * 10;
+                        //                        if (langSize < 100) {
+                        //                            langSize = 100;
+                        //                        }
+                        //                    }
+                        columns.push({
+                            minWidth: 100,
+                            text: headers[idx],
+                            dataIndex: key
+                        });
+                    };
+                //}
+                Ext.each(formFields, addColumn);
+                Ext.each(formFields, function(itm) {
+                    Ext.Array.remove(keys, itm);
+                });
+                Ext.each(keys, addColumn);
+                grid.reconfigure(this.store, columns);
+            }
+        });
+    },
+    onSave: function(btn) {
+        var me = this,
+            grid = me.down('grid');
+        var data = me.getGridData(grid),
+            param = {
+                data: data
+            };
+        if (me.__PARAMS.params) {
+            Ext.apply(param, me.__PARAMS.params);
+        }
+        Util.CommonAjax({
+            url: me.__PARAMS.url,
+            params: param,
+            pCallback: function(scope, param, result) {
+                if (result.success) {
+                    me.ownerCt.fireEvent('complete', me.ownerCt, data);
+                } else {
+                    me.ownerCt.fireEvent('fail', me.ownerCt, data);
+                    Ext.Msg.alert('저장실패', result.message);
+                }
+            }
+        });
+    },
+    getGridData: function(grid, data) {
+        var list = grid.getStore().getData().items,
+            ret = [];
+        Ext.Array.each(list, function(itm) {
+            ret.push(Ext.applyIf({
+                __rowStatus: 'I'
+            }, itm.getData(), data));
+        });
+        return ret;
+    },
+    toJson: function() {
+        var me = this;
+        var file = Ext.getCmp('uploadExcel').getEl().down('input[type=file]').dom.files[0];
+        var reader = new FileReader();
+        //        var encodeList = document.getElementById("encoding");
+        //		var encoding = encodeList.options[encodeList.selectedIndex].value;
+        //문서변환
+        reader.readAsText(file, "EUC-KR");
+        reader.onload = function(oFREvent) {
+            myCsv = oFREvent.target.result;
+            var lines = myCsv.split("\n");
+            var result = [];
+            var headers = lines[0].split("|");
+            for (var i = 1; i < lines.length; i++) {
+                var obj = {};
+                if (lines[i]) {
+                    var currentline = lines[i].split("|");
+                    for (var j = 0; j < headers.length; j++) {
+                        var header = headers[j].trim();
+                        /* ++ 2016. 11. 24 Add by. syyoon
+                         * 엑셀업로드를 호출한 Front에서 Grid가 있는지 체크
+                         * Grid에서 엑셀업로드 기능을 호출하면 me.__PARAMS안에 name, dataIndex, text가 들어있음
+                         * 없으면 field0, field1, field2.... 순서대로 셋팅됨
+                         * ++*/
+                        if (typeof (me.__PARAMS.DATAINDEX) == "undefined") {
+                            obj['field' + j] = '' + currentline[j];
+                        } else {
+                            if (me.__PARAMS.DATAINDEX[j] == null) {
+                                obj['field' + j] = '' + currentline[j];
+                            } else {
+                                obj[me.__PARAMS.DATAINDEX[j]] = '' + currentline[j];
+                            }
+                        }
+                    }
+                    // 기존 방식
+                    //obj['field'+j] = ''+currentline[j];
+                    result.push(obj);
+                }
+            }
+            /*불러오기*/
+            //            console.log(result);
+            me.onSearch(result, headers);
+        };
+    },
+    //            Ext.getCmp('display').setData(json);
+    //		reader.readAsBinaryString(file);
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            defaults: {
+                margin: 5
+            },
+            items: [
+                {
+                    title: 'Excel Upload',
+                    xtype: 'euiform',
+                    tableColumns: 1,
+                    items: [
+                        {
+                            xtype: 'euidisplay',
+                            value: '제어판 -> 국가 및 언어 -> 숫자탭의 "목록 구분 기호"를 "|"로 꼭 변경하세요'
+                        },
+                        {
+                            fieldLabel: '파일',
+                            xtype: 'filefield',
+                            cellCls: 'fo-table-row-td',
+                            colspan: 3,
+                            regex: (/.(csv)$/i),
+                            regexText: 'Only CSV files allowed for upload',
+                            id: 'uploadExcel'
+                        }
+                    ],
+                    buttons: [
+                        {
+                            xtype: 'button',
+                            text: 'Upload',
+                            handler: function() {
+                                me.toJson();
+                            }
+                        },
+                        {
+                            xtype: 'button',
+                            text: 'Save',
+                            handler: function() {
+                                me.onSave();
+                            }
+                        }
+                    ]
+                },
+                {
+                    xtype: 'grid',
+                    flex: 1,
+                    height: 400,
+                    usePagingToolbar: false,
+                    bind: {
+                        store: '{excelStore}'
+                    },
+                    listeners: {
+                        itemdblclick: {
+                            fn: me.parentCallBack,
+                            scope: me
+                        }
+                    },
+                    forceFit: true,
+                    columns: {
+                        defaults: {
+                            width: 120
+                        },
+                        items: [
+                            {
+                                text: '-',
+                                dataIndex: 'temp'
+                            }
+                        ]
+                    }
+                }
+            ]
+        });
+        this.callParent(arguments);
+        this.on('afterrender', function() {
+            var me = this;
+        });
+    }
+});
+/* ++ 부모 그리드에서 dataIndex, name, text 던져준 파라미터 호출  - 2016. 11. 23 Add By. syyoon
+             * 주석처리 2016. 11. 24 Add by. syyoon++*/
+/*var dataIndex = me.__PARAMS.DATAINDEX;
+             var name = me.__PARAMS.NAME;
+             var text = me.__PARAMS.TEXT;
+             var columns = [];
+
+             var grid = me.down('hgrid');
+
+
+             for(var i = 1; i < dataIndex.length; i++){
+             columns.push({
+             minWidth: 100,
+             text: text[i],
+             name : name[i],
+             dataIndex: dataIndex[i]
+             });
+             }
+
+             grid.reconfigure(this.store, columns);*/
+/* -- 2016. 11. 23 수정 내역 끝 -- */
+//
+//Arrival Date|
+//BL NO.|
+//TERMS|
+//ORIGN|
+//DEST.|
+//VENDOR CODE|
+//CUR|
+//THC |
+//Trucking Charge |
+//H/D Charge |
+//Pick Up Over Time |
+//Storage Charge |
+//CC Fee |
+//CC Over Time |
+//VIP CHARGE |
+//Other charge |
+//D/O Fee |
+//    P/F |
+//Import Tax |
+//Vendor Invoice. No |
+//    VAT (%)|
+//Total (including VAT)|
+//CUSTOMER CODE|
+//CUR|
+//    Air-Freight |
+//FSC |
+//CC Fee |
+//Trucking Charge |
+//    H/D Charge |
+//Storage Charge |
+//    P/F |
+//Import Tax |
+//Vendor Invoice. No |
+//    VAT (%)|
+//Total
+
+/*!
+ * Ext JS GridFilter plugin v0.1
+ * https://github.com/roberto-rodriguez/ExtJs_GridFilterPlugin
+ *
+ *
+ * Copyright 2016 Roberto Rodriguez
+ * Licensed under GNU General Public License v3.
+ * http://www.gnu.org/licenses/
+ *
+ *
+ * @class Ext.ux.grid.GridFilter
+ * @extends Ext.AbstractPlugin
+ *
+ * Grid plugin that adds filtering row below grid header.
+ * Allows remote filtering, supports pagination grids.
+ *
+ * To add filtering to column, define "filter" property in the column configuration
+ *
+ *
+ * <b>What it does?</b>
+ * When the user adds criterias to the filter and hits enter,
+ * The plugin reload the grid, including in the query params the values of the filters
+ *
+ * The values are collected just for the filters that are not empty,
+ *  and are sent to the server in the format:
+ *   dataIndex:VALUE    // Example  firstName: 'Roberto'
+ *
+ *
+ *
+ Example:
+
+ var grid = new Ext.grid.GridPanel({
+ columns: [
+ {
+ text: "User ID",
+ dataIndex: 'userId',
+ filter: true
+ },
+ {
+ text: "First Name",
+ dataIndex: 'firstName',
+ filter: true
+ },
+ {
+ text: "First Name",
+ dataIndex: 'firstName',
+ filter: lastName
+ }
+ ],
+ plugins:[{ptype:"gridFilter"}]
+ ...
+ });
+ */
+Ext.define('eui.ux.grid.GridFilter', {
+    extend: 'Ext.AbstractPlugin',
+    alias: 'plugin.gridFilter',
+    init: function(grid) {
+        var me = this;
+        var store = grid.getStore();
+        if (grid.getBind()['store']) {
+            store = grid.lookupViewModel().getStore(grid.getBind()['store'].stub.name);
+            store.on('load', function() {});
+        }
+        //               debugger;
+        console.log('store', store);
+        grid.relayEvents(store, [
+            'viewready',
+            'load',
+            'beforeload',
+            'sortchange'
+        ]);
+        grid.addListener('beforeload', me.onBeforeLoad);
+        grid.addListener('viewready', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 300);
+        });
+        grid.addListener('load', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 200);
+        });
+        grid.on('resize', function() {
+            Ext.defer(function() {
+                me.storeload(grid);
+            }, 300);
+        });
+    },
+    //
+    //        grid.addListener('sortchange', function () {
+    //            me.storeload(grid)
+    //        });
+    storeload: function(gg) {
+        //debugger;
+        var me = this;
+        if (gg) {
+            me = gg;
+        }
+        console.log('storeload..', me);
+        var body = me.body.dom;
+        //        Ext.defer(function () {
+        var container = body.getElementsByClassName('x-grid-item-container')[0];
+        var __table = container.childNodes[0];
+        if (!__table) {
+            return;
+        }
+        if (me.el.dom.getElementsByClassName('filter-table')[0]) {
+            //            debugger;
+            Ext.get(me.el.dom.getElementsByClassName('filter-table')[0]).destroy();
+        }
+        var __tbody = __table.getElementsByTagName('tbody')[0];
+        var tr1 = __tbody.childNodes[0];
+        if (tr1) {
+            me['tr1'] = tr1;
+        } else {
+            if (me['tr1']) {
+                tr1 = me['tr1'];
+            } else {
+                return;
+            }
+        }
+        var table = document.createElement('table');
+        table.setAttribute('class', 'filter-table');
+        var tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+        var newTr = document.createElement('tr');
+        var tr_nodes = Ext.Array.clone(tr1.childNodes);
+        var columns = Ext.pluck(Ext.Array.clone(me.columns), 'initialConfig');
+        if (tr_nodes[0].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1) {
+            columns.unshift({
+                filter: false
+            });
+        }
+        for (var i = 0; i < tr_nodes.length; i++) {
+            var td = document.createElement('td');
+            td.setAttribute("style", tr_nodes[i].getAttribute('style') + "padding:1px 1px;border: solid gray 1px;");
+            //            if (tr_nodes[i].getAttribute('class').indexOf('x-grid-cell-checkcolumn') != -1){
+            //
+            //            }else {
+            if (columns[i].filter) {
+                var input = document.createElement('input');
+                input.setAttribute("style", "width:100%");
+                input.setAttribute("name", columns[i].dataIndex);
+                if (me.filters && me.filters[columns[i].dataIndex]) {
+                    input.value = me.filters[columns[i].dataIndex];
+                }
+                input.onkeyup = function(event) {
+                    if (event.keyCode === 13) {
+                        var tr = event.target.parentNode.parentNode;
+                        var searchParams = {};
+                        for (var j = 0; j < tr.childNodes.length; j++) {
+                            if (tr.childNodes[j].childNodes[0] && tr.childNodes[j].childNodes[0].value) {
+                                searchParams[tr.childNodes[j].childNodes[0].name] = tr.childNodes[j].childNodes[0].value;
+                            }
+                        }
+                        me['filters'] = searchParams;
+                        var clonedSearchParams = {
+                                //for avoid include start and page in the global var
+                                start: 0,
+                                page: 1
+                            };
+                        for (var key in searchParams) {
+                            clonedSearchParams[key] = searchParams[key];
+                        }
+                        me.store.load({
+                            params: clonedSearchParams
+                        });
+                        me.store.currentPage = 1;
+                    }
+                };
+                td.appendChild(input);
+            } else {
+                td.setAttribute('class', 'x-grid-item x-grid-item-selected');
+            }
+            newTr.appendChild(td);
+        }
+        tbody.appendChild(newTr);
+        //        container.insertBefore(table, __table);
+        me.el.dom.getElementsByClassName('x-grid-body')[0].insertBefore(table, me.el.dom.getElementsByClassName('x-grid-view')[0]);
+    },
+    //debugger;
+    //        me.el.dom.getElementsByClassName('x-grid-view')[0]
+    //        me.el.dom.getElementsByClassName('x-grid-body')[0]
+    //        },1000)
+    onBeforeLoad: function(store, operation, eOpts) {
+        var me = this;
+        if (me.filters) {
+            store.getProxy().extraParams = me.filters;
+        }
+        if (!me['pageSize']) {
+            me['pageSize'] = --store.pageSize;
+            store.getProxy().extraParams['limit'] = me['pageSize'];
+        }
     }
 });
 
@@ -10223,7 +13804,15 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
      * String used to format dates (defaults to "Y-m-d"). All other data types are left unmolested
      */
     dateFormatString: "Y-m-d",
-    worksheetTpl: new Ext.XTemplate('<ss:Worksheet ss:Name="{title}">', '<ss:Names>', '<ss:NamedRange ss:Name="Print_Titles" ss:RefersTo="=\'{title}\'!R1:R2" />', '</ss:Names>', '<ss:Table x:FullRows="1" x:FullColumns="1" ss:ExpandedColumnCount="{colCount}" ss:ExpandedRowCount="{rowCount}">', '{columns}', '<ss:Row ss:Height="38">', '<ss:Cell ss:StyleID="title" ss:MergeAcross="{colCount - 1}">', '<ss:Data xmlns:html="http://www.w3.org/TR/REC-html40" ss:Type="String">', '<html:B><html:U><html:Font html:Size="15">{title}', '</html:Font></html:U></html:B></ss:Data><ss:NamedCell ss:Name="Print_Titles" />', '</ss:Cell>', '</ss:Row>', '<ss:Row ss:AutoFitHeight="1">', '{header}', '</ss:Row>', '{rows}', '</ss:Table>', '<x:WorksheetOptions>', '<x:PageSetup>', '<x:Layout x:CenterHorizontal="1" x:Orientation="Landscape" />', '<x:Footer x:Data="Page &amp;P of &amp;N" x:Margin="0.5" />', '<x:PageMargins x:Top="0.5" x:Right="0.5" x:Left="0.5" x:Bottom="0.8" />', '</x:PageSetup>', '<x:FitToPage />', '<x:Print>', '<x:PrintErrors>Blank</x:PrintErrors>', '<x:FitWidth>1</x:FitWidth>', '<x:FitHeight>32767</x:FitHeight>', '<x:ValidPrinterInfo />', '<x:VerticalResolution>600</x:VerticalResolution>', '</x:Print>', '<x:Selected />', '<x:DoNotDisplayGridlines />', '<x:ProtectObjects>False</x:ProtectObjects>', '<x:ProtectScenarios>False</x:ProtectScenarios>', '</x:WorksheetOptions>', '</ss:Worksheet>'),
+    worksheetTpl: new Ext.XTemplate('<ss:Worksheet ss:Name="{title}">', '<ss:Names>', '<ss:NamedRange ss:Name="Print_Titles" ss:RefersTo="=\'{title}\'!R1:R2" />', '</ss:Names>', '<ss:Table x:FullRows="1" x:FullColumns="1" ss:ExpandedColumnCount="{colCount}" ss:ExpandedRowCount="{rowCount}">', '{columns}', // 아래 코드 엑셀 최상단 타이틀 제고.
+    //        '<ss:Row ss:Height="38">',
+    //        '<ss:Cell ss:StyleID="title" ss:MergeAcross="{colCount - 1}">',
+    //        '<ss:Data xmlns:html="http://www.w3.org/TR/REC-html40" ss:Type="String">',
+    //        '<html:B><html:U><html:Font html:Size="15">{title}',
+    //        '</html:Font></html:U></html:B></ss:Data><ss:NamedCell ss:Name="Print_Titles" />',
+    //        '</ss:Cell>',
+    //        '</ss:Row>',
+    '<ss:Row ss:AutoFitHeight="1">', '{header}', '</ss:Row>', '{rows}', '</ss:Table>', '<x:WorksheetOptions>', '<x:PageSetup>', '<x:Layout x:CenterHorizontal="1" x:Orientation="Landscape" />', '<x:Footer x:Data="Page &amp;P of &amp;N" x:Margin="0.5" />', '<x:PageMargins x:Top="0.5" x:Right="0.5" x:Left="0.5" x:Bottom="0.8" />', '</x:PageSetup>', '<x:FitToPage />', '<x:Print>', '<x:PrintErrors>Blank</x:PrintErrors>', '<x:FitWidth>1</x:FitWidth>', '<x:FitHeight>32767</x:FitHeight>', '<x:ValidPrinterInfo />', '<x:VerticalResolution>600</x:VerticalResolution>', '</x:Print>', '<x:Selected />', '<x:DoNotDisplayGridlines />', '<x:ProtectObjects>False</x:ProtectObjects>', '<x:ProtectScenarios>False</x:ProtectScenarios>', '</x:WorksheetOptions>', '</ss:Worksheet>'),
     /**
      * Builds the Worksheet XML
      * @param {Ext.data.Store} store The store to build from
@@ -10267,6 +13856,8 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
                 title = col.name.replace(/_/g, " ");
                 title = Ext.String.capitalize(title);
             }
+            title = title.replace(/<\/BR>/gi, '\n\r');
+            title = title.replace(/<BR>/gi, '\n\r');
             cells.push(Ext.String.format('<ss:Cell ss:StyleID="headercell"><ss:Data ss:Type="String">{0}</ss:Data><ss:NamedCell ss:Name="Print_Titles" /></ss:Cell>', title));
         }, //}
         this);
@@ -10338,6 +13929,22 @@ Ext.define("Ext.ux.exporter.excelFormatter.Worksheet", {
         'gridcolumn': 'String',
         'float': "Number",
         'date': "DateTime"
+    }
+});
+
+Ext.define('Override.ux.exporter.excelFormatter.Worksheet', {
+    override: 'Ext.ux.exporter.excelFormatter.Worksheet',
+    buildCell: function(value, type, style) {
+        if (type == "DateTime" && Ext.isFunction(value.format)) {
+            value = value.format(this.dateFormatString);
+        }
+        value = '' + value;
+        value = value.replace(/</g, "&lt;");
+        return new Ext.ux.exporter.excelFormatter.Cell({
+            value: value,
+            type: type,
+            style: style
+        });
     }
 });
 
@@ -10477,23 +14084,33 @@ Ext.define('Ext.ux.exporter.FileSaver', {
                         //safari 5 throws error
                         type: mimeType + ";charset=" + charset + ","
                     });
-                if (link && "download" in link) {
-                    blobURL = window.URL.createObjectURL(blob);
-                    link.href = blobURL;
-                    link.download = filename;
-                    if (cb)  {
-                        cb.call(scope);
-                    }
-                    
-                    this.cleanBlobURL(blobURL);
-                    return;
-                } else if (window.navigator.msSaveOrOpenBlob) {
+                blobURL = window.URL.createObjectURL(blob);
+                //                    link.href = blobURL;
+                //                    link.download = filename;
+                if (window.navigator.msSaveOrOpenBlob) {
                     //IE 10+
                     window.navigator.msSaveOrOpenBlob(blob, filename);
                     if (cb)  {
                         cb.call(scope);
                     }
                     
+                    return;
+                } else {
+                    var a = document.createElement("a");
+                    // safari doesn't support this yet
+                    if (typeof a.download === 'undefined') {
+                        window.location = downloadUrl;
+                    } else {
+                        a.href = blobURL;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                    }
+                    if (cb)  {
+                        cb.call(scope);
+                    }
+                    
+                    this.cleanBlobURL(blobURL);
                     return;
                 }
             } catch (e) {
@@ -10632,10 +14249,12 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
             if (me.component) {
                 me.component = !Ext.isString(me.component) ? me.component : Ext.ComponentQuery.query(me.component)[0];
             }
-            me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            try {
+                me.setComponent(me.store || me.component || me.up("gridpanel") || me.up("treepanel") || me.targetGrid, config);
+            } catch (e) {}
         });
     },
-    onClick: function(e) {
+    onClick2: function(e) {
         var me = this,
             blobURL = "",
             format = me.format,
@@ -10650,8 +14269,8 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
         });
         filename = title + "_" + Ext.Date.format(dt, "Y-m-d h:i:s") + "." + res.ext;
         Ext.ux.exporter.FileSaver.saveAs(res.data, res.mimeType, res.charset, filename, link, remote, me.onComplete, me);
-        me.callParent(arguments);
     },
+    //        me.callParent(arguments);
     setComponent: function(component, config) {
         var me = this;
         me.component = component;
@@ -10691,6 +14310,771 @@ Ext.define("Ext.ux.exporter.ExporterButton", {
     // only components or stores, if it doesn't respond to is method, it's a store
     onComplete: function() {
         this.fireEvent('complete', this);
+    }
+});
+
+/**
+ * The main upload dialog.
+ *
+ * Mostly, this may be the only object you need to interact with. Just initialize it and show it:
+ *
+ *     @example
+ *     var dialog = Ext.create('Ext.ux.upload.Dialog', {
+ *         dialogTitle: 'My Upload Widget',
+ *         uploadUrl: 'upload.php'
+ *     });
+ *     dialog.show();
+ *
+ */
+Ext.define('Ext.ux.upload.Dialog', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'uploaddialog',
+    /**
+     * @cfg {Number} [width=700]
+     */
+    width: 700,
+    /**
+     * @cfg {Number} [height=500]
+     */
+    height: 500,
+    border: 0,
+    config: {
+        /**
+         * @cfg {String}
+         *
+         * The title of the dialog.
+         */
+        dialogTitle: '',
+        /**
+         * @cfg {boolean} [synchronous=false]
+         *
+         * If true, all files are uploaded in a sequence, otherwise files are uploaded simultaneously (asynchronously).
+         */
+        synchronous: true,
+        /**
+         * @cfg {String} uploadUrl (required)
+         *
+         * The URL to upload files to.
+         */
+        uploadUrl: '',
+        /**
+         * @cfg {Object}
+         *
+         * Params passed to the uploader object and sent along with the request. It depends on the implementation of the
+         * uploader object, for example if the {@link Ext.ux.upload.uploader.ExtJsUploader} is used, the params are sent
+         * as GET params.
+         */
+        uploadParams: {},
+        /**
+         * @cfg {Object}
+         *
+         * Extra HTTP headers to be added to the HTTP request uploading the file.
+         */
+        uploadExtraHeaders: {},
+        /**
+         * @cfg {Number} [uploadTimeout=6000]
+         *
+         * The time after the upload request times out - in miliseconds.
+         */
+        uploadTimeout: 60000,
+        // strings
+        textClose: 'Close'
+    },
+    /**
+     * @private
+     */
+    initComponent: function() {
+        if (!Ext.isObject(this.panel)) {
+            this.panel = Ext.create('Ext.ux.upload.Panel', {
+                synchronous: this.synchronous,
+                scope: this.scope,
+                uploadUrl: this.uploadUrl,
+                uploadParams: this.uploadParams,
+                uploadExtraHeaders: this.uploadExtraHeaders,
+                uploadTimeout: this.uploadTimeout
+            });
+        }
+        this.relayEvents(this.panel, [
+            'uploadcomplete'
+        ]);
+        Ext.apply(this, {
+            layout: 'fit',
+            items: [
+                this.panel
+            ]
+        });
+        /*,
+                        dockedItems : [
+                            {
+                                xtype : 'toolbar',
+                                dock : 'bottom',
+                                ui : 'footer',
+                                defaults : {
+                                    minWidth : this.minButtonWidth
+                                },
+                                items : [
+                                    '->',
+                                    {
+                                        text : this.textClose,
+                                        cls : 'x-btn-text-icon',
+                                        scope : this,
+                                        handler : function() {
+                                            this.close();
+                                        }
+                                    }
+                                ]
+                            }
+                        ]*/
+        this.callParent(arguments);
+    }
+});
+
+/**
+ * The main upload dialog.
+ * 
+ * Mostly, this will be the only object you need to interact with. Just initialize it and show it:
+ * 
+ *      @example
+ *      var dialog = Ext.create('Ext.ux.upload.Dialog', {
+ *          dialogTitle: 'My Upload Widget',
+ *          uploadUrl: 'upload.php'
+ *      });
+ * 
+ *      dialog.show();
+ * 
+ */
+Ext.define('Ext.ux.upload.LegacyDialog', {
+    extend: 'Ext.window.Window',
+    requires: [
+        'Ext.ux.upload.ItemGridPanel',
+        'Ext.ux.upload.Manager',
+        'Ext.ux.upload.StatusBar',
+        'Ext.ux.upload.BrowseButton',
+        'Ext.ux.upload.Queue'
+    ],
+    /**
+     * @cfg {Number} [width=700]
+     */
+    width: 700,
+    /**
+     * @cfg {Number} [height=500]
+     */
+    height: 500,
+    config: {
+        /**
+         * @cfg {String}
+         * 
+         * The title of the dialog.
+         */
+        dialogTitle: '',
+        /**
+         * @cfg {boolean} [synchronous=false]
+         * 
+         * If true, all files are uploaded in a sequence, otherwise files are uploaded simultaneously (asynchronously).
+         */
+        synchronous: true,
+        /**
+         * @cfg {String} uploadUrl (required)
+         * 
+         * The URL to upload files to.
+         */
+        uploadUrl: '',
+        /**
+         * @cfg {Object}
+         * 
+         * Params passed to the uploader object and sent along with the request. It depends on the implementation of the
+         * uploader object, for example if the {@link Ext.ux.upload.uploader.ExtJsUploader} is used, the params are sent
+         * as GET params.
+         */
+        uploadParams: {},
+        /**
+         * @cfg {Object}
+         * 
+         * Extra HTTP headers to be added to the HTTP request uploading the file.
+         */
+        uploadExtraHeaders: {},
+        /**
+         * @cfg {Number} [uploadTimeout=6000]
+         * 
+         * The time after the upload request times out - in miliseconds.
+         */
+        uploadTimeout: 60000,
+        // dialog strings
+        textOk: 'OK',
+        textClose: 'Close',
+        textUpload: '1111Upload',
+        textBrowse: 'Browse',
+        textAbort: 'Abort',
+        textRemoveSelected: 'Remove selected',
+        textRemoveAll: 'Remove all',
+        // grid strings
+        textFilename: 'Filename',
+        textSize: 'Size',
+        textType: 'Type',
+        textStatus: 'Status',
+        textProgress: '%',
+        // status toolbar strings
+        selectionMessageText: 'Selected {0} file(s), {1}',
+        uploadMessageText: 'Upload progress {0}% ({1} of {2} souborů)',
+        // browse button
+        buttonText: '00Browse...'
+    },
+    /**
+     * @property {Ext.ux.upload.Queue}
+     */
+    queue: null,
+    /**
+     * @property {Ext.ux.upload.ItemGridPanel}
+     */
+    grid: null,
+    /**
+     * @property {Ext.ux.upload.Manager}
+     */
+    uploadManager: null,
+    /**
+     * @property {Ext.ux.upload.StatusBar}
+     */
+    statusBar: null,
+    /**
+     * @property {Ext.ux.upload.BrowseButton}
+     */
+    browseButton: null,
+    /**
+     * @private
+     */
+    initComponent: function() {
+        this.queue = this.initQueue();
+        this.grid = Ext.create('Ext.ux.upload.ItemGridPanel', {
+            queue: this.queue,
+            textFilename: this.textFilename,
+            textSize: this.textSize,
+            textType: this.textType,
+            textStatus: this.textStatus,
+            textProgress: this.textProgress
+        });
+        this.uploadManager = Ext.create('Ext.ux.upload.Manager', {
+            url: this.uploadUrl,
+            synchronous: this.synchronous,
+            params: this.uploadParams,
+            extraHeaders: this.uploadExtraHeaders,
+            uploadTimeout: this.uploadTimeout
+        });
+        this.uploadManager.on('uploadcomplete', this.onUploadComplete, this);
+        this.uploadManager.on('itemuploadsuccess', this.onItemUploadSuccess, this);
+        this.uploadManager.on('itemuploadfailure', this.onItemUploadFailure, this);
+        this.statusBar = Ext.create('Ext.ux.upload.StatusBar', {
+            dock: 'bottom',
+            selectionMessageText: this.selectionMessageText,
+            uploadMessageText: this.uploadMessageText
+        });
+        Ext.apply(this, {
+            title: this.dialogTitle,
+            autoScroll: true,
+            layout: 'fit',
+            uploading: false,
+            items: [
+                this.grid
+            ],
+            dockedItems: [
+                this.getTopToolbarConfig(),
+                {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    ui: 'footer',
+                    defaults: {
+                        minWidth: this.minButtonWidth
+                    },
+                    items: [
+                        '->',
+                        {
+                            text: this.textClose,
+                            // iconCls : 'ux-mu-icon-action-ok',
+                            cls: 'x-btn-text-icon',
+                            scope: this,
+                            handler: function() {
+                                this.close();
+                            }
+                        }
+                    ]
+                },
+                this.statusBar
+            ]
+        });
+        this.on('afterrender', function() {
+            this.stateInit();
+        }, this);
+        this.callParent(arguments);
+    },
+    /**
+     * @private 
+     * 
+     * Returns the config object for the top toolbar.
+     * 
+     * @return {Array}
+     */
+    getTopToolbarConfig: function() {
+        this.browseButton = Ext.create('Ext.ux.upload.BrowseButton', {
+            id: 'button_browse',
+            buttonText: this.buttonText
+        });
+        this.browseButton.on('fileselected', this.onFileSelection, this);
+        return {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                this.browseButton,
+                '-',
+                {
+                    id: 'button_upload',
+                    text: this.textUpload,
+                    iconCls: 'ux-mu-icon-action-upload',
+                    scope: this,
+                    handler: this.onInitUpload
+                },
+                '-',
+                {
+                    id: 'button_abort',
+                    text: this.textAbort,
+                    iconCls: 'ux-mu-icon-action-abort',
+                    scope: this,
+                    handler: this.onAbortUpload,
+                    disabled: true
+                },
+                '->',
+                {
+                    id: 'button_remove_selected',
+                    text: this.textRemoveSelected,
+                    iconCls: 'ux-mu-icon-action-remove',
+                    scope: this,
+                    handler: this.onMultipleRemove
+                },
+                '-',
+                {
+                    id: 'button_remove_all',
+                    text: this.textRemoveAll,
+                    iconCls: 'ux-mu-icon-action-remove',
+                    scope: this,
+                    handler: this.onRemoveAll
+                }
+            ]
+        };
+    },
+    /**
+     * @private
+     * 
+     * Initializes and returns the queue object.
+     * 
+     * @return {Ext.ux.upload.Queue}
+     */
+    initQueue: function() {
+        var queue = Ext.create('Ext.ux.upload.Queue');
+        queue.on('queuechange', this.onQueueChange, this);
+        return queue;
+    },
+    onInitUpload: function() {
+        if (!this.queue.getCount()) {
+            return;
+        }
+        this.stateUpload();
+        this.startUpload();
+    },
+    onAbortUpload: function() {
+        this.uploadManager.abortUpload();
+        this.finishUpload();
+        this.switchState();
+    },
+    onUploadComplete: function(manager, queue, errorCount) {
+        this.finishUpload();
+        this.stateInit();
+        this.fireEvent('uploadcomplete', this, manager, queue.getUploadedItems(), errorCount);
+    },
+    /**
+     * @private
+     * 
+     * Executes after files has been selected for upload through the "Browse" button. Updates the upload queue with the
+     * new files.
+     * 
+     * @param {Ext.ux.upload.BrowseButton} input
+     * @param {FileList} files
+     */
+    onFileSelection: function(input, files) {
+        this.queue.clearUploadedItems();
+        this.queue.addFiles(files);
+        this.browseButton.reset();
+    },
+    /**
+     * @private
+     * 
+     * Executes if there is a change in the queue. Updates the related components (grid, toolbar).
+     * 
+     * @param {Ext.ux.upload.Queue} queue
+     */
+    onQueueChange: function(queue) {
+        this.updateStatusBar();
+        this.switchState();
+    },
+    /**
+     * @private
+     * 
+     * Executes upon hitting the "multiple remove" button. Removes all selected items from the queue.
+     */
+    onMultipleRemove: function() {
+        var records = this.grid.getSelectedRecords();
+        if (!records.length) {
+            return;
+        }
+        var keys = [];
+        var i;
+        var num = records.length;
+        for (i = 0; i < num; i++) {
+            keys.push(records[i].get('filename'));
+        }
+        this.queue.removeItemsByKey(keys);
+    },
+    onRemoveAll: function() {
+        this.queue.clearItems();
+    },
+    onItemUploadSuccess: function(item, info) {},
+    onItemUploadFailure: function(item, info) {},
+    startUpload: function() {
+        this.uploading = true;
+        this.uploadManager.uploadQueue(this.queue);
+    },
+    finishUpload: function() {
+        this.uploading = false;
+    },
+    isUploadActive: function() {
+        return this.uploading;
+    },
+    updateStatusBar: function() {
+        if (!this.statusBar) {
+            return;
+        }
+        var numFiles = this.queue.getCount();
+        this.statusBar.setSelectionMessage(this.queue.getCount(), this.queue.getTotalBytes());
+    },
+    getButton: function(id) {
+        return Ext.ComponentMgr.get(id);
+    },
+    switchButtons: function(info) {
+        var id;
+        for (id in info) {
+            this.switchButton(id, info[id]);
+        }
+    },
+    switchButton: function(id, on) {
+        var button = this.getButton(id);
+        if (button) {
+            if (on) {
+                button.enable();
+            } else {
+                button.disable();
+            }
+        }
+    },
+    switchState: function() {
+        if (this.uploading) {
+            this.stateUpload();
+        } else if (this.queue.getCount()) {
+            this.stateQueue();
+        } else {
+            this.stateInit();
+        }
+    },
+    stateInit: function() {
+        this.switchButtons({
+            'button_browse': 1,
+            'button_upload': 0,
+            'button_abort': 0,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    },
+    stateQueue: function() {
+        this.switchButtons({
+            'button_browse': 1,
+            'button_upload': 1,
+            'button_abort': 0,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    },
+    stateUpload: function() {
+        this.switchButtons({
+            'button_browse': 0,
+            'button_upload': 0,
+            'button_abort': 1,
+            'button_remove_all': 1,
+            'button_remove_selected': 1
+        });
+    }
+});
+
+/**
+ * Abstract filename encoder.
+ */
+Ext.define('Ext.ux.upload.header.AbstractFilenameEncoder', {
+    config: {},
+    type: 'generic',
+    encode: function(filename) {},
+    getType: function() {
+        return this.type;
+    }
+});
+
+/**
+ * Base64 filename encoder - uses the built-in function window.btoa().
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Window.btoa
+ */
+Ext.define('Ext.ux.upload.header.Base64FilenameEncoder', {
+    extend: 'Ext.ux.upload.header.AbstractFilenameEncoder',
+    config: {},
+    type: 'base64',
+    encode: function(filename) {
+        return window.btoa(unescape(encodeURIComponent(filename)));
+    }
+});
+
+Ext.define('Ext.ux.upload.uploader.DummyUploader', {
+    extend: 'Ext.ux.upload.uploader.AbstractUploader',
+    delay: 1000,
+    uploadItem: function(item) {
+        item.setUploading();
+        var task = new Ext.util.DelayedTask(function() {
+                this.fireEvent('uploadsuccess', item, {
+                    success: true,
+                    message: 'OK',
+                    response: null
+                });
+            }, this);
+        task.delay(this.delay);
+    },
+    abortUpload: function() {}
+});
+
+/**
+ * Uploader implementation - with the Connection object in ExtJS 4
+ * 
+ */
+Ext.define('Ext.ux.upload.uploader.ExtJsUploader', {
+    extend: 'Ext.ux.upload.uploader.AbstractXhrUploader',
+    requires: [
+        'Ext.ux.upload.data.Connection'
+    ],
+    config: {
+        /**
+         * @cfg {String} [method='PUT']
+         * 
+         * The HTTP method to be used.
+         */
+        method: 'PUT',
+        /**
+         * @cfg {Ext.data.Connection}
+         * 
+         * If set, this connection object will be used when uploading files.
+         */
+        connection: null
+    },
+    /**
+     * @property
+     * @private
+     * 
+     * The connection object.
+     */
+    conn: null,
+    /**
+     * @private
+     * 
+     * Initializes and returns the connection object.
+     * 
+     * @return {Ext.ux.upload.data.Connection}
+     */
+    initConnection: function() {
+        var conn,
+            url = this.url;
+        console.log('ExtJsUploader.. initConnection..');
+        if (this.connection instanceof Ext.data.Connection) {
+            conn = this.connection;
+        } else {
+            if (this.params) {
+                url = Ext.urlAppend(url, Ext.urlEncode(this.params));
+            }
+            conn = Ext.create('Ext.ux.upload.data.Connection', {
+                disableCaching: true,
+                method: this.method,
+                url: url,
+                timeout: this.timeout,
+                defaultHeaders: {
+                    'Content-Type': this.contentType,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        }
+        return conn;
+    },
+    /**
+     * @protected
+     */
+    initHeaders: function(item) {
+        var headers = this.callParent(arguments);
+        headers['Content-Type'] = item.getType();
+        return headers;
+    },
+    /**
+     * Implements {@link Ext.ux.upload.uploader.AbstractUploader#uploadItem}
+     * 
+     * @param {Ext.ux.upload.Item} item
+     */
+    uploadItem: function(item) {
+        var file = item.getFileApiObject();
+        if (!file) {
+            return;
+        }
+        item.setUploading();
+        this.conn = this.initConnection();
+        /*
+         * Passing the File object directly as the "rawFata" option.
+         * Specs:
+         *   https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method
+         *   http://dev.w3.org/2006/webapi/FileAPI/#blob
+         */
+        this.conn.request({
+            scope: this,
+            headers: this.initHeaders(item),
+            rawData: file,
+            success: Ext.Function.bind(this.onUploadSuccess, this, [
+                item
+            ], true),
+            failure: Ext.Function.bind(this.onUploadFailure, this, [
+                item
+            ], true),
+            progress: Ext.Function.bind(this.onUploadProgress, this, [
+                item
+            ], true)
+        });
+    },
+    /**
+     * Implements {@link Ext.ux.upload.uploader.AbstractUploader#abortUpload}
+     */
+    abortUpload: function() {
+        if (this.conn) {
+            /*
+        	 * If we don't suspend the events, the connection abortion will cause a failure event. 
+        	 */
+            this.suspendEvents();
+            this.conn.abort();
+            this.resumeEvents();
+        }
+    }
+});
+
+/**
+ * Uploader implementation - with the Connection object in ExtJS 4
+ * 
+ */
+Ext.define('Ext.ux.upload.uploader.LegacyExtJsUploader', {
+    extend: 'Ext.ux.upload.uploader.AbstractUploader',
+    requires: [
+        'Ext.ux.upload.data.Connection'
+    ],
+    /**
+     * @property
+     * 
+     * The connection object.
+     */
+    conn: null,
+    /**
+     * @private
+     * 
+     * Initializes and returns the connection object.
+     * 
+     * @return {Ext.ux.upload.data.Connection}
+     */
+    initConnection: function() {
+        console.log('LegacyExtJsUploader.. initConnection..');
+        var url = this.url;
+        if (this.params) {
+            url = Ext.urlAppend(url, Ext.urlEncode(this.params));
+        }
+        var conn = Ext.create('Ext.ux.upload.data.Connection', {
+                disableCaching: true,
+                method: this.method,
+                url: url,
+                timeout: this.timeout,
+                defaultHeaders: {
+                    'Content-Type': this.contentType,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        return conn;
+    },
+    /**
+     * Implements {@link Ext.ux.upload.uploader.AbstractUploader#uploadItem}
+     * 
+     * @param {Ext.ux.upload.Item} item
+     */
+    uploadItem: function(item) {
+        var file = item.getFileApiObject();
+        if (!file) {
+            return;
+        }
+        item.setUploading();
+        this.conn = this.initConnection();
+        this.conn.request({
+            scope: this,
+            headers: this.initHeaders(item),
+            xmlData: file,
+            success: Ext.Function.bind(this.onUploadSuccess, this, [
+                item
+            ], true),
+            failure: Ext.Function.bind(this.onUploadFailure, this, [
+                item
+            ], true),
+            progress: Ext.Function.bind(this.onUploadProgress, this, [
+                item
+            ], true)
+        });
+    },
+    /**
+     * Implements {@link Ext.ux.upload.uploader.AbstractUploader#abortUpload}
+     */
+    abortUpload: function() {
+        if (this.conn) {
+            this.conn.abort();
+        }
+    },
+    onUploadSuccess: function(response, options, item) {
+        var info = {
+                success: false,
+                message: 'general error',
+                response: response
+            };
+        if (response.responseText) {
+            var responseJson = Ext.decode(response.responseText);
+            if (responseJson && responseJson.success) {
+                Ext.apply(info, {
+                    success: responseJson.success,
+                    message: responseJson.message
+                });
+                this.fireEvent('uploadsuccess', item, info);
+                return;
+            }
+            Ext.apply(info, {
+                message: responseJson.message
+            });
+        }
+        this.fireEvent('uploadfailure', item, info);
+    },
+    onUploadFailure: function(response, options, item) {
+        var info = {
+                success: false,
+                message: 'http error',
+                response: response
+            };
+        this.fireEvent('uploadfailure', item, info);
+    },
+    onUploadProgress: function(event, item) {
+        this.fireEvent('uploadprogress', item, event);
     }
 });
 
