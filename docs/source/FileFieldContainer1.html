@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.ux.file.FileFieldContainer1&#39;, {
+    extend: &#39;eui.form.FieldContainer&#39;,
+    xtype: &#39;filefieldcontainer1&#39;,
+    layout: &#39;fit&#39;,
+    defaultBindProperty: &#39;params&#39;,
+    config: {
+        params: null
+    },
+    items: [{
+        xtype: &#39;tabpanel&#39;,
+        height: 200,
+        items: [{
+                title: &#39;File List&#39;,
+                layout: &#39;fit&#39;,
+                width: 700,
+                items: [{
+                    xtype: &#39;filegrid&#39;,
+                    fileAutoLoad: false,
+                    fileParams: null,
+                    columns: [{
+                            text: &#39;Filename&#39;,
+                            flex: 1,
+                            dataIndex: &#39;NM_FILE&#39;
+                        },
+                        {
+                            text: &#39;Size&#39;,
+                            align: &#39;right&#39;,
+                            width: 70,
+                            dataIndex: &#39;SIZE_FILE&#39;,
+                            renderer: function(value) {
+                                return Ext.util.Format.fileSize(value);
+                            }
+                        },
+                        {
+                            text: &#39;Add User&#39;,
+                            align: &#39;center&#39;,
+                            width: 70,
+                            dataIndex: &#39;ID_REV_PRSN&#39;
+                        },
+                        {
+                            xtype: &#39;datecolumn&#39;,
+                            format: &#39;Y.m.d G:i a&#39;,
+                            width: 150,
+                            text: &#39;Add Date&#39;,
+                            align: &#39;center&#39;,
+                            dataIndex: &#39;DT_REV&#39;
+                        },
+                        {
+                            xtype: &#39;actioncolumn&#39;,
+                            text: &#39;Down&#39;,
+                            width: 40,
+                            items: [{
+                                icon: &#39;resources/images/customui/icon/COM.png&#39;,
+                                handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                                    Util.fileClick(record.get(&#39;ID_FILE_DTIL&#39;), record.get(&#39;ID_ATCH_FILE&#39;), record.get(&#39;NM_FILE&#39;))
+                                }
+                            }]
+                        },
+                        {
+                            xtype: &#39;actioncolumn&#39;,
+                            text: &#39;Del&#39;,
+                            width: 40,
+                            items: [{
+                                icon: &#39;resources/images/customui/icon/COM.png&#39;,
+                                handler: function(view, rowIndex, colIndex, item, e, record, row) {
+                                    var store = this.up(&#39;grid&#39;).store;
+                                    store.remove(record);
+                                }
+                            }]
+                        }
+                    ]
+                }]
+            },
+            {
+                title: &#39;File Add&#39;,
+                layout: &#39;fit&#39;,
+                width: 700,
+                items: {
+                    xtype: &#39;uploadpanel&#39;,
+                    uploader: &#39;Ext.ux.upload.uploader.FormDataUploader&#39;,
+                    initComponent: function() {
+                        var me = this;
+                        Ext.apply(me, {
+                            uploaderOptions: {
+                                params: null,
+                                url: Config.fileuploadUrl
+                            }
+                        });
+                        Ext.ux.upload.Panel.prototype.initComponent.call(me);
+                    },
+                    synchronous: true,
+                    listeners: {
+                        beforeupload: function() {
+                            var maxSize = Config.fileuploadMaxSize || 1048576,
+                                totalSize = 0,
+                                size, errorMsg = &#39;&#39;,
+                                msgFormat = &#39;파일 최대 업로드 용량({0})을 초과하였습니다&#39;;
+                            this.queue.each(function(itm) {
+                                size = itm &amp;&amp; itm.config &amp;&amp; itm.config.fileApiObject &amp;&amp; itm.config.fileApiObject.size;
+                                totalSize += Ext.isNumber(size) ? size : 0;
+                            });
+
+                            if (totalSize &gt; maxSize) {
+                                var fn = Ext.util.Format.fileSize;
+                                errorMsg = Ext.String.format(msgFormat, fn(maxSize));
+                                Ext.Msg.show({
+                                    icon: Ext.Msg.WARNING,
+                                    buttons: Ext.Msg.OK,
+                                    message: errorMsg
+                                });
+                                return false;
+                            }
+                        },
+                        uploadcomplete: function(uploadPanel, manager, items, errorCount) {
+                            var tab = this.up(&#39;tabpanel&#39;);
+
+                            if (errorCount) {
+                                Ext.Msg.show({
+                                    title: &#39;WARNING&#39;,
+                                    icon: Ext.Msg.WARNING,
+                                    message: &#39;업로드를 실패하였습니다.&#39;,
+                                    buttons: Ext.Msg.OK
+                                });
+                            } else {
+                                Ext.Msg.show({
+                                    title: &#39;INFO&#39;,
+                                    icon: Ext.Msg.INFO,
+                                    message: &#39;업로드를 완료하였습니다.&#39;,
+                                    buttons: Ext.Msg.OK
+                                });
+                                tab = tab.setActiveItem(0);
+                                this.onRemoveAll();
+                                tab.down(&#39;grid&#39;).getStore().reload();
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }],
+    setParams: function(params) {
+        var me = this,
+            filegrid, uploadpanel,
+            fn = function() {
+                filegrid = me.down(&#39;filegrid&#39;);
+                uploadpanel = me.down(&#39;uploadpanel&#39;);
+                // ID_ATTACH_FILE 값이 Integer, String인 경우
+                if (!Ext.isObject(params)) {
+                    params = {
+                        ID_ATTACH_FILE: params
+                    }
+                }
+                filegrid.fileParams = params;
+                filegrid.store.proxy.setExtraParams(params);
+                uploadpanel.uploadManager.uploader.params = params;
+                if (!Ext.isEmpty(params)) {
+                    filegrid.store.load();
+                }
+            };
+        this.callParent(arguments);
+        if (me.rendered) {
+            fn();
+        } else {
+            me.on(&#39;afterrender&#39;, function() {
+                fn();
+                me.un(fn);
+            });
+        }
+    }
+});
+</pre>
+</body>
+</html>
