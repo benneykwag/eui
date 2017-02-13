@@ -89,7 +89,104 @@ Ext.define('eui.toolbar.EuiCommand', {
 
     defaultBindProperty: 'store',
 
+    /**
+     * @event reloadbtnclick
+     * 조회 버튼을 클릭할 경우 발생한다. Store가 바인딩 된 경우 그리드에 리스너를 구현할 수 있고
+     * 리스너가 구현되지 않을 경우 eui Grid의 onReload를 호출 그리드를 리로드한다..
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event printbtnclick
+     * 출력 버튼 클릭 시 호출.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event rowaddbtnclick
+     * 신규 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event rowdeletebtnclick
+     * 삭제 버튼 클릭 시 발생. Store가 바인딩 시 리스너 구현이 없을 경우 eui Grid.onRowDelete메소드 호출.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event regbtnclick
+     * 등록 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event modbtnclick
+     * 수정 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
+    /**
+     * @event savebtnclick
+     * 저장 버튼 클릭 시 발생.
+     * @param {eui.toolbar.EuiCommand} this
+     */
+
     config: {
+        /**
+         * @cfg {String} [printBtnICon]
+         * 프린터 버튼의 icon
+         */
+        printBtnICon: null,
+
+        /**
+         * @cfg {String} [printBtnICon]
+         * 프린터 버튼의 icon
+         */
+        rowAddBtnICon: null,
+
+        /**
+         * @cfg {String} [rowDelBtnICon]
+         * 삭제 버튼의 icon
+         */
+        rowDelBtnICon: null,
+
+        /**
+         * @cfg {String} [regBtnICon]
+         * 등록 버튼의 icon
+         */
+        regBtnICon: null,
+
+        /**
+         * @cfg {String} [reloadBtnICon]
+         * 조회 버튼의 icon
+         */
+        reloadBtnICon: null,
+
+        /**
+         * @cfg {String} [modBtnICon]
+         * 수정 버튼의 icon
+         */
+        modBtnICon: null,
+
+        /**
+         * @cfg {String} [saveBtnICon]
+         * 저장 버튼의 icon
+         */
+        saveBtnICon: null,
+
+        /**
+         * @cfg {String} [closeBtnICon]
+         * 닫기 버튼의 icon
+         */
+        closeBtnICon: null,
+
+        /**
+         * @cfg {String} [excelDownBtnICon]
+         * 엑셀다운로드 버튼의 icon
+         */
+        excelDownBtnICon: null,
+
         /**
          * @cfg {String} [scale]
          * 버튼의 scale을 지정한다. 기본값은 small, 그외 medium, large
@@ -426,7 +523,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 cls: 'bgtype1',
                 text: me.reloadBtnText || '#{새로고침}',
                 itemId: 'LOAD',
-                iconCls: (me.hideReloadBtnICon ==null?'#{새로고침아이콘}':me.hideReloadBtnICon),
+                iconCls: (me.hideReloadBtnICon ? null : (me.reloadBtnICon?me.reloadBtnICon:'#{새로고침아이콘}')),
                 disabled: me.getDisableReloadBtn(),
                 hidden: !me.getShowReloadBtn(),
                 listeners: {
@@ -449,7 +546,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 cls: 'bgtype1',
                 text: me.printBtnText || '#{인쇄}',
                 itemId: 'PRINT',
-                iconCls: (me.hidePrintBtnICon ==null?'#{인쇄아이콘}':me.hidePrintBtnICon),
+                iconCls: (me.hidePrintBtnICon ? null : (me.hidePrintBtnICon?me.printBtnICon:'#{인쇄아이콘}')),
                 disabled: me.getDisablePrintBtn(),
                 hidden: !me.getShowPrintBtn(),
                 listeners: {
@@ -469,7 +566,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.excelDownBtnText || '#{엑셀다운로드}',
                 scale: me.scale,
                 itemId: 'EXLDWN',
-                iconCls: (me.hideExcelDownBtnICon ==null?'#{엑셀다운로드아이콘}':me.hideExcelDownBtnICon),
+                iconCls: (me.hideExcelDownBtnICon ? null : (me.hideExcelDownBtnICon?me.excelDownBtnICon:'#{엑셀다운로드아이콘}')),
                 disabled: me.getDisableExcelDownBtn(),
                 hidden: !me.getShowExcelDownBtn(),
                 xtype: 'exporterbutton',
@@ -486,7 +583,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 margin: '0 5 0 5',
                 scale: me.scale,
                 text: me.rowAddBtnText || '#{행추가}',
-                iconCls: (me.hideAddBtnICon ==null?'#{행추가아이콘}':me.hideAddBtnICon),
+                iconCls: (me.hideAddBtnICon ? null : (me.hideAddBtnICon?me.addBtnICon:'#{행추가아이콘}')),
                 scope: me,
                 itemId: 'ADD',
                 disabled: me.getDisableRowAddBtn(),
@@ -511,7 +608,7 @@ Ext.define('eui.toolbar.EuiCommand', {
             {
                 xtype: 'euibutton',
                 scale: me.scale,
-                iconCls: (me.hideDelBtnICon ==null?'#{행삭제아이콘}':me.hideDelBtnICon),
+                iconCls: (me.hideDelBtnICon ? null : (me.hideDelBtnICon?me.delBtnICon:'#{행삭제아이콘}')),
                 text: me.rowDelBtnText || '#{행삭제}',
                 itemId: 'DEL',
                 scope: me,
@@ -536,7 +633,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 scale: me.scale,
                 text: me.regBtnText || '#{등록}',
                 itemId: 'REG',
-                iconCls: (me.hideRegBtnICon ==null?'#{등록아이콘}':me.hideRegBtnICon),
+                iconCls: (me.hideRegBtnICon ? null : (me.hideRegBtnICon?me.regBtnICon:'#{등록아이콘}')),
                 disabled: me.getDisableRegBtn(),
                 hidden: !me.getShowRegBtn(),
                 listeners: {
@@ -557,7 +654,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 scale: me.scale,
                 text: me.modBtnText || '#{수정}',
                 itemId: 'MOD',
-                iconCls: (me.hideModBtnICon ==null?'#{수정아이콘}':me.hideModBtnICon),
+                iconCls: (me.hideModBtnICon ? null : (me.hideModBtnICon?me.modBtnICon:'#{수정아이콘}')),
                 disabled: me.getDisableExcelDownBtn(),
                 hidden: !me.getShowModBtn(),
                 listeners: {
@@ -579,7 +676,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 text: me.saveBtnText || '#{저장}',
                 formBind: true,
                 itemId: 'SAVE',
-                iconCls: (me.hideSaveBtnICon ==null?'#{저장아이콘}':me.hideSaveBtnICon),
+                iconCls: (me.hideSaveBtnICon ? null : (me.hideSaveBtnICon?me.saveBtnICon:'#{저장아이콘}')),
                 disabled: me.getDisableSaveBtn(),
                 hidden: !me.getShowSaveBtn(),
                 listeners: {
@@ -601,7 +698,7 @@ Ext.define('eui.toolbar.EuiCommand', {
                 scale: me.scale,
                 text: me.closeBtnText || '#{닫기}',
                 itemId: 'CLOSE',
-                iconCls: (me.hideCloseBtnICon ==null?'#{닫기아이콘}':me.hideCloseBtnICon),
+                iconCls: (me.hideCloseBtnICon ? null : (me.hideCloseBtnICon?me.closetnICon:'#{닫기아이콘}')),
                 disabled: me.getDisableCloseBtn(),
                 hidden: !me.getShowCloseBtn(),
                 listeners: {
