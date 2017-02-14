@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.ux.file.FileManager&#39;, {
+    extend: &#39;Ext.panel.Panel&#39;,
+    xtype: &#39;filemanager&#39;,
+    modal: true,
+    requires: [
+        &#39;Ext.ux.upload.uploader.FormDataUploader&#39;,
+//        &#39;Ext.ux.upload.uploader.ExtJsUploader&#39;,
+        &#39;Ext.ux.upload.Panel&#39;,
+        &#39;eui.ux.file.FileGrid&#39;,
+        &#39;eui.ux.file.FileForm&#39;,
+        &#39;eui.ux.file.FileManagerController&#39;
+    ],
+    defaultListenerScope: true,
+    controller: &#39;filemanager&#39;,
+
+    layout: &#39;fit&#39;,
+
+    title: &#39;파일매니저&#39;,
+    fileAutoLoad: true,
+    draggable: false,
+    resizable: false,
+
+    config: {
+        fileParams : {}
+    },
+
+    initComponent: function () {
+        var me = this;
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: &#39;filegrid&#39;,
+                    listeners: {
+                        render: function () {
+                            if(me.fileAutoLoad){
+                                this.store.load();
+                            }
+                        }
+                    },
+                    fileParams : me.getFileParams()
+                }
+            ]
+        });
+        me.callParent(arguments);
+    },
+
+    listeners: {
+        fileuploadcomplete: function(){
+            console.log(&#39;fileuploadcomplete&#39;, arguments);
+        }
+    },
+
+    onRender: function (cmp) {
+        var me = this,
+            statusbar = this.down(&#39;filegrid&#39;),
+            form = this.down(&#39;form&#39;);
+        statusbar.bbar = [
+        ];
+
+//        this.addHiddenFieldParams(me.fileParams);
+        this.callParent(arguments);
+    },
+
+    addHiddenFieldParams: function (fileParams) {
+        this.setFileParams(fileParams);
+        var form = this.down(&#39;fileform&#39;);
+        for (var test in fileParams) {
+            var value = fileParams[test];
+            form.add({
+                xtype: &#39;iddenfield&#39;,
+                name: test,
+                value : value
+            })
+        }
+    }
+
+});
+</pre>
+</body>
+</html>

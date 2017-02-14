@@ -25,12 +25,8 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V04', {
                 {
                     xtype: 'euibutton',
                     iconCls: 'x-fa fa-filter',
-                    width: 50,
                     text: '검색',
                     handler: 'dataSearch'
-                },
-                {
-                    xtype: 'tbseparator'
                 }
             ]
         },
@@ -40,35 +36,29 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V04', {
             margin: '0 10 0 10',
             items: [
                 {
-                    xtype: 'fieldcontainer',
-                    layout:'hbox',
-                    items: [
-                        {
-                            bind: '{ROWPOSITION}',
-                            xtype:'euinumber',
-                            allowBlank: false,
-                            width: 20
-                        },
-                        {
-                            bind: '{COLPOSITION}',
-                            xtype: 'euinumber',
-                            allowBlank: false,
-                            width: 20
-                        },
-                        {
-                            xtype: 'euibutton',
-                            text: '에디터 활성화',
-                            handler: 'openEditor'
-                        }
-                    ]
+                    margin: '0 10 0 10',
+                    boxLabel: '전체',
+                    xtype: 'checkbox'
                 },
-
+                {
+                    margin: '0 10 0 10',
+                    boxLabel: '협력사',
+                    xtype: 'checkbox'
+                },
+                {
+                    margin: '0 10 0 10',
+                    boxLabel: '직영',
+                    xtype: 'checkbox'
+                },
+                {
+                    xtype: 'euibutton',
+                    text: '영업점'
+                },
                 '->',
                 {
                     bind: '{STORE01}',
                     showReloadBtn: true,
                     showExcelDownBtn: true,
-
                     showRowAddBtn: true,
                     showRowDelBtn: true,
                     showRegBtn: true,       // 등록 버튼 활성화
@@ -92,4 +82,4 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V04', {
             ]
         }
     ]
-})
+});

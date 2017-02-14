@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.define(&#39;eui.toolbar.Command&#39;, {
+    extend: &#39;Ext.toolbar.Toolbar&#39;,
+    xtype: &#39;commandtoolbar&#39;,
+    ui: &#39;plain&#39;,
+
+    config: {
+<span id='global-cfg-ownerGrid'>        /**
+</span>         * @cfg {Object} [ownerGrid:&#39;sample-basic-grid@mygrid&#39;]
+         * 그리드 내부에 tbar등으로 배치하지 않고 그리드 외부에서 사용할 경우
+         * 대상 그리드를 명시하는 config
+         * ownerGrid : &#39;sample-basic-grid@mygrid&#39;,
+         * 상위컴포넌트@그리드itemId 또는 그리드의 itemId만 명시한다.
+         */
+        ownerGrid: null,
+        showText: true,
+        showRowAddBtn: false,
+        showRowDelBtn: false,
+        showRegBtn: false,
+        showReloadBtn: false,
+        showModBtn: false,
+        showSaveBtn: false,
+        showCloseBtn: false,
+        showGridCount: false,
+        showExcelDownBtn: false
+
+    },
+
+    initComponent: function () {
+        var me = this,
+            owner = this.up(&#39;grid,form&#39;);
+//        var query = (this.ownerGrid||&#39;&#39;).split(&#39;@&#39;);
+//        if (query.length == 1 &amp;&amp; !Ext.isEmpty(query[0])) {
+//            owner = Ext.ComponentQuery.query(&#39;#&#39; + query[0])[0];
+//        } else if (query.length == 2) {
+//            owner = me.up(query[0]).down(&#39;#&#39; + query[1])
+//        }
+
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: &#39;component&#39;,
+                    itemId: &#39;status&#39;,
+                    tpl: &#39;({count}개)&#39;,
+                    margin: &#39;0 10 0 20&#39;,
+                    hidden: !me.getShowGridCount()
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{행추가}&#39;,
+                    iconCls: &#39;#{행추가아이콘}&#39;,
+                    scope: me,
+                    showText: me.getShowText(),
+                    hidden: !me.getShowRowAddBtn(),
+                    listeners: {
+                        click: function () {
+                            if (owner.hasListeners[&#39;rowaddbtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;rowaddbtnclick&#39;, owner);
+                            } else {
+                                owner.onRowAdd(owner, {
+                                    randomInt: Ext.Number.randomInt(1, 1000000000000)
+                                }, 0, null);
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    iconCls: &#39;#{행삭제아이콘}&#39;,
+                    text: &#39;#{행삭제}&#39;,
+                    scope: me,
+                    hidden: !me.getShowRowDelBtn(),
+                    listeners: {
+                        click: function () {
+                            if (owner.hasListeners[&#39;rowdeletebtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;rowdeletebtnclick&#39;, owner);
+                            } else {
+                                owner.onRowDelete(owner, null, owner);
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{등록}&#39;,
+                    iconCls: &#39;#{등록아이콘}&#39;,
+                    hidden: !me.getShowRegBtn(),
+                    listeners: {
+                        click: function () {
+                            owner.fireEvent(&#39;regbtnclick&#39;, owner);
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{수정}&#39;,
+                    iconCls: &#39;#{수정아이콘}&#39;,
+                    hidden: !me.getShowModBtn(),
+                    listeners: {
+                        click: function () {
+                            owner.fireEvent(&#39;modbtnclick&#39;, owner);
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{저장}&#39;,
+                    formBind: true,
+                    iconCls: &#39;#{저장아이콘}&#39;,
+                    hidden: !me.getShowSaveBtn(),
+                    listeners: {
+                        click: function () {
+                            if (owner.hasListeners[&#39;savebtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;savebtnclick&#39;, owner);
+                            } else {
+                                owner.onSave(owner);
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{조회}&#39;,
+                    iconCls: &#39;#{조회아이콘}&#39;,
+                    hidden: !me.getShowReloadBtn(),
+                    listeners: {
+                        click: function () {
+                            if (owner.hasListeners[&#39;reloadbtnclick&#39;.toLowerCase()]) {
+                                owner.fireEvent(&#39;reloadbtnclick&#39;, owner);
+                            } else {
+                                owner.onReload();
+                            }
+                        }
+                    }
+                },
+                {
+                    text: &#39;#{엑셀다운로드}&#39;,
+                    iconCls: &#39;#{엑셀다운로드아이콘}&#39;,
+                    hidden: !me.getShowExcelDownBtn(),
+                    xtype: &#39;exporterbutton&#39;,
+                    listeners: {
+                        click: function () {
+                            this.onClick2();
+                        }
+                    }
+//                    targetGrid: owner
+                    //Or you can use
+                    //component: someGrid
+                    //component: someTree
+                    //component: &#39;#someGridItemId&#39;
+                },
+                {
+                    xtype: &#39;euibutton&#39;,
+                    text: &#39;#{닫기}&#39;,
+                    iconCls: &#39;x-fa fa-sign-out&#39;,
+                    hidden: !me.getShowCloseBtn(),
+                    listeners: {
+                        click: function () {
+                            var window = Util.getOwnerCt(this);
+                            if (Util.getOwnerCt(this).xtype === &#39;window&#39;) {
+                                window.close();
+                            } else {
+                                Ext.Error.raise({
+                                    msg: &#39;닫기 버튼은 팝업에서만 사용가능합니다.&#39;
+                                });
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+        me.callParent(arguments);
+        var store = owner.store;
+        if (owner.bind &amp;&amp; owner.bind[&#39;store&#39;]) {
+            store = owner.bind.store.owner.get(owner.bind.store.stub.path);
+        }
+
+        store.on(&#39;datachanged&#39;, function () {
+            owner.down(&#39;#status&#39;).update({count: store.getTotalCount()});
+        });
+    }
+});</pre>
+</body>
+</html>

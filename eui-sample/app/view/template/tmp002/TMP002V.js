@@ -15,15 +15,17 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V',{
         type: 'vbox',
         align: 'stretch'
     },
-    items : [
+    items: [
+        {
+            xtype: 'euiheader',
+            title: '운영관리'
+        },
         {
             xtype: 'TMP002V01'
         },
         {
-            xtype: 'TMP002V04'
-        },
-        {
-            itemId: 'excelgrid',
+            flex:1,
+            margin: '0 10 15 10',
             reference: 'cusGrid',
             xtype: 'TMP002V02',
             bind: '{STORE01}'

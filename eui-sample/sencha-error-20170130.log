@@ -1,0 +1,299 @@
+Sencha Cmd 6.0.0.202 - Crash report
+================================================
+An error occurred while executing the following command: app watch
+
+Diagnostic information:
+=======================
+                         app.archivePath : archive                                           
+                      app.bootstrap.base : /Volumes/Disk2/git.projects/eui-workspace/eui-sample
+                       app.bootstrap.css : bootstrap.css                                     
+               app.bootstrap.microloader : bootstrap.js                                      
+                        app.cache.deltas : true                                              
+                        app.cache.enable : false                                             
+                           app.classpath : app                                               
+                         app.classpath.0 : app                                               
+                    app.classpath.length : 1                                                 
+                         app.cmd.version : 6.2.0.103                                         
+                          app.config.dir : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/.sencha/app
+                app.cordova.cache.enable : false                                             
+                   app.cordova.config.id : com.domain.Eui.sample                             
+                 app.cordova.config.name : Eui.sample                                        
+                 app.cordova.config.path : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/cordova
+               app.cordova.config.target :                                                   
+              app.cordova.config.verbose : false                                             
+                   app.cordova.js.0.path : cordova.js                                        
+               app.cordova.js.0.priority : 1000                                              
+                 app.cordova.js.0.remote : true                                              
+                   app.cordova.js.length : 1                                                 
+                 app.cordova.microloader : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/.sencha/app/Microloader.js
+      app.cordova.output.appCache.enable : false                                             
+                 app.cordova.output.base : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/cordova/www
+             app.cordova.output.manifest : ${build.id}.json                                  
+                 app.cordova.output.page : index.html                                        
+                    app.development.tags :                                                   
+             app.development.tags.length : 0                                                 
+                                 app.dir : /Volumes/Disk2/git.projects/eui-workspace/eui-sample
+              app.fashion.inliner.enable : false                                             
+                           app.framework : ext                                               
+                   app.framework.version : 6.2.0.839                                         
+                                  app.id : f4542940-2d46-4729-b604-916f0706c37b              
+                       app.indexHtmlPath : index.html                                        
+                        app.loader.cache : false                                             
+                   app.loader.cacheParam : _dc                                               
+                              app.locale : ko                                                
+                                app.name : Eui.sample                                        
+              app.output.appCache.enable : false                                             
+                         app.output.base : /Volumes/Disk2/git.projects/eui-workspace/build/${build.environment}/Eui.sample
+           app.output.microloader.enable : true                                              
+                           app.overrides : overrides                                         
+                         app.overrides.0 : overrides                                         
+                    app.overrides.length : 1                                                 
+               app.phonegap.cache.enable : false                                             
+                  app.phonegap.config.id : com.domain.Eui.sample                             
+                app.phonegap.config.name : Eui.sample                                        
+                app.phonegap.config.path : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/phonegap
+              app.phonegap.config.remote : false                                             
+             app.phonegap.config.verbose : false                                             
+                  app.phonegap.js.0.path : cordova.js                                        
+              app.phonegap.js.0.priority : 1000                                              
+                app.phonegap.js.0.remote : true                                              
+                  app.phonegap.js.length : 1                                                 
+                app.phonegap.microloader : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/.sencha/app/Microloader.js
+     app.phonegap.output.appCache.enable : false                                             
+                app.phonegap.output.base : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/phonegap/www
+            app.phonegap.output.manifest : ${build.id}.json                                  
+                app.phonegap.output.page : index.html                                        
+             app.production.cache.enable : true                                              
+          app.production.compressor.type : yui                                               
+             app.production.loader.cache : ${build.timestamp}                                
+   app.production.output.appCache.enable : true                                              
+     app.production.output.appCache.path : cache.appcache                                    
+                      app.requires.names : null                                              
+                   app.requires.packages : null                                              
+                      app.resource.paths :                                                   
+                        app.sass.dynamic : true                                              
+                            app.sass.etc : sass/etc/all.scss                                 
+                          app.sass.etc.0 : sass/etc/all.scss                                 
+                     app.sass.etc.length : 1                                                 
+                      app.sass.namespace : Eui.sample                                        
+                            app.sass.src : sass/src                                          
+                          app.sass.src.0 : sass/src                                          
+                     app.sass.src.length : 1                                                 
+                            app.sass.var : sass/var/all.scss,sass/var                        
+                          app.sass.var.0 : sass/var/all.scss                                 
+                          app.sass.var.1 : sass/var                                          
+                     app.sass.var.length : 2                                                 
+                 app.slicer.cache.enable : false                                             
+        app.slicer.js.0.isWidgetManifest : true                                              
+                    app.slicer.js.0.path : /Volumes/Disk2/git.projects/eui-workspace/eui-sample/sass/example/custom.js
+                    app.slicer.js.length : 1                                                 
+       app.slicer.output.appCache.enable : false                                             
+                               app.theme : theme-gray                                        
+                             app.toolkit : classic                                           
+                             app.version : 1.0.0.0                                           
+                    buildenvironment.dir : /Volumes/Disk2/git.projects/eui-workspace/eui-sample
+               buildenvironment.load.dir : /Volumes/Disk2/git.projects/eui-workspace/eui-sample
+                          cmd.config.dir : /Users/benney/bin/Sencha/Cmd/6.0.0.202            
+                                 cmd.dir : /Users/benney/bin/Sencha/Cmd/6.0.0.202            
+                    cmd.framework.minver : 5.5.0                                             
+                   cmd.framework.version : 99.99                                             
+                            cmd.jvm.args : -Xms128m -Xmx1024m -Dapple.awt.UIElement=true     
+              cmd.merge.tool.args.araxis : -wait -merge -3 -a1 {base} {user} {generated} {out}
+              cmd.merge.tool.args.kdiff3 : {base} {user} {generated} -o {out}                
+             cmd.merge.tool.args.p4merge : {base} {user} {generated} {out}                   
+           cmd.merge.tool.args.smartsync : {user} {generated} {base}                         
+          cmd.merge.tool.args.sourcegear : --merge --result={out} {user} {base} {generated}  
+            cmd.merge.tool.args.tortoise : -base:{base} -theirs:{generated} -mine:{user} -merged:{out}
+                              cmd.minver : 3.0.0.0                                           
+                            cmd.platform : osx                                               
+                         cmd.server.port : 1841                                              
+                     cmd.unicode.escapes : /Users/benney/bin/Sencha/Cmd/6.0.0.202/unicode-escapes.json
+                             cmd.version : 6.0.0.202                                         
+                            cmd.web.port : 1841                                              
+                      config.skipInherit : false                                             
+                                 ext.dir : /Volumes/Disk2/git.projects/eui-workspace/ext     
+                        ext.license.name : dev                                               
+                     framework.build.dir : ${package.output.base}                            
+                     framework.classpath : ${package.dir}/src                                
+                    framework.cmd.minver : 6.2.1.29                                          
+                   framework.cmd.version : 6.2.1.29                                          
+                 framework.compatVersion : 6.2.0                                             
+                    framework.config.dir : /Users/benney/bin/Sencha/Cmd/6.0.0.202/plugins/ext/current
+                       framework.creator : Sencha                                            
+           framework.detailedDescription : Sencha Ext JS JavaScript Framework                
+                           framework.dir : /Volumes/Disk2/git.projects/eui-workspace/ext     
+                  framework.example.apps : admin-dashboard,executive-dashboard,feed-viewer,kitchensink,calendar,classic/desktop,classic/ticket-app,classic/portal,classic/simple-tasks,classic/responsive-app,classic/aria,modern/addressbook,modern/blackberry,modern/energy,modern/stockapp,modern/states,modern/geocongress,modern/oreilly
+                framework.example.apps.0 : admin-dashboard                                   
+                framework.example.apps.1 : executive-dashboard                               
+               framework.example.apps.10 : classic/aria                                      
+               framework.example.apps.11 : modern/addressbook                                
+               framework.example.apps.12 : modern/blackberry                                 
+               framework.example.apps.13 : modern/energy                                     
+               framework.example.apps.14 : modern/stockapp                                   
+               framework.example.apps.15 : modern/states                                     
+               framework.example.apps.16 : modern/geocongress                                
+               framework.example.apps.17 : modern/oreilly                                    
+                framework.example.apps.2 : feed-viewer                                       
+                framework.example.apps.3 : kitchensink                                       
+                framework.example.apps.4 : calendar                                          
+                framework.example.apps.5 : classic/desktop                                   
+                framework.example.apps.6 : classic/ticket-app                                
+                framework.example.apps.7 : classic/portal                                    
+                framework.example.apps.8 : classic/simple-tasks                              
+                framework.example.apps.9 : classic/responsive-app                            
+           framework.example.apps.length : 18                                                
+                  framework.example.path : examples,templates                                
+                framework.example.path.0 : examples                                          
+                framework.example.path.1 : templates                                         
+           framework.example.path.length : 2                                                 
+                        framework.format : 1                                                 
+                          framework.isV5 : true                                              
+                          framework.isV6 : true                                              
+                          framework.name : ext                                               
+                     framework.namespace : Ext                                               
+                        framework.output : ${package.dir}/build                              
+                     framework.overrides : ${package.dir}/overrides                          
+                  framework.packages.dir : /Volumes/Disk2/git.projects/eui-workspace/ext/packages/,/Volumes/Disk2/git.projects/eui-workspace/ext/classic
+                framework.resource.paths : resources                                         
+              framework.resource.paths.0 : resources                                         
+         framework.resource.paths.length : 1                                                 
+                      framework.sass.etc : ${package.dir}/sass/etc/all.scss                  
+                  framework.sass.fashion : true                                              
+                framework.sass.namespace : Ext                                               
+                      framework.sass.src : ${package.dir}/sass/src                           
+                      framework.sass.var : ${package.dir}/sass/var                           
+                       framework.subpkgs : classic/classic,modern/modern,packages/charts,packages/amf,packages/soap,packages/ux,packages/google,packages/legacy,packages/font-awesome,packages/font-pictos,packages/font-ext
+                     framework.subpkgs.0 : classic/classic                                   
+                     framework.subpkgs.1 : modern/modern                                     
+                    framework.subpkgs.10 : packages/font-ext                                 
+                     framework.subpkgs.2 : packages/charts                                   
+                     framework.subpkgs.3 : packages/amf                                      
+                     framework.subpkgs.4 : packages/soap                                     
+                     framework.subpkgs.5 : packages/ux                                       
+                     framework.subpkgs.6 : packages/google                                   
+                     framework.subpkgs.7 : packages/legacy                                   
+                     framework.subpkgs.8 : packages/font-awesome                             
+                     framework.subpkgs.9 : packages/font-pictos                              
+                framework.subpkgs.length : 11                                                
+                       framework.summary : Ext JS                                            
+                          framework.type : framework                                         
+                       framework.version : 6.2.2.12                                          
+                             locale.name : ko                                                
+                    package.sass.dynamic : true                                              
+                          repo.local.dir : /Users/benney/bin/Sencha/Cmd/repo                 
+        system.java.net.useSystemProxies : true                                              
+                        theme.base.names : null                                              
+                     theme.base.packages : null                                              
+                              theme.name : theme-gray                                        
+                            toolkit.name : classic                                           
+                          workspace.apps : eui-sample                                        
+                        workspace.apps.0 : eui-sample                                        
+                   workspace.apps.length : 1                                                 
+                     workspace.build.dir : /Volumes/Disk2/git.projects/eui-workspace/build   
+                   workspace.cmd.version : 6.0.2.14                                          
+                    workspace.config.dir : /Volumes/Disk2/git.projects/eui-workspace/.sencha/workspace
+                           workspace.dir : /Volumes/Disk2/git.projects/eui-workspace         
+                workspace.frameworks.ext : ext                                               
+                  workspace.packages.dir : /Volumes/Disk2/git.projects/eui-workspace/packages/local,/Volumes/Disk2/git.projects/eui-workspace/packages
+              workspace.packages.extract : /Volumes/Disk2/git.projects/eui-workspace/packages/remote
+                     workspace.theme.dir : /Volumes/Disk2/git.projects/eui-workspace/packages/local,/Volumes/Disk2/git.projects/eui-workspace/packages/${args.themeName}
+
+Exception information:
+=======================
+java.lang.IllegalStateException: Expected a string but was BEGIN_OBJECT at line 30 column 10
+     at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$Adapter.read(ReflectiveTypeAdapterFactory.java:176)
+     at com.google.gson.Gson.fromJson(Gson.java:803)
+     at com.google.gson.Gson.fromJson(Gson.java:768)
+     at com.google.gson.Gson.fromJson(Gson.java:717)
+     at com.sencha.util.JsonUtil$ThreadSafeGson.fromJson(JsonUtil.java:390)
+     at com.sencha.util.JsonUtil.fromJson(JsonUtil.java:151)
+     at com.sencha.tools.pkg.Model$Package.load(Model.java:851)
+     at com.sencha.tools.pkg.Model$Package.load(Model.java:843)
+     at com.sencha.command.environment.WorkspaceRepository$2.map(WorkspaceRepository.java:402)
+     at com.sencha.command.environment.WorkspaceRepository$2.map(WorkspaceRepository.java:393)
+     at com.sencha.command.environment.WorkspaceRepository.scanPackages(WorkspaceRepository.java:422)
+     at com.sencha.command.environment.WorkspaceRepository.scanPackages(WorkspaceRepository.java:378)
+     at com.sencha.command.environment.WorkspaceRepository.scanWorkspacePackages(WorkspaceRepository.java:369)
+     at com.sencha.command.environment.WorkspaceRepository.getWorkspaceCatalog(WorkspaceRepository.java:449)
+     at com.sencha.command.environment.WorkspaceRepository.getWorkspaceCatalog(WorkspaceRepository.java:444)
+     at com.sencha.command.environment.WorkspaceRepository.getPackage(WorkspaceRepository.java:303)
+     at com.sencha.command.environment.AppOrPackageEnvironment$1.test(AppOrPackageEnvironment.java:182)
+     at com.sencha.command.environment.AppOrPackageEnvironment$1.test(AppOrPackageEnvironment.java:178)
+     at com.sencha.util.CollectionUtil.filter(CollectionUtil.java:72)
+     at com.sencha.util.CollectionUtil$MonadicList.filter(CollectionUtil.java:254)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequires(AppOrPackageEnvironment.java:178)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequires(AppOrPackageEnvironment.java:126)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequiredPackages(AppOrPackageEnvironment.java:319)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequiredPackages(AppOrPackageEnvironment.java:289)
+     at com.sencha.command.environment.AppOrPackageEnvironment.execute(AppOrPackageEnvironment.java:737)
+     at com.sencha.command.BasePluginCommands$BasePluginCommand.doExecute(BasePluginCommands.java:97)
+     at com.sencha.command.app.AppCommands$BuildCommand.execute(AppCommands.java:346)
+     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+     at java.lang.reflect.Method.invoke(Method.java:497)
+     at com.sencha.util.MethodInvoker$Arguments.invoke(MethodInvoker.java:175)
+     at com.sencha.cli.Command.dispatch(Command.java:43)
+     at com.sencha.command.BasePluginCommands$BasePluginCommand.dispatch(BasePluginCommands.java:201)
+     at com.sencha.cli.Commands.dispatch(Commands.java:64)
+     at com.sencha.cli.Commands.dispatch(Commands.java:64)
+     at com.sencha.command.Sencha.dispatch(Sencha.java:73)
+     at com.sencha.command.Sencha.main(Sencha.java:141)
+     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+     at java.lang.reflect.Method.invoke(Method.java:497)
+     at com.exe4j.runtime.LauncherEngine.launch(Unknown Source)
+     at com.install4j.runtime.launcher.UnixLauncher.main(Unknown Source)
+   Caused by: Expected a string but was BEGIN_OBJECT at line 30 column 10
+     at com.google.gson.stream.JsonReader.nextString(JsonReader.java:821)
+     at com.google.gson.internal.bind.TypeAdapters$13.read(TypeAdapters.java:358)
+     at com.google.gson.internal.bind.TypeAdapters$13.read(TypeAdapters.java:346)
+     at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40)
+     at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72)
+     at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1.read(ReflectiveTypeAdapterFactory.java:93)
+     at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$Adapter.read(ReflectiveTypeAdapterFactory.java:172)
+     at com.google.gson.Gson.fromJson(Gson.java:803)
+     at com.google.gson.Gson.fromJson(Gson.java:768)
+     at com.google.gson.Gson.fromJson(Gson.java:717)
+     at com.sencha.util.JsonUtil$ThreadSafeGson.fromJson(JsonUtil.java:390)
+     at com.sencha.util.JsonUtil.fromJson(JsonUtil.java:151)
+     at com.sencha.tools.pkg.Model$Package.load(Model.java:851)
+     at com.sencha.tools.pkg.Model$Package.load(Model.java:843)
+     at com.sencha.command.environment.WorkspaceRepository$2.map(WorkspaceRepository.java:402)
+     at com.sencha.command.environment.WorkspaceRepository$2.map(WorkspaceRepository.java:393)
+     at com.sencha.command.environment.WorkspaceRepository.scanPackages(WorkspaceRepository.java:422)
+     at com.sencha.command.environment.WorkspaceRepository.scanPackages(WorkspaceRepository.java:378)
+     at com.sencha.command.environment.WorkspaceRepository.scanWorkspacePackages(WorkspaceRepository.java:369)
+     at com.sencha.command.environment.WorkspaceRepository.getWorkspaceCatalog(WorkspaceRepository.java:449)
+     at com.sencha.command.environment.WorkspaceRepository.getWorkspaceCatalog(WorkspaceRepository.java:444)
+     at com.sencha.command.environment.WorkspaceRepository.getPackage(WorkspaceRepository.java:303)
+     at com.sencha.command.environment.AppOrPackageEnvironment$1.test(AppOrPackageEnvironment.java:182)
+     at com.sencha.command.environment.AppOrPackageEnvironment$1.test(AppOrPackageEnvironment.java:178)
+     at com.sencha.util.CollectionUtil.filter(CollectionUtil.java:72)
+     at com.sencha.util.CollectionUtil$MonadicList.filter(CollectionUtil.java:254)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequires(AppOrPackageEnvironment.java:178)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequires(AppOrPackageEnvironment.java:126)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequiredPackages(AppOrPackageEnvironment.java:319)
+     at com.sencha.command.environment.AppOrPackageEnvironment.getRequiredPackages(AppOrPackageEnvironment.java:289)
+     at com.sencha.command.environment.AppOrPackageEnvironment.execute(AppOrPackageEnvironment.java:737)
+     at com.sencha.command.BasePluginCommands$BasePluginCommand.doExecute(BasePluginCommands.java:97)
+     at com.sencha.command.app.AppCommands$BuildCommand.execute(AppCommands.java:346)
+     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+     at java.lang.reflect.Method.invoke(Method.java:497)
+     at com.sencha.util.MethodInvoker$Arguments.invoke(MethodInvoker.java:175)
+     at com.sencha.cli.Command.dispatch(Command.java:43)
+     at com.sencha.command.BasePluginCommands$BasePluginCommand.dispatch(BasePluginCommands.java:201)
+     at com.sencha.cli.Commands.dispatch(Commands.java:64)
+     at com.sencha.cli.Commands.dispatch(Commands.java:64)
+     at com.sencha.command.Sencha.dispatch(Sencha.java:73)
+     at com.sencha.command.Sencha.main(Sencha.java:141)
+     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+     at java.lang.reflect.Method.invoke(Method.java:497)
+     at com.exe4j.runtime.LauncherEngine.launch(Unknown Source)
+     at com.install4j.runtime.launcher.UnixLauncher.main(Unknown Source)
+

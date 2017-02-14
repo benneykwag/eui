@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-form-CheckboxGroup'>/***
+</span> *
+ * ## Summary
+ *
+ * Ext.form.CheckboxGroup 확장. 스타일 적용
+ *
+ *      fieldLabel: &#39;체크박스그룹&#39;,
+ *      xtype: &#39;euicheckboxgroup&#39;,
+ *      fieldLabel: &#39;체크박스그룹&#39;,
+ *      columns: 4,     // 컬럼수를 설정한다.
+ *      // 뷰모델을 배열형태로 CHECKBOXGROUP: [&#39;A1&#39;,&#39;A2&#39;] 로 사용한다.
+ *      bind:&#39;{RECORD.CHECKBOXGROUP}&#39;,
+ *      items: [
+ *      // inputValue가 전달된다.
+ *          { boxLabel: &#39;Item 1&#39;, inputValue: &#39;A1&#39; },
+ *          { boxLabel: &#39;Item 2&#39;, inputValue: &#39;A2&#39;},
+ *          { boxLabel: &#39;Item 3&#39;, inputValue: &#39;A3&#39; },
+ *          { boxLabel: &#39;Item 4&#39;, inputValue: &#39;A4&#39; }
+ *      ]
+ *
+ * # Sample
+ *
+ *     @example
+ *
+ *      Ext.define(&#39;CheckboxGroup&#39;, {
+ *          extend: &#39;eui.form.Panel&#39;,
+ *          defaultListenerScope: true,
+ *          viewModel: {
+ *
+ *          },
+ *          title: &#39;체크박스그룹&#39;,
+ *          items: [
+ *             {
+ *               xtype: &#39;euicheckboxgroup&#39;,
+ *               fieldLabel: &#39;체크박스그룹&#39;,
+ *               itemId: &#39;euicheckboxgroup&#39;,
+ *               columns: 4,
+ *               bind:&#39;{RECORD.CHECKBOXGROUP}&#39;,
+ *               items: [
+ *                  {   boxLabel: &#39;KOREA&#39;, inputValue: &#39;KOREA&#39; },
+ *                  {   boxLabel: &#39;JAPAN&#39;, inputValue: &#39;JAPAN&#39; },
+ *                  {   boxLabel: &#39;USA&#39;, inputValue: &#39;USA&#39; },
+ *                  { boxLabel: &#39;RUSIA&#39;, inputValue: &#39;RUSIA&#39; }
+ *               ]
+ *             }
+ *          ],
+ *          bbar: [
+ *              {
+ *                  text: &#39;전체 체크&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;checkBoxgroupAllCheck&#39;
+ *              },
+ *              {
+ *                  text: &#39;전체 체크해제&#39;,
+ *                  xtype : &#39;euibutton&#39;,
+ *                  handler: &#39;checkBoxgroupAllUnCheck&#39;
+ *              },
+ *              {
+ *                  text: &#39;서버로전송&#39;,
+ *                  xtype: &#39;euibutton&#39;,
+ *                  handler: &#39;onSaveMember&#39;
+ *              }
+ *         ],
+ *
+ *         listeners : {
+ *              render: &#39;setRecord&#39;
+ *         },
+ *
+ *         setRecord: function () {
+ *              this.getViewModel().set(&#39;RECORD&#39;, Ext.create(&#39;Ext.data.Model&#39;, {
+ *                  CHECKBOXGROUP : [&#39;KOREA&#39;,&#39;JAPAN&#39;,&#39;USA&#39;]
+ *               }));
+ *         },
+ *
+ *         onSaveMember: function () {
+ *              var data = this.getViewModel().get(&#39;RECORD&#39;).getData();
+ *              Util.CommonAjax({
+ *                  method: &#39;POST&#39;,
+ *                  url: &#39;resources/data/success.json&#39;,
+ *                  params: {
+ *                      param: data
+ *                  },
+ *                  pCallback: function (v, params, result) {
+ *                      if (result.success) {
+ *                          Ext.Msg.alert(&#39;저장성공&#39;, &#39;정상적으로 저장되었습니다.&#39;);
+ *                      } else {
+ *                          Ext.Msg.alert(&#39;저장실패&#39;, &#39;저장에 실패했습니다...&#39;);
+ *                      }
+ *                  }
+ *             });
+ *          },
+ *
+ *          checkBoxgroupAllCheck: function(button){
+ *              this.down(&#39;#euicheckboxgroup&#39;).setValue([&#39;KOREA&#39;,&#39;JAPAN&#39;,&#39;USA&#39;,&#39;RUSIA&#39;]);
+ *          },
+ *
+ *          checkBoxgroupAllUnCheck: function(button){
+ *              this.down(&#39;#euicheckboxgroup&#39;).setValue();
+ *          }
+ *      });
+ *
+ *      Ext.create(&#39;CheckboxGroup&#39;,{
+ *          width: 400,
+ *          renderTo: Ext.getBody()
+ *      });
+ *
+ **/
+
+Ext.define(&#39;eui.form.CheckboxGroup&#39;, {
+    extend: &#39;Ext.form.CheckboxGroup&#39;,
+    xtype: &#39;euicheckboxgroup&#39;,
+    mixins: [
+        &#39;eui.mixin.FormField&#39;
+    ],
+<span id='eui-form-CheckboxGroup-property-cellCls'>    cellCls: &#39;fo-table-row-td eui-radio&#39;,
+</span><span id='eui-form-CheckboxGroup-property-width'>    width: &#39;100%&#39;,
+</span>
+<span id='eui-form-CheckboxGroup-method-setValue'>    /***
+</span>     * object 아래 배열을 단순 배열로 처리하기 위한 로직을 기존 로직에 추가함.
+     * @param value
+     * @returns {euicheckboxgroup}
+     */
+    setValue: function(value) {
+        var me    = this,
+            boxes = me.getBoxes(),
+            b,
+            bLen  = boxes.length,
+            box, name,
+            cbValue,
+            tmpValue;
+        // 추가로직 object 이하에 배열정보 포함시.
+        if (!Ext.isArray(value)) {
+            for (var test in value) {
+                tmpValue = value[test];
+            }
+            if (!Ext.isArray(tmpValue)){
+                tmpValue = [tmpValue];
+            }
+            value = tmpValue;
+        }
+
+        me.batchChanges(function() {
+            Ext.suspendLayouts();
+            for (b = 0; b &lt; bLen; b++) {
+                box = boxes[b];
+                name = box.getName();
+                cbValue = false;
+
+                if (value) {
+                    if (Ext.isArray(value)) {
+                        cbValue = Ext.Array.contains(value, box.inputValue);
+                    } else {
+                        // single value, let the checkbox&#39;s own setValue handle conversion
+                        cbValue = value[name];
+                    }
+                }
+
+                box.setValue(cbValue);
+            }
+            Ext.resumeLayouts(true);
+        });
+        return me;
+    },
+<span id='eui-form-CheckboxGroup-method-initComponent'>    initComponent: function () {
+</span>        this.setAllowBlank();
+        this.callParent(arguments);
+    }
+});</pre>
+</body>
+</html>

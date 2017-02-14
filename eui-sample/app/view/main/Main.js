@@ -9,6 +9,7 @@ Ext.define('Eui.sample.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
     requires: [
+        'Eui.sample.view.grid.MergeGrid2'
 //        'Eui.sample.view.grid.MergeGrid',
 //        'Ext.plugin.Viewport',
 //        'Ext.window.MessageBox',
@@ -59,7 +60,7 @@ Ext.define('Eui.sample.view.main.Main', {
                         {
                             title: 'HOME',
 //                            xtype: 'sample-basic-grid'
-                            xtype: 'TMP014V'
+                            xtype: 'sample-mergegrid2'
                         }
                     ]
                 }

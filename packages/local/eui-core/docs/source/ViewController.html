@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='eui-mvvm-ViewController'>/***
+</span> *
+ * ## Summary
+ *
+ * 공통 뷰 컨트롤러
+ */
+Ext.define(&#39;eui.mvvm.ViewController&#39;, {
+    extend: &#39;Ext.app.ViewController&#39;,
+    mixins: [
+        &#39;eui.mixin.FormField&#39;,
+        &#39;eui.mvvm.GridViewController&#39;,
+        &#39;eui.mvvm.GridRenderer&#39;
+    ],
+
+    requires: [
+        &#39;eui.Util&#39;
+    ],
+
+<span id='eui-mvvm-ViewController-method-init'>    init: function () {
+</span>        var vm = this.vm = this.getViewModel(),
+            view = this.view = this.getView();
+    },
+
+<span id='eui-mvvm-ViewController-property-'>    /***** form 관련 *******/
+</span>
+<span id='eui-mvvm-ViewController-method-baseFormSave'>    /***
+</span>     * 공통 폼 저장 처리. 무조건 재정의 해야한다.
+     */
+    baseFormSave: function (form, srvOpt, callback) {
+        var alertTitle = srvOpt.alertTitle || &quot;저장&quot;,
+            alertMsg = srvOpt.alertMsg || &quot;처리하시겠습니까?&quot;;
+
+
+        srvOpt.pCallback = function (formpanel, input, output, svrId) {
+            Ext.Msg.alert(&#39;처리완료&#39;, &#39;처리가 완료되었습니다.&#39;);
+            if (Ext.isFunction(callback)) {
+                callback(formpanel, input, output, svrId);
+            }
+        }
+
+        HMsg.show({
+            title: alertTitle,
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            message: alertMsg,
+            fn: function (btn) {
+                if (btn === &#39;yes&#39;) {
+                    srvOpt.pScope = form;
+                    Util.CommonAjax(srvOpt);
+                }
+            }
+        });
+    },
+<span id='eui-mvvm-ViewController-method-transaction'>    transaction: function(transactionID, className, methodName, outgoingDataset, incomingDataset,
+</span>    		additionalParameters, showLoadMask, userCallBack, timeout){
+    	var option = {
+    		url:Ext.util.Format.format(&#39;/{0}/{1}/&#39;, Util.getContextPath(), Util.getBaseUrl()),
+    		async:true,
+    		method:&#39;POST&#39;,
+    		success: function(response, options){
+    			Ext.getBody().unmask();
+    			if(!Ext.isEmpty(response.responseText)){
+    				var returnData = Ext.decode(response.responseText),
+    				result = returnData[0].result;
+    				this.processCallback(result, incomingDataset, userCallBack);
+    			}
+    		},
+    		failure: function(response, options){
+    			Ext.Msg.alert(&#39;Status&#39;,&#39;server-side failure with status code &#39; + response.status);
+    			Ext.getBody().unmask();
+    			this.processCallback(null, incomingDataset, userCallBack);
+    		},
+    		jsonData: {
+    			action: className,
+    			method: methodName,
+    			tid: Ext.id(),
+    			type:&#39;rpc&#39;,
+    			data: []
+    		},
+    		scope:this,
+    		timeout: timeout || 30000,
+    		disableCaching:false
+    	};
+    	option = this.buildJsonData(option, outgoingDataset, additionalParameters, incomingDataset);
+    	if(showLoadMask){
+    		Ext.getBody().mask(&#39;Please waiting...&#39;).dom.style.zIndex = &#39;99999&#39;;
+	    	if(!Ext.Ajax.hasListener(&#39;requestexception&#39;)){
+	    		Ext.Ajax.on(&#39;requestexception&#39;, function (conn, response, options) {
+	    			Ext.getBody().unmask();
+	    	    });
+	    	}
+    	}
+    	Ext.Ajax.request(option);
+    }
+});
+</pre>
+</body>
+</html>
