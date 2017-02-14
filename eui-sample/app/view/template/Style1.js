@@ -99,7 +99,6 @@ Ext.define('Eui.sample.view.template.Style1',{
             xtype : 'euigrid',
             margin: 10,
             height: 200,
-            iconCls: null,
             title: 'PAGE TITLE 페이지 타이틀',
             header: {
                 xtype: 'header',
