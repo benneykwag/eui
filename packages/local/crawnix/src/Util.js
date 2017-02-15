@@ -7,16 +7,15 @@ Ext.define('crawnix.Util', {
 		cssUrl: 'http://172.20.101.133:7001/ReportingServer/html5/css/crownix-viewer.min.css',
 		serviceUrl: 'http://172.20.101.133:7001/ReportingServer/service'
 	},
-	
+
 	initCrawnix: function (win, cb) {
 		var doc = win.document,
 			me = this;
-		// 관련 리소스 동적 로딩
 		Ext.Promise.all([
             new Ext.Promise(function (res) {
             	var jquery  = doc.createElement('script'),
             		crawnix = doc.createElement('script');
-            	
+
             	jquery.src = me.config.jqueryUrl;
             	crawnix.src = me.config.crawnixUrl;
             	jquery.onload = function () {
@@ -43,7 +42,7 @@ Ext.define('crawnix.Util', {
         	}
         });
 	},
-	
+
 	openPopup: function (param) {
 		var me = this,
 			size,
@@ -55,14 +54,21 @@ Ext.define('crawnix.Util', {
 		size = Ext.Object.toQueryString(size).replace(/&/g, ',');
 		win = window.open('', 'report', size);
 		me.initCrawnix(win, function (w) {
-			if (param && Ext.isFunction(param.callback)) {
+			if (param) {
 				var doc = w.document;
-            	var div = doc.createElement('div');
-            	div.id = Ext.id();
-            	div.style = 'position:absolute;width:100%;height:100%';
-            	doc.body.style.margin = '0px';
-            	doc.body.appendChild(div);
-				param.callback(w, div.id);
+				if (Ext.isString(param.title)) {
+					var title = doc.createElement('title');
+					title.innerText = param.title;
+					doc.head.appendChild(title);
+				}
+				if (Ext.isFunction(param.callback)) {
+        	var div = doc.createElement('div');
+        	div.id = Ext.id();
+        	div.style = 'position:absolute;width:100%;height:100%';
+        	doc.body.style.margin = '0px';
+        	doc.body.appendChild(div);
+					param.callback(w, div.id);
+				}
 			}
 		});
 	}
