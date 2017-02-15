@@ -267,7 +267,9 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
         }
         if (this.bind &amp;&amp; this.bind[&#39;store&#39;]) {
             var store = this.lookupViewModel().getStore(this.bind.store.stub.name);
-            store.on(&#39;focusgridrecord&#39;, focusgridrecord, this);
+            if (store) {
+                store.on(&#39;focusgridrecord&#39;, focusgridrecord, this);
+            }
 
         } else if (this.store) {
             this.store.on(&#39;focusgridrecord&#39;, focusgridrecord, this);
@@ -559,6 +561,7 @@ Ext.define(&#39;eui.grid.Panel&#39;, {
             );
         }
     }
-});</pre>
+});
+</pre>
 </body>
 </html>

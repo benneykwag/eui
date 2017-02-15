@@ -39,7 +39,7 @@
 
     <target name="-after-build">
         <tstamp>
-            <format property="THISYEAR" pattern="yyyy.mm.dd H:m:s"/>
+            <format property="THISYEAR" pattern="yyyy.M.d H:m"/>
         </tstamp>
         <move file="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js" tofile="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js.tmp"/>
 
@@ -127,6 +127,10 @@
         <copy todir="docs" overwrite="true">
             <fileset file=".jsduck/eg-iframe.html"></fileset>
         </copy>
+
+
+
+
         <copy todir="docs/eui-core" overwrite="true">
             <fileset dir="build"></fileset>
         </copy>

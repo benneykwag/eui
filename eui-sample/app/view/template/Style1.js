@@ -9,13 +9,11 @@ Ext.define('Eui.sample.view.template.Style1',{
             items: [
                 {
                     xtype: 'euiheader',
-                    width: 200,
                     title: 'PAGE TITLE 페이지 타이틀'
                 },
                 '->',
                 {
                     scale: 'medium',
-                    reloadBtnICon : 'x-fa fa-download',
                     showPrintBtn: true,
                     showRowAddBtn: true,
                     showRowDelBtn: true,
@@ -66,6 +64,7 @@ Ext.define('Eui.sample.view.template.Style1',{
                         showRowAddBtn: true,
                         showRowDelBtn: true,
                         showSaveBtn: true,
+                        showExcelDownBtn: true,
                         xtype: 'euicommand',
                         params: {
                             PGMID: 'A000',
@@ -94,7 +93,7 @@ Ext.define('Eui.sample.view.template.Style1',{
                     fieldLabel: 'FORM FIELD'
                 }
             ]
-        },
+        }/*,
         {
             xtype : 'euigrid',
             margin: 10,
@@ -138,6 +137,6 @@ Ext.define('Eui.sample.view.template.Style1',{
                     fieldLabel: 'FORM FIELD'
                 }
             ]
-        }
+        }*/
     ]
 })
