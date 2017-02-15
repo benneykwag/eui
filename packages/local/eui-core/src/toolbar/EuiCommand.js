@@ -4,7 +4,7 @@
  *
  * 명령 버튼 (CRUD 등) 그리드에 탑재해 사용한다.
  *
- *   # Sample
+ * # Sample
  *
  *     @example
  *
@@ -81,6 +81,37 @@
  *          width: '100%',
  *          renderTo: Ext.getBody()
  *      });
+ *
+ *
+ * # 버튼 표시
+ *
+ * showXXXBtn 변수를 설정해 버튼을 표시한다. 모든 버튼은 최초 표시되지 않도록 기본값을 false로 하고 있다.
+ *
+ *      showPrintBtn: true,
+ *      showRowAddBtn: true,
+ *      showRowDelBtn: true,
+ *      showRegBtn: true,
+ *      showReloadBtn: true,
+ *      showModBtn: true,
+ *      showSaveBtn: true,
+ *      showCloseBtn: true,
+ *      showExcelDownBtn: true,
+ *      xtype: 'euicommand'
+ *
+ * # 버튼 텍스트 변경.
+ *
+ *  xxxBtnText 변수를 설정해 기본 설정된 버튼의 텍스트 값을 변경할 수 있다.
+ *
+ *      printBtnText: '출력버튼',
+ *      rowAddBtnText: '추가버튼',
+ *      rowDelBtnText: '삭제버튼',
+ *      regBtnText: '등록버튼',
+ *      reloadBtnText: '조회버튼',
+ *      modBtnText: '수정버튼',
+ *      saveBtnText: '저장버튼',
+ *      closeBtnText: '닫기버튼',
+ *      excelDownBtnText: '엑셀다운로드버튼',
+ *      xtype: 'euicommand'
  **/
 Ext.define('eui.toolbar.EuiCommand', {
     extend: 'Ext.toolbar.Toolbar',
@@ -514,6 +545,19 @@ Ext.define('eui.toolbar.EuiCommand', {
         return me;
     },
 
+    initComponent: function () {
+        var me = this;
+        if(me.scale == 'medium'){
+            Ext.apply(me, {
+                defaults: {
+                    height: 28
+                }
+            });
+        }
+
+        this.callParent(arguments);
+    },
+
     buttonsAdd: function () {
         var me = this;
         me.add([
@@ -565,6 +609,7 @@ Ext.define('eui.toolbar.EuiCommand', {
             {
                 text: me.excelDownBtnText || '#{엑셀다운로드}',
                 scale: me.scale,
+                cls: 'bgtype2',
                 itemId: 'EXLDWN',
                 iconCls: (me.hideExcelDownBtnICon ? null : (me.hideExcelDownBtnICon?me.excelDownBtnICon:'#{엑셀다운로드아이콘}')),
                 disabled: me.getDisableExcelDownBtn(),
@@ -601,29 +646,6 @@ Ext.define('eui.toolbar.EuiCommand', {
                                     randomInt: Ext.Number.randomInt(1, 1.0E12)
                                 }, 0, null);
                             }
-                        }
-                    }
-                }
-            },
-            {
-                xtype: 'euibutton',
-                scale: me.scale,
-                iconCls: (me.hideDelBtnICon ? null : (me.hideDelBtnICon?me.delBtnICon:'#{행삭제아이콘}')),
-                text: me.rowDelBtnText || '#{행삭제}',
-                itemId: 'DEL',
-                scope: me,
-                disabled: me.getDisableRowDelBtn(),
-                hidden: !me.getShowRowDelBtn(),
-                listeners: {
-                    click: function () {
-                        var owner = me.getStoreOwner();
-                        if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
-                            me.fireEvent('rowdeletebtnclick', owner);
-                        } else if (owner) {
-                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
-                                owner.fireEvent('rowdeletebtnclick', owner);
-                            } else
-                                owner.onRowDelete(owner, null, owner);
                         }
                     }
                 }
@@ -670,6 +692,30 @@ Ext.define('eui.toolbar.EuiCommand', {
                     }
                 }
             },
+            {
+                xtype: 'euibutton',
+                scale: me.scale,
+                iconCls: (me.hideDelBtnICon ? null : (me.hideDelBtnICon?me.delBtnICon:'#{행삭제아이콘}')),
+                text: me.rowDelBtnText || '#{행삭제}',
+                itemId: 'DEL',
+                scope: me,
+                disabled: me.getDisableRowDelBtn(),
+                hidden: !me.getShowRowDelBtn(),
+                listeners: {
+                    click: function () {
+                        var owner = me.getStoreOwner();
+                        if (me.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                            me.fireEvent('rowdeletebtnclick', owner);
+                        } else if (owner) {
+                            if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
+                                owner.fireEvent('rowdeletebtnclick', owner);
+                            } else
+                                owner.onRowDelete(owner, null, owner);
+                        }
+                    }
+                }
+            },
+
             {
                 xtype: 'euibutton',
                 scale: me.scale,
