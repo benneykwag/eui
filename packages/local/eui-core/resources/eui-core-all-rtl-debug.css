@@ -320,10 +320,6 @@ grid, panel에 cls: 'eui-form-table'로 설정
     font-size: 12px !important;
 }
 
-.x-btn-icon-left > .x-btn-icon-el-default-toolbar-medium, .x-btn-icon-right > .x-btn-icon-el-default-toolbar-medium {
-    width: 18px !important;
-}
-
 /** 아이콘 배경 흰색 */
 .bgtype1 .x-btn-icon-el-default-toolbar-medium {
     color: #fff;
