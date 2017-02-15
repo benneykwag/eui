@@ -36,7 +36,7 @@ Ext.define('Ext.ux.grid.PageSize', {
     onInitView: function(paging) {
         this.setValue(paging.store.pageSize);
         paging.add('-', this.beforeText, this, this.afterText);
-        this.on('select', this.onPageSizeChanged, paging);
+        this.on('change', this.onPageSizeChanged, paging);
         this.on('specialkey', function(combo, e) {
             if(13 === e.getKey()) {
                 this.onPageSizeChanged.call(paging, this);
