@@ -1,7 +1,7 @@
 
 /*
 * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
-* 2017.2.15 12:13
+* 2017.2.22 18:16
 */
 /*
  * 기본 ajax 요청관련 기본 설정 수정
@@ -7519,7 +7519,7 @@ Ext.define('Ext.ux.grid.PageSize', {
     onInitView: function(paging) {
         this.setValue(paging.store.pageSize);
         paging.add('-', this.beforeText, this, this.afterText);
-        this.on('select', this.onPageSizeChanged, paging);
+        this.on('change', this.onPageSizeChanged, paging);
         this.on('specialkey', function(combo, e) {
             if (13 === e.getKey()) {
                 this.onPageSizeChanged.call(paging, this);
@@ -8778,13 +8778,17 @@ Ext.define('eui.panel.BasePanel', {
 });
 
 /***
- *
+ *  헤더용 타이틀 바.
  */
 Ext.define('eui.panel.Header', {
     extend: 'Ext.Component',
     xtype: 'euiheader',
     height: 30,
     margin: '10 10 0 5',
+    localeProperties: [
+        'title',
+        'iconCls'
+    ],
     config: {
         title: null,
         iconCls: 'x-fa fa-pencil-square'
@@ -8800,14 +8804,12 @@ Ext.define('eui.panel.Header', {
         '<div data-ref="textEl" class="x-title-text x-title-text-default x-title-item" unselectable="on" role="presentation">{title}</div>' + '</div>' + '</div>' + '</div>' + '<span data-ref="tabGuardAfterEl" aria-hidden="true" class="x-tab-guard x-tab-guard-" style="width:0px;height:0px;"></span>' + '</div>',
         '</div>'
     ],
-    initComponent: function() {
-        Ext.apply(this, {
-            data: {
-                iconCls: this.iconCls,
-                title: this.title
-            }
-        });
+    onRender: function() {
         this.callParent(arguments);
+        this.update({
+            iconCls: this.iconCls,
+            title: this.getTitle()
+        });
     }
 });
 
@@ -13812,7 +13814,7 @@ Ext.define("Ext.ux.exporter.excelFormatter.Workbook", {
                         },
                         {
                             name: "Color",
-                            value: "#CCFFFF"
+                            value: "#FFFFFF"
                         }
                     ]
                 }
@@ -13830,7 +13832,7 @@ Ext.define("Ext.ux.exporter.excelFormatter.Workbook", {
                         },
                         {
                             name: "Color",
-                            value: "#CCCCFF"
+                            value: "#FFFFFF"
                         }
                     ]
                 }

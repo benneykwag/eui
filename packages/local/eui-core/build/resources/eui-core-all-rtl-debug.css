@@ -278,6 +278,13 @@ grid, panel에 cls: 'eui-form-table'로 설정
 }
 
 /* 버튼 medium */
+.x-btn-icon-el-default-toolbar-medium {
+    font-size: 20px;
+    height: 22px;
+    color: #333;
+    line-height: 24px;
+}
+
 .x-btn-inner-default-toolbar-medium {
     font-family: NGB;
     color: #333;
@@ -285,13 +292,60 @@ grid, panel에 cls: 'eui-form-table'로 설정
     padding: 0 4px;
     max-width: 100%;
 }
-
+/* 새로 고침 & 인쇄 bgtype1*/
 .bgtype1.x-btn-default-toolbar-medium {
+    border-color: #9d9d9d !important;
+    background-color: #322b33 !important;
+    min-height: 20px;
+}
+/* 텍스트 높이 */
+.x-btn-button-default-toolbar-medium {
+    min-height: 20px !important;
+}
+.bgtype1.x-btn-over.x-btn-default-toolbar-medium {
+    background-image: -webkit-linear-gradient(top, #9d9d9d, #322b33);
+}
+.bgtype1.x-btn-default-toolbar-small {
+    border-color: #9d9d9d !important;
+    background-color: #322b33 !important;
+}
+.bgtype1.x-btn-over.x-btn-default-toolbar-small {
+    background-image: -webkit-linear-gradient(top, #9d9d9d, #322b33);
+}
+
+.x-btn-icon-el-default-toolbar-medium {
+    font-size: 15px !important;/**아이콘 사이즈 */
+}
+.x-btn-icon-el-default-toolbar-small {
+    font-size: 12px !important;
+}
+
+/** 아이콘 배경 흰색 */
+.bgtype1 .x-btn-icon-el-default-toolbar-medium {
+    color: #fff;
+}
+.bgtype1 .x-btn-icon-el-default-toolbar-small {
+    color: #fff;
+}
+/** 텍스트 배경 흰색 */
+.bgtype1 .x-btn-inner-default-toolbar-medium {
+    color: #fff;
+}
+.bgtype1 .x-btn-inner-default-toolbar-small {
+    color: #fff;
+}
+
+.x-btn-inner-default-toolbar-medium {
+    font: normal 13px/16px tahoma, arial, verdana, sans-serif !important;
+}
+
+/* 새로 고침,인쇄 외 특이 기능  bgtype2*/
+.bgtype2.x-btn-default-toolbar-medium {
     border-color: #9d9d9d !important;
     background-color: #d4cccc !important;
 }
 
-.bgtype1.x-btn-default-toolbar-small {
+.bgtype2.x-btn-default-toolbar-small {
     border-color: #9d9d9d !important;
     background-color: #d4cccc !important;
 }

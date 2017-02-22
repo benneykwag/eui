@@ -53,7 +53,7 @@
     onInitView: function(paging) {
         this.setValue(paging.store.pageSize);
         paging.add(&#39;-&#39;, this.beforeText, this, this.afterText);
-        this.on(&#39;select&#39;, this.onPageSizeChanged, paging);
+        this.on(&#39;change&#39;, this.onPageSizeChanged, paging);
         this.on(&#39;specialkey&#39;, function(combo, e) {
             if(13 === e.getKey()) {
                 this.onPageSizeChanged.call(paging, this);

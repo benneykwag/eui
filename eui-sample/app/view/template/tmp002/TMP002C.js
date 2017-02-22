@@ -45,7 +45,6 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002C', {
             }, false);
 
         popup.down('TMP002V03').on('onsaveform', function (rec) {
-            debugger;
             console.log('rec', rec.getData());
 
             this.onSaveForm(rec, popup, function () {

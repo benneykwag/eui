@@ -9,7 +9,9 @@ Ext.define('Eui.sample.view.template.Style1',{
             items: [
                 {
                     xtype: 'euiheader',
-                    title: 'PAGE TITLE 페이지 타이틀'
+                    id: 'ddd',
+                    title: '#{행삭제}'
+//                    title: 'PAGE TITLE 페이지 타이틀'
                 },
                 '->',
                 {

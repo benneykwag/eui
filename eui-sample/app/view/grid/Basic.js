@@ -84,6 +84,7 @@ Ext.define('Eui.sample.view.grid.Basic', {
                     dataIndex: 'MSG_ID',
                     filter: true,
                     editor: {
+                        allowBlank: false,
                         bind: "{messageRecord.MSG_ID}",
                         xtype: 'textfield'
                     }
