@@ -6,7 +6,9 @@ Ext.define('eui.panel.Header', {
     xtype: 'euiheader',
     height: 30,
     margin: '10 10 0 5',
+
     localeProperties: ['title','iconCls'],
+
     config: {
         title: null,
         iconCls: 'x-fa fa-pencil-square'
