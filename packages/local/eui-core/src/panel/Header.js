@@ -35,6 +35,7 @@ Ext.define('eui.panel.Header', {
     ],
 
     onRender: function () {
+        this.callParent(arguments);
         this.update({
             iconCls: this.iconCls,
             title: this.getTitle()
