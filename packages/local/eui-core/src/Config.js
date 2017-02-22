@@ -28,6 +28,9 @@ Ext.define('eui.Config', {
     fileuploadMaxSize: 1048576,
     fileDownloadUrl : '',
 
+    loginPageUrl: null, //외부로그인 html, jsp page url
+    loginRequestUrl: null,
+
     // model.getData() 시 euidate, euimonthfield
     modelGetDataDateFormat: 'Ymd',
 
@@ -117,6 +120,8 @@ Ext.define('eui.Config', {
             {"MSG_ID": "등록", "MSG_LABEL": "등록"},
             {"MSG_ID": "등록아이콘", "MSG_LABEL": "x-fa fa-table"},
             {"MSG_ID": "수정", "MSG_LABEL": "수정"},
+            {"MSG_ID": "조회", "MSG_LABEL": "조회"},
+            {"MSG_ID": "조회아이콘", "MSG_LABEL": "x-fa fa-search"},
             {"MSG_ID": "수정아이콘", "MSG_LABEL": "x-fa fa-pencil-square-o"},
             {"MSG_ID": "저장", "MSG_LABEL": "저장"},
             {"MSG_ID": "저장아이콘", "MSG_LABEL": "x-fa fa-save"},

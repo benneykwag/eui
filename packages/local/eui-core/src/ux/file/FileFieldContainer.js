@@ -23,7 +23,7 @@ Ext.define('eui.ux.file.FileFieldContainer', {
                 items: {
                     xtype: 'uploadpanel',
                     uploader: 'Ext.ux.upload.uploader.FormDataUploader',
-                    initComponent: function () {
+                    initComponent: function() {
                         var me = this;
                         Ext.apply(me, {
                             uploaderOptions: {
@@ -35,20 +35,37 @@ Ext.define('eui.ux.file.FileFieldContainer', {
                     },
                     synchronous: true,
                     listeners: {
-                        beforeupload: function () {
+                        beforeupload: function() {
                             var maxSize = Config.fileuploadMaxSize || 1048576,
                                 totalSize = 0,
-                                size, errorMsg = '',
+                                size, extension, isValidExtension = true,
+                                validExtensions = Config.validFileExtensions,
+                                errorMsg = '',
+                                invalidExtensionFormat = '부적합한 확장자의 파일이 포함되어 있습니다',
                                 msgFormat = '파일 최대 업로드 용량({0})을 초과하였습니다';
                             this.queue.each(function(itm) {
+                                if (validExtensions) {
+                                    extension = itm.fileApiObject.name.split('.')[itm.fileApiObject.name.split('.').length - 1];
+                                    isValidExtension = isValidExtension && Ext.Array.contains(validExtensions, extension);
+                                }
                                 size = itm && itm.config && itm.config.fileApiObject && itm.config.fileApiObject.size;
                                 totalSize += Ext.isNumber(size) ? size : 0;
                             });
-
+                            if (!isValidExtension) {
+                                errorMsg = invalidExtensionFormat + '사용가능 확장자) ' + validExtensions.join(', ');
+                                Ext.Msg.show({
+                                    title: 'WARNING',
+                                    icon: Ext.Msg.WARNING,
+                                    buttons: Ext.Msg.OK,
+                                    message: errorMsg
+                                });
+                                return false;
+                            }
                             if (totalSize > maxSize) {
                                 var fn = Ext.util.Format.fileSize;
                                 errorMsg = Ext.String.format(msgFormat, fn(maxSize));
                                 Ext.Msg.show({
+                                    title: 'WARNING',
                                     icon: Ext.Msg.WARNING,
                                     buttons: Ext.Msg.OK,
                                     message: errorMsg
