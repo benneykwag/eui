@@ -81,6 +81,29 @@ Ext.define('eui.Util', {
                     }
                 }
 
+                // 대림 invalid session request
+                if (response.status === 401) {
+                    Ext.Msg.show({
+                        title: 'WARNING',
+                        icon: Ext.Msg.ERROR,
+                        buttons: Ext.Msg.OK,
+                        message: '비인가된 요청입니다',
+                        fn: function(btn) {
+                            if (Config && Config.loginPageUrl) {
+                                location.href = Config.loginPageUrl;
+                            } else {
+                                var main = Ext.ComponentQuery.query('[viewportCls]')[0];
+                                if (main) {
+                                    main.destroy();
+                                    if (Util) {
+                                        Util.globalLoginForm();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
                 if (response.status === 0) {
                     Ext.Msg.show({
                         title: 'WARNING',
@@ -116,18 +139,28 @@ Ext.define('eui.Util', {
 
                     }
                 }
-                //                Ext.require('eui.window.Notification', function () {
-                //                    Ext.create('widget.uxNotification', {
-                //                        title: '처리결과',
-                //                        position: 'br',
-                //                        cls: 'ux-notification-light',
-                //                        closable: false,
-                //                        iconCls: 'ux-notification-icon-information',
-                //                        autoCloseDelay: 3000,
-                //                        spacing: 20,
-                //                        html: result.DESC || result.MSG
-                //                    }).show();
-                //                });
+                // 대림 invalid session request
+                if (response.status === 401) {
+                    Ext.Msg.show({
+                        title: 'WARNING',
+                        icon: Ext.Msg.ERROR,
+                        buttons: Ext.Msg.OK,
+                        message: '비인가된 요청입니다',
+                        fn: function(btn) {
+                            if (Config && Config.loginPageUrl) {
+                                location.href = Config.loginPageUrl;
+                            } else {
+                                var main = Ext.ComponentQuery.query('[viewportCls]')[0];
+                                if (main) {
+                                    main.destroy();
+                                    if (Util) {
+                                        Util.globalLoginForm();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
 
                 if (result && parseInt(result.TYPE) === 0) {
                     Util.showGlobalMsg(result, 'INFO');
@@ -464,6 +497,12 @@ Ext.define('eui.Util', {
 
             if (!Ext.isEmpty(option.params)) {
                 option.jsonData = Ext.applyIf(option.jsonData, option.params);
+            }
+            if (option.jsonData) {
+                var str = Ext.encode(option.jsonData);
+                str = str.replace(/<script>/g, '&lt;script&gt;');
+                str = str.replace(/<\/script>/g, '&lt;/script&gt;');
+                option.jsonData = Ext.decode(str);
             }
             delete option.params;
 
@@ -912,7 +951,7 @@ Ext.define('eui.Util', {
             uploader: 'Ext.ux.upload.uploader.FormDataUploader',
             uploaderOptions: {
                 params: cfg,
-                url: Config.baseUrlPrifix||'' + Config.fileuploadUrl
+                url: Config.baseUrlPrifix || '' + Config.fileuploadUrl
             },
             synchronous: true //appPanel.syncCheckbox.getValue()
         });
@@ -1043,12 +1082,12 @@ Ext.define('eui.Util', {
      * @param key: viewModel에서 찾을려고 하는 value의 key
      * @returns {*}
      */
-    lookupViewModel: function (selector, key) {
+    lookupViewModel: function(selector, key) {
         var str = [
-            '#{0}',
-            '{0}'
-        ].join(),
-        cmp, vm;
+                '#{0}',
+                '{0}'
+            ].join(),
+            cmp, vm;
 
         selector = Ext.String.format(str, selector);
         cmp = Ext.ComponentQuery.query(selector).length && Ext.ComponentQuery.query(selector)[0];
