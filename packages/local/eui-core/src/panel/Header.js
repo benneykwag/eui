@@ -6,6 +6,10 @@ Ext.define('eui.panel.Header', {
     xtype: 'euiheader',
     height: 30,
     margin: '10 10 0 5',
+<<<<<<< HEAD
+=======
+
+>>>>>>> cebf0adf5db2219e233a5fff8e4e317f143c46a9
     localeProperties: ['title','iconCls'],
 
     config: {
