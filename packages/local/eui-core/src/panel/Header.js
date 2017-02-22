@@ -1,12 +1,13 @@
 /***
- *
+ *  헤더용 타이틀 바.
  */
 Ext.define('eui.panel.Header', {
     extend: 'Ext.Component',
     xtype: 'euiheader',
     height: 30,
     margin: '10 10 0 5',
-    localeProperties: ['title'],
+    localeProperties: ['title','iconCls'],
+
     config: {
         title: null,
         iconCls: 'x-fa fa-pencil-square'
@@ -40,11 +41,11 @@ Ext.define('eui.panel.Header', {
         });
         this.callParent(arguments);
     },
-    setTitle: function(v) {
+
+    onRender: function () {
         this.update({
-            title: v,
-            iconCls: this.iconCls
+            iconCls: this.iconCls,
+            title: this.getTitle()
         });
-        this.callParent(arguments);
     }
 });
