@@ -28,6 +28,9 @@ Ext.define('eui.form.field.PopUpField', {
         trigger.setValue(record.get(trigger.valueField));
         this.collapse();
     },
+    plugins : [{
+        ptype: 'clearable'
+    }],
 
     createPicker: function (C) {        // #4
         var me = this;
@@ -57,11 +60,7 @@ Ext.define('eui.form.field.PopUpField', {
                 layout: 'fit',
                 items: [
                     {
-                        xtype: (me.popupConfig.popupWidget ? me.popupConfig.popupWidget : 'euipopup'),
-//                        formConfig : me.formConfig,
-//                        multiSelect : me.multiSelect,
-//                        simpleColumns : me.popupConfig.simpleColumns,
-//                        normalColumns : me.popupConfig.normalColumns,
+                        xtype: (me.popupConfig.popupWidget ? me.popupConfig.popupWidget : 'defaultpopup'),
                         height: (me.simpleMode ? 290 : me.popupConfig.height - 10),
                         tableColumns: 2,
                         trigger: me,

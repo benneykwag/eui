@@ -41,7 +41,6 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
                 width: 600,
                 height: 400,
                 autoSearch: true,
-                popupWidget: 'defaultpopup',
                 title: 'Port Search',
                 columnConfig: {
                     "CUSTOMER_CODE": "고객코드",
