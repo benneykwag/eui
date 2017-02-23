@@ -6,7 +6,7 @@ Ext.define('Override.eui.Config', {
     localeUrl: 'resources/data/i18n.json',
 //    baseUrlPrifix : 'http://localhost:8080',
 
-    commandButtonControllerUrl : 'resources/data/buttonControl.json',
+//    commandButtonControllerUrl : 'resources/data/buttonControl.json',
 
     fileuploadListUrl : 'resources/data/fileList.json',
 

@@ -59,8 +59,9 @@ Ext.define('Eui.sample.view.main.Main', {
                     items: [
                         {
                             title: 'HOME',
+                            closable: true,
 //                            xtype: 'sample-basic-grid'
-                            xtype: 'sample-mergegrid2'
+                            xtype: 'TMP010V'
                         }
                     ]
                 }

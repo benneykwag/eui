@@ -22,15 +22,70 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
             xtype: 'euitext'
         },
         {
-            xtype: 'euipopuppicker',
+            xtype: 'euipopupfield',
             fieldLabel: '이름',
-            valueField: 'NAME',
             bind: '{FORMRECORD.NAME}',
-            popupConfig :{
-                popupWidget : 'popup01',
-                title: 'aa',
+            valueField: 'CUSTOMER_NAME_ENG',    // 팝업 선택후 설정 필드.
+            popupConfig: {
+                store: {
+                    proxy: {
+                        type: 'rest',
+                        url: 'resources/data/getPopup.json',
+                        reader: {
+                            type: 'json',
+                            rootProperty: 'data'
+                        }
+                    }
+                },
+                formField: 'DT_CODE', //폼필드에 값이 설정된다..
                 width: 600,
-                height : 500
+                height: 400,
+                autoSearch: true,
+                popupWidget: 'defaultpopup',
+                title: 'Port Search',
+                columnConfig: {
+                    "CUSTOMER_CODE": "고객코드",
+                    "CUSTOMER_NAME_ENG": "영문고객명",
+                    "CUSTOMER_NAME": "한글고객명",
+                    "ADDR_ENG": "ADDR_ENG",
+                    "COUNTRY_CODE": "COUNTRY_CODE",
+                    "TEL_NO": "TEL_NO",
+                    "FAX_NO": "FAX_NO",
+                    "STAFF_SEQ_NO": "STAFF_SEQ_NO",
+                    "STAFF_NAME": "STAFF_NAME",
+                    "STAFF_ROLE": "STAFF_ROLE",
+                    "MOBILE_NO": "MOBILE_NO",
+                    "EMAIL_ADDR": "EMAIL_ADDR",
+                    "POSITION": "POSITION",
+                    "DEPT": "DEPT",
+                    "IRS_NO": "IRS_NO",
+                    "CUSTOMER_DIRECTOR": "CUSTOMER_DIRECTOR",
+                    "INDUSTRY_TYPE": "INDUSTRY_TYPE",
+                    "BUSINESS_TYPE": "BUSINESS_TYPE",
+                    "SALES_ID_MASTER": "SALES_ID_MASTER",
+                    "SALES_ID_SUB": "SALES_ID_SUB",
+                    "DUE_DATE": "DUE_DATE",
+                    "DEAL_UNIT": "DEAL_UNIT",
+                    "PLANT_CODE": "PLANT_CODE",
+                    "PLANT_NAME": "PLANT_NAME"
+                },
+                formConfig: [
+                    {
+                        name: 'DT_CODE',
+                        fieldLabel: 'Port Code',
+                        xtype: 'euitext'
+                    },
+                    {
+                        name: 'LOC_VALUE',
+                        fieldLabel: 'Port Name(Loc)',
+                        xtype: 'euitext'
+                    },
+                    {
+                        name: 'ENG_VALUE',
+                        fieldLabel: 'Port Name(Eng)',
+                        xtype: 'euitext'
+                    }
+                ]
             }
         },
         {

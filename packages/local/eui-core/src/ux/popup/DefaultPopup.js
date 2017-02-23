@@ -1,23 +1,14 @@
 Ext.define('eui.ux.popup.DefaultPopup', {
-    extend: 'eui.container.PopupContainer',
-    alias: 'widget.popup-default',
-    requires: [
-
-    ],
-    viewModel: {
-        stores: {
-            commonpopupStore: {
-                autoLoad: true,
-                remoteSort: true,
-                fields: [],
-                proxy: {
-                    type: 'rest',
-                    url: 'api/COM050101SVC/getPopup',
-                    reader: {
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                }
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.defaultpopup',
+    defaultListenerScope: true,
+    store: {
+        proxy: {
+            type: 'rest',
+            url: 'resources/data/getPopup.json',
+            reader: {
+                type: 'json',
+                rootProperty: 'data'
             }
         }
     },
@@ -28,25 +19,13 @@ Ext.define('eui.ux.popup.DefaultPopup', {
 
     autoScroll: true,
 
-    setCallbackData: function () {
-        console.log(this);
-        var record = Ext.create('Ext.data.Model', {
-            CD: 'AAAA',
-            CD_NM: '코드명'
-        });
-        this.parentCallBack(record, 'CD', 'CD_NM');
-        this.up('window').close();
-    },
-
     /***
      *
      */
     beforeRender: function () {
         var me = this,
-            formConfig = this.__PARAMS.popupConfig.formConfig,
-            length = formConfig.length,
-            tableColumns = me.items.items[0].tableColumns,
-            colspan = (length * 2) % tableColumns == 0 ? 0 : ((tableColumns + 1) - (length * 2) % tableColumns);
+            popupConfig = this.__PARAMS.popupConfig,
+            formConfig = popupConfig.formConfig;
 
         // formpanel title
         if (this.__PARAMS.popupConfig.title) {
@@ -56,40 +35,26 @@ Ext.define('eui.ux.popup.DefaultPopup', {
         }
 
         Ext.each(formConfig, function (item, idx) {
-            me.items.items[0].add({
-                    xtype: 'euilabel',
-                    text: item.label
-                },
-                Ext.apply(item, {colspan: (idx === (length - 1) ? colspan : 0)})
-            )
+            // picker value setting
+            if(popupConfig.formField == item.name){
+                item.value = me.__PARENT.getValue();
+            }
+
+            me.items.items[0].add(item)
         });
+
+        if(popupConfig.store||me.store){
+            var store = Ext.create('Ext.data.Store',popupConfig.store||me.store);
+            me.items.items[1].bindStore(store);
+        }
+
         this.callParent(arguments);
     },
 
     onSearch: function (type) {
-        var me = Util.getOwnerCt(this).down('sppopupcontainer'),
-            grid = me.down('spgrid'),
+        var me = this,
+            grid = me.down('grid'),
             popupConfig = me.__PARAMS.popupConfig;
-
-        if(type == "S"){	//시작은 sql이 우선
-//            var sql = Ext.apply(Util.getOwnerCt(me).down('spform').getValues(), popupConfig.sql);
-        }else{
-//            var sql = Ext.apply(popupConfig.sql, Util.getOwnerCt(me).down('spform').getValues()); //팝업은 검색조건이 우선시됨 JKM
-        }
-
-//        if (!Ext.isEmpty(popupConfig.addSearchOption)) {
-//            Ext.each(popupConfig.addSearchOption, function (field, idx) {
-//
-////                var search = '[searchId=' + field.searchId + ']';
-////                var value = field.reqValue;
-////                if (!value) {
-////                    value = Util.getOwnerCt(me.__PARENT).down(search).getSubmitValue();
-////                }
-////                if (sql) {
-////                    sql[(field.reqName ? field.reqName : field.searchId)] = value;
-////                }
-//            });
-//        }
 
         grid.store.getProxy().extraParams = {
             groupCode: popupConfig.groupCode
@@ -99,7 +64,7 @@ Ext.define('eui.ux.popup.DefaultPopup', {
             popupConfig.hiddenColumns = [];
         }
         grid.store.load({
-//            params: me.down('#popup').getForm().getValue(),
+            params: me.down('#popup').getForm().getValues(),
             callback: function (records, operation, success) {
                 if (Ext.isEmpty(records) || records.length === 0) {
                     return;
@@ -133,10 +98,14 @@ Ext.define('eui.ux.popup.DefaultPopup', {
                                 langSize = 100;
                             }
                         }
+                        var text;
+                        if(popupConfig.columnConfig){
+                            text = popupConfig.columnConfig[key];
+                        }
                         columns.push({
-//                            hidden: (hiddenFlag.length === 0) ? false : true,
+                            hidden: (hiddenFlag.length === 0) ? false : true,
                             minWidth: langSize,
-                            text: '#{' + key + '}',
+                            text: text||'#{' + key + '}',
                             dataIndex: key
                         });
 
@@ -159,11 +128,15 @@ Ext.define('eui.ux.popup.DefaultPopup', {
         if (!this.__PARAMS.popupConfig.autoSearch) {
             return;
         }
-        this.onSearch('S');
+        this.onSearch();
     },
 
     parentCallBack: function (view, record) {
-        this.callParent([record])
+        var trigger = this.__PARENT;
+        if(!Ext.isEmpty(trigger) && !Ext.isEmpty(trigger.callBack)){
+            Ext.callback(trigger.callBack, trigger, [trigger, record]);
+        }
+
     },
 
     initComponent: function () {
@@ -171,24 +144,48 @@ Ext.define('eui.ux.popup.DefaultPopup', {
         Ext.apply(me, {
             items: [
                 {
-                    tableColumns: 4,
-                    hiddenCloseBtn: false,
-                    hiddenHeader: true,
+                    margin: '10 10 5 10',
                     itemId: 'popup',
                     xtype: 'euiform',
-                    hiddenSearchBtn: false,
+                    title: 'TITLE',
+                    tableColumns: 2,
+                    header: {
+                        xtype: 'header',
+                        titlePosition: 0,
+                        items: [
+                            {
+                                showReloadBtn: true,
+                                showCloseBtn: true,
+                                xtype: 'euicommand',
+                                listeners: {
+                                    reloadbtnclick: 'onSearch'
+                                }
+                            }
+                        ]
+                    },
                     listeners: {
-                        scome: me,
+                        scope: me,
                         baseformsearch: me.onSearch
+                    },
+                    //엔터칠때 조회되도록
+                    defaults: {
+                        listeners: {
+                            specialkey: function (field, e) {
+                                if (e.getKey() == e.ENTER) {
+                                    me.onSearch();
+                                }
+                            }
+                        }
                     }
                 },
                 {
                     xtype: 'euigrid',
+                    margin: '5 10 10 10',
                     flex: 1,
                     usePagingToolbar: true,
-                    bind: {
-                        store: '{commonpopupStore}'
-                    },
+//                    bind: {
+//                        store: '{commonpopupStore}'
+//                    },
                     listeners: {
                         itemdblclick: {
                             fn: me.parentCallBack,
