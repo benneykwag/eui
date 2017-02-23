@@ -84,6 +84,11 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
                         name: 'ENG_VALUE',
                         fieldLabel: 'Port Name(Eng)',
                         xtype: 'euitext'
+                    },
+                    {
+                        name: 'ENG_VALUE2',
+                        fieldLabel: 'Port Name(Eng)',
+                        xtype: 'euitext'
                     }
                 ]
             }
