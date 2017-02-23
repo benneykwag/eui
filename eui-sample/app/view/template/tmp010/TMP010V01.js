@@ -26,7 +26,16 @@ Ext.define('Eui.sample.view.template.tmp010.TMP010V01',{
             fieldLabel: '이름',
             bind: '{FORMRECORD.NAME}',
             valueField: 'CUSTOMER_NAME_ENG',    // 팝업 선택후 설정 필드.
+
+            /*
+            // 팝업 선택 후
+            onTriggerCallback: function (trigger, record) {
+                trigger.setValue(record.get(trigger.valueField));
+                this.collapse();
+            },*/
+
             popupConfig: {
+                // 그리드 store 정의.
                 store: {
                     proxy: {
                         type: 'rest',
