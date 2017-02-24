@@ -603,6 +603,29 @@ Ext.define('eui.toolbar.EuiCommand', {
                                 owner.fireEvent('printbtnclick', owner);
                             }
                         }
+                        if (window.Config && Config.logUrl) {
+                            var main = this.up('[viewportCls]'),
+                                menuTreeStore = main && main.down('> treepanel[region=west]') && main.down('> treepanel[region=west]').getStore(),
+                                tab = main && main.down('> tabpanel') && main.down('> tabpanel').getActiveTab(),
+                                className, param;
+                            if (menuTreeStore && tab) {
+                                className = Ext.getClassName(tab);
+                                Ext.Object.each(menuTreeStore.byIdMap, function(id, itm) {
+                                    if (itm.get('pgmClass') == className) {
+                                        param = {
+                                            mnuId: itm.get('pgmAlias'),
+                                            state: 'P',
+                                            msg: '인쇄'
+                                        };
+                                        Util.CommonAjax({
+                                            url: Config.logUrl,
+                                            params: param
+                                        });
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
                     }
                 }
             },
@@ -620,6 +643,29 @@ Ext.define('eui.toolbar.EuiCommand', {
                         var owner = me.getStoreOwner();
                         this.setComponent(owner);
                         this.onClick2();
+                        if (window.Config && Config.logUrl) {
+                            var main = this.up('[viewportCls]'),
+                                menuTreeStore = main && main.down('> treepanel[region=west]') && main.down('> treepanel[region=west]').getStore(),
+                                tab = main && main.down('> tabpanel') && main.down('> tabpanel').getActiveTab(),
+                                className, param;
+                            if (menuTreeStore && tab) {
+                                className = Ext.getClassName(tab);
+                                Ext.Object.each(menuTreeStore.byIdMap, function(id, itm) {
+                                    if (itm.get('pgmClass') == className) {
+                                        param = {
+                                            mnuId: itm.get('pgmAlias'),
+                                            state: 'E',
+                                            msg: '엑셀'
+                                        };
+                                        Util.CommonAjax({
+                                            url: Config.logUrl,
+                                            params: param
+                                        });
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
                     }
                 }
             },

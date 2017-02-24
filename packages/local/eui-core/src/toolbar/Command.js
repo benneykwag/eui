@@ -25,19 +25,18 @@ Ext.define('eui.toolbar.Command', {
 
     },
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this,
             owner = this.up('grid,form');
-//        var query = (this.ownerGrid||'').split('@');
-//        if (query.length == 1 && !Ext.isEmpty(query[0])) {
-//            owner = Ext.ComponentQuery.query('#' + query[0])[0];
-//        } else if (query.length == 2) {
-//            owner = me.up(query[0]).down('#' + query[1])
-//        }
+        //        var query = (this.ownerGrid||'').split('@');
+        //        if (query.length == 1 && !Ext.isEmpty(query[0])) {
+        //            owner = Ext.ComponentQuery.query('#' + query[0])[0];
+        //        } else if (query.length == 2) {
+        //            owner = me.up(query[0]).down('#' + query[1])
+        //        }
 
         Ext.apply(me, {
-            items: [
-                {
+            items: [{
                     xtype: 'component',
                     itemId: 'status',
                     tpl: '({count}개)',
@@ -52,7 +51,7 @@ Ext.define('eui.toolbar.Command', {
                     showText: me.getShowText(),
                     hidden: !me.getShowRowAddBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             if (owner.hasListeners['rowaddbtnclick'.toLowerCase()]) {
                                 owner.fireEvent('rowaddbtnclick', owner);
                             } else {
@@ -70,7 +69,7 @@ Ext.define('eui.toolbar.Command', {
                     scope: me,
                     hidden: !me.getShowRowDelBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             if (owner.hasListeners['rowdeletebtnclick'.toLowerCase()]) {
                                 owner.fireEvent('rowdeletebtnclick', owner);
                             } else {
@@ -85,7 +84,7 @@ Ext.define('eui.toolbar.Command', {
                     iconCls: '#{등록아이콘}',
                     hidden: !me.getShowRegBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             owner.fireEvent('regbtnclick', owner);
                         }
                     }
@@ -96,7 +95,7 @@ Ext.define('eui.toolbar.Command', {
                     iconCls: '#{수정아이콘}',
                     hidden: !me.getShowModBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             owner.fireEvent('modbtnclick', owner);
                         }
                     }
@@ -108,7 +107,7 @@ Ext.define('eui.toolbar.Command', {
                     iconCls: '#{저장아이콘}',
                     hidden: !me.getShowSaveBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             if (owner.hasListeners['savebtnclick'.toLowerCase()]) {
                                 owner.fireEvent('savebtnclick', owner);
                             } else {
@@ -123,7 +122,7 @@ Ext.define('eui.toolbar.Command', {
                     iconCls: '#{조회아이콘}',
                     hidden: !me.getShowReloadBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             if (owner.hasListeners['reloadbtnclick'.toLowerCase()]) {
                                 owner.fireEvent('reloadbtnclick', owner);
                             } else {
@@ -138,15 +137,33 @@ Ext.define('eui.toolbar.Command', {
                     hidden: !me.getShowExcelDownBtn(),
                     xtype: 'exporterbutton',
                     listeners: {
-                        click: function () {
+                        click: function() {
                             this.onClick2();
+                            if (window.Config && Config.logUrl) {
+                                var main = this.up('[viewportCls]'),
+                                    menuTreeStore = main && main.down('> treepanel[region=west]') && main.down('> treepanel[region=west]').getStore(),
+                                    tab = main && main.down('> tabpanel') && main.down('> tabpanel').getActiveTab(),
+                                    className, param;
+                                if (menuTreeStore && tab) {
+                                    className = Ext.getClassName(tab);
+                                    Ext.Object.each(menuTreeStore.byIdMap, function(id, itm) {
+                                        if (itm.get('pgmClass') == className) {
+                                            param = {
+                                                mnuId: itm.get('pgmAlias'),
+                                                state: 'E',
+                                                msg: '엑셀'
+                                            };
+                                            Util.CommonAjax({
+                                                url: Config.logUrl,
+                                                params: param
+                                            });
+                                            return false;
+                                        }
+                                    });
+                                }
+                            }
                         }
                     }
-//                    targetGrid: owner
-                    //Or you can use
-                    //component: someGrid
-                    //component: someTree
-                    //component: '#someGridItemId'
                 },
                 {
                     xtype: 'euibutton',
@@ -154,7 +171,7 @@ Ext.define('eui.toolbar.Command', {
                     iconCls: 'x-fa fa-sign-out',
                     hidden: !me.getShowCloseBtn(),
                     listeners: {
-                        click: function () {
+                        click: function() {
                             var window = Util.getOwnerCt(this);
                             if (Util.getOwnerCt(this).xtype === 'window') {
                                 window.close();
@@ -174,8 +191,10 @@ Ext.define('eui.toolbar.Command', {
             store = owner.bind.store.owner.get(owner.bind.store.stub.path);
         }
 
-        store.on('datachanged', function () {
-            owner.down('#status').update({count: store.getTotalCount()});
+        store.on('datachanged', function() {
+            owner.down('#status').update({
+                count: store.getTotalCount()
+            });
         });
     }
 });
