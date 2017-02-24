@@ -1,11 +1,14 @@
 /target
 /.idea
+**/docs
+eui-sample/.idea
 /.DS_Store
 /build
 g1proj
 CrudTree
 CultivateCode
 MvvmEx1v5
+standard
 Instrumatics
 Postcard/
 architecture-cms/
