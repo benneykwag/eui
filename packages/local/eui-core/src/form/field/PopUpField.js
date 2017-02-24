@@ -21,16 +21,19 @@ Ext.define('eui.form.field.PopUpField', {
     onFocusLeave: function (e) {
     },
 
-    collapseIf: function (e) {
-    },
+//    collapseIf: function (e) {
+//    },
 
     onTriggerCallback: function (trigger, record) {
         trigger.setValue(record.get(trigger.valueField));
         this.collapse();
+        this.isExpanded = true;
     },
-    plugins : [{
-        ptype: 'clearable'
-    }],
+    plugins: [
+        {
+            ptype: 'clearable'
+        }
+    ],
 
     createPicker: function (C) {        // #4
         var me = this;
@@ -87,13 +90,21 @@ Ext.define('eui.form.field.PopUpField', {
         me.addListener('specialkey', this.setSpecialKey, this);
     },
 
+    onTriggerClick: function (e) {
+        var me = this;
+        if (!me.readOnly && !me.disabled) {
+            me.collapse();
+            me.expand();
+        }
+    },
+
     setSpecialKey: function (field, e, eOpts) {
         var me = this;
         if ((e.getKey() === Ext.EventObject.ENTER
             && !Ext.isEmpty(this.getValue()))
             || (e.getKey() === Ext.EventObject.TAB && !Ext.isEmpty(this.getValue()))) {
             if (!me.checkSingleResult(field)) {
-                field.expand();
+                field.onTriggerClick();
             }
         }
     },
@@ -114,7 +125,7 @@ Ext.define('eui.form.field.PopUpField', {
             params[me.popupConfig.formField] = me.getValue();
             Ext.apply(me.popupConfig.store, {
                 autoDestroy: true,
-                storeId :  Util.generateUUID()
+                storeId: Util.generateUUID()
             });
             var store = Ext.create('Ext.data.Store', me.popupConfig.store);
             store.load({
