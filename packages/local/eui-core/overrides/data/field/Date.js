@@ -25,7 +25,6 @@ Ext.define('Override.data.field.Date', {
             parsed;
 
         if (dateFormat) {
-            console.log(Ext.Date.parse(v, dateFormat));
             return Ext.Date.parse(v, dateFormat, this.useStrict);
         }
 
