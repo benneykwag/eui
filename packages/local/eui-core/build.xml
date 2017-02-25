@@ -46,7 +46,10 @@
         <concat destfile="${workspace.dir}/packages/local/eui-core/build/eui-core-debug.js">
             <header filtering="no" trimleading="yes">
                 /*
-                * Copyright 김앤곽 센차컨설팅그룹. All Rights Reserved.
+                * Eui JS Library
+                * Copyright(c) 2015-2017 김앤곽 센차컨설팅그룹.
+                * benneykwag@gmail.com
+                * http://www.kksencha.com
                 * ${THISYEAR}
                 */
             </header>
