@@ -216,7 +216,7 @@ Ext.define('eui.data.validator.Format', {
             result = matcher && matcher.test(value),
             chkTypeString = me.getChkString()[me.getChkType()],
             chkTypeMessage = me.getChkString()[me.getChkType() + '_MSG'];
-        if(value == undefined){
+        if(value == undefined || value == ""){
             return true;
         }
         if (this.getChkType()) {
