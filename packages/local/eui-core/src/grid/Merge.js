@@ -306,13 +306,23 @@ Ext.define('eui.grid.Merge', {
     /***
      * 메뉴 제거함.
      */
-    onRender: function () {
+    afterRender: function () {
         this.callParent(arguments);
         Ext.each(this.getColumns(), function(item) {
             if(item.triggerEl){
                 item.triggerEl.hide();
             }
         });
+    },
+
+    initComponent: function () {
+        Ext.Array.each(this.columns, function (col) {
+            Ext.apply(col, {
+                menuDisabled : true
+            });
+
+        });
+        this.callParent(arguments);
     },
 
     /**
