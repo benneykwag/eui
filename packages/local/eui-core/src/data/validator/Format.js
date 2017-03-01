@@ -216,9 +216,15 @@ Ext.define('eui.data.validator.Format', {
             result = matcher && matcher.test(value),
             chkTypeString = me.getChkString()[me.getChkType()],
             chkTypeMessage = me.getChkString()[me.getChkType() + '_MSG'];
-
+        if(value == undefined){
+            return true;
+        }
         if (this.getChkType()) {
-            if(!Ext.isNumber(value)){
+            if(Ext.isNumeric(value)){
+                if(me.getChkType() == 'N'){
+                    return true;
+                }
+            }else{
                 value = value.replace( /(\s*)/g, "");
             }
 
