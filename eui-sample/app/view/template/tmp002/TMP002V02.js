@@ -30,6 +30,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             ]
         }
     ],
+
     columns: [
         {
             xtype: 'rownumberer'
@@ -40,8 +41,11 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             locked: true,
             editor: {
                 bind: {
-                    disabled: '{!formStatus.phantom}'
+                    disabled: '{!formStatus.phantom}',
+                    value:  '{customerRecord.USEPRSN_NM}'
                 },
+
+                allowBlank: false,
                 xtype: 'euitext'
             }
         },
@@ -54,9 +58,13 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             }
         },
         {
-            text: '조건',
-            dataIndex: 'CNDT',
+            text: '숫자타입String',
+            dataIndex: 'NUMBERTYPE_STRING',
             editor: {
+                bind: {
+                    value: '{customerRecord.NUMBERTYPE_STRING}'
+                },
+                allowBlank: false,
                 xtype: 'euitext'
             }
         },
@@ -68,7 +76,7 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V02', {
             }
         },
         {
-            text:'숫자',
+            text:'영문대소문자',
             dataIndex:'MSG',
             editor: {
                 xtype: 'euitext'

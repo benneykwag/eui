@@ -38,6 +38,16 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002M', {
                     ]
                 },
                 {
+                    name: 'NUMBERTYPE_STRING',
+                    validators: [
+                        {
+                            type: 'euiformat',
+                            chkType: 'N',
+                            message: "숫자만 허용합니다"
+                        }
+                    ]
+                },
+                {
                     name: "OUTPUT_DT",
                     type: "date"
                 },

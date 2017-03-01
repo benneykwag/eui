@@ -85,6 +85,11 @@ Ext.define('Eui.sample.view.template.tmp002.TMP002V03', {
             bind: '{customerRecord.MSG}'
         },
         {
+            fieldLabel: '숫자타입문자열',
+            xtype: 'euitext',
+            bind: '{customerRecord.NUMBERTYPE_STRING}'
+        },
+        {
             fieldLabel: '방문여부',
             xtype: 'euiradiogroup',
             defaults: {
