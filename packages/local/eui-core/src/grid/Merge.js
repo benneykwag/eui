@@ -303,6 +303,17 @@ Ext.define('eui.grid.Merge', {
 
     lastMergeColumn: [],
 
+    /***
+     * 메뉴 제거함.
+     */
+    onRender: function () {
+        this.callParent(arguments);
+        Ext.each(this.getColumns(), function(item) {
+            if(item.triggerEl){
+                item.triggerEl.hide();
+            }
+        });
+    },
 
     /**
      * 스토어를 복제해 계산에 사용하기 위한 스토어를 반환한다.
