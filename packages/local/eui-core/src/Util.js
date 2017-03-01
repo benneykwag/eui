@@ -1094,5 +1094,28 @@ Ext.define('eui.Util', {
         if (cmp && (vm = cmp.getViewModel())) {
             return vm.get(key);
         }
+    },
+
+    /***
+     * 동적 모델 생성시 필드를 같이 정의한다
+     * @param fields
+     * @returns {*}
+     */
+    modelFactory: function(fields) {
+        var name = Util.generateUUID();
+        return Ext.define(name, {
+            extend: 'Ext.data.Model',
+            fields: fields
+        });
+    },
+
+    /***
+     * 동적 모델 생성시 필드를 같이 정의한다
+     * @param field
+     * @param data
+     * @returns {*}
+     */
+    dynamicModel: function (field, data) {
+        return Ext.create(this.modelFactory(field), data);
     }
 });
