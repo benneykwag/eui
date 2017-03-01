@@ -41,6 +41,11 @@ Ext.define('Eui.sample.view.form.Panel', {
             },
             items: [
                 {
+                    fieldLabel: '숫자타입문자열',
+                    xtype: 'euitext',
+                    bind: '{RECORD.VALIDATOR_CHK_NUMBER}'
+                },
+                {
                     fieldLabel : '파일업로드',
                     xtype: 'euifieldcontainer',
                     items: [

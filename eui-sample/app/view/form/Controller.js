@@ -12,7 +12,32 @@ Ext.define('Eui.sample.view.form.Controller', {
     },
 
     setRecord: function () {
-        this.getViewModel().set('RECORD', Ext.create('Eui.sample.model.Base', {
+        var record = Util.dynamicModel([
+            {
+                name: "TEXTFIELD",
+                type: "string",
+                validators: [
+                    {
+                        type: "length",
+                        min: 3,
+                        minOnlyMessage: "MSG_ID must have at least 3 characters"
+                    },
+                    {
+                        type: 'euiformat',
+                        chkType: 'Ee'
+                    }
+                ]
+            },
+            {
+                name: 'VALIDATOR_CHK_NUMBER',
+                validators: [
+                    {
+                        type: 'euiformat',
+                        chkType: 'N'
+                    }
+                ]
+            }
+        ], {
             CHECKBOX1 : 'Y',
             RADIOGROUP: 'A',
             MONTHFIELD : '2011.09',
@@ -23,7 +48,8 @@ Ext.define('Eui.sample.view.form.Controller', {
             CHECKBOXGROUP: ['KOREA','JAPAN','USA','RUSIA'],
             BIGTEXT: 'AAAA',
             NUMBER01 : 1100090
-        }));
+        });
+        this.getViewModel().set('RECORD', record);
     },
 
     onSaveMember: function () {
