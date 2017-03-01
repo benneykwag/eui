@@ -120,6 +120,12 @@ Ext.define('eui.grid.Panel', {
      */
 
     config: {
+        /**
+         * @cfg {Boolean} [modelValidation=`true`]
+         * 그리드 에디터에서 model validation 사용.
+         */
+        modelValidation: true,
+
         showRowAddBtn: false,
         showRowDelBtn: false,
         showRowRegBtn: false,
