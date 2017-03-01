@@ -259,11 +259,71 @@ Ext.define('eui.grid.Panel', {
             if (store) {
                 store.on('focusgridrecord', focusgridrecord, this);
             }
-
         } else if (this.store) {
             this.store.on('focusgridrecord', focusgridrecord, this);
         }
+
+        me.getView().getNavigationModel().on('navigate', function(event , keyEvent){
+            me.selectedRowIndex = event.recordIndex;
+            me.selectedRowRecord = event.record;
+            me.columnIndex = event.columnIndex;
+            me.previousColumnIndex = event.previousColumnIndex;
+        });
+
+        var keyMap = Ext.create('Ext.util.KeyMap', this.getEl(), [
+            {
+                // ctrl+c
+                key: 67,
+                ctrl: true,
+                fn: function(cmp, Dm ) {
+                    if(Ext.select('.x-grid-item-focused').elements.length == 1){
+                        var idString = Ext.get(Ext.select('.x-grid-item-focused').elements[0]).getAttribute('class').split(' ')[2];
+                        var columnid = idString.split('-')[3]+'-'+idString.split('-')[4];
+                        var column = Ext.getCmp(columnid),
+                            grid = me,
+                            record = grid.selectedRowRecord;
+                        grid.copyText = record.get(column.dataIndex);
+                        grid.copyRecord = record;
+                        me.confirmColumnIndex = grid.columnIndex;
+                        var id = Ext.get(Ext.select('.x-grid-item-focused').elements[0]).down('div').id;
+
+                        Util.selectText(id)
+                        document.execCommand('copy');
+                    }
+
+                }
+            },
+            {
+                // ctrl+v
+                key: 86,
+                ctrl: true,
+                fn: function(cmp, Dm ) {
+                    if(Ext.select('.x-grid-item-focused').elements.length == 1){
+                        var idString = Ext.get(Ext.select('.x-grid-item-focused').elements[0]).getAttribute('class').split(' ')[2];
+                        var columnid = idString.split('-')[3]+'-'+idString.split('-')[4];
+                        var column = Ext.getCmp(columnid),
+                            grid = me,
+                            record = grid.selectedRowRecord,
+                            editor = column.getEditor();
+
+                        if(grid.columnIndex == grid.confirmColumnIndex){
+                            record.set(column.dataIndex, grid.copyText);
+                            if(editor && editor.valueColumnDataIndex){
+                                record.set(editor.valueColumnDataIndex, grid.copyRecord.get(editor.valueColumnDataIndex));
+                            }
+                            if (record.dirty) {
+                                grid.getSelectionModel().select(grid.selectedRowIndex, true);
+                            } else {
+                                grid.selModel.doDeselect(record);
+                            }
+                        }
+                    }
+
+                }
+            }
+        ]);
     },
+
 
     setStatusbar: function () {
         var me = this,
