@@ -158,7 +158,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                                 field.ownerNextBindVar = fieldArr[0];
                                 field.ownerNextBindParam = fieldParam;
                                 field.ownerNextBindFieldId = combo.getId();
-
+                                field.proxyParams = field.proxyParams||{};
                                 field.proxyParams[fieldParam] = record.get((combo.valueField));
                                 //                                console.log('field.proxyParams', field.proxyParams);
                                 // 그리드 에디터일 경우
