@@ -4,19 +4,19 @@
     {
         "FILE_SIZE": "3K",
         "REF_TYPE": "RM",
-        "ADD_USER_ID": "tnsrnr",
-        "ADD_USER_NAME": "장순국",
+        "ADD_USER_ID": "87654",
+        "ADD_USER_NAME": "홍길동",
         "YYMMDD": "20161219",
         "S_FUNC_CODE": "CH",
         "REMARKS": "",
-        "FILE_MGT_CODE": "884c2e791821433696b4374558cf05f1",
+        "FILE_MGT_CODE": "111",
         "FILE_NAME": "login.txt",
         "CHANGE_USER_NAME": "",
         "STATUS": "C",
         "TIME_ZONE": "GMT +09:00",
         "ADD_DATE": "Dec 19, 2016 8:56:09 PM",
         "CHANGE_USER_ID": "",
-        "REF_NO": "tnsrnr",
-        "COMPANY_CODE": "HTNS"
+        "REF_NO": "sadf",
+        "COMPANY_CODE": "KOREA"
     }
 ], "TYPE": 1}

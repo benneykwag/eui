@@ -1,0 +1,38 @@
+{
+    "success": true,
+    "data": [
+        {
+            "COMPANY_NAME": "마이크로소프트",
+            "COMPANY_CODE": "MICROSOFT",
+            "COUNTRY_NAME": "한국",
+            "COUNTRY_CODE": "KOREA",
+            "LOCALE_NAME": "인천",
+            "LOCALE_CODE" : "INCHON"
+        },
+        {
+            "COMPANY_NAME": "현대자동차",
+            "COMPANY_CODE": "HYUNDAI",
+            "COUNTRY_NAME": "중국",
+            "COUNTRY_CODE": "CHINA",
+            "LOCALE_NAME": "인천",
+            "LOCALE_CODE" : "INCHON"
+        },
+        {
+            "COMPANY_NAME": "휘렛팩커드",
+            "COMPANY_CODE": "HP",
+            "COUNTRY_NAME": "일본",
+            "COUNTRY_CODE": "JAPAN",
+            "LOCALE_NAME": "인천",
+            "LOCALE_CODE" : "INCHON"
+        },
+        {
+            "COMPANY_NAME": "엘지",
+            "COMPANY_CODE": "LG",
+            "COUNTRY_NAME": "미국",
+            "COUNTRY_CODE": "USA",
+            "LOCALE_NAME": "인천",
+            "LOCALE_CODE" : "INCHON"
+        }
+    ],
+    "message": ""
+}

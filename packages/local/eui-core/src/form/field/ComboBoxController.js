@@ -153,7 +153,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                     if (field.getBind().hasOwnProperty('value') && fieldArr[0] == field.getBind().value.stub.path) {
                         // 연계 콤보
                         if (viewClass.prototype.xtypesMap['euicombo']) {
-                            field.setValue(null);
+                            field.clearValue(null);
                             if (record) { // select이벤트에 의해 연계처리.
                                 field.ownerNextBindVar = fieldArr[0];
                                 field.ownerNextBindParam = fieldParam;
@@ -175,6 +175,7 @@ Ext.define('eui.form.field.ComboBoxController', {
                                 }
 
                             } else { // clear
+//                                debugger;
                                 if (field.column) {
                                     me.enableEditor(field.column);
                                     Ext.defer(function() {

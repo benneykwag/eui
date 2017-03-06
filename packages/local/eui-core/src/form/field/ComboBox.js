@@ -168,8 +168,15 @@ Ext.define('eui.form.field.ComboBox', {
     width: '100%',
 //    proxyParams : {},
     config: {
+        /***
+         * @cfg {array} nextBindFields
+         * 연계 콤보를 설정한다. 설정 방법은 nextBindFields : ['뷰모델변수|파라메터명','뷰모델변수']
+         * 복수로 설정 가능하고 뷰모델변수를 설정할 경우 연계될 대상 콤보가 로드시 파라메터로 뷰모델 변수가 전달된다.
+         * 파라메터 지정은 뷰모델변수 다음 '|'로 구분하여 전달될 파라메터명을 설정할 수 있다..
+         */
+        nextBindFields: null,
 
-        nextBindComboExpand: true,
+        nextBindComboExpand: false,
         /***
          * @cfg {string} proxyUrl
          * 데이터를 얻기 위한 서버사이드 주소
@@ -286,7 +293,6 @@ Ext.define('eui.form.field.ComboBox', {
      * 않도록 한다.
      */
     checkAutoLoad: function () {
-
         if (this.value) {
             return true;
         }

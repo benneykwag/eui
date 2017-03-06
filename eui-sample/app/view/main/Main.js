@@ -61,7 +61,7 @@ Ext.define('Eui.sample.view.main.Main', {
                             title: 'HOME',
                             closable: true,
 //                            xtype: 'sample-basic-grid'
-                            xtype: 'TMP010V'
+                            xtype: 'FMS010106V'
                         }
                     ]
                 }
