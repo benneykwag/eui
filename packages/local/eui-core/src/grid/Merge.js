@@ -277,7 +277,7 @@ Ext.define('eui.grid.Merge', {
 
     lockable: false,
     columnLines: true,
-
+    bufferedRenderer : false,
     sortableColumns: false,
 
     /***
