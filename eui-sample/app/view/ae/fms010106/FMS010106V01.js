@@ -32,33 +32,17 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V01', {
                 {
                     width: '40%',
                     xtype: 'hcombobox',
-                    plugins:[
-                        {
-                            ptype: 'clearable'
-                        }
-                    ],
                     nextBindFields: ['GUBUN2_CODE|GUBUN1_CD','NEXT0'],
                     bind: '{GUBUN1_CD}'
                 },
                 {
                     xtype: 'hcombobox',
-                    plugins:[
-                        {
-                            ptype: 'clearable'
-                        }
-                    ],
                     nextBindFields: ['NEXT3'],
                     bind: '{GUBUN2_CODE}',
                     groupCode: 'SP9997'
                 },
                 {
                     xtype: 'hcombobox',
-                    plugins:[
-                        {
-                            ptype: 'clearable'
-                        }
-                    ],
-                    nextBindFields: ['NEXT4'],
                     bind: '{NEXT3}',
                     groupCode: 'SP9997'
                 }
@@ -84,11 +68,6 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V01', {
 
                 },
                 {
-                    plugins:[
-                        {
-                            ptype: 'clearable'
-                        }
-                    ],
                     xtype: 'hcombobox',
                     nextBindFields: ['NEXT0'],
                     bind: '{NEXT1000}',

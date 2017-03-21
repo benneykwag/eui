@@ -9,7 +9,7 @@ Ext.define('Eui.sample.view.grid.MergeGrid2', {
     ],
     title: 'Rowspan, Colspan Grid',
     frame: true,
-
+    bufferedRenderer: false,
     viewModel: {
         stores: {
             store: {

@@ -1,53 +1,20 @@
 Ext.define('Eui.sample.view.ae.fms010106.FMS010106V02', {
-    extend: 'Eui.sample.view.common.Grid',
+    extend: 'eui.grid.Panel',
     xtype: 'FMS010106V02',
     usePagingToolbar: true,
-    hiddenRowAddBtn: false,
-    hiddenRowDelBtn: false,
-    hiddenRowRegBtn: false,
-    hiddenRowModBtn: false,
-    hiddenRowSaveBtn: false,
-    listeners: {
-        SPGridRowReg: function () {
-            console.log('SPGridRowReg called..');
-        },
-        SPGridRowMod: function () {
-            console.log('SPGridRowMod called..');
-        },
-        SPGridRowAdd: function () {
-
-        },
-        SPGridRowSave: 'onGridRowSave'
+    plugins: {
+        ptype: 'cellediting',
+        clicksToEdit: 2
     },
-
-//    onRowAdd: function () {
-//        // this.callParent를 꼭 호출하고 arguments를 전달한다.
-//        this.callParent([this, {
-//            randomInt : Ext.Number.randomInt(1, 1000000000000),
-//            CUSTOMER_NAME_ENG: 'SDS',
-//            CUSTOMER_NAME_KO: 'SDS'
-//        }, 0, function () {    // callback이 필요할 경우 구현한다.
-//            console.log('그리드 내부에서 콜백철...')
-//        }]);
-//    },
-
-
     columns: [
-        {
-            xtype: 'rownumberer'
-        },
         {
             text: 'COMPANY_NAME',
             width: 100,
             dataIndex: 'COMPANY_NAME',
             editor: {
+                id: 'combo1',
                 renderEditor: true,
                 xtype: 'hcombobox',
-                plugins: [
-                    {
-                        ptype: 'clearable'
-                    }
-                ],
                 valueColumnDataIndex: 'COMPANY_CODE',
                 nextBindFields: ['COUNTRY_CODE|COMPANY_CD'],
                 bind: '{COMPANY_CODE}'
@@ -88,6 +55,20 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V02', {
         {
             text: 'LOCALE_CODE',
             dataIndex: 'LOCALE_CODE'
+        },
+        {
+            text: 'AREA_NAME',
+            width: 100,
+            dataIndex: 'AREA_NAME',
+            editor: {
+                xtype: 'hcombobox',
+                valueColumnDataIndex: 'AREA_CODE',
+                bind: '{AREA_CODE}'
+            }
+        },
+        {
+            text: 'AREA_CODE',
+            dataIndex: 'AREA_CODE'
         }
     ]
 });

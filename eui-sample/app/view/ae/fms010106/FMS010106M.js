@@ -3,7 +3,8 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106M', {
     alias: 'viewmodel.FMS010106M',
     data: {
         CUSTOMER_CODE : 'YUSEN',
-        CUSTOMER_CODE2 : 'HTNSSHA'
+        CUSTOMER_CODE2 : 'HTNSSHA',
+        GUBUN1_CD :"0002"
     },
     stores: {
         FMS010106G1: {

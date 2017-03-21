@@ -22,7 +22,7 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V', {
         {
             title: 'ULD Plan',
             xtype: 'FMS010106V01'
-        }/*,
+        },
         {
             flex:1,
             xtype: 'container',
@@ -35,7 +35,6 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V', {
                     flex:1,
                     margin: 10,
                     bind: {
-                        title: '{MYTEXT}',
                         store: '{FMS010106G1}'
                     },
                     xtype: 'FMS010106V02',
@@ -44,14 +43,11 @@ Ext.define('Eui.sample.view.ae.fms010106.FMS010106V', {
                 {
                     flex:1,
                     margin: 10,
-                    bind: {
-                        title: '{MYTEXT}'
-                    },
                     xtype: 'FMS010106V03',
                     minHeight: 200
                 }
             ]
 
-        }*/
+        }
     ]
 })
